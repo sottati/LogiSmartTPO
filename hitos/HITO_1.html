@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITO 1 - LogiSmart | Análisis de Dominio y Casos de Uso</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --primary: #1a365d;
+        --primary-light: #2b6cb0;
+        --accent: #ed8936;
+        --accent-light: #fbd38d;
+        --bg: #f7fafc;
+        --surface: #ffffff;
+        --text: #1a202c;
+        --text-secondary: #4a5568;
+        --border: #e2e8f0;
+        --success: #38a169;
+        --warning: #d69e2e;
+        --danger: #e53e3e;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+        font-size: 15px;
+      }
+
+      /* --- Cover Page --- */
+      .cover {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--surface); /* Usamos tu color de superficie */
+        background-image: radial-gradient(var(--border) 1px, transparent 1px); /* Patrón sutil de puntos */
+        background-size: 20px 20px;
+        color: var(--text);
+        text-align: center;
+        padding: 2rem;
+        border-bottom: 8px solid var(--primary); /* Tu azul principal */
+      }
+
+      .cover-content {
+        max-width: 900px;
+        width: 100%;
+      }
+
+      .cover .university {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+      }
+
+      .cover .subject {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--primary-light);
+        margin-bottom: 4rem;
+      }
+
+      .cover h1 {
+        font-size: 5rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.03em;
+      }
+
+      .cover .subtitle {
+        font-size: 1.25rem;
+        font-weight: 400;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        margin-bottom: 5rem;
+      }
+
+      .cover .team {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        border-top: 2px solid var(--bg);
+        padding-top: 3rem;
+      }
+
+      .team-member strong {
+        display: block;
+        font-size: 1.1rem;
+        color: var(--text);
+        margin-bottom: 0.25rem;
+      }
+
+      .team-member div {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-family: monospace; /* Estilo técnico para la LU */
+      }
+
+      .cover .date {
+        margin-top: 4rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--accent); /* Tu color naranja para resaltar la fecha */
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      /* --- Main Content --- */
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+      }
+
+      /* --- Section --- */
+      .section {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.06),
+          0 1px 2px rgba(0, 0, 0, 0.04);
+        border: 1px solid var(--border);
+      }
+
+      .section-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: var(--primary);
+        color: white;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+      }
+
+      .section h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 0.3rem;
+      }
+
+      .section-desc {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.25rem;
+      }
+
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        margin-top: 2rem;
+      }
+
+      h3:first-of-type {
+        margin-top: 0;
+      }
+
+      /* --- Tables --- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.9rem;
+      }
+
+      thead th {
+        background: var(--primary);
+        color: white;
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      thead th:first-child {
+        border-radius: 8px 0 0 0;
+      }
+
+      thead th:last-child {
+        border-radius: 0 8px 0 0;
+      }
+
+      tbody td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+
+      tbody tr:hover {
+        background: #f0f5ff;
+      }
+
+      tbody tr:last-child td:first-child {
+        border-radius: 0 0 0 8px;
+      }
+
+      tbody tr:last-child td:last-child {
+        border-radius: 0 0 8px 0;
+      }
+
+      /* --- Tags --- */
+      .tag {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+
+      .tag-actor {
+        background: #ebf8ff;
+        color: #2b6cb0;
+      }
+
+      .tag-stakeholder {
+        background: #fefcbf;
+        color: #975a16;
+      }
+
+      .tag-external {
+        background: #fed7e2;
+        color: #9b2c2c;
+      }
+
+      .tag-both {
+        background: #c6f6d5;
+        color: #22543d;
+      }
+
+      /* --- Print --- */
+      /* --- Side Nav --- */
+      .side-nav {
+        position: fixed;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        padding: 0.6rem 0.5rem;
+      }
+
+      .side-nav a {
+        display: block;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .side-nav a:hover {
+        color: var(--primary);
+        border-left-color: var(--border);
+      }
+
+      .side-nav a.active {
+        color: var(--primary);
+        font-weight: 700;
+        border-left-color: var(--accent);
+      }
+
+      @media (max-width: 1200px) {
+        .side-nav {
+          display: none;
+        }
+      }
+
+      @media print {
+        .side-nav {
+          display: none;
+        }
+      }
+
+      /* --- Risk/Probability Tags --- */
+      .tag-low {
+        background: #c6f6d5;
+        color: #22543d;
+      }
+      .tag-med {
+        background: #fefcbf;
+        color: #975a16;
+      }
+      .tag-high {
+        background: #fed7e2;
+        color: #9b2c2c;
+      }
+      .tag-crit {
+        background: #e53e3e;
+        color: white;
+      }
+
+      /* --- CU Cards --- */
+      .cu-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        border-left: 4px solid var(--primary-light);
+        background: var(--bg);
+      }
+
+      .cu-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .cu-card-id {
+        background: var(--primary);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        letter-spacing: 0.5px;
+      }
+
+      .cu-card-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .cu-card-actor {
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.6rem;
+      }
+
+      .cu-card-actor strong {
+        color: var(--primary-light);
+      }
+
+      .cu-card-body {
+        font-size: 0.9rem;
+        color: var(--text);
+        line-height: 1.75;
+      }
+
+      /* --- Context Diagram --- */
+      .context-diagram-wrapper {
+        overflow-x: auto;
+        margin: 1rem 0;
+      }
+
+      .context-diagram-wrapper svg {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        height: auto;
+      }
+
+      pre.mermaid {
+        background: none;
+        border: none;
+        min-height: 400px;
+        text-align: center;
+      }
+
+      .mermaid .node rect {
+        rx: 10px;
+        ry: 10px;
+      }
+
+      .node-title {
+        font-size: 1.15em;
+        font-weight: bold;
+      }
+
+      @media print {
+        body {
+          background: white;
+          font-size: 12pt;
+        }
+        .cover {
+          min-height: auto;
+          padding: 3rem 2rem;
+          page-break-after: always;
+        }
+        .section {
+          box-shadow: none;
+          border: 1px solid #ccc;
+          break-inside: avoid;
+        }
+        .section.context-diagram-section {
+          break-inside: auto;
+          page-break-inside: auto;
+        }
+        .container {
+          max-width: 100%;
+          padding: 0 1rem;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .cover h1 {
+          font-size: 2rem;
+        }
+        .section {
+          padding: 1.5rem;
+        }
+        table {
+          font-size: 0.82rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ COVER ============ -->
+    <div class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+        
+        <h1>LogiSmart</h1>
+        <div class="subtitle">Análisis de Dominio, Visión y Alcance del Producto</div>
+
+        <div class="team">
+          <div class="team-member">
+            <strong>Julio Quinteros</strong>
+            <div>LU: 1122040</div>
+          </div>
+          <div class="team-member">
+            <strong>Rosario Presedo</strong>
+            <div>LU: 1146894</div>
+          </div>
+          <div class="team-member">
+            <strong>Simon Ottati</strong>
+            <div>LU: 1155931</div>
+          </div>
+        </div>
+        
+        <div class="date">Martes Noche • 10 de Marzo de 2026</div>
+      </div>
+    </div>
+
+    <!-- ============ SIDE NAV ============ -->
+    <nav class="side-nav">
+      <a href="#mv">Misión y Visión</a>
+      <a href="#ctx">Diagrama de Contexto</a>
+      <a href="#s1">Actores y Stakeholders</a>
+      <a href="#s2">Casos de Uso (MVP)</a>
+      <a href="#s3">3 CU Principales</a>
+      <a href="#s4">Atributos de Calidad</a>
+      <a href="#s5">Restricciones y Riesgos</a>
+    </nav>
+
+    <!-- ============ CONTENT ============ -->
+    <div class="container">
+      <!-- ===== MISIÓN Y VISIÓN ===== -->
+      <div id="mv" class="section">
+        <h2>Misión y Visión del Producto</h2>
+        <p
+          class="section-desc"
+          style="border-bottom: none; padding-bottom: 0; margin-bottom: 0"
+        >
+          Para las PyMEs de manufactura que hoy gestionan su logística de forma
+          manual y fragmentada, <strong>LogiSmart</strong> es una plataforma
+          SaaS de optimización "todo en uno" que, a diferencia del uso de
+          planillas y comunicaciones informales, centraliza la cadena de
+          suministro mediante rutas inteligentes y trazabilidad en tiempo real.
+          Nuestra visión es convertirnos en el motor de eficiencia que permita a
+          las pequeñas empresas competir a gran escala, transformando la
+          logística de un centro de costos en una ventaja competitiva
+          sostenible.
+        </p>
+      </div>
+
+      <!-- ===== DIAGRAMA DE CONTEXTO ===== -->
+      <div id="ctx" class="section context-diagram-section">
+        <h2>Diagrama de Contexto del Sistema (Nivel 0)</h2>
+        <p class="section-desc">
+          Visión global de LogiSmart, sus actores externos y los flujos de
+          información principales.
+        </p>
+
+        <h3>Capa de Negocio</h3>
+        <pre class="mermaid">
+%%{init: {'flowchart': {'nodeSpacing': 40, 'rankSpacing': 70, 'padding': 18}}}%%
+flowchart LR
+  CL["<b class='node-title'>Consultora Logística</b><br/>(Sponsor / Inversora)"]
+  CIT["<b class='node-title'>Consultora IT</b><br/>(Equipo de Desarrollo)"]
+  LS["<b class='node-title'>LogiSmart</b><br/>SaaS Multitenant"]
+
+  subgraph PYMES["Clientes PyMEs"]
+    direction TB
+    PM1["<b class='node-title'>PyME A</b><br/>(Op. Logístico + Admin)"]
+    PM2["<b class='node-title'>PyME B</b><br/>(Op. Logístico + Admin)"]
+    PM3["<b class='node-title'>PyME N...</b><br/>(Op. Logístico + Admin)"]
+    PM1 ~~~ PM2 ~~~ PM3
+  end
+
+  CL -->|contrata| CIT
+  CIT -->|desarrolla| LS
+  LS -->|sirve a| PYMES
+
+  classDef std padding:12px 20px
+  class CL,CIT,LS,PM1,PM2,PM3 std
+
+  style CL fill:#fefcbf,stroke:#d69e2e,stroke-width:2px,color:#1a365d
+  style CIT fill:#ebf8ff,stroke:#2b6cb0,stroke-width:2px,color:#1a365d
+  style LS fill:#1a365d,stroke:#2b6cb0,stroke-width:3px,color:#fff
+  style PM1 fill:#c6f6d5,stroke:#38a169,stroke-width:2px,color:#22543d
+  style PM2 fill:#c6f6d5,stroke:#38a169,stroke-width:2px,color:#22543d
+  style PM3 fill:#c6f6d5,stroke:#38a169,stroke-width:2px,color:#22543d
+  style PYMES fill:#f0fff4,stroke:#38a169,stroke-width:2px,stroke-dasharray: 6 4,color:#22543d
+        </pre>
+
+        <h3>Capa de Sistema</h3>
+        <pre class="mermaid">
+flowchart TB
+  PYME["<b class='node-title'>PyMEs</b><br/>(Operador Logístico +<br/>Administrador PyME)"]
+  CLI["<b class='node-title'>Clientes Finales</b><br/>(Destinatarios)"]
+  TR["<b class='node-title'>Transportistas</b><br/>(Conductores / Choferes)"]
+  EC["<b class='node-title'>Sistemas E-commerce</b><br/>TiendaNube / MercadoShops"]
+  API["<b class='node-title'>API Mapas / Geolocalización</b><br/>(Google Maps, etc.)"]
+  PAG["<b class='node-title'>Pasarela de Pagos</b><br/>(Cobro suscripción SaaS)"]
+  ADM["<b class='node-title'>Admin Plataforma</b><br/>(Equipo LogiSmart)"]
+  LS["<b class='node-title'>LogiSmart</b><br/>Plataforma SaaS Multitenant<br/>Optimización Logística"]
+
+  PYME <-->|"Gestión envíos, flota,\nplanificación rutas,\nreportes y métricas"| LS
+  CLI <-->|"Tracking tiempo real,\nmapa interactivo + ETA"| LS
+  TR <-->|"Hoja de ruta \nGPS + Entregas"| LS
+
+  LS <-->|"Órdenes pendientes ↔\nEstado envío"| EC
+  LS <-->|"Rutas óptimas, tráfico,\ngeocode, posición chofer"| API
+  LS <-->|"Alta/baja PyMEs,\ncobro fee mensual"| PAG
+  ADM -->|"Soporte, billing,\nmonitoreo servicio"| LS
+
+  style PYME fill:#c6f6d5,stroke:#38a169,stroke-width:2px,color:#22543d
+  style CLI fill:#ebf8ff,stroke:#2b6cb0,stroke-width:2px,color:#1a365d
+  style TR fill:#fed7e2,stroke:#e53e3e,stroke-width:2px,color:#9b2c2c
+  style EC fill:#fefcbf,stroke:#d69e2e,stroke-width:2px,color:#975a16
+  style API fill:#e9d8fd,stroke:#805ad5,stroke-width:2px,color:#553c9a
+  style PAG fill:#feebc8,stroke:#dd6b20,stroke-width:2px,color:#9c4221
+  style ADM fill:#1a365d,stroke:#2b6cb0,stroke-width:2px,color:#fff
+  style LS fill:#1a365d,stroke:#2b6cb0,stroke-width:3px,color:#fff
+        </pre>
+      </div>
+
+      <!-- ===== 1. ACTORES Y STAKEHOLDERS ===== -->
+      <div id="s1" class="section">
+        <div class="section-number">1</div>
+        <h2>Actores y Stakeholders</h2>
+        <p class="section-desc">
+          Identificación de todos los actores que interactúan directamente con
+          el sistema y los stakeholders que tienen interés en su éxito.
+        </p>
+
+        <h3>1.1 Actores del Sistema</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Actor</th>
+              <th>Tipo</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Operador Logístico (PyME)</strong></td>
+              <td><span class="tag tag-actor">Primario</span></td>
+              <td>
+                Usuario principal de la plataforma. Gestiona envíos, planifica
+                rutas, administra su flota y monitorea las entregas. Representa
+                al personal de logística de la PyME.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Administrador PyME</strong></td>
+              <td><span class="tag tag-actor">Primario</span></td>
+              <td>
+                Dueño o gerente de la PyME. Configura la cuenta, gestiona
+                suscripciones, consulta reportes y métricas de desempeño
+                logístico.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Transportista / Conductor</strong></td>
+              <td><span class="tag tag-actor">Primario</span></td>
+              <td>
+                Chofer (propio o tercerizado) que recibe la hoja de ruta
+                asignada, reporta el estado de cada entrega y transmite su
+                ubicación en tiempo real.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Cliente Final</strong></td>
+              <td><span class="tag tag-actor">Primario</span></td>
+              <td>
+                Destinatario del envío. Consulta el estado y la ubicación de su
+                pedido en tiempo real a través de un enlace de seguimiento.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Administrador de Plataforma (LogiSmart)</strong></td>
+              <td><span class="tag tag-actor">Primario</span></td>
+              <td>
+                Equipo interno de LogiSmart que gestiona la plataforma: alta de
+                PyMEs, soporte técnico, monitoreo del servicio y facturación.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Sistema E-commerce</strong></td>
+              <td><span class="tag tag-external">Externo</span></td>
+              <td>
+                Plataformas como TiendaNube o MercadoShops que se integran vía
+                API para importar pedidos automáticamente al sistema.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Servicio de Geolocalización / Mapas</strong></td>
+              <td><span class="tag tag-external">Externo</span></td>
+              <td>
+                API externa (ej. Google Maps) que provee datos de tráfico en
+                tiempo real, cálculo de rutas y geocodificación de direcciones.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Pasarela de Pagos</strong></td>
+              <td><span class="tag tag-external">Externo</span></td>
+              <td>
+                Sistema externo que procesa los cobros del fee mensual de
+                suscripción a las PyMEs.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>1.2 Stakeholders</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Stakeholder</th>
+              <th>Rol</th>
+              <th>Interés en el Sistema</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Consultora de Logística (Inversora)</strong></td>
+              <td><span class="tag tag-stakeholder">Sponsor</span></td>
+              <td>
+                Financia el desarrollo. Le interesa el retorno de inversión, la
+                adopción del producto por PyMEs y la viabilidad del modelo SaaS.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Dueños / Gerentes de PyMEs</strong></td>
+              <td><span class="tag tag-both">Actor + Stakeholder</span></td>
+              <td>
+                Necesitan reducir costos logísticos, mejorar la trazabilidad y
+                la experiencia de sus clientes. Deciden la adopción del sistema.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Clientes Finales (Destinatarios)</strong></td>
+              <td><span class="tag tag-both">Actor + Stakeholder</span></td>
+              <td>
+                Esperan transparencia en la entrega, poder rastrear su pedido y
+                recibir notificaciones. Su satisfacción impacta en la reputación
+                de la PyME.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Equipo de Desarrollo</strong></td>
+              <td><span class="tag tag-stakeholder">Interno</span></td>
+              <td>
+                Responsable de implementar y mantener la plataforma. Necesita
+                requerimientos claros y una arquitectura mantenible.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Proveedores de APIs (Mapas, E-commerce)</strong></td>
+              <td><span class="tag tag-stakeholder">Externo</span></td>
+              <td>
+                Proveen servicios que el sistema consume. Definen restricciones
+                de uso (rate limits, costos) que impactan la arquitectura.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Área Legal</strong></td>
+              <td><span class="tag tag-stakeholder">Interno</span></td>
+              <td>
+                Gestiona contratos con PyMEs, cumplimiento de facturación
+                electrónica y términos de servicio de la plataforma.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Área de Compliance</strong></td>
+              <td><span class="tag tag-stakeholder">Interno</span></td>
+              <td>
+                Vela por el cumplimiento de la Ley de Protección de Datos
+                Personales (Ley 25.326) y regulaciones aplicables al manejo de
+                datos logísticos.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Área de Seguridad Informática</strong></td>
+              <td><span class="tag tag-stakeholder">Interno</span></td>
+              <td>
+                Responsable de la protección de datos sensibles, cifrado de
+                comunicaciones, gestión de vulnerabilidades y auditorías de
+                seguridad.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Área de Infraestructura</strong></td>
+              <td><span class="tag tag-stakeholder">Interno</span></td>
+              <td>
+                Garantiza los SLAs de disponibilidad, uptime de la plataforma y
+                escalabilidad de la infraestructura cloud.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Área Comercial / Ventas</strong></td>
+              <td><span class="tag tag-stakeholder">Interno</span></td>
+              <td>
+                Encargada de la adquisición de nuevas PyMEs, definición de
+                pricing del modelo SaaS y relaciones comerciales.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Soporte Técnico</strong></td>
+              <td><span class="tag tag-stakeholder">Interno</span></td>
+              <td>
+                Gestiona el onboarding de nuevas PyMEs, brinda asistencia
+                técnica y resuelve incidencias operativas de los usuarios.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== 2. CATÁLOGO DE CASOS DE USO (MVP) ===== -->
+      <div id="s2" class="section">
+        <div class="section-number">2</div>
+        <h2>Catálogo de Casos de Uso (MVP)</h2>
+        <p class="section-desc">
+          Casos de uso principales que componen el alcance mínimo viable de la
+          plataforma LogiSmart.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Caso de Uso</th>
+              <th>Actor Principal</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>CU-01</strong></td>
+              <td><strong>Importar Pedidos desde E-commerce</strong></td>
+              <td><span class="tag tag-actor">Operador Logístico</span></td>
+              <td>
+                El Operador Logístico sincroniza la plataforma con TiendaNube o
+                MercadoShops para cargar automáticamente las órdenes pendientes
+                de envío.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>CU-02</strong></td>
+              <td><strong>Gestionar Flota y Capacidades</strong></td>
+              <td><span class="tag tag-actor">Operador Logístico</span></td>
+              <td>
+                El Operador Logístico registra los vehículos disponibles,
+                especificando su capacidad de carga y disponibilidad horaria.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>CU-03</strong></td>
+              <td><strong>Planificar Rutas Óptimas</strong></td>
+              <td><span class="tag tag-actor">Operador Logístico</span></td>
+              <td>
+                El Operador Logístico solicita al sistema generar el recorrido
+                más eficiente basado en el tráfico real y las ventanas horarias
+                de los clientes.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>CU-04</strong></td>
+              <td><strong>Asignar Hoja de Ruta a Chofer</strong></td>
+              <td><span class="tag tag-actor">Operador Logístico</span></td>
+              <td>
+                El Operador Logístico vincula una ruta planificada a un chofer
+                específico para su ejecución.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>CU-05</strong></td>
+              <td><strong>Iniciar Recorrido de Entrega</strong></td>
+              <td><span class="tag tag-actor">Chofer</span></td>
+              <td>
+                El Chofer activa su ruta desde la aplicación móvil para comenzar
+                a reportar su ubicación y recibir instrucciones de destino.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>CU-06</strong></td>
+              <td><strong>Registrar Entrega de Pedido</strong></td>
+              <td><span class="tag tag-actor">Chofer</span></td>
+              <td>
+                El Chofer confirma la entrega exitosa (o reporta un incidente)
+                en el sistema, disparando notificaciones automáticas.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>CU-07</strong></td>
+              <td><strong>Consultar Ubicación del Pedido</strong></td>
+              <td><span class="tag tag-actor">Cliente Final</span></td>
+              <td>
+                El Cliente Final accede a un mapa en tiempo real para visualizar
+                dónde está su paquete y el tiempo estimado de llegada.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>CU-08</strong></td>
+              <td><strong>Administrar Suscripción (Billing)</strong></td>
+              <td><span class="tag tag-actor">Admin Consultora</span></td>
+              <td>
+                El Administrador de la Consultora gestiona el alta/baja de las
+                PyMEs y visualiza el consumo mensual para el cobro del fee.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== 3. DESCRIPCIÓN DE LOS 3 CASOS DE USO PRINCIPALES ===== -->
+      <div id="s3" class="section">
+        <div class="section-number">3</div>
+        <h2>Descripción de los 3 Casos de Uso Principales</h2>
+        <p class="section-desc">
+          Desarrollo detallado de los casos de uso de mayor impacto funcional
+          para el MVP de LogiSmart.
+        </p>
+
+        <div class="cu-card">
+          <div class="cu-card-header">
+            <span class="cu-card-id">CU-03</span>
+            <span class="cu-card-title">Planificar Rutas Óptimas</span>
+          </div>
+          <div class="cu-card-actor">
+            <strong>Actor Principal:</strong> Operador Logístico de la PyME
+          </div>
+          <div class="cu-card-body">
+            El Operador solicita la generación de una hoja de ruta para el día.
+            El sistema analiza los pedidos pendientes de entrega, los vehículos
+            disponibles y sus capacidades. Utilizando datos de tráfico en tiempo
+            real de servicios externos, el sistema devuelve la secuencia de
+            paradas más eficiente, respetando las ventanas horarias de los
+            clientes finales.
+          </div>
+        </div>
+
+        <div class="cu-card">
+          <div class="cu-card-header">
+            <span class="cu-card-id">CU-01</span>
+            <span class="cu-card-title">Importar Pedidos desde E-commerce</span>
+          </div>
+          <div class="cu-card-actor">
+            <strong>Actor Principal:</strong> Operador Logístico de la PyME
+          </div>
+          <div class="cu-card-body">
+            El Operador inicia la sincronización con las plataformas de
+            e-commerce vinculadas (TiendaNube, MercadoShops). El sistema se
+            conecta a las APIs externas, extrae las órdenes con estado
+            "pendiente de envío" y las consolida en el tablero de LogiSmart,
+            eliminando la carga manual de datos desde planillas o mensajes.
+          </div>
+        </div>
+
+        <div class="cu-card">
+          <div class="cu-card-header">
+            <span class="cu-card-id">CU-07</span>
+            <span class="cu-card-title">Consultar Ubicación del Pedido</span>
+          </div>
+          <div class="cu-card-actor">
+            <strong>Actor Principal:</strong> Cliente Final
+          </div>
+          <div class="cu-card-body">
+            A través de un enlace de seguimiento recibido por canales externos,
+            el Cliente accede a un portal de consulta. El sistema solicita al
+            servicio de mapas la posición geográfica actual del chofer asignado
+            y la proyecta en un mapa interactivo, informando además el tiempo
+            estimado de llegada (ETA) calculado en base al progreso real de la
+            ruta.
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 4. ATRIBUTOS DE CALIDAD ===== -->
+      <div id="s4" class="section">
+        <div class="section-number">4</div>
+        <h2>Atributos de Calidad</h2>
+        <p class="section-desc">
+          Requisitos no funcionales clave que condicionan las decisiones
+          arquitectónicas del sistema.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Atributo</th>
+              <th>Categoría</th>
+              <th>Criticidad</th>
+              <th>Descripción e Impacto Arquitectónico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Alta Disponibilidad</strong></td>
+              <td><span class="tag tag-actor">Confiabilidad</span></td>
+              <td><span class="tag tag-crit">Crítica</span></td>
+              <td>
+                El sistema debe garantizar un acceso ininterrumpido (ej. 99.9%
+                de uptime), ya que una caída detiene la operación logística de
+                las PyMEs. Requiere una infraestructura con redundancia en la
+                nube para evitar puntos únicos de falla.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Aislamiento de Datos</strong></td>
+              <td><span class="tag tag-external">Seguridad</span></td>
+              <td><span class="tag tag-high">Alta</span></td>
+              <td>
+                Garantiza que la información de cada PyME sea técnica y
+                legalmente inaccesible para otros abonados al SaaS. Impacta en
+                el diseño de las capas de autorización y acceso a los datos.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Elasticidad</strong></td>
+              <td><span class="tag tag-both">Escalabilidad</span></td>
+              <td><span class="tag tag-med">Media-Alta</span></td>
+              <td>
+                Capacidad del sistema para adaptar sus recursos automáticamente
+                según la demanda de pedidos procesados para optimizar costos
+                operativos. Se logra mediante el uso de hosting escalable que
+                permite pagar solo por lo consumido.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Interoperabilidad</strong></td>
+              <td><span class="tag tag-stakeholder">Mantenibilidad</span></td>
+              <td><span class="tag tag-high">Alta</span></td>
+              <td>
+                El sistema debe integrarse de forma fluida con servicios
+                externos como e-commerce y mapas. Impacta en el diseño de
+                interfaces de comunicación estandarizadas que faciliten el
+                intercambio de datos.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Eficiencia de Respuesta</strong></td>
+              <td><span class="tag tag-actor">Performance</span></td>
+              <td><span class="tag tag-med">Media</span></td>
+              <td>
+                El cálculo de rutas y la visualización del mapa deben ser
+                rápidos para asegurar la operatividad de los choferes y
+                clientes. Requiere optimizar el procesamiento de datos de
+                tráfico en tiempo real.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== 5. RESTRICCIONES Y RIESGOS ===== -->
+      <div id="s5" class="section">
+        <div class="section-number">5</div>
+        <h2>Restricciones y Riesgos</h2>
+        <p class="section-desc">
+          Limitaciones que condicionan el desarrollo y riesgos identificados con
+          sus estrategias de mitigación.
+        </p>
+
+        <h3>5.1 Restricciones</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Restricción</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Modelo SaaS Multitenant</strong></td>
+              <td>
+                El sistema debe ser una plataforma única capaz de servir a
+                múltiples PyMEs de forma aislada y centralizada.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Integración Externa Crítica</strong></td>
+              <td>
+                Es obligatorio que el sistema se conecte con plataformas de
+                e-commerce (TiendaNube/MercadoShops) y APIs de tráfico para ser
+                funcional.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Optimización de Costos Operativos</strong></td>
+              <td>
+                El diseño debe permitir un mantenimiento económico para que el
+                fee mensual sea accesible para pequeñas empresas.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>5.2 Riesgos</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Riesgo</th>
+              <th>Prob.</th>
+              <th>Impacto</th>
+              <th>Mitigación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>RI1</strong></td>
+              <td><strong>Baja adopción por PyMEs</strong></td>
+              <td><span class="tag tag-med">Media</span></td>
+              <td><span class="tag tag-high">Alto</span></td>
+              <td>
+                Onboarding asistido, periodo de prueba gratuito, UX simple.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>RI2</strong></td>
+              <td><strong>Caída de API de mapas</strong></td>
+              <td><span class="tag tag-low">Baja</span></td>
+              <td><span class="tag tag-high">Alto</span></td>
+              <td>
+                Cache de rutas recientes, proveedor alternativo (Mapbox),
+                degradación graceful.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>RI3</strong></td>
+              <td><strong>Imprecisión en tracking GPS</strong></td>
+              <td><span class="tag tag-med">Media</span></td>
+              <td><span class="tag tag-med">Medio</span></td>
+              <td>
+                Validación de coordenadas, interpolación de posición,
+                actualización configurable.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>RI4</strong></td>
+              <td><strong>Falla en integración e-commerce</strong></td>
+              <td><span class="tag tag-med">Media</span></td>
+              <td><span class="tag tag-high">Alto</span></td>
+              <td>
+                Circuit breaker pattern, reintentos con backoff, notificación al
+                operador.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>RI5</strong></td>
+              <td>
+                <strong>Brecha de seguridad / filtración de datos</strong>
+              </td>
+              <td><span class="tag tag-low">Baja</span></td>
+              <td><span class="tag tag-crit">Crítico</span></td>
+              <td>
+                Cifrado en tránsito y reposo, auditorías periódicas, plan de
+                respuesta a incidentes.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>RI6</strong></td>
+              <td><strong>Escalabilidad bajo demanda</strong></td>
+              <td><span class="tag tag-med">Media</span></td>
+              <td><span class="tag tag-high">Alto</span></td>
+              <td>
+                Arquitectura cloud auto-escalable, load testing previo al
+                lanzamiento.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- /container -->
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          fontSize: "16px",
+          primaryColor: "#1a365d",
+          edgeLabelBackground: "#ffffff",
+        },
+        flowchart: {
+          padding: 20,
+          nodeSpacing: 30,
+          rankSpacing: 60,
+          useMaxWidth: true,
+        },
+      });
+
+      const nav = document.querySelector(".side-nav");
+      const links = nav.querySelectorAll("a");
+      const sections = document.querySelectorAll(".section[id]");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            const link = nav.querySelector(`a[href="#${e.target.id}"]`);
+            if (link) link.classList.toggle("active", e.isIntersecting);
+          });
+        },
+        { rootMargin: "-30% 0px -60% 0px" },
+      );
+      sections.forEach((s) => observer.observe(s));
+    </script>
+  </body>
+</html>

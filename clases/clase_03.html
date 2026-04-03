@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 3: Del Diseño a la Implementación - Traduciendo UML a Código Java - Proceso de Desarrollo de Software</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background-color: #f4f7f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+            font-size: 0.95em;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background: #34495e;
+            color: #667eea;
+        }
+
+        .main-content {
+            margin-left: 300px;
+            padding: 40px;
+            flex: 1;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #34495e;
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .section h4 {
+            color: #555;
+            margin: 15px 0 10px 0;
+            font-size: 1.1em;
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .highlight {
+            background: #e8eaf6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #764ba2;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.85em;
+            line-height: 1.5;
+            border-left: 4px solid #667eea;
+        }
+
+        .code-inline {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        .example-box {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2196F3;
+        }
+
+        .comparison-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+
+        .comparison-item h4 {
+            margin-top: 0;
+        }
+
+        .uml-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .java-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #667eea;
+            color: white;
+        }
+
+        table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 15px;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .step-list li:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .resource-link {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 5px 5px 5px 0;
+            transition: background 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: #764ba2;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; padding: 20px; }
+            .header h1 { font-size: 2em; }
+            .comparison-box { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    
+    <div class="container">
+        <nav class="sidebar" id="sidebar">
+            <h2>📚 Navegación</h2>
+            <ul>
+                <li><a href="#intro">🔄 Del Diseño a la Implementación</a></li>
+                <li><a href="#eclipse">🛠️ Eclipse IDE</a></li>
+                <li><a href="#proyecto">📁 Creando un Proyecto</a></li>
+                <li><a href="#clases">📦 Traduciendo Clases</a></li>
+                <li><a href="#atributos">📝 Atributos y Constructores</a></li>
+                <li><a href="#getset">🔑 Getters y Setters</a></li>
+                <li><a href="#asociacion">🔗 Asociación y Composición</a></li>
+                <li><a href="#herencia">👨‍👧 Herencia en Java</a></li>
+                <li><a href="#comportamiento">⚙️ Implementando Comportamiento</a></li>
+                <li><a href="#hito3">🎯 Hito 3: Implementación</a></li>
+                <li><a href="#recursos">📖 Recursos Adicionales</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="header">
+                <h1>Clase 3: Del Diseño a la Implementación</h1>
+                <p>Traduciendo Diagramas de Clases UML a Código Java en Eclipse</p>
+            </header>
+
+            <section id="intro" class="section">
+                <h2><span class="icon">🔄</span>Del Diseño a la Implementación</h2>
+                <p>En la clase anterior, nos convertimos en arquitectos de software. Diseñamos la estructura de LogiSmart usando Diagramas de Clases UML. Hoy, cambiamos de sombrero. Nos convertimos en constructores. Vamos a tomar esos planos que diseñaron y empezar a construir la estructura de nuestro edificio de software.</p>
+                
+                <h3>¿Por Qué Separamos Diseño de Implementación?</h3>
+                <p>En la ingeniería de software profesional, el diseño es una actividad deliberada y crítica. Al diseñar primero en UML, logramos varias cosas importantes:</p>
+                
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🧠 Pensamiento Abstracto</h4>
+                        <p>Nos enfocamos en la estructura sin distracciones de sintaxis. Es como pensar en la arquitectura de un edificio sin preocuparse por qué tipo de cemento usar.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🌐 Comunicación Universal</h4>
+                        <p>Un diagrama UML es entendido por equipos en diferentes lenguajes. Java, Python, C# - todos pueden implementar el mismo diseño.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🐛 Detección Temprana de Errores</h4>
+                        <p>Es infinitamente más barato corregir una flecha en un diagrama que refactorizar cientos de líneas de código mal estructurado.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🦅 Visión Global</h4>
+                        <p>El diagrama nos da una vista de pájaro de todo el sistema, algo muy difícil de ver cuando estás inmerso en el código.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="eclipse" class="section">
+                <h2><span class="icon">🛠️</span>Eclipse IDE: Nuestra Herramienta de Construcción</h2>
+                <p>Así como un carpintero tiene su taller, nosotros, los desarrolladores de software, tenemos nuestro IDE (Entorno de Desarrollo Integrado). Un IDE es mucho más que un simple editor de texto. Es una suite completa de herramientas que nos ayuda a escribir, compilar, depurar y gestionar nuestro código de manera eficiente.</p>
+
+                <h3>¿Por Qué Eclipse?</h3>
+                <p>Existen muchos IDEs en el mercado: IntelliJ IDEA, Visual Studio Code, NetBeans. Nosotros usaremos Eclipse, uno de los IDEs más robustos y utilizados en el mundo empresarial para el desarrollo en Java. Es de código abierto, gratuito y tiene una comunidad enorme.</p>
+
+                <h3>¿Qué nos ofrece Eclipse?</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>📝 Editor Inteligente</h4>
+                        <p>Autocompletado, resaltado de sintaxis, detección de errores en tiempo real. El editor sabe Java y nos ayuda a escribir mejor código.</p>
+                    </div>
+                    <div class="card">
+                        <h4>⚙️ Compilador Integrado</h4>
+                        <p>Traduce nuestro código Java a bytecode que la máquina virtual de Java (JVM) puede ejecutar. Todo automáticamente.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🐛 Depurador (Debugger)</h4>
+                        <p>Una herramienta increíblemente poderosa para ejecutar código línea por línea, inspeccionar variables y encontrar errores.</p>
+                    </div>
+                    <div class="card">
+                        <h4>📦 Gestión de Proyectos</h4>
+                        <p>Organiza archivos, librerías y dependencias en una estructura clara. Todo en un lugar.</p>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <h3>Instalación de Eclipse</h3>
+                    <p>Descargar desde <a href="https://www.eclipse.org/downloads/" target="_blank">eclipse.org</a>. Seleccionar "Eclipse IDE for Java Developers". Seguir el instalador. ¡Listo!</p>
+                </div>
+            </section>
+
+            <section id="proyecto" class="section">
+                <h2><span class="icon">📁</span>Creando un Proyecto Java en Eclipse</h2>
+                <p>Lo primero es crear nuestro espacio de trabajo. En Eclipse, esto se llama un Proyecto. Un proyecto es como una carpeta especial que contiene todo nuestro código, librerías y configuración.</p>
+
+                <h3>Paso a Paso: Crear un Proyecto</h3>
+                <ol class="step-list">
+                    <li><strong>File > New > Java Project</strong> - Abre el diálogo de creación</li>
+                    <li><strong>Project Name:</strong> Le damos un nombre, por ejemplo, <span class="code-inline">LogiSmartTPO</span></li>
+                    <li><strong>JRE:</strong> Nos aseguramos de que esté seleccionada una versión de Java (JavaSE-11 o superior)</li>
+                    <li><strong>Project Layout:</strong> Dejamos la opción por defecto. Esto crea dos carpetas: <span class="code-inline">src</span> (código fuente) y <span class="code-inline">bin</span> (código compilado)</li>
+                    <li><strong>Finish</strong> - ¡Proyecto creado!</li>
+                </ol>
+
+                <h3>Creando Paquetes (Packages)</h3>
+                <p>Para mantener el orden, crearemos paquetes. Un paquete es como una carpeta para nuestras clases. Es una convención usar un nombre de dominio invertido. Por ejemplo: <span class="code-inline">com.logismart.dominio</span></p>
+
+                <ol class="step-list">
+                    <li><strong>Click derecho en la carpeta src</strong> en el Package Explorer</li>
+                    <li><strong>New > Package</strong></li>
+                    <li><strong>Name:</strong> <span class="code-inline">com.logismart.dominio</span></li>
+                    <li><strong>Finish</strong></li>
+                </ol>
+
+                <div class="example-box">
+                    <h4>Estructura de Proyecto Recomendada</h4>
+                    <p>Para un proyecto más grande, podrías tener múltiples paquetes:</p>
+                    <ul style="margin-left: 20px;">
+                        <li><span class="code-inline">com.logismart.dominio</span> - Clases del modelo de dominio</li>
+                        <li><span class="code-inline">com.logismart.servicio</span> - Servicios y lógica de negocio</li>
+                        <li><span class="code-inline">com.logismart.persistencia</span> - Acceso a base de datos</li>
+                        <li><span class="code-inline">com.logismart.ui</span> - Interfaz de usuario</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="clases" class="section">
+                <h2><span class="icon">📦</span>Traduciendo Clases UML a Código Java</h2>
+                <p>Ahora viene la magia. Tomemos una clase de nuestro diagrama y la traducimos a código. La traducción es casi 1 a 1.</p>
+
+                <h3>Creando una Clase en Eclipse</h3>
+                <ol class="step-list">
+                    <li><strong>Click derecho en el paquete</strong> <span class="code-inline">com.logismart.dominio</span></li>
+                    <li><strong>New > Class</strong></li>
+                    <li><strong>Name:</strong> <span class="code-inline">Vehiculo</span></li>
+                    <li><strong>Finish</strong></li>
+                </ol>
+
+                <p>Eclipse nos crea el esqueleto:</p>
+                <div class="code-block">package com.logismart.dominio;
+
+public class Vehiculo {
+
+}</div>
+
+                <h3>De UML a Java: La Traducción Directa</h3>
+                <p>Veamos cómo se traduce un diagrama UML a código Java. Usaremos la clase Vehiculo como ejemplo.</p>
+
+                <div class="comparison-box">
+                    <div class="comparison-item uml-box">
+                        <h4>📋 En UML (Diagrama)</h4>
+                        <p><strong>Clase:</strong> Vehiculo</p>
+                        <p><strong>Atributos:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>- id: String</li>
+                            <li>- patente: String</li>
+                            <li>- marca: String</li>
+                            <li>- capacidadPeso: double</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-item java-box">
+                        <h4>💻 En Java (Código)</h4>
+                        <p><strong>Clase:</strong> public class Vehiculo</p>
+                        <p><strong>Atributos:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>private String id;</li>
+                            <li>private String patente;</li>
+                            <li>private String marca;</li>
+                            <li>private double capacidadPeso;</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <p>Como ven, <span class="code-inline">visibilidad nombre: tipo</span> en UML se convierte en <span class="code-inline">visibilidad tipo nombre;</span> en Java. El <span class="code-inline">-</span> se convierte en <span class="code-inline">private</span>. El <span class="code-inline">+</span> se convertirá en <span class="code-inline">public</span>.</p>
+            </section>
+
+            <section id="atributos" class="section">
+                <h2><span class="icon">📝</span>Atributos y Constructores</h2>
+                <p>Ahora agregamos los atributos a nuestra clase. Todos deben ser privados (encapsulación).</p>
+
+                <div class="code-block">public class Vehiculo {
+    // Atributos (privados - encapsulación)
+    private String id;
+    private String patente;
+    private String marca;
+    private String modelo;
+    private int anio;
+    private double capacidadPeso;
+    private double capacidadVolumen;
+}</div>
+
+                <h3>¿Qué es un Constructor?</h3>
+                <p>Un constructor es un método especial que se llama cuando creamos un nuevo objeto (<span class="code-inline">new Vehiculo()</span>). Sirve para inicializar el estado del objeto. Si no definimos uno, Java nos da uno por defecto vacío. Pero es una buena práctica definir el nuestro.</p>
+
+                <div class="code-block">public class Vehiculo {
+    private String id;
+    private String patente;
+    private String marca;
+    private double capacidadPeso;
+
+    // Constructor
+    public Vehiculo(String id, String patente, String marca, double capacidadPeso) {
+        this.id = id;
+        this.patente = patente;
+        this.marca = marca;
+        this.capacidadPeso = capacidadPeso;
+    }
+}</div>
+
+                <p>La palabra clave <span class="code-inline">this</span> se usa para desambiguar entre el parámetro del método (<span class="code-inline">patente</span>) y el atributo de la clase (<span class="code-inline">this.patente</span>).</p>
+
+                <div class="highlight">
+                    <h3>Usando el Constructor</h3>
+                    <p>Ahora podemos crear objetos Vehiculo:</p>
+                    <div class="code-block">Vehiculo v1 = new Vehiculo("V001", "ABC-123", "Toyota", 1000.0);
+Vehiculo v2 = new Vehiculo("V002", "XYZ-789", "Ford", 1500.0);</div>
+                </div>
+            </section>
+
+            <section id="getset" class="section">
+                <h2><span class="icon">🔑</span>Getters y Setters: Accediendo a Atributos Privados</h2>
+                <p>¿Recuerdan la encapsulación? Los atributos son privados. ¿Cómo accedemos a ellos desde fuera? A través de métodos públicos llamados getters (para obtener el valor) y setters (para modificar el valor).</p>
+
+                <h3>¿Qué es un Getter?</h3>
+                <p>Un getter es un método que retorna el valor de un atributo privado. La convención es nombrarlos <span class="code-inline">get</span> + nombre del atributo.</p>
+
+                <div class="code-block">public class Vehiculo {
+    private String patente;
+
+    // Getter para la patente
+    public String getPatente() {
+        return this.patente;
+    }
+}</div>
+
+                <h3>¿Qué es un Setter?</h3>
+                <p>Un setter es un método que modifica el valor de un atributo privado. La convención es nombrarlos <span class="code-inline">set</span> + nombre del atributo.</p>
+
+                <div class="code-block">public class Vehiculo {
+    private String marca;
+
+    // Setter para la marca
+    public void setMarca(String nuevaMarca) {
+        this.marca = nuevaMarca;
+    }
+}</div>
+
+                <h3>Generando Getters y Setters Automáticamente</h3>
+                <p>Escribir getters y setters es tedioso. Eclipse puede hacerlo por nosotros automáticamente:</p>
+
+                <ol class="step-list">
+                    <li><strong>Click derecho en el código de la clase</strong></li>
+                    <li><strong>Source > Generate Getters and Setters...</strong></li>
+                    <li><strong>Seleccionar los atributos</strong> para los que quieres generar getters/setters</li>
+                    <li><strong>OK</strong> - ¡Eclipse genera todo el código!</li>
+                </ol>
+
+                <div class="example-box">
+                    <h4>Resultado Automático</h4>
+                    <p>Eclipse genera algo como esto:</p>
+                    <div class="code-block">public String getId() {
+    return id;
+}
+
+public void setId(String id) {
+    this.id = id;
+}
+
+public String getPatente() {
+    return patente;
+}
+
+public void setPatente(String patente) {
+    this.patente = patente;
+}</div>
+                </div>
+
+                <h3>Usando Getters y Setters</h3>
+                <p>Ahora podemos acceder y modificar atributos de forma controlada:</p>
+
+                <div class="code-block">Vehiculo v1 = new Vehiculo("V001", "ABC-123", "Toyota", 1000.0);
+
+// Usar getter
+String patente = v1.getPatente(); // "ABC-123"
+
+// Usar setter
+v1.setMarca("Honda");
+
+// Ahora la marca cambió
+System.out.println(v1.getMarca()); // "Honda"</div>
+            </section>
+
+            <section id="asociacion" class="section">
+                <h2><span class="icon">🔗</span>Traduciendo Relaciones: Asociación y Composición</h2>
+                <p>Ahora, lo interesante: las relaciones. ¿Cómo representamos que una clase "conoce" o "tiene" a otra?</p>
+
+                <h3>Relación de Asociación Simple</h3>
+                <p>Recordemos la relación entre Ruta y Vehiculo. Una Ruta tiene un Vehiculo. En el diagrama, es una línea de asociación. En código, esto se traduce en un atributo cuyo tipo es la otra clase.</p>
+
+                <div class="comparison-box">
+                    <div class="comparison-item uml-box">
+                        <h4>📋 En UML</h4>
+                        <p>Ruta -------- Vehiculo (1 a 1)</p>
+                    </div>
+                    <div class="comparison-item java-box">
+                        <h4>💻 En Java</h4>
+                        <div class="code-block">public class Ruta {
+    private Vehiculo vehiculoAsignado;
+}</div>
+                    </div>
+                </div>
+
+                <h3>Relación de Composición (1 a Muchos)</h3>
+                <p>Si una Ruta se compone de muchos PuntosDeEntrega (relación 1 a 0..*), usamos una Colección, como una List.</p>
+
+                <div class="code-block">import java.util.ArrayList;
+import java.util.List;
+
+public class Ruta {
+    private String id;
+    private Vehiculo vehiculoAsignado;
+    
+    // Composición con multiplicidad múltiple
+    private List<PuntoDeEntrega> puntosDeEntrega;
+
+    public Ruta(String id, Vehiculo vehiculo) {
+        this.id = id;
+        this.vehiculoAsignado = vehiculo;
+        // Inicializamos la lista vacía
+        this.puntosDeEntrega = new ArrayList<>();
+    }
+
+    public void agregarPuntoDeEntrega(PuntoDeEntrega punto) {
+        this.puntosDeEntrega.add(punto);
+    }
+
+    public List<PuntoDeEntrega> getPuntosDeEntrega() {
+        return this.puntosDeEntrega;
+    }
+}</div>
+
+                <div class="highlight">
+                    <h3>¿Qué es ArrayList?</h3>
+                    <p><span class="code-inline">ArrayList</span> es una clase de Java que representa una lista dinámica (puede crecer o encogerse). Es como un array, pero más flexible. <span class="code-inline">List&lt;PuntoDeEntrega&gt;</span> significa "una lista de objetos de tipo PuntoDeEntrega".</p>
+                </div>
+            </section>
+
+            <section id="herencia" class="section">
+                <h2><span class="icon">👨‍👧</span>Herencia en Java: La Relación "Es un"</h2>
+                <p>La herencia es otra relación fundamental. En UML, es una flecha con punta triangular. En Java, usamos la palabra clave <span class="code-inline">extends</span>.</p>
+
+                <h3>Creando una Jerarquía de Usuarios</h3>
+                <p>Recordemos nuestra jerarquía: Usuario es la clase base, Cliente y Operador heredan de ella.</p>
+
+                <h4>Paso 1: Crear la Clase Base (Usuario)</h4>
+                <div class="code-block">public class Usuario {
+    private String id;
+    private String email;
+    private String password;
+
+    public Usuario(String id, String email, String password) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+    }
+
+    public boolean autenticar(String passwordIngresado) {
+        return this.password.equals(passwordIngresado);
+    }
+
+    // Getters y setters...
+}</div>
+
+                <h4>Paso 2: Crear la Clase Hija (Cliente)</h4>
+                <p>Para indicar que Cliente hereda de Usuario, usamos <span class="code-inline">extends</span>:</p>
+
+                <div class="code-block">public class Cliente extends Usuario {
+    // No necesito declarar id, email, password
+    // ¡Ya los heredé de Usuario!
+
+    private String razonSocial;
+    private String cuit;
+
+    public Cliente(String id, String email, String password, String razonSocial) {
+        // Debo llamar al constructor de la clase padre (Usuario)
+        super(id, email, password);
+        this.razonSocial = razonSocial;
+    }
+
+    public String getRazonSocial() {
+        return this.razonSocial;
+    }
+}</div>
+
+                <p>La palabra clave <span class="code-inline">super</span> es la forma de acceder a miembros (constructores, métodos) de la clase padre. <span class="code-inline">super(id, email, password)</span> llama al constructor de Usuario.</p>
+
+                <h3>Usando la Herencia</h3>
+                <div class="code-block">// Crear un cliente
+Cliente c1 = new Cliente("U001", "juan@logismart.com", "pass123", "Juan's Logistics");
+
+// Usar métodos heredados de Usuario
+boolean autenticado = c1.autenticar("pass123"); // true
+
+// Usar métodos propios de Cliente
+String razon = c1.getRazonSocial(); // "Juan's Logistics"</div>
+
+                <div class="highlight">
+                    <h3>La Prueba de Liskov</h3>
+                    <p>Un Cliente siempre puede ser tratado como un Usuario (porque hereda de él). Esto es la esencia de la herencia correcta.</p>
+                </div>
+            </section>
+
+            <section id="comportamiento" class="section">
+                <h2><span class="icon">⚙️</span>Implementando Comportamiento: Métodos con Lógica</h2>
+                <p>Hasta ahora, nuestras clases son solo contenedores de datos. Pero la POO se trata de juntar datos y comportamiento. Ahora debemos implementar la lógica dentro de los métodos.</p>
+
+                <h3>Ejemplo: Método con Lógica de Negocio</h3>
+                <p>Tomemos el método <span class="code-inline">agregarPuntoDeEntrega()</span> en la clase Ruta. Podría tener lógica de negocio:</p>
+
+                <div class="code-block">public class Ruta {
+    private Vehiculo vehiculoAsignado;
+    private List<PuntoDeEntrega> puntosDeEntrega;
+
+    public boolean agregarPuntoDeEntrega(PuntoDeEntrega nuevoPunto) {
+        // Lógica de negocio: verificar capacidad del vehículo
+        double pesoTotal = 0;
+        
+        // Sumar el peso de todos los puntos actuales
+        for (PuntoDeEntrega p : this.puntosDeEntrega) {
+            pesoTotal += p.getEnvio().getPeso();
+        }
+
+        // Verificar si el nuevo punto cabe
+        if (this.vehiculoAsignado.verificarCapacidad(
+            pesoTotal + nuevoPunto.getEnvio().getPeso())) {
+            this.puntosDeEntrega.add(nuevoPunto);
+            System.out.println("Punto agregado exitosamente.");
+            return true;
+        } else {
+            System.out.println("Error: Capacidad del vehículo excedida.");
+            return false;
+        }
+    }
+}</div>
+
+                <p>Aquí vemos el poder de la POO. El objeto Ruta colabora con el objeto Vehiculo y el objeto PuntoDeEntrega para cumplir una tarea. Cada objeto es responsable de su propia lógica. Ruta no sabe cómo el vehículo verifica su capacidad, solo le pregunta. Esto es bajo acoplamiento.</p>
+            </section>
+
+            <section id="hito3" class="section">
+                <h2><span class="icon">🎯</span>Hito 3: Implementación en Eclipse</h2>
+                <p>Hemos visto cómo pasar de un plano a una estructura de código. Ahora es su turno. En el Hito 3, tomarán el Diagrama de Clases que diseñaron en el Hito 2 e lo implementarán en Java usando Eclipse.</p>
+
+                <h3>¿Qué Deben Entregar?</h3>
+                <p>Un proyecto de Eclipse funcional con:</p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>La estructura de paquetes correcta</li>
+                    <li>Todas las clases de su diagrama implementadas como archivos .java</li>
+                    <li>Atributos con la visibilidad correcta (¡encapsulación!)</li>
+                    <li>Constructores para inicializar sus objetos</li>
+                    <li>Getters y Setters para todos los atributos</li>
+                    <li>Relaciones implementadas: atributos para asociación/composición y extends para herencia</li>
+                    <li>Métodos principales definidos (el esqueleto, no necesitan implementar toda la lógica compleja aún)</li>
+                </ul>
+
+                <div class="highlight">
+                    <h3>Objetivo del Hito 3</h3>
+                    <p>Esta es una tarea de traducción y atención al detalle. El objetivo es que al final del hito, tengan una base de código sólida y bien estructurada que refleje fielmente el diseño que crearon. Esta base será sobre la que construiremos en las próximas clases, aplicando patrones de diseño y lógica de negocio más compleja.</p>
+                </div>
+            </section>
+
+            <section id="recursos" class="section">
+                <h2><span class="icon">📖</span>Recursos Adicionales</h2>
+                <p>Aquí hay algunos recursos excelentes para profundizar en los temas de esta clase:</p>
+
+                <h3>Tutoriales de Eclipse</h3>
+                <a href="https://www.eclipse.org/documentation/" class="resource-link" target="_blank">📚 Documentación Oficial de Eclipse</a>
+                <a href="https://www.youtube.com/results?search_query=eclipse+java+tutorial" class="resource-link" target="_blank">🎥 Tutoriales en YouTube</a>
+
+                <h3>Java y POO</h3>
+                <a href="https://docs.oracle.com/javase/tutorial/" class="resource-link" target="_blank">☕ Tutorial Oficial de Java (Oracle)</a>
+                <a href="https://www.baeldung.com/java-oop" class="resource-link" target="_blank">📖 Baeldung: Conceptos de POO en Java</a>
+                <a href="https://www.geeksforgeeks.org/object-oriented-programming-oops-concept-in-java/" class="resource-link" target="_blank">💻 GeeksForGeeks: POO en Java</a>
+
+                <h3>Getters y Setters</h3>
+                <a href="https://www.baeldung.com/java-getters-setters" class="resource-link" target="_blank">🔑 Baeldung: Getters y Setters</a>
+                <a href="https://www.oracle.com/java/technologies/javase/codeconventions-namingconventions.html" class="resource-link" target="_blank">📋 Convenciones de Nombres en Java</a>
+
+                <h3>Herencia en Java</h3>
+                <a href="https://www.baeldung.com/java-inheritance" class="resource-link" target="_blank">👨‍👧 Baeldung: Herencia en Java</a>
+                <a href="https://www.geeksforgeeks.org/inheritance-in-java/" class="resource-link" target="_blank">📚 GeeksForGeeks: Herencia</a>
+
+                <h3>Collections (List, ArrayList)</h3>
+                <a href="https://www.baeldung.com/java-collections" class="resource-link" target="_blank">📦 Baeldung: Java Collections</a>
+                <a href="https://docs.oracle.com/javase/tutorial/collections/" class="resource-link" target="_blank">☕ Tutorial Oficial: Collections</a>
+
+                <h3>Debugging en Eclipse</h3>
+                <a href="https://www.eclipse.org/community/eclipse_newsletter/2017/june/article1.php" class="resource-link" target="_blank">🐛 Debugging en Eclipse</a>
+                <a href="https://www.youtube.com/watch?v=kkFhLr53DTY" class="resource-link" target="_blank">🎥 Debugging Tutorial (YouTube)</a>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.transform = sidebar.style.transform === 'translateX(0px)' ? 'translateX(-100%)' : 'translateX(0px)';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.sidebar a');
+
+            function changeNav() {
+                let index = sections.length;
+                while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
+                
+                navLinks.forEach((link) => link.classList.remove('active'));
+                if(navLinks[index]) navLinks[index].classList.add('active');
+            }
+
+            changeNav();
+            window.addEventListener('scroll', changeNav);
+
+            document.querySelectorAll('.sidebar a').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if (window.innerWidth <= 768) {
+                        toggleSidebar();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

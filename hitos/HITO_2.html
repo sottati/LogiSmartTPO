@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITO 2 - LogiSmart | Modelo de Dominio y UML</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --primary: #1a365d;
+        --primary-light: #2b6cb0;
+        --accent: #ed8936;
+        --bg: #f7fafc;
+        --surface: #ffffff;
+        --text: #1a202c;
+        --text-secondary: #4a5568;
+        --border: #e2e8f0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+        font-size: 15px;
+      }
+
+      .cover {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--surface);
+        background-image: radial-gradient(var(--border) 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--text);
+        text-align: center;
+        padding: 2rem;
+        border-bottom: 8px solid var(--primary);
+      }
+
+      .cover-content {
+        max-width: 900px;
+        width: 100%;
+      }
+
+      .cover .university {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+      }
+
+      .cover .subject {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--primary-light);
+        margin-bottom: 4rem;
+      }
+
+      .cover h1 {
+        font-size: 5rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.03em;
+      }
+
+      .cover .subtitle {
+        font-size: 1.25rem;
+        font-weight: 400;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        margin-bottom: 5rem;
+      }
+
+      .cover .team {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        border-top: 2px solid var(--bg);
+        padding-top: 3rem;
+      }
+
+      .team-member strong {
+        display: block;
+        font-size: 1.1rem;
+        color: var(--text);
+        margin-bottom: 0.25rem;
+      }
+
+      .team-member div {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-family: monospace;
+      }
+
+      .cover .date {
+        margin-top: 4rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .side-nav {
+        position: fixed;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        padding: 0.6rem 0.5rem;
+      }
+
+      .side-nav a {
+        display: block;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .side-nav a:hover {
+        color: var(--primary);
+        border-left-color: var(--border);
+      }
+
+      .side-nav a.active {
+        color: var(--primary);
+        font-weight: 700;
+        border-left-color: var(--accent);
+      }
+
+      .container {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+      }
+
+      .section {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.06),
+          0 1px 2px rgba(0, 0, 0, 0.04);
+        border: 1px solid var(--border);
+      }
+
+      .section-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: var(--primary);
+        color: white;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+      }
+
+      .section h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 0.3rem;
+      }
+
+      .section-desc {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.1rem;
+      }
+
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        margin-top: 2rem;
+      }
+
+      h3:first-of-type {
+        margin-top: 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.9rem;
+      }
+
+      thead th {
+        background: var(--primary);
+        color: white;
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      tbody td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+
+      tbody tr:hover {
+        background: #f0f5ff;
+      }
+
+      .context-diagram-wrapper {
+        overflow-x: auto;
+        margin: 1rem 0;
+      }
+
+      pre.mermaid {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem;
+        min-height: 500px;
+      }
+
+      .note-list li {
+        margin-left: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+
+      @media (max-width: 1200px) {
+        .side-nav {
+          display: none;
+        }
+      }
+
+      @media print {
+        body {
+          background: white;
+          font-size: 12pt;
+        }
+
+        .side-nav {
+          display: none;
+        }
+
+        .cover {
+          min-height: auto;
+          padding: 3rem 2rem;
+          page-break-after: always;
+        }
+
+        .section {
+          box-shadow: none;
+          border: 1px solid #ccc;
+          break-inside: avoid;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .cover h1 {
+          font-size: 2.2rem;
+        }
+
+        .cover .team {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .section {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+
+        <h1>HITO 2</h1>
+        <div class="subtitle">
+          Modelo de Dominio y Diagrama de Clases UML de LogiSmart
+        </div>
+
+        <div class="team">
+          <div class="team-member">
+            <strong>Julio Quinteros</strong>
+            <div>LU: 1122040</div>
+          </div>
+          <div class="team-member">
+            <strong>Rosario Presedo</strong>
+            <div>LU: 1146894</div>
+          </div>
+          <div class="team-member">
+            <strong>Simon Ottati</strong>
+            <div>LU: 1155931</div>
+          </div>
+        </div>
+
+        <div class="date">Martes Noche • 17 de Marzo de 2026</div>
+      </div>
+    </div>
+
+    <nav class="side-nav">
+      <a href="#s1">1. Clases candidatas</a>
+      <a href="#s2">2. Atributos y metodos</a>
+      <a href="#s3">3. Relaciones UML</a>
+      <a href="#s4">4. Cohesion/acoplamiento</a>
+      <a href="#s5">5. Decisiones de diseno</a>
+    </nav>
+
+    <div class="container">
+      <div id="s1" class="section">
+        <div class="section-number">1</div>
+        <h2>Identificar clases candidatas desde sustantivos de casos de uso</h2>
+        <p class="section-desc">
+          Primera seleccion de clases a partir del diagrama de contexto de
+          sistema y casos de uso del MVP.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Clase</th>
+              <th>Tipo</th>
+              <th>Responsabilidad principal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Usuario</strong></td>
+              <td>Entidad base</td>
+              <td>Autenticacion y datos comunes de actor.</td>
+            </tr>
+            <tr>
+              <td><strong>AdminEmpresa</strong></td>
+              <td>Entidad (hereda)</td>
+              <td>Configura cuenta Empresa y consulta reportes.</td>
+            </tr>
+            <tr>
+              <td><strong>OperadorLogistico</strong></td>
+              <td>Entidad (hereda)</td>
+              <td>Planifica rutas, asigna flota y envios.</td>
+            </tr>
+            <tr>
+              <td><strong>Transportista</strong></td>
+              <td>Entidad (hereda)</td>
+              <td>Ejecuta ruta y reporta entregas/GPS.</td>
+            </tr>
+            <tr>
+              <td><strong>ClienteFinal</strong></td>
+              <td>Entidad (hereda)</td>
+              <td>Consulta tracking y ETA del envio.</td>
+            </tr>
+            <tr>
+              <td><strong>AdminPlataforma</strong></td>
+              <td>Entidad (hereda)</td>
+              <td>Opera soporte, billing y monitoreo.</td>
+            </tr>
+            <tr>
+              <td><strong>Empresa</strong></td>
+              <td>Entidad</td>
+              <td>Tenant del SaaS; agrupa operacion logistica.</td>
+            </tr>
+            <tr>
+              <td><strong>Orden</strong></td>
+              <td>Entidad</td>
+              <td>Pedido importado desde e-commerce.</td>
+            </tr>
+            <tr>
+              <td><strong>Envio</strong></td>
+              <td>Entidad</td>
+              <td>Ciclo operativo de entrega.</td>
+            </tr>
+            <tr>
+              <td><strong>Ruta</strong></td>
+              <td>Entidad</td>
+              <td>Secuencia optimizada de paradas.</td>
+            </tr>
+            <tr>
+              <td><strong>PuntoEntrega</strong></td>
+              <td>Value Object</td>
+              <td>Destino puntual con ventana horaria.</td>
+            </tr>
+            <tr>
+              <td><strong>Flota</strong></td>
+              <td>Entidad</td>
+              <td>Agrupa vehiculos disponibles.</td>
+            </tr>
+            <tr>
+              <td><strong>Vehiculo</strong></td>
+              <td>Entidad</td>
+              <td>Unidad de transporte con capacidad.</td>
+            </tr>
+            <tr>
+              <td><strong>SeguimientoEnvio</strong></td>
+              <td>Entidad</td>
+              <td>Registra estado y trazabilidad.</td>
+            </tr>
+            <tr>
+              <td><strong>PosicionGPS</strong></td>
+              <td>Value Object</td>
+              <td>Coordenadas y timestamp.</td>
+            </tr>
+            <tr>
+              <td><strong>ETA</strong></td>
+              <td>Value Object</td>
+              <td>Tiempo estimado de llegada.</td>
+            </tr>
+            <tr>
+              <td><strong>Entrega</strong></td>
+              <td>Entidad</td>
+              <td>Resultado final de entrega.</td>
+            </tr>
+            <tr>
+              <td><strong>Suscripcion</strong></td>
+              <td>Entidad</td>
+              <td>Contrato SaaS de una Empresa.</td>
+            </tr>
+            <tr>
+              <td><strong>Cobro</strong></td>
+              <td>Entidad</td>
+              <td>Transaccion del fee mensual.</td>
+            </tr>
+            <tr>
+              <td><strong>Reporte</strong></td>
+              <td>Entidad</td>
+              <td>Vista consolidada de performance.</td>
+            </tr>
+            <tr>
+              <td><strong>Metrica</strong></td>
+              <td>Value Object</td>
+              <td>Indicador cuantitativo de operacion.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="s2" class="section">
+        <div class="section-number">2</div>
+        <h2>Definir atributos y metodos</h2>
+        <p class="section-desc">
+          Se detallan atributos y metodos principales por clase. En UML usamos
+          atributos privados (<strong>-</strong>) y metodos publicos
+          (<strong>+</strong>).
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Clase/Entidad</th>
+              <th>Atributos principales</th>
+              <th>Metodos principales</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Usuario</strong></td>
+              <td>id, username, email, passwordHash, rol, estado</td>
+              <td>iniciarSesion(), cambiarPassword(), cerrarSesion()</td>
+            </tr>
+            <tr>
+              <td><strong>AdminEmpresa</strong></td>
+              <td>EmpresaId, permisosAdmin, notificaciones</td>
+              <td>
+                configurarEmpresa(), consultarReportes(), gestionarSuscripcion()
+              </td>
+            </tr>
+            <tr>
+              <td><strong>OperadorLogistico</strong></td>
+              <td>EmpresaId, zonaOperacion, turno</td>
+              <td>
+                importarOrdenes(), gestionarFlota(), planificarRuta(),
+                asignarRuta()
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Transportista</strong></td>
+              <td>licencia, disponibilidad, vehiculoAsignadoId</td>
+              <td>
+                iniciarRecorrido(), actualizarPosicion(), registrarEntrega(),
+                reportarIncidente()
+              </td>
+            </tr>
+            <tr>
+              <td><strong>ClienteFinal</strong></td>
+              <td>nombre, telefono, direccionEntrega</td>
+              <td>consultarTracking(), verETA(), confirmarRecepcion()</td>
+            </tr>
+            <tr>
+              <td><strong>AdminPlataforma</strong></td>
+              <td>idInterno, nivelAcceso, area</td>
+              <td>
+                darAltaEmpresa(), darBajaEmpresa(), monitorearServicio(),
+                gestionarBilling()
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Empresa</strong></td>
+              <td>id, razonSocial, cuit, estado, fechaAlta</td>
+              <td>activar(), suspender(), actualizarDatos()</td>
+            </tr>
+            <tr>
+              <td><strong>Orden</strong></td>
+              <td>id, canalOrigen, estado, fechaCreacion, totalBultos</td>
+              <td>
+                marcarPendienteEnvio(), asociarEnvio(), actualizarEstado()
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Envio</strong></td>
+              <td>id, estado, prioridad, fechaProgramada</td>
+              <td>reprogramar(), iniciar(), cancelar(), cerrar()</td>
+            </tr>
+            <tr>
+              <td><strong>Ruta</strong></td>
+              <td>id, distanciaKm, duracionEstimadaMin, estado</td>
+              <td>optimizar(), recalcular(), asignarTransportista()</td>
+            </tr>
+            <tr>
+              <td><strong>PuntoEntrega</strong></td>
+              <td>direccion, lat, lng, ventanaHorario, ordenParada</td>
+              <td>validarVentana(), actualizarCoordenadas()</td>
+            </tr>
+            <tr>
+              <td><strong>Flota</strong></td>
+              <td>id, EmpresaId, vehiculos:Set&lt;Vehiculo&gt;, estado</td>
+              <td>agregarVehiculo(), quitarVehiculo(), obtenerDisponibles()</td>
+            </tr>
+            <tr>
+              <td><strong>Vehiculo</strong></td>
+              <td>id, patente, capacidadKg, tipo, disponibilidad</td>
+              <td>asignarRuta(), liberar(), actualizarCapacidad()</td>
+            </tr>
+            <tr>
+              <td><strong>SeguimientoEnvio</strong></td>
+              <td>id, estadoActual, ultimoEvento, ultimaActualizacion</td>
+              <td>
+                actualizarEstado(), registrarPosicion(), publicarTracking()
+              </td>
+            </tr>
+            <tr>
+              <td><strong>PosicionGPS</strong></td>
+              <td>lat, lng, timestamp, precision</td>
+              <td>esValida(), distanciaA()</td>
+            </tr>
+            <tr>
+              <td><strong>ETA</strong></td>
+              <td>valorMinutos, actualizadoEn, nivelConfianza</td>
+              <td>recalcular(), vencio()</td>
+            </tr>
+            <tr>
+              <td><strong>Entrega</strong></td>
+              <td>id, resultado, fechaHora, observaciones</td>
+              <td>confirmarExitosa(), registrarFallida(), adjuntarPrueba()</td>
+            </tr>
+            <tr>
+              <td><strong>Suscripcion</strong></td>
+              <td>id, plan, estado, montoMensual, proximoVencimiento</td>
+              <td>activar(), pausar(), renovar(), cambiarPlan()</td>
+            </tr>
+            <tr>
+              <td><strong>Cobro</strong></td>
+              <td>id, monto, estado, fecha, medioPago</td>
+              <td>
+                autorizar(), registrarPago(), marcarFallido(),
+                emitirComprobante()
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Reporte</strong></td>
+              <td>id, periodo, tipo, generadoEn</td>
+              <td>generar(), exportar(), compartir()</td>
+            </tr>
+            <tr>
+              <td><strong>Metrica</strong></td>
+              <td>nombre, valor, unidad, timestamp</td>
+              <td>actualizarValor(), normalizar(), comparar()</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="s3" class="section">
+        <div class="section-number">3</div>
+        <h2>Establecer relaciones, tipo y multiplicidad justificadas</h2>
+        <p class="section-desc">
+          Modelo inicial de dominio con herencia, asociaciones, agregaciones y
+          composiciones para el nucleo de negocio.
+        </p>
+
+        <div class="context-diagram-wrapper">
+          <pre class="mermaid">
+classDiagram
+direction LR
+
+class Usuario {
+  -id
+  -username: String
+  -email
+  -passwordHash
+  -rol
+  -estado
+  +iniciarSesion()
+  +cambiarPassword()
+  +cerrarSesion()
+}
+
+class AdminEmpresa {
+  +configurarEmpresa()
+  +consultarReportes()
+  +gestionarSuscripcion()
+}
+
+class OperadorLogistico {
+  +importarOrdenes()
+  +gestionarFlota()
+  +planificarRuta()
+  +asignarRuta()
+}
+
+class Transportista {
+  +iniciarRecorrido()
+  +actualizarPosicion()
+  +registrarEntrega()
+  +reportarIncidente()
+}
+
+class ClienteFinal {
+  +consultarTracking()
+  +verETA()
+  +confirmarRecepcion()
+}
+
+class AdminPlataforma {
+  +darAltaEmpresa()
+  +darBajaEmpresa()
+  +monitorearServicio()
+  +gestionarBilling()
+}
+
+class Empresa {
+  -id
+  -razonSocial
+  -cuit
+  -estado
+}
+
+class Flota {
+  -id
+  -vehiculos: Set~Vehiculo~
+  +agregarVehiculo()
+  +quitarVehiculo()
+  +obtenerDisponibles()
+}
+
+class Vehiculo {
+  -id
+  -patente
+  -capacidadKg
+  -tipo
+  -disponibilidad
+  +asignarRuta()
+  +liberar()
+  +actualizarCapacidad()
+}
+
+class Orden {
+  -id
+  -canalOrigen
+  -estado
+}
+
+class Envio {
+  -id
+  -estado
+  -fechaProgramada
+  +reprogramar()
+}
+
+class Ruta {
+  -id
+  -distanciaKm
+  -duracionEstimadaMin
+  +optimizar()
+}
+
+class PuntoEntrega {
+  -direccion
+  -lat
+  -lng
+  -ventanaHorario
+}
+
+class SeguimientoEnvio {
+  -id
+  -estadoActual
+  +actualizarEstado()
+}
+
+class PosicionGPS {
+  -lat
+  -lng
+  -timestamp
+}
+
+class ETA {
+  -valorMinutos
+  -actualizadoEn
+}
+
+class Entrega {
+  -id
+  -resultado
+  -fechaHora
+}
+
+class Suscripcion {
+  -id
+  -plan
+  -estado
+  -montoMensual
+}
+
+class Cobro {
+  -id
+  -monto
+  -estado
+  -fecha
+}
+
+class Reporte {
+  -id
+  -periodo
+  +generar()
+}
+
+class Metrica {
+  -nombre
+  -valor
+  -unidad
+}
+
+AdminEmpresa --|> Usuario
+OperadorLogistico --|> Usuario
+Transportista --|> Usuario
+ClienteFinal --|> Usuario
+AdminPlataforma --|> Usuario
+
+Empresa "1" o-- "1" Flota : tiene
+Flota "1" *-- "1..*" Vehiculo : compone
+Empresa "1" o-- "0..*" Envio : opera
+Empresa "1" o-- "0..*" Reporte : genera
+Reporte "1" *-- "1..*" Metrica : incluye
+
+Envio "1" *-- "1..*" Orden : agrupa
+Envio "1" --> "1" Ruta : utiliza
+Ruta "1" *-- "1..*" PuntoEntrega : define
+Orden "0..*" --> "1" PuntoEntrega : entregaEn
+Ruta "1" --> "1" Vehiculo : asigna
+Ruta "1" --> "1" Transportista : ejecutadaPor
+
+Envio "1" *-- "1" SeguimientoEnvio : traza
+SeguimientoEnvio "1" *-- "1..*" PosicionGPS : registra
+SeguimientoEnvio "1" --> "1" ETA : estima
+Envio "1" *-- "1" Entrega : finalizaEn
+ClienteFinal "1" --> "0..*" Envio : consulta
+
+Empresa "1" --> "1" Suscripcion : posee
+Suscripcion "1" *-- "0..*" Cobro : genera
+AdminPlataforma "1" --> "0..*" Suscripcion : administra
+          </pre>
+        </div>
+
+        <h3>3.1 Explicacion relacion por relacion</h3>
+        <ul class="note-list">
+          <li>
+            <strong>AdminEmpresa --|&gt; Usuario:</strong> herencia;
+            AdminEmpresa reutiliza identidad/autenticacion base de Usuario.
+          </li>
+          <li>
+            <strong>OperadorLogistico --|&gt; Usuario:</strong> herencia; agrega
+            operaciones de planificacion y asignacion.
+          </li>
+          <li>
+            <strong>Transportista --|&gt; Usuario:</strong> herencia; agrega
+            ejecucion de ruta y registro de entrega.
+          </li>
+          <li>
+            <strong>ClienteFinal --|&gt; Usuario:</strong> herencia; agrega
+            consulta de tracking y ETA.
+          </li>
+          <li>
+            <strong>AdminPlataforma --|&gt; Usuario:</strong> herencia; agrega
+            alta/baja Empresa y monitoreo.
+          </li>
+          <li>
+            <strong>Empresa 1 o-- 1 Flota:</strong> agregacion; cada Empresa
+            tiene una Flota principal.
+          </li>
+          <li>
+            <strong>Flota 1 *-- 1..* Vehiculo:</strong> composicion; Flota se
+            compone de uno o mas Vehiculos.
+          </li>
+          <li>
+            <strong>Empresa 1 o-- 0..* Envio:</strong> agregacion; Empresa opera
+            multiples Envios.
+          </li>
+          <li>
+            <strong>Empresa 1 o-- 0..* Reporte:</strong> agregacion; Empresa
+            genera varios Reportes.
+          </li>
+          <li>
+            <strong>Reporte 1 *-- 1..* Metrica:</strong> composicion; un Reporte
+            incluye una o mas Metricas.
+          </li>
+          <li>
+            <strong>Envio 1 *-- 1..* Orden:</strong> composicion; cada Envio
+            agrupa una o mas Ordenes.
+          </li>
+          <li>
+            <strong>Envio 1 --&gt; 1 Ruta:</strong> asociacion; un Envio utiliza
+            una Ruta planificada.
+          </li>
+          <li>
+            <strong>Ruta 1 *-- 1..* PuntoEntrega:</strong> composicion; Ruta
+            definida por una secuencia de paradas.
+          </li>
+          <li>
+            <strong>Orden 0..* --&gt; 1 PuntoEntrega:</strong> asociacion; cada
+            Orden tiene un destino unico y un PuntoEntrega puede concentrar
+            varias Ordenes.
+          </li>
+          <li>
+            <strong>Ruta 1 --&gt; 1 Vehiculo:</strong> asociacion; la Ruta se
+            ejecuta con un Vehiculo asignado.
+          </li>
+          <li>
+            <strong>Ruta 1 --&gt; 1 Transportista:</strong> asociacion; la Ruta
+            la ejecuta un Transportista.
+          </li>
+          <li>
+            <strong>Envio 1 *-- 1 SeguimientoEnvio:</strong> composicion;
+            tracking pertenece al ciclo de ese Envio.
+          </li>
+          <li>
+            <strong>SeguimientoEnvio 1 *-- 1..* PosicionGPS:</strong>
+            composicion; historial de posiciones GPS.
+          </li>
+          <li>
+            <strong>SeguimientoEnvio 1 --&gt; 1 ETA:</strong> asociacion;
+            tracking mantiene ETA vigente.
+          </li>
+          <li>
+            <strong>Envio 1 *-- 1 Entrega:</strong> composicion; cierre
+            operativo del Envio.
+          </li>
+          <li>
+            <strong>ClienteFinal 1 --&gt; 0..* Envio:</strong> asociacion;
+            cliente puede consultar varios Envios.
+          </li>
+          <li>
+            <strong>Empresa 1 --&gt; 1 Suscripcion:</strong> asociacion; cada
+            Empresa posee una Suscripcion activa.
+          </li>
+          <li>
+            <strong>Suscripcion 1 *-- 0..* Cobro:</strong> composicion;
+            historial de Cobros de la Suscripcion.
+          </li>
+          <li>
+            <strong>AdminPlataforma 1 --&gt; 0..* Suscripcion:</strong>
+            asociacion; administra multiples Suscripciones.
+          </li>
+        </ul>
+      </div>
+
+      <div id="s4" class="section">
+        <div class="section-number">4</div>
+        <h2>Cohesion y acoplamiento</h2>
+        <p class="section-desc">
+          Justificacion del modelo respecto a alta cohesion y bajo acoplamiento.
+        </p>
+
+        <p>
+          El modelo mantiene <strong>alta cohesion</strong> porque cada clase
+          concentra una responsabilidad concreta del dominio. Por ejemplo,
+          <strong>Envio</strong> gestiona ciclo de entrega,
+          <strong>Ruta</strong> organiza paradas,
+          <strong>SeguimientoEnvio</strong> gestiona trazabilidad y
+          <strong>Suscripcion</strong>/<strong>Cobro</strong> cubren billing. No
+          hay clases que mezclen logistica, tracking y facturacion al mismo
+          tiempo.
+        </p>
+
+        <br />
+
+        <p>
+          Tambien mantiene <strong>bajo acoplamiento</strong> porque cada
+          entidad se conecta solo con las que necesita para cumplir su funcion.
+          La separacion en varias clases evita una "clase dios" y facilita
+          evolucionar partes puntuales sin romper todo el modelo.
+        </p>
+      </div>
+
+      <div id="s5" class="section">
+        <div class="section-number">5</div>
+        <h2>Debatir y justificar decisiones</h2>
+        <p class="section-desc">
+          Decisiones clave de modelado y su razon de negocio.
+        </p>
+
+        <p>
+          Se eligio una superclase <strong>Usuario</strong> para unificar
+          identidad y autenticacion, y roles derivados
+          (<strong>AdminEmpresa</strong>, <strong>OperadorLogistico</strong>,
+          <strong>Transportista</strong>, <strong>ClienteFinal</strong>,
+          <strong>AdminPlataforma</strong>) para separar comportamiento por
+          contexto. Esto evita duplicar atributos comunes en cada actor.
+        </p>
+
+        <br />
+
+        <p>
+          Se usaron composiciones donde la vida de los objetos depende del
+          agregado principal (ej. <strong>Flota-Vehiculo</strong>,
+          <strong>Envio-SeguimientoEnvio</strong>,
+          <strong>SeguimientoEnvio-PosicionGPS</strong>), y
+          agregaciones/asociaciones donde las entidades se relacionan sin
+          dependencia total (ej. <strong>Empresa-Envio</strong>,
+          <strong>Envio-Ruta</strong>, <strong>Ruta-Transportista</strong>).
+        </p>
+      </div>
+    </div>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          fontSize: "15px",
+          primaryColor: "#f8fbff",
+          primaryTextColor: "#0f172a",
+          primaryBorderColor: "#1a365d",
+          lineColor: "#1a365d",
+          tertiaryColor: "#f8fafc",
+          edgeLabelBackground: "#ffffff",
+        },
+      });
+
+      const nav = document.querySelector(".side-nav");
+      const sections = document.querySelectorAll(".section[id]");
+
+      if (nav) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const link = nav.querySelector(`a[href="#${entry.target.id}"]`);
+              if (link) {
+                link.classList.toggle("active", entry.isIntersecting);
+              }
+            });
+          },
+          { rootMargin: "-30% 0px -60% 0px" },
+        );
+        sections.forEach((section) => observer.observe(section));
+      }
+    </script>
+  </body>
+</html>

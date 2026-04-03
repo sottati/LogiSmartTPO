@@ -1,0 +1,22 @@
+- Proyecto: Proceso de Desarrollo de Software
+
+- Cuando aparezca o cambie `clase_*.html`, convertirlo a skill local en `skills/`.
+- Cada clase debe ser una skill separada: `skills/<slug-clase>/`.
+- Estructura obligatoria por skill:
+  - `SKILL.md` (corto, operativo)
+  - `REFERENCE.md` (contenido de clase en markdown)
+- `SKILL.md` debe tener frontmatter YAML valido con:
+  - `name`
+  - `description` (incluir frase tipo `Use when ...` con triggers claros)
+- `SKILL.md` debe:
+  - explicar alcance de la clase
+  - indicar que la fuente de verdad es `REFERENCE.md`
+  - indicar limite: si no esta en referencia, decirlo explicito
+- Reglas de parseo HTML -> MD:
+  - usar solo contenido de `main-content`
+  - ignorar CSS, JS, sidebar, navegacion visual
+  - preservar jerarquia `h1..h4`, listas, tablas y bloques tecnicos
+  - limpiar ruido visual (emojis decorativos, estilos inline)
+  - mantener espanol tecnico claro
+- No mezclar clases distintas en una sola skill.
+- Mantener nombres estables para evitar romper triggers.

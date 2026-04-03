@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 2: Del Análisis al Diseño - Modelo de Dominio - Proceso de Desarrollo de Software</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background-color: #f4f7f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+            font-size: 0.95em;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background: #34495e;
+            color: #667eea;
+        }
+
+        .main-content {
+            margin-left: 300px;
+            padding: 40px;
+            flex: 1;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #34495e;
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .section h4 {
+            color: #555;
+            margin: 15px 0 10px 0;
+            font-size: 1.1em;
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .highlight {
+            background: #e8eaf6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #764ba2;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .example-box {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2196F3;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #667eea;
+            color: white;
+        }
+
+        table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .uml-diagram {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; padding: 20px; }
+            .header h1 { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    
+    <div class="container">
+        <nav class="sidebar" id="sidebar">
+            <h2>📚 Navegación</h2>
+            <ul>
+                <li><a href="#intro">🔄 Del Análisis al Diseño</a></li>
+                <li><a href="#modelo">🗺️ Modelo de Dominio</a></li>
+                <li><a href="#poo">🎯 POO vs Procedural</a></li>
+                <li><a href="#pilares">🏛️ Pilares de la POO</a></li>
+                <li><a href="#clases">📦 Clases y Objetos</a></li>
+                <li><a href="#encapsulacion">🔐 Encapsulación</a></li>
+                <li><a href="#uml">📐 Diagramas de Clases UML</a></li>
+                <li><a href="#relaciones">🔗 Relaciones entre Clases</a></li>
+                <li><a href="#herencia">👨‍👧 Herencia</a></li>
+                <li><a href="#principios">⚖️ Principios de Diseño</a></li>
+                <li><a href="#hito2">🎯 Hito 2: Modelo de Dominio</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="header">
+                <h1>Clase 2: Del Análisis al Diseño</h1>
+                <p>Construyendo el Modelo de Dominio con Programación Orientada a Objetos</p>
+            </header>
+
+            <section id="intro" class="section">
+                <h2><span class="icon">🔄</span>Del Análisis al Diseño: El Siguiente Paso</h2>
+                <p>En la clase anterior, nos sumergimos en el "Fuzzy Front-End", esa fase inicial caótica de cualquier proyecto. Aprendimos a usar el Proceso Unificado, los Casos de Uso y el análisis de Atributos de Calidad para transformar una idea vaga en un documento de Visión y Alcance. Ustedes hicieron un gran trabajo con el Hito 1, analizando el caso de LogiSmart y definiendo qué debería hacer el sistema.</p>
+                
+                <p>Hoy, damos el siguiente paso crítico en nuestro viaje: pasamos del <strong>QUÉ</strong> (qué debe hacer el sistema, definido en los Casos de Uso) al <strong>CÓMO</strong> (cómo se estructurará internamente para lograrlo). Vamos a tomar ese análisis y empezar a traducirlo en un diseño de software tangible. Nuestro primer artefacto de diseño se llama el <strong>Modelo de Dominio</strong>.</p>
+            </section>
+
+            <section id="modelo" class="section">
+                <h2><span class="icon">🗺️</span>¿Qué es el Modelo de Dominio?</h2>
+                <p>Piensen en el Modelo de Dominio como un <strong>vocabulario visual</strong> para nuestro proyecto. Es una representación de los conceptos, entidades y objetos más importantes del mundo real de nuestro problema (el "dominio"), y las relaciones que existen entre ellos. No estamos diseñando el software aún, estamos modelando el problema. Es un mapa conceptual que nos ayudará a todos (desarrolladores, analistas, clientes) a hablar el mismo idioma.</p>
+
+                <h3>Ejemplos de Modelos de Dominio</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>E-commerce</h4>
+                        <p>Conceptos: Cliente, Producto, Orden, Carrito de Compras, Pago, Envío. Las relaciones definen cómo interactúan estos conceptos.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Sistema de Aerolíneas</h4>
+                        <p>Conceptos: Pasajero, Vuelo, Asiento, Aeropuerto, Equipaje, Reserva. Cada uno con sus propias características y relaciones.</p>
+                    </div>
+                    <div class="card">
+                        <h4>LogiSmart</h4>
+                        <p>Conceptos: Cliente, Envío, Vehículo, Ruta, Operador Logístico, Punto de Entrega. Identificados en el Hito 1.</p>
+                    </div>
+                </div>
+
+                <p>La herramienta que usaremos para crear este vocabulario visual es el <strong>Diagrama de Clases de UML</strong>. Y para entender el Diagrama de Clases, primero debemos solidificar los pilares de la Programación Orientada a Objetos.</p>
+            </section>
+
+            <section id="poo" class="section">
+                <h2><span class="icon">🎯</span>POO vs. Programación Procedural: Un Cambio de Paradigma</h2>
+                <p>Muchos de ustedes vienen de un mundo de programación procedural o estructurada. En ese paradigma, pensamos en el software como una secuencia de pasos, una receta. Tenemos datos por un lado y funciones que operan sobre esos datos por otro. Los datos y las funciones están separados.</p>
+
+                <div class="example-box">
+                    <h4>Ejemplo Procedural: Gestión de Cuentas Bancarias</h4>
+                    <p><strong>Datos:</strong> `saldo`, `titular`, `numero_cuenta`</p>
+                    <p><strong>Funciones:</strong> `depositar(monto)`, `extraer(monto)`, `obtenerSaldo()`</p>
+                    <p>Los datos y las funciones están separados. Cualquiera puede modificar el saldo directamente.</p>
+                </div>
+
+                <h3>La Revolución de la POO</h3>
+                <p>La Programación Orientada a Objetos (POO) propone un cambio radical. En lugar de separar datos y comportamiento, los juntamos en unidades cohesivas llamadas <strong>Objetos</strong>. Un objeto no es solo un dato, ni solo una función. Es una entidad que tiene <strong>estado</strong> (datos) y <strong>comportamiento</strong> (funciones que operan sobre su propio estado).</p>
+
+                <div class="example-box">
+                    <h4>Ejemplo POO: Gestión de Cuentas Bancarias</h4>
+                    <p><strong>Objeto CuentaBancaria:</strong></p>
+                    <p><strong>Estado:</strong> saldo, titular, numero_cuenta (privados)</p>
+                    <p><strong>Comportamiento:</strong> depositar(), extraer(), obtenerSaldo() (públicos)</p>
+                    <p>El objeto controla su propio estado. Solo puede modificarse a través de sus métodos públicos.</p>
+                </div>
+
+                <h3>Ventajas de la POO</h3>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Modularidad:</strong> El código está organizado en unidades cohesivas y comprensibles.</li>
+                    <li><strong>Reutilización:</strong> Las clases pueden ser reutilizadas en diferentes contextos.</li>
+                    <li><strong>Mantenibilidad:</strong> Los cambios en un objeto no afectan a otros objetos que lo usan.</li>
+                    <li><strong>Escalabilidad:</strong> Es más fácil agregar nuevas funcionalidades sin romper las existentes.</li>
+                </ul>
+            </section>
+
+            <section id="pilares" class="section">
+                <h2><span class="icon">🏛️</span>Los 3 Pilares Fundamentales de un Objeto</h2>
+                <p>Todo objeto en el universo de la POO se define por tres características inseparables:</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>1️⃣ Identidad</h4>
+                        <p>Lo que hace que un objeto sea único, incluso si su estado es idéntico al de otro. En software, es la dirección de memoria donde vive el objeto. Nunca hay dos objetos con la misma identidad.</p>
+                    </div>
+                    <div class="card">
+                        <h4>2️⃣ Estado (Atributos)</h4>
+                        <p>Los datos que el objeto conoce, las propiedades que describen su condición actual. Para un Cliente: nombre, email, dirección. Para un Producto: precio, stock, descripción.</p>
+                    </div>
+                    <div class="card">
+                        <h4>3️⃣ Comportamiento (Métodos)</h4>
+                        <p>Las acciones que el objeto puede realizar. Funciones ligadas al objeto que generalmente modifican su propio estado. Un CarritoDeCompras: agregarProducto(), eliminarProducto(), calcularTotal().</p>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <h3>Analogía del Mundo Real</h3>
+                    <p>Un auto tiene <strong>identidad</strong> (su número de chasis único), <strong>estado</strong> (color, marca, velocidad actual, cantidad de nafta) y <strong>comportamiento</strong> (acelerar, frenar, girar). En POO, no tendríamos una variable 'velocidad' y una función 'acelerar(velocidad)'. Tendríamos un objeto 'Auto' que tiene una propiedad 'velocidad' y un método 'acelerar()' que modifica su propia velocidad.</p>
+                </div>
+            </section>
+
+            <section id="clases" class="section">
+                <h2><span class="icon">📦</span>Clases y Objetos: La Plantilla y la Instancia</h2>
+                <p>Ahora, ¿de dónde salen estos objetos? No los creamos de la nada. Los creamos a partir de una <strong>Clase</strong>. Una Clase es una plantilla, un plano, una definición. Es el molde que describe cómo serán todos los objetos de un cierto tipo.</p>
+
+                <h3>Clase vs. Objeto</h3>
+                <table>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Clase</th>
+                        <th>Objeto</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Naturaleza</strong></td>
+                        <td>Plantilla, definición abstracta</td>
+                        <td>Instancia concreta y viva</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cantidad</strong></td>
+                        <td>Una clase por tipo</td>
+                        <td>Múltiples objetos de la misma clase</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Existencia</strong></td>
+                        <td>Existe en el código fuente</td>
+                        <td>Existe en memoria en tiempo de ejecución</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Estado</strong></td>
+                        <td>Define qué atributos tendrá</td>
+                        <td>Cada objeto tiene su propio estado</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ejemplo</strong></td>
+                        <td>La clase "Cliente"</td>
+                        <td>Juan Pérez, María García (instancias)</td>
+                    </tr>
+                </table>
+
+                <p>La clase 'Cliente' define que <strong>todos</strong> los clientes tendrán un nombre, un email y un método para cambiar su dirección. La clase no es un cliente, es la <strong>idea</strong> de un cliente. Un <strong>Objeto</strong>, entonces, es una <strong>instancia</strong> de una clase. Es una manifestación concreta y viva de esa plantilla, con su propia identidad y su propio estado.</p>
+            </section>
+
+            <section id="encapsulacion" class="section">
+                <h2><span class="icon">🔐</span>Encapsulación: El Principio de Ocultamiento de Información</h2>
+                <p>Este es quizás el concepto más importante de la POO: la <strong>Encapsulación</strong>. La idea es que un objeto debe ocultar su estado interno del mundo exterior. Debe ser una "caja negra". Nadie desde afuera debería poder modificar directamente el estado de un objeto. ¿Por qué? Para proteger la <strong>integridad</strong> de ese estado.</p>
+
+                <div class="example-box">
+                    <h4>Ejemplo: Cuenta Bancaria</h4>
+                    <p>Si cualquiera pudiera hacer `cuenta.saldo = -1000`, sería un desastre. La encapsulación dice: "No, el saldo es privado. Si quieres cambiarlo, debes usar mi método `extraer(monto)`". Dentro de ese método, la cuenta puede verificar si hay fondos suficientes, registrar la transacción, etc. El objeto tiene el control total sobre su propio estado.</p>
+                </div>
+
+                <h3>Modificadores de Visibilidad</h3>
+                <table>
+                    <tr>
+                        <th>Modificador</th>
+                        <th>Símbolo</th>
+                        <th>Accesibilidad</th>
+                        <th>Uso Típico</th>
+                    </tr>
+                    <tr>
+                        <td><strong>public</strong></td>
+                        <td>+</td>
+                        <td>Desde cualquier lugar</td>
+                        <td>El comportamiento (métodos) del objeto</td>
+                    </tr>
+                    <tr>
+                        <td><strong>private</strong></td>
+                        <td>-</td>
+                        <td>Solo desde dentro del objeto</td>
+                        <td>El estado (atributos) del objeto</td>
+                    </tr>
+                    <tr>
+                        <td><strong>protected</strong></td>
+                        <td>#</td>
+                        <td>Desde dentro y desde clases hijas</td>
+                        <td>Atributos/métodos compartidos con subclases</td>
+                    </tr>
+                </table>
+
+                <h3>Beneficios de la Encapsulación</h3>
+                <p>La encapsulación reduce el acoplamiento y aumenta la cohesión. Hace que nuestro software sea mucho más fácil de mantener, porque podemos cambiar la implementación interna de un objeto sin que nadie que lo usa se vea afectado, siempre que mantengamos su comportamiento público (su "contrato").</p>
+            </section>
+
+            <section id="uml" class="section">
+                <h2><span class="icon">📐</span>Diagrama de Clases UML: La Sintaxis del Diseño</h2>
+                <p>El <strong>Diagrama de Clases de UML</strong> (Lenguaje de Modelado Unificado) es la herramienta estándar de la industria para dibujar nuestro Modelo de Dominio. Es la forma en que representamos visualmente nuestras clases, sus atributos, sus métodos y las relaciones entre ellas.</p>
+
+                <h3>Estructura de una Clase en UML</h3>
+                <p>Una clase se representa como un rectángulo dividido en tres secciones:</p>
+
+                <div class="uml-diagram">
+┌─────────────────────────────────┐
+│      NombreDeLaClase            │  ← Nombre (negrita)
+├─────────────────────────────────┤
+│ - atributo1: String             │
+│ - atributo2: int                │  ← Atributos (privados)
+│ + saldo: double                 │
+├─────────────────────────────────┤
+│ + metodo1(parametro): tipo      │
+│ + metodo2(): void               │  ← Métodos (públicos)
+│ - metodoPrivado(): boolean      │
+└─────────────────────────────────┘
+                </div>
+
+                <h3>Sintaxis de Atributos y Métodos</h3>
+                <p><strong>Atributos:</strong> `visibilidad nombreAtributo: tipo [= valorInicial]`</p>
+                <p>Ejemplo: `- saldo: double = 0.0`</p>
+
+                <p><strong>Métodos:</strong> `visibilidad nombreMetodo(parametros): tipoDeRetorno`</p>
+                <p>Ejemplo: `+ extraer(monto: double): boolean`</p>
+
+                <h3>Ejemplo Completo: Clase CuentaBancaria</h3>
+                <div class="uml-diagram">
+┌──────────────────────────────────┐
+│     CuentaBancaria               │
+├──────────────────────────────────┤
+│ - numeroCuenta: String           │
+│ - titular: String                │
+│ - saldo: double = 0.0            │
+│ - clave: String                  │
+├──────────────────────────────────┤
+│ + depositar(monto: double): void │
+│ + extraer(monto: double): bool   │
+│ + obtenerSaldo(): double         │
+│ + cambiarClave(nueva: String)    │
+│ - validarClave(clave: String)    │
+└──────────────────────────────────┘
+                </div>
+
+                <p>Observe que los atributos son privados (protegen el estado) y los métodos son públicos (definen el comportamiento accesible).</p>
+            </section>
+
+            <section id="relaciones" class="section">
+                <h2><span class="icon">🔗</span>Relaciones entre Clases: Tejiendo la Red</h2>
+                <p>Una clase sola no hace mucho. El poder de la POO viene de cómo se relacionan las clases entre sí. Las relaciones más comunes son:</p>
+
+                <h3>1. Asociación: "Conoce a"</h3>
+                <p>Es la relación más básica. Simplemente dice que dos clases se conocen, que un objeto de una clase puede interactuar con un objeto de otra. Se representa con una línea simple. Podemos indicar la <strong>multiplicidad</strong>: cuántos objetos de una clase se relacionan con cuántos de la otra.</p>
+
+                <div class="example-box">
+                    <h4>Ejemplo: Cliente y Orden</h4>
+                    <p>Un Cliente se asocia con una Orden. Un cliente puede tener muchas (0..*) órdenes, pero una orden pertenece a un solo (1) cliente.</p>
+                    <p>En UML: `Cliente ────── 1 Orden` (con multiplicidades 1 en Cliente, 0..* en Orden)</p>
+                </div>
+
+                <h3>2. Agregación: "Tiene un" (débil)</h3>
+                <p>Es un tipo especial de asociación que representa una relación "tiene un" o "es parte de", pero donde las partes pueden existir independientemente del todo. Se representa con un rombo blanco. Si el todo se destruye, las partes siguen existiendo.</p>
+
+                <div class="example-box">
+                    <h4>Ejemplo: Departamento y Profesor</h4>
+                    <p>Un Departamento tiene Profesores. Si el departamento se disuelve, los profesores siguen existiendo (pueden ir a otro departamento).</p>
+                </div>
+
+                <h3>3. Composición: "Es parte de" (fuerte)</h3>
+                <p>Es una forma más fuerte de agregación. Es una relación "es parte de" donde las partes <strong>no pueden existir</strong> sin el todo. Si el todo se destruye, las partes también. Se representa con un rombo negro.</p>
+
+                <div class="example-box">
+                    <h4>Ejemplo: Orden e ItemsDeOrden</h4>
+                    <p>Una Orden se compone de ItemsDeOrden. Los ítems no tienen sentido sin la orden. Si la orden se cancela, los ítems también desaparecen.</p>
+                </div>
+
+                <h3>Tabla Comparativa de Relaciones</h3>
+                <table>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Símbolo</th>
+                        <th>Significado</th>
+                        <th>Dependencia</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Asociación</strong></td>
+                        <td>Línea simple</td>
+                        <td>Conoce a</td>
+                        <td>Débil</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Agregación</strong></td>
+                        <td>Rombo blanco</td>
+                        <td>Tiene un (débil)</td>
+                        <td>Débil</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Composición</strong></td>
+                        <td>Rombo negro</td>
+                        <td>Es parte de (fuerte)</td>
+                        <td>Fuerte</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section id="herencia" class="section">
+                <h2><span class="icon">👨‍👧</span>Herencia: La Relación "Es Un"</h2>
+                <p>La <strong>Herencia</strong> es otra relación fundamental, pero diferente. No es una relación "tiene un", sino "es un". Permite que una clase (la "clase hija" o "subclase") herede los atributos y métodos de otra clase (la "clase padre" o "superclase"). Se representa con una flecha con la punta triangular vacía.</p>
+
+                <h3>¿Cómo Funciona la Herencia?</h3>
+                <p>Cuando una clase hereda de otra, automáticamente obtiene todos sus atributos y métodos. Luego, puede agregar su propio estado y comportamiento. Esto permite la reutilización de código y la creación de jerarquías de clases.</p>
+
+                <div class="example-box">
+                    <h4>Ejemplo: Usuarios en LogiSmart</h4>
+                    <p>Podemos tener una clase base 'Usuario' con atributos como 'email' y 'password'. Luego, clases 'Cliente' y 'Operador' heredan de 'Usuario'. Ambas tendrán automáticamente email y password, pero pueden agregar su propio estado y comportamiento.</p>
+                    <p><strong>Usuario:</strong> email, password, cambiarPassword()</p>
+                    <p><strong>Cliente (hereda de Usuario):</strong> historialDeCompras, calificacion, solicitarEnvio()</p>
+                    <p><strong>Operador (hereda de Usuario):</strong> numeroEmpleado, asignacionesActuales, aceptarEnvio()</p>
+                </div>
+
+                <h3>La Prueba de Liskov: ¿Cuándo Usar Herencia?</h3>
+                <p>La regla de oro es la <strong>Prueba de Sustitución de Liskov</strong>: una clase hija siempre debe poder ser sustituida por su clase padre sin alterar la corrección del programa. Siempre pregunten: ¿Un 'Cliente' <strong>es un</strong> tipo de 'Usuario'? Si la respuesta es sí, la herencia es probablemente correcta.</p>
+
+                <div class="highlight">
+                    <h3>Advertencia: Herencia vs. Composición</h3>
+                    <p>La herencia es poderosa pero debe usarse con cuidado. A menudo, la <strong>composición</strong> es una mejor opción. En lugar de heredar, un objeto puede <strong>contener</strong> otro objeto. Por ejemplo, en lugar de que 'Auto' herede de 'Motor', es mejor que 'Auto' <strong>tenga un</strong> 'Motor'. Esto es más flexible y reduce el acoplamiento.</p>
+                </div>
+            </section>
+
+            <section id="principios" class="section">
+                <h2><span class="icon">⚖️</span>Principios de Diseño: Cohesión y Acoplamiento</h2>
+                <p>Tener clases y objetos no garantiza un buen diseño. Necesitamos principios que nos guíen. Dos de los más importantes son la Cohesión y el Acoplamiento.</p>
+
+                <h3>Alta Cohesión</h3>
+                <p>Este principio dice que una clase debe tener una <strong>única responsabilidad</strong> bien definida. Todos sus atributos y métodos deben trabajar juntos para cumplir esa responsabilidad. Una clase 'Cliente' no debería tener métodos para calcular impuestos o para conectarse a la base de datos. Esas son responsabilidades de otras clases.</p>
+
+                <div class="example-box">
+                    <h4>Ejemplo: Baja Cohesión</h4>
+                    <p>Una clase 'Usuario' que tiene métodos para: autenticar(), guardarEnBD(), enviarEmail(), calcularImpuestos(). Esto es un desastre. Tiene demasiadas responsabilidades.</p>
+                    <p><strong>Solución:</strong> Crear clases especializadas: 'Usuario' (solo datos y métodos de usuario), 'AutenticacionService', 'RepositorioUsuario', 'EmailService', 'ImpuestoService'.</p>
+                </div>
+
+                <h3>Bajo Acoplamiento</h3>
+                <p>Este principio dice que las clases deben ser lo más independientes posible unas de otras. Si un cambio en la Clase A me obliga a hacer cambios en la Clase B, C y D, entonces tengo un alto acoplamiento, y mi diseño es frágil. Debemos minimizar las dependencias entre clases.</p>
+
+                <div class="example-box">
+                    <h4>Ejemplo: Alto Acoplamiento</h4>
+                    <p>La clase 'Orden' crea directamente objetos de 'BaseDatos' y 'Email'. Si cambio cómo funciona la base de datos, tengo que cambiar 'Orden'.</p>
+                    <p><strong>Solución:</strong> Usar inyección de dependencias. 'Orden' recibe las dependencias como parámetros, no las crea ella misma.</p>
+                </div>
+
+                <h3>Beneficios de Alta Cohesión y Bajo Acoplamiento</h3>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Mantenibilidad:</strong> Cambios localizados, menos efectos secundarios.</li>
+                    <li><strong>Testabilidad:</strong> Clases independientes son más fáciles de probar.</li>
+                    <li><strong>Reutilización:</strong> Clases con responsabilidades claras son más reutilizables.</li>
+                    <li><strong>Escalabilidad:</strong> Es más fácil agregar nuevas funcionalidades.</li>
+                </ul>
+            </section>
+
+            <section id="hito2" class="section">
+                <h2><span class="icon">🎯</span>Hito 2: Construyendo el Modelo de Dominio de LogiSmart</h2>
+                <p>Muy bien, hemos cubierto una cantidad enorme de teoría. Ahora es el momento de aplicarla. En el Hito 2, van a tomar todo el análisis que hicieron en el Hito 1 para LogiSmart y lo van a traducir en su primer artefacto de diseño: el <strong>Diagrama de Clases del Modelo de Dominio</strong>.</p>
+
+                <h3>Desafíos del Hito 2</h3>
+                <p>Su desafío será:</p>
+                <ol style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Identificar las Clases Candidatas:</strong> A partir de los sustantivos en sus Casos de Uso y descripción del problema (Cliente, Envío, Vehículo, Ruta, etc.), decidan cuáles son las clases principales de su dominio.</li>
+                    <li><strong>Definir Atributos y Métodos:</strong> Para cada clase, definan su estado (atributos) y su comportamiento principal (métodos). Usen la visibilidad correcta (¡encapsulación!).</li>
+                    <li><strong>Establecer Relaciones:</strong> Dibujen las relaciones entre sus clases. ¿Un 'Envío' se asocia con un 'Cliente'? ¿Una 'Ruta' se compone de 'PuntosDeEntrega'? Justifiquen la multiplicidad y el tipo de relación.</li>
+                    <li><strong>Pensar en la Cohesión y el Acoplamiento:</strong> ¿Sus clases tienen una única responsabilidad? ¿Están minimizando las dependencias?</li>
+                    <li><strong>Debatir y Justificar:</strong> No hay una única respuesta correcta. Lo que evaluaré es la calidad de su modelo, la aplicación de los conceptos que vimos hoy y, sobre todo, la justificación de sus decisiones de diseño.</li>
+                </ol>
+
+                <div class="highlight">
+                    <h3>Importancia del Hito 2</h3>
+                    <p>Este diagrama será la columna vertebral de nuestro proyecto. Cada decisión que tomen aquí guiará el trabajo de las próximas clases. Los patrones de diseño que aplicaremos más adelante se construirán sobre este modelo. Tómense el tiempo para debatir, investigar y justificar cada decisión.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.transform = sidebar.style.transform === 'translateX(0px)' ? 'translateX(-100%)' : 'translateX(0px)';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.sidebar a');
+
+            function changeNav() {
+                let index = sections.length;
+                while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
+                
+                navLinks.forEach((link) => link.classList.remove('active'));
+                if(navLinks[index]) navLinks[index].classList.add('active');
+            }
+
+            changeNav();
+            window.addEventListener('scroll', changeNav);
+
+            document.querySelectorAll('.sidebar a').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if (window.innerWidth <= 768) {
+                        toggleSidebar();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

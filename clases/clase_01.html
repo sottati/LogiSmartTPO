@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 1: De la Idea a la Arquitectura - Proceso de Desarrollo de Software</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background-color: #f4f7f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+            font-size: 0.95em;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background: #34495e;
+            color: #667eea;
+        }
+
+        .main-content {
+            margin-left: 300px;
+            padding: 40px;
+            flex: 1;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #34495e;
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .section h4 {
+            color: #555;
+            margin: 15px 0 10px 0;
+            font-size: 1.1em;
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .highlight {
+            background: #e8eaf6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #764ba2;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .example-box {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2196F3;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #667eea;
+            color: white;
+        }
+
+        table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; padding: 20px; }
+            .header h1 { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    
+    <div class="container">
+        <nav class="sidebar" id="sidebar">
+            <h2>📚 Navegación</h2>
+            <ul>
+                <li><a href="#intro">🚀 Introducción</a></li>
+                <li><a href="#fuzzy">🌫️ El Fuzzy Front-End</a></li>
+                <li><a href="#rup">⚙️ Proceso Unificado</a></li>
+                <li><a href="#iterativo">🔄 Iterativo e Incremental</a></li>
+                <li><a href="#casos">🎯 Casos de Uso</a></li>
+                <li><a href="#calidad">⭐ Atributos de Calidad</a></li>
+                <li><a href="#tradeoffs">⚖️ Trade-offs</a></li>
+                <li><a href="#vision">🔭 Documentando la Visión</a></li>
+                <li><a href="#practica">🛠️ Introducción a la Práctica</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="header">
+                <h1>Clase 1: De la Idea a la Arquitectura</h1>
+                <p>Proceso de Desarrollo de Software - 1C 2026</p>
+            </header>
+
+            <section id="intro" class="section">
+                <h2><span class="icon">🚀</span>Introducción: El Verdadero Desafío</h2>
+                <p>Bienvenidos a Proceso de Desarrollo de Software. En esta materia, vamos más allá de aprender a programar. La programación es una herramienta, como un martillo o un destornillador. Aquí vamos a aprender a ser arquitectos y constructores. Vamos a aprender a diseñar y construir sistemas de software de calidad profesional, sistemas que no solo funcionen hoy, sino que puedan crecer, adaptarse y sobrevivir en el tiempo.</p>
+                
+                <h3>¿Cuál es el verdadero desafío?</h3>
+                <p>Muchas personas creen que el desafío más grande en la ingeniería de software es escribir código complejo, o quizás depurar un error difícil. Pero la realidad es que el desafío más grande, el más costoso y el más crítico, es decidir <strong>qué código escribir</strong> y, más importante aún, <strong>cómo estructurarlo</strong>.</p>
+                
+                <div class="example-box">
+                    <h4>Analogía: Construyendo un Vehículo</h4>
+                    <p>Imaginen que les pido que construyan un vehículo. Si no hacemos las preguntas correctas al principio, podríamos terminar construyendo una bicicleta cuando en realidad necesitaban un camión. Ambos son vehículos, ambos funcionan, pero uno es completamente inútil para el problema real. El costo de convertir esa bicicleta en un camión es gigantesco, si no imposible. En software, esto pasa todos los días.</p>
+                </div>
+
+                <p>El código que funciona es solo el primer paso, la punta del iceberg. El verdadero valor está en el código que es <strong>mantenible</strong>, <strong>flexible</strong> y <strong>escalable</strong>. Código que un nuevo desarrollador puede entender en un tiempo razonable. Código al que se le pueden agregar nuevas funcionalidades sin romper las existentes. Código que puede soportar 100 usuarios hoy y 1 millón de usuarios en un año.</p>
+            </section>
+
+            <section id="fuzzy" class="section">
+                <h2><span class="icon">🌫️</span>El "Fuzzy Front-End": Navegando la Incertidumbre</h2>
+                <p>A esta fase inicial de un proyecto, los expertos la llaman el <strong>"Fuzzy Front-End"</strong>. "Fuzzy" significa borroso, difuso. Es ese momento caótico donde solo tenemos una idea, una visión vaga, un problema de negocio. Es un pantano de incertidumbre. No sabemos exactamente qué construir, cómo funcionará, qué tecnología usar.</p>
+                
+                <h3>¿Por qué es crítica esta fase?</h3>
+                <p>Es precisamente aquí, en este pantano, donde la mayoría de los proyectos de software fracasan. Fracasan antes de que se escriba una sola línea de código. ¿Por qué? Porque se salta directamente a la construcción sin un plano. Se empieza a poner ladrillos sin saber si se está construyendo una casa o un rascacielos.</p>
+
+                <div class="highlight">
+                    <h3>Nuestra Misión</h3>
+                    <p>Nuestra misión en esta materia es aprender a traer <strong>ingeniería</strong> a esta fase. Aprender a usar un <strong>proceso</strong> sistemático para transformar esa idea borrosa en un plan de construcción claro y robusto. Un plano que nos guíe a través de la complejidad. Y el mapa que usaremos para este viaje se llama el Proceso Unificado.</p>
+                </div>
+            </section>
+
+            <section id="rup" class="section">
+                <h2><span class="icon">⚙️</span>El Proceso Unificado (RUP)</h2>
+                <p>El <strong>Proceso Unificado de Rational</strong>, o RUP (Rational Unified Process), es precisamente eso: un mapa, un marco de trabajo, una filosofía para construir software de forma profesional. No es una receta rígida, sino una guía adaptable que nos ayuda a atacar los riesgos más grandes primero y a construir el sistema de forma controlada.</p>
+                
+                <p>RUP se basa en tres pilares fundamentales que vamos a grabar a fuego en nuestra mente durante todo el cuatrimestre:</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>1️⃣ Iterativo e Incremental</h4>
+                        <p>Dividimos el proyecto en pequeños mini-proyectos llamados iteraciones. Cada iteración produce un incremento funcional del software.</p>
+                    </div>
+                    <div class="card">
+                        <h4>2️⃣ Guiado por Casos de Uso</h4>
+                        <p>Los Casos de Uso (objetivos del usuario) son el motor que impulsa el desarrollo desde el análisis hasta las pruebas.</p>
+                    </div>
+                    <div class="card">
+                        <h4>3️⃣ Centrado en la Arquitectura</h4>
+                        <p>La arquitectura se diseña intencionalmente desde el principio y se valida en cada iteración.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="iterativo" class="section">
+                <h2><span class="icon">🔄</span>Pilar 1: Iterativo e Incremental</h2>
+                <p>El primer pilar es que es <strong>Iterativo e Incremental</strong>. ¿Qué significa esto? Significa que abandonamos la idea de construir el software de una sola vez, en una secuencia lineal gigante (lo que se conoce como modelo en cascada). Eso no funciona en el mundo real porque los requisitos siempre cambian.</p>
+
+                <h3>¿Cómo funciona?</h3>
+                <p>En su lugar, dividimos el proyecto en pequeños mini-proyectos, llamados <strong>iteraciones</strong>. Cada iteración dura unas pocas semanas y pasa por todas las fases del desarrollo: análisis, diseño, implementación y pruebas. Al final de cada iteración, no tenemos el producto completo, pero tenemos una versión un poco más grande y mejor del producto, un <strong>incremento</strong> funcional y probado. El sistema va creciendo de a poco, como una bola de nieve.</p>
+
+                <div class="example-box">
+                    <h4>Ejemplo: Desarrollo de un E-commerce</h4>
+                    <p><strong>Iteración 1:</strong> Implementamos el catálogo de productos y la búsqueda básica. Los usuarios pueden ver productos.</p>
+                    <p><strong>Iteración 2:</strong> Agregamos el carrito de compras. Los usuarios pueden agregar productos a un carrito.</p>
+                    <p><strong>Iteración 3:</strong> Implementamos el checkout y el procesamiento de pagos. Los usuarios pueden completar una compra.</p>
+                    <p><strong>Iteración 4:</strong> Agregamos un sistema de recomendaciones basado en el historial de compras.</p>
+                </div>
+
+                <h3>Ventajas del Enfoque Iterativo</h3>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Feedback temprano:</strong> En cada iteración podemos obtener feedback real de los usuarios y corregir el rumbo.</li>
+                    <li><strong>Reducción de riesgo:</strong> Nos aseguramos de que siempre estamos construyendo algo de valor. Reducimos el riesgo de pasar un año construyendo algo que nadie quiere.</li>
+                    <li><strong>Adaptabilidad:</strong> Si los requisitos cambian (y siempre cambian), podemos incorporar esos cambios sin descartar todo el trabajo anterior.</li>
+                </ul>
+            </section>
+
+            <section id="casos" class="section">
+                <h2><span class="icon">🎯</span>Pilar 2: Casos de Uso - El Lenguaje del Valor</h2>
+                <p>El segundo pilar es que es <strong>Guiado por Casos de Uso</strong>. Esta es una idea poderosísima. En lugar de pensar en una lista abstracta de "features" o funcionalidades, nos enfocamos en los <strong>objetivos del usuario</strong>.</p>
+
+                <h3>¿Qué es un Caso de Uso?</h3>
+                <p>Un Caso de Uso es simplemente una historia, una narrativa que describe cómo un usuario (al que llamamos "actor") utiliza el sistema para lograr algo que tiene valor para él. Es un contrato entre el usuario y el sistema: el usuario dice "Quiero lograr ESTO", y el Caso de Uso describe cómo el sistema lo ayuda a hacerlo.</p>
+
+                <h3>Estructura de un Caso de Uso</h3>
+                <table>
+                    <tr>
+                        <th>Componente</th>
+                        <th>Descripción</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Nombre</strong></td>
+                        <td>Claro e indicativo del objetivo (verbo + objeto, ej: "Generar Reporte de Ventas")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Actor Principal</strong></td>
+                        <td>Quién inicia la interacción</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Precondiciones</strong></td>
+                        <td>Qué debe ser verdad antes de que el caso de uso comience</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flujo Básico</strong></td>
+                        <td>La secuencia de pasos cuando todo sale bien (el "camino feliz")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flujos Alternativos</strong></td>
+                        <td>Qué pasa si algo sale mal o el usuario toma un camino diferente</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Postcondiciones</strong></td>
+                        <td>Qué ha cambiado en el sistema después de que el caso de uso se completa</td>
+                    </tr>
+                </table>
+
+                <h3>Ejemplo Detallado: Reservar una Mesa</h3>
+                <div class="code-block">
+<strong>Caso de Uso: Reservar Mesa</strong>
+<strong>Actor Principal:</strong> Cliente
+<strong>Precondición:</strong> El Cliente está autenticado en el sistema.
+<strong>Resumen:</strong> El Cliente busca un restaurante, selecciona una fecha y hora, 
+y confirma una reserva para un número de comensales.
+
+<strong>Flujo Básico:</strong>
+1. El Cliente busca un restaurante por nombre o ubicación.
+2. El Sistema muestra una lista de restaurantes coincidentes.
+3. El Cliente selecciona un restaurante.
+4. El Sistema muestra los detalles y la disponibilidad del restaurante.
+5. El Cliente elige una fecha, hora y cantidad de personas.
+6. El Sistema valida que hay mesas disponibles.
+7. El Cliente confirma la reserva.
+8. El Sistema registra la reserva, envía una confirmación por email 
+   al Cliente y notifica al restaurante.
+
+<strong>Flujo Alternativo: No hay disponibilidad</strong>
+6a. Si el Sistema determina que no hay mesas disponibles, 
+    informa al Cliente y le sugiere horarios alternativos.
+
+<strong>Postcondición:</strong> La reserva ha sido registrada y ambas partes 
+han sido notificadas.
+                </div>
+
+                <p>Como pueden ver, esto es mucho más rico que una simple "feature". Es una especificación de comportamiento que nos guía para el diseño y las pruebas. Si podemos implementar este flujo, hemos entregado valor real al usuario.</p>
+
+                <h3>¿Por qué los Casos de Uso son tan poderosos?</h3>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Centrados en el usuario:</strong> Nos obligan a pensar en el valor que estamos entregando.</li>
+                    <li><strong>Lenguaje común:</strong> Clientes, desarrolladores y testers pueden hablar el mismo idioma.</li>
+                    <li><strong>Base para el diseño:</strong> Cada Caso de Uso se traduce en clases, métodos y diagramas de secuencia.</li>
+                    <li><strong>Base para las pruebas:</strong> Podemos crear casos de prueba directamente del Caso de Uso.</li>
+                </ul>
+            </section>
+
+            <section id="calidad" class="section">
+                <h2><span class="icon">⭐</span>Pilar 3: Atributos de Calidad y Arquitectura</h2>
+                <p>Si los Casos de Uso nos dicen <strong>QUÉ</strong> debe hacer el sistema, los <strong>Atributos de Calidad</strong> nos dicen <strong>CÓMO</strong> debe hacerlo. También se les llama Requerimientos No Funcionales, y son los que realmente dictan la arquitectura.</p>
+
+                <h3>Analogía: Dos Sistemas, Mismo Objetivo</h3>
+                <p>Imaginen dos sistemas que implementan el mismo Caso de Uso "Comprar un Producto". Uno es para una pequeña tienda de barrio y el otro es para Amazon. Funcionalmente, hacen lo mismo. Pero, ¿son iguales por dentro? Para nada.</p>
+
+                <p>Amazon necesita una <strong>performance</strong> extrema (responder en milisegundos), una <strong>escalabilidad</strong> masiva (soportar millones de usuarios simultáneos) y una <strong>confiabilidad</strong> a toda prueba (no puede caerse en el Black Friday). Estos son atributos de calidad. La arquitectura de Amazon está diseñada desde cero para cumplir con esos atributos. La de la tienda de barrio, no.</p>
+
+                <h3>Atributos de Calidad Clave</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>Performance</h4>
+                        <p>¿Cuán rápido responde el sistema? Se mide en latencia (tiempo de respuesta) y throughput (cantidad de solicitudes por segundo). Crítico para la experiencia de usuario.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Seguridad</h4>
+                        <p>¿Cómo protege el sistema los datos contra accesos no autorizados? Involucra autenticación, autorización y encriptación.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Confiabilidad</h4>
+                        <p>¿Cuán a menudo falla el sistema? Se mide en tiempo medio entre fallas (MTBF). Crítico para sistemas de misión crítica.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Usabilidad</h4>
+                        <p>¿Cuán fácil es para un usuario aprender y utilizar el sistema? Impacta directamente en la adopción del producto.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Escalabilidad</h4>
+                        <p>¿Cómo maneja el sistema un aumento en la carga de trabajo (más usuarios, más datos)?</p>
+                    </div>
+                    <div class="card">
+                        <h4>Mantenibilidad</h4>
+                        <p>¿Cuán fácil es modificar el sistema, corregir errores o agregar nuevas funcionalidades? Impacta en el costo a largo plazo.</p>
+                    </div>
+                </div>
+
+                <h3>Impacto en la Arquitectura</h3>
+                <p>Cada atributo de calidad tiene implicaciones profundas para la arquitectura:</p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Performance:</strong> Requiere caché, bases de datos optimizadas, algoritmos eficientes.</li>
+                    <li><strong>Seguridad:</strong> Requiere múltiples capas de autenticación, encriptación de datos en tránsito y en reposo.</li>
+                    <li><strong>Confiabilidad:</strong> Requiere redundancia, replicación de datos, mecanismos de recuperación ante desastres.</li>
+                    <li><strong>Escalabilidad:</strong> Requiere arquitectura distribuida, microservicios, balanceo de carga.</li>
+                </ul>
+            </section>
+
+            <section id="tradeoffs" class="section">
+                <h2><span class="icon">⚖️</span>El Juego de los Trade-offs</h2>
+                <p>Y esto nos lleva al corazón del trabajo de un arquitecto de software: el <strong>juego de los trade-offs</strong> o compromisos. No se puede tener todo. Mejorar un atributo de calidad a menudo degrada a otro.</p>
+
+                <h3>Ejemplos de Trade-offs Comunes</h3>
+                <div class="example-box">
+                    <h4>Seguridad vs. Performance</h4>
+                    <p>Aumentar la seguridad con múltiples capas de encriptación y validación puede hacer que el sistema sea más lento. Cada validación adicional consume tiempo de procesamiento.</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>Flexibilidad vs. Usabilidad</h4>
+                    <p>Hacer un sistema extremadamente flexible y configurable puede hacerlo mucho más complejo de usar. Los usuarios se pierden en las opciones.</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>Escalabilidad vs. Simplicidad</h4>
+                    <p>Un sistema altamente escalable (con microservicios, bases de datos distribuidas) es mucho más complejo de construir y mantener que un sistema monolítico simple.</p>
+                </div>
+
+                <div class="highlight">
+                    <h3>La Realidad del Trabajo de Arquitecto</h3>
+                    <p>No existe la "arquitectura perfecta". Existe la arquitectura <strong>adecuada</strong> para un conjunto específico de prioridades de negocio. Nuestro trabajo es entender esas prioridades y tomar decisiones de diseño informadas y justificadas. Ser un arquitecto es el arte de saber qué compromisos hacer.</p>
+                </div>
+            </section>
+
+            <section id="vision" class="section">
+                <h2><span class="icon">🔭</span>Documentando la Visión</h2>
+                <p>Para salir del "Fuzzy Front-End" y solidificar nuestro entendimiento, usamos algunos documentos clave que cristalizan nuestras decisiones.</p>
+
+                <h3>Declaración de la Visión</h3>
+                <p>La <strong>Declaración de la Visión</strong> es nuestra "estrella polar". Es una frase corta e inspiradora que describe el futuro que queremos crear con nuestro producto. Debe responder: ¿Para quién es? ¿Qué problema resuelve? ¿Qué lo hace diferente?</p>
+
+                <div class="example-box">
+                    <h4>Ejemplo de Visión</h4>
+                    <p>"Convertirnos en el sistema nervioso central de la logística para cada PyME en Latinoamérica, transformando su cadena de suministro de un centro de costos a una ventaja competitiva, a través de una plataforma inteligente, accesible y radicalmente fácil de usar."</p>
+                </div>
+
+                <h3>Diagrama de Contexto (Nivel 0)</h3>
+                <p>El <strong>Diagrama de Contexto</strong> es nuestro primer dibujo técnico. Es increíblemente simple pero poderoso. Dibuja nuestro sistema como una única caja negra en el centro y muestra a todos los actores y sistemas externos que interactúan con él. Nos obliga a definir los <strong>límites</strong> de nuestro sistema. ¿Qué está adentro y qué está afuera? Es el mapa del mundo de nuestro software.</p>
+
+                <p>El diagrama de contexto responde preguntas fundamentales como: ¿Quiénes son los usuarios del sistema? ¿Con qué otros sistemas tenemos que integrarnos? ¿Dónde terminan nuestras responsabilidades?</p>
+            </section>
+
+            <section id="practica" class="section">
+                <h2><span class="icon">🛠️</span>Introducción a la Práctica (Hito 1)</h2>
+                <p>Muy bien, suficiente teoría por hoy. La mejor forma de aprender esto es haciéndolo. La segunda parte de la clase de hoy consiste en su primera práctica, el <strong>Hito 1</strong> de su Trabajo Práctico Obligatorio.</p>
+
+                <h3>Su Misión</h3>
+                <p>Van a recibir un caso de negocio, "LogiSmart", muy similar a los ejemplos que hemos discutido. En sus grupos, su misión será actuar como el equipo de arquitectos que es contratado para iniciar este proyecto. Deberán aplicar todo lo que vimos hoy:</p>
+
+                <ol style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>Leerán el caso y analizarán el dominio.</li>
+                    <li>Identificarán los actores y stakeholders.</li>
+                    <li>Definirán un catálogo de <strong>Casos de Uso</strong> que el sistema debe cumplir para ser exitoso.</li>
+                    <li>Describirán en detalle los 3 casos de uso más importantes.</li>
+                    <li>Analizarán los <strong>Atributos de Calidad</strong> cruciales para LogiSmart y pensarán en sus implicaciones para la arquitectura.</li>
+                    <li>Finalmente, crearán un documento de Visión y Alcance que capture todo este análisis.</li>
+                </ol>
+
+                <div class="highlight">
+                    <h3>Importancia de Este Hito</h3>
+                    <p>Este no es un ejercicio trivial. Este documento es la fundación sobre la cual construiremos todo el proyecto durante el cuatrimestre. Es su primer paso para pasar de una idea borrosa a un plano de ingeniería. Cada decisión que tomen aquí guiará el trabajo de las próximas clases. ¡Manos a la obra!</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.transform = sidebar.style.transform === 'translateX(0px)' ? 'translateX(-100%)' : 'translateX(0px)';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.sidebar a');
+
+            function changeNav() {
+                let index = sections.length;
+                while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
+                
+                navLinks.forEach((link) => link.classList.remove('active'));
+                if(navLinks[index]) navLinks[index].classList.add('active');
+            }
+
+            changeNav();
+            window.addEventListener('scroll', changeNav);
+
+            document.querySelectorAll('.sidebar a').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if (window.innerWidth <= 768) {
+                        toggleSidebar();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
