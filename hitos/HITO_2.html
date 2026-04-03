@@ -546,13 +546,24 @@
             </tr>
             <tr>
               <td><strong>Envio</strong></td>
-              <td>id, estado, prioridad, fechaProgramada</td>
-              <td>reprogramar(), iniciar(), cancelar(), cerrar()</td>
+              <td>
+                id, empresaId, estado, prioridad, fechaProgramada,
+                ordenes: List&lt;Orden&gt;, seguimiento, entrega
+              </td>
+              <td>
+                agregarOrden(), reprogramar(), iniciar(), cancelar(), cerrar()
+              </td>
             </tr>
             <tr>
               <td><strong>Ruta</strong></td>
-              <td>id, distanciaKm, duracionEstimadaMin, estado</td>
-              <td>optimizar(), recalcular(), asignarTransportista()</td>
+              <td>
+                id, distanciaKm, duracionEstimadaMin, estado, paradas:
+                List&lt;PuntoEntrega&gt;
+              </td>
+              <td>
+                optimizar(), recalcular(), asignarTransportista(),
+                asignarVehiculo(), agregarParada()
+              </td>
             </tr>
             <tr>
               <td><strong>PuntoEntrega</strong></td>
@@ -567,11 +578,17 @@
             <tr>
               <td><strong>Vehiculo</strong></td>
               <td>id, patente, capacidadKg, tipo, disponibilidad</td>
-              <td>asignarRuta(), liberar(), actualizarCapacidad()</td>
+              <td>
+                puedeCargar(), estaOperativo(), asignarRuta(), liberar(),
+                actualizarCapacidad()
+              </td>
             </tr>
             <tr>
               <td><strong>SeguimientoEnvio</strong></td>
-              <td>id, estadoActual, ultimoEvento, ultimaActualizacion</td>
+              <td>
+                id, estadoActual, ultimoEvento, ultimaActualizacion,
+                historialPosiciones: List&lt;PosicionGPS&gt;
+              </td>
               <td>
                 actualizarEstado(), registrarPosicion(), publicarTracking()
               </td>
@@ -685,6 +702,7 @@ class Empresa {
 
 class Flota {
   -id
+  -empresaId
   -vehiculos: Set~Vehiculo~
   +agregarVehiculo()
   +quitarVehiculo()
@@ -697,6 +715,8 @@ class Vehiculo {
   -capacidadKg
   -tipo
   -disponibilidad
+  +puedeCargar()
+  +estaOperativo()
   +asignarRuta()
   +liberar()
   +actualizarCapacidad()
@@ -710,16 +730,31 @@ class Orden {
 
 class Envio {
   -id
+  -empresaId
   -estado
+  -prioridad
   -fechaProgramada
+  -ordenes: List~Orden~
+  -seguimiento: SeguimientoEnvio
+  -entrega: Entrega
+  +agregarOrden()
   +reprogramar()
+  +iniciar()
+  +cancelar()
+  +cerrar()
 }
 
 class Ruta {
   -id
   -distanciaKm
   -duracionEstimadaMin
+  -estado
+  -paradas: List~PuntoEntrega~
   +optimizar()
+  +recalcular()
+  +asignarTransportista()
+  +asignarVehiculo()
+  +agregarParada()
 }
 
 class PuntoEntrega {
@@ -732,7 +767,12 @@ class PuntoEntrega {
 class SeguimientoEnvio {
   -id
   -estadoActual
+  -ultimoEvento
+  -ultimaActualizacion
+  -historialPosiciones: List~PosicionGPS~
   +actualizarEstado()
+  +registrarPosicion()
+  +publicarTracking()
 }
 
 class PosicionGPS {
