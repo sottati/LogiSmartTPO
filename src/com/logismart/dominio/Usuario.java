@@ -8,11 +8,11 @@ public class Usuario {
 	private String rol;
 	private String estado;
 	
-	public Usuario(String id, String username, String email, String passwordHash, String rol, String estado) {
+	public Usuario(String id, String username, String email, String password, String rol, String estado) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
-		this.passwordHash = passwordHash;
+		this.passwordHash = BCrypt.hash(password);
 		this.rol = rol;
 		this.estado = estado;
 	}
@@ -29,10 +29,6 @@ public class Usuario {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getEmail() {
 		return email;
 	}
@@ -43,10 +39,6 @@ public class Usuario {
 
 	public String getPasswordHash() {
 		return passwordHash;
-	}
-
-	public void setPasswordHash(String passwordHash) {
-		this.passwordHash = passwordHash;
 	}
 
 	public String getRol() {
@@ -70,7 +62,10 @@ public class Usuario {
 	}
 	
 	public void cambiarPassword(String newPassword) {
-		this.passwordHash = newPassword;
+		if (newPassword == null || newPassword.isBlank()) {
+			throw new IllegalArgumentException("La nueva password no puede estar vacia");
+		}
+		this.passwordHash = BCrypt.hash(newPassword);
 	}
 
 	public void cerrarSesion() {

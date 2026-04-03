@@ -2,6 +2,7 @@ package com.logismart.dominio;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SeguimientoEnvio {
@@ -36,7 +37,7 @@ public class SeguimientoEnvio {
 	}
 
 	public List<PosicionGPS> getHistorialPosiciones() {
-		return historialPosiciones;
+		return Collections.unmodifiableList(historialPosiciones);
 	}
 
 	public void actualizarEstado(String nuevoEstado) {

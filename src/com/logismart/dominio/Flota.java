@@ -1,5 +1,6 @@
 package com.logismart.dominio;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,20 +21,12 @@ public class Flota {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public Set<Vehiculo> getVehiculos() {
-		return vehiculos;
+		return Collections.unmodifiableSet(vehiculos);
 	}
 
 	public String getEmpresaId() {
 		return empresaId;
-	}
-
-	public void setEmpresaId(String empresaId) {
-		this.empresaId = empresaId;
 	}
 
 	public String getEstado() {

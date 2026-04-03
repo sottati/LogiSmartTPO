@@ -1,5 +1,9 @@
 package com.logismart.dominio;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Ruta {
 	private String id;
 	private double distanciaKm;
@@ -7,12 +11,14 @@ public class Ruta {
 	private String estado;
 	private Transportista transportistaAsignado;
 	private Vehiculo vehiculoAsignado;
+	private List<PuntoEntrega> paradas;
 
 	public Ruta(String id, double distanciaKm, int duracionEstimadaMin, String estado) {
 		this.id = id;
 		this.distanciaKm = distanciaKm;
 		this.duracionEstimadaMin = duracionEstimadaMin;
 		this.estado = estado;
+		this.paradas = new ArrayList<>();
 	}
 
 	public String getId() {
@@ -39,6 +45,10 @@ public class Ruta {
 		return vehiculoAsignado;
 	}
 
+	public List<PuntoEntrega> getParadas() {
+		return Collections.unmodifiableList(paradas);
+	}
+
 	public void optimizar() {
 	}
 
@@ -51,5 +61,9 @@ public class Ruta {
 
 	public void asignarVehiculo(Vehiculo vehiculo) {
 		vehiculoAsignado = vehiculo;
+	}
+
+	public void agregarParada(PuntoEntrega punto) {
+		this.paradas.add(punto);
 	}
 }
