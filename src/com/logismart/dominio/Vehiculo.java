@@ -18,10 +18,6 @@ public class Vehiculo {
 	public String getId() {
 		return id;
 	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 	
 	public String getPatente() {
 		return patente;
@@ -33,6 +29,26 @@ public class Vehiculo {
 
 	public double getCapacidadKg() {
 		return capacidadKg;
+	}
+
+	/**
+	 * Verifica si el vehiculo tiene capacidad para transportar el peso dado.
+	 * Regla de negocio: se usa un margen de seguridad del 90% de la capacidad maxima.
+	 * @param pesoTotalKg peso combinado de todas las ordenes del envio
+	 * @return true si el vehiculo puede tomar la carga
+	 */
+	public boolean puedeCargar(double pesoTotalKg) {
+		final double MARGEN_SEGURIDAD = 0.90;
+		return this.disponibilidad && (pesoTotalKg <= this.capacidadKg * MARGEN_SEGURIDAD);
+	}
+
+	/**
+	 * Verifica si el vehiculo esta disponible para ser asignado.
+	 * Condicion: debe estar disponible y en estado operativo.
+	 */
+	public boolean estaOperativo() {
+		return this.disponibilidad;
+		// En una version mas completa: && "OPERATIVO".equals(this.estadoMantenimiento)
 	}
 
 	public String getTipo() {
