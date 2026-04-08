@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 4: GRASP (Parte I) - Proceso de Desarrollo de Software</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            border-right: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar h2 {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: #4ade80;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #764ba2;
+            font-size: 28px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #667eea;
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .example-box {
+            background: #f0f4ff;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .example-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .diagram {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        .intro-section h1 {
+            color: white;
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+
+        .intro-section p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Contenidos</h2>
+        <ul>
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#introduccion">Introducción a GRASP</a></li>
+            <li><a href="#expert">Expert</a></li>
+            <li><a href="#creator">Creator</a></li>
+            <li><a href="#low-coupling">Low Coupling</a></li>
+            <li><a href="#high-cohesion">High Cohesion</a></li>
+            <li><a href="#diagramas">Diagramas de Interacción</a></li>
+            <li><a href="#resumen">Resumen</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <!-- SECCIÓN: INICIO -->
+        <div id="inicio" class="intro-section">
+            <h1>GRASP (Parte I)</h1>
+            <p><strong>Asignación de Responsabilidades — GRASP (Parte I)</strong></p>
+            <p style="margin-top: 20px; font-size: 16px;">Expert, Creator, Low Coupling, High Cohesion. Diagramas de interacción.</p>
+            <p style="margin-top: 30px; font-size: 14px; opacity: 0.9;">Clase 4 | Proceso de Desarrollo de Software | 1C 2026</p>
+        </div>
+
+        <!-- SECCIÓN: INTRODUCCIÓN A GRASP -->
+        <div id="introduccion" class="section">
+            <h2>¿Qué es GRASP?</h2>
+            <p><strong>GRASP</strong> es un acrónimo que significa <strong>General Responsibility Assignment Software Patterns</strong> (Patrones Generales de Asignación de Responsabilidades en Software).</p>
+            
+            <p>GRASP proporciona patrones probados para responder a la pregunta más importante en el diseño orientado a objetos:</p>
+            
+            <div class="highlight">
+                <strong>¿A qué clase le asigno esta responsabilidad?</strong>
+            </div>
+
+            <h3>Por Qué GRASP Importa</h3>
+            <p>La diferencia entre un buen diseño y uno malo no está en la tecnología que usamos, sino en <strong>cómo asignamos responsabilidades</strong>. Un buen diseño es uno donde:</p>
+            <ul>
+                <li>Cada clase tiene responsabilidades claras y bien definidas</li>
+                <li>Las responsabilidades están relacionadas entre sí (alta cohesión)</li>
+                <li>Las dependencias entre clases son mínimas (bajo acoplamiento)</li>
+                <li>Es fácil entender, mantener y extender el código</li>
+            </ul>
+
+            <h3>Los Patrones GRASP</h3>
+            <p>GRASP consta de 9 patrones. Hoy veremos los primeros 4:</p>
+            <table class="comparison-table">
+                <tr>
+                    <th>Patrón</th>
+                    <th>Pregunta Clave</th>
+                    <th>Respuesta</th>
+                </tr>
+                <tr>
+                    <td><strong>1. Expert</strong></td>
+                    <td>¿A quién le asigno esta responsabilidad?</td>
+                    <td>A la clase que tiene la información necesaria</td>
+                </tr>
+                <tr>
+                    <td><strong>2. Creator</strong></td>
+                    <td>¿Quién debe crear instancias de esta clase?</td>
+                    <td>La clase que la contiene o la que la usa</td>
+                </tr>
+                <tr>
+                    <td><strong>3. Low Coupling</strong></td>
+                    <td>¿Cómo minimizo dependencias?</td>
+                    <td>Reduciendo referencias directas entre clases</td>
+                </tr>
+                <tr>
+                    <td><strong>4. High Cohesion</strong></td>
+                    <td>¿Cómo mantengo responsabilidades relacionadas?</td>
+                    <td>Agrupando funcionalidades afines en una clase</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- SECCIÓN: EXPERT -->
+        <div id="expert" class="section">
+            <h2>1. Expert (Experto)</h2>
+            
+            <h3>Definición</h3>
+            <p><strong>Asigna la responsabilidad a la clase que tiene la información necesaria para cumplirla.</strong></p>
+
+            <h3>El Problema</h3>
+            <p>Cuando necesitas implementar una funcionalidad, ¿a qué clase le asignas esa responsabilidad? Hay varias opciones, pero ¿cuál es la correcta?</p>
+
+            <div class="example-box">
+                <h4>Ejemplo: Calcular el Total de una Factura</h4>
+                <p>Una factura tiene líneas, y cada línea tiene un precio y una cantidad. ¿Quién debería calcular el total?</p>
+                <ul>
+                    <li>¿La clase <code>Linea</code>? Ella sabe el precio y cantidad de UNA línea, pero no de todas.</li>
+                    <li>¿La clase <code>Factura</code>? Ella sabe TODAS las líneas, así que es el experto.</li>
+                </ul>
+                <p><strong>Respuesta:</strong> La responsabilidad debe estar en <code>Factura</code>.</p>
+            </div>
+
+            <h3>Aplicación en LogiSmart</h3>
+            <p>Supongamos que queremos calcular la distancia total de una ruta:</p>
+
+<div class="example-box">
+    <h4>¿Quién es el Experto?</h4>
+    <div class="code-block">
+<pre><code>
+// Una ruta tiene múltiples puntos de entrega
+public class Ruta {
+    private List<PuntoDeEntrega> puntos;
+    
+    // Ruta es el experto en la distancia total
+    public double calcularDistanciaTotal() {
+        double total = 0;
+        for (int i = 0; i < puntos.size() - 1; i++) {
+            Ubicacion ubicacion1 = puntos.get(i).getUbicacion();
+            Ubicacion ubicacion2 = puntos.get(i + 1).getUbicacion();
+            // Delega a Ubicacion (el experto en distancias)
+            total += ubicacion1.calcularDistancia(ubicacion2);
+        }
+        return total;
+    }
+}
+
+// Ubicacion es el experto en calcular distancias
+public class Ubicacion {
+    private double latitud;
+    private double longitud;
+    
+    public double calcularDistancia(Ubicacion otra) {
+        // Algoritmo de cálculo de distancia
+        double latDiff = Math.abs(this.latitud - otra.latitud);
+        double lonDiff = Math.abs(this.longitud - otra.longitud);
+        return Math.sqrt(latDiff * latDiff + lonDiff * lonDiff) * 111;
+    }
+}
+</code></pre>
+    </div>
+</div>
+
+            <h3>Ventajas del Patrón Expert</h3>
+            <ul>
+                <li><strong>Encapsulación:</strong> La información se mantiene donde pertenece</li>
+                <li><strong>Bajo acoplamiento:</strong> Los objetos no necesitan saber detalles internos unos de otros</li>
+                <li><strong>Alta cohesión:</strong> Cada clase tiene responsabilidades relacionadas</li>
+                <li><strong>Reutilización:</strong> Las clases son más independientes</li>
+                <li><strong>Mantenibilidad:</strong> Los cambios se localizan en un lugar</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>💡 Regla de Oro:</strong> Si necesitas información de múltiples fuentes para hacer algo, la responsabilidad debería estar en la clase que tiene acceso a esa información.
+            </div>
+        </div>
+
+        <!-- SECCIÓN: CREATOR -->
+        <div id="creator" class="section">
+            <h2>2. Creator (Creador)</h2>
+            
+            <h3>Definición</h3>
+            <p><strong>Asigna la responsabilidad de crear instancias de una clase a otra clase que tiene una relación especial con ella.</strong></p>
+
+            <h3>El Problema</h3>
+            <p>¿Quién debe crear los objetos en tu sistema? Si no lo piensas bien, terminarás con creación inconsistente de objetos y código confuso.</p>
+
+            <h3>Las Reglas de Creator</h3>
+            <p>Creator proporciona reglas en orden de preferencia:</p>
+
+            <table class="comparison-table">
+                <tr>
+                    <th>Regla</th>
+                    <th>Descripción</th>
+                    <th>Ejemplo en LogiSmart</th>
+                </tr>
+                <tr>
+                    <td><strong>1. Contención</strong></td>
+                    <td>Si B contiene A (composición), B crea A</td>
+                    <td>Ruta contiene PuntosDeEntrega, así que Ruta los crea</td>
+                </tr>
+                <tr>
+                    <td><strong>2. Agregación</strong></td>
+                    <td>Si B agrega A (agregación), B crea A</td>
+                    <td>Viaje agrega Rutas, así que Viaje las crea</td>
+                </tr>
+                <tr>
+                    <td><strong>3. Datos</strong></td>
+                    <td>Si B tiene los datos para inicializar A, B crea A</td>
+                    <td>FormularioDeEnvio tiene datos del envío, puede crearlo</td>
+                </tr>
+                <tr>
+                    <td><strong>4. Uso Frecuente</strong></td>
+                    <td>Si B usa A frecuentemente, B crea A</td>
+                    <td>ServicioDeNotificaciones usa Notificaciones, las crea</td>
+                </tr>
+            </table>
+
+            <h3>Aplicación en LogiSmart</h3>
+<div class="example-box">
+    <h4>Ejemplo: Quién Crea PuntoDeEntrega</h4>
+    <div class="code-block">
+<pre><code>
+// Ruta contiene PuntosDeEntrega (Regla 1: Contención)
+public class Ruta {
+    private List<PuntoDeEntrega> puntos;
+    private Vehiculo vehiculo;
+    private Operador operador;
+    
+    // Ruta es responsable de crear PuntosDeEntrega
+    public boolean agregarPuntoDeEntrega(Envio envio, Ubicacion ubicacion, int secuencia) {
+        // Validar capacidad
+        if (!vehiculo.puedeTransportar(envio.getPeso())) {
+            return false;
+        }
+        
+        // Crear el punto (Ruta es el creador)
+        PuntoDeEntrega punto = new PuntoDeEntrega(envio, ubicacion, secuencia);
+        puntos.add(punto);
+        recalcularDistancia();
+        return true;
+    }
+}
+
+// PuntoDeEntrega es creado por Ruta
+public class PuntoDeEntrega {
+    private Envio envio;
+    private Ubicacion ubicacion;
+    private int secuencia;
+    
+    public PuntoDeEntrega(Envio envio, Ubicacion ubicacion, int secuencia) {
+        this.envio = envio;
+        this.ubicacion = ubicacion;
+        this.secuencia = secuencia;
+    }
+}
+</code></pre>
+    </div>
+</div>
+
+            <h3>Ventajas del Patrón Creator</h3>
+            <ul>
+                <li><strong>Consistencia:</strong> Todos los objetos se crean de la misma forma</li>
+                <li><strong>Bajo acoplamiento:</strong> Los creadores no dependen de detalles complejos</li>
+                <li><strong>Responsabilidad clara:</strong> Está claro quién es responsable de crear qué</li>
+                <li><strong>Facilita cambios:</strong> Si el proceso de creación cambia, solo hay que modificar el creador</li>
+                <li><strong>Encapsulación:</strong> El creador puede validar antes de crear</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>💡 Regla de Oro:</strong> La clase que contiene a otra (composición) es usualmente responsable de crearla.
+            </div>
+        </div>
+
+        <!-- SECCIÓN: LOW COUPLING -->
+        <div id="low-coupling" class="section">
+            <h2>3. Low Coupling (Bajo Acoplamiento)</h2>
+            
+            <h3>Definición</h3>
+            <p><strong>Minimiza las dependencias entre clases.</strong></p>
+
+            <h3>El Problema: Alto Acoplamiento</h3>
+            <p>El acoplamiento es el grado de dependencia entre dos clases. Si la clase A depende de la clase B, están acopladas.</p>
+
+            <p>El problema con el acoplamiento alto es que los cambios en una clase afectan a todas las que dependen de ella. Es como un efecto dominó.</p>
+
+<div class="example-box">
+    <h4>❌ Diseño Incorrecto (Alto Acoplamiento)</h4>
+    <div class="code-block">
+<pre><code>
+public class Ruta {
+    private Vehiculo vehiculo;
+    
+    // ¡Ruta crea directamente Vehiculo!
+    // Si el constructor de Vehiculo cambia, hay que modificar Ruta
+    public Ruta(String vehiculoId) {
+        this.vehiculo = new Vehiculo(vehiculoId);
+    }
+}
+</code></pre>
+    </div>
+    <p style="margin-top: 10px;">
+        <strong>Problema:</strong> Ruta está fuertemente acoplada a Vehiculo. 
+        Si Vehiculo cambia, Ruta se rompe.
+    </p>
+</div>
+
+            <h3>La Solución: Inyección de Dependencias</h3>
+            <p>La forma principal de lograr Low Coupling es mediante <strong>inyección de dependencias</strong>: pasar las dependencias como parámetros en lugar de crearlas internamente.</p>
+
+<div class="example-box">
+    <h4>✅ Diseño Correcto (Bajo Acoplamiento)</h4>
+    <div class="code-block">
+<pre><code>
+public class Ruta {
+    private Vehiculo vehiculo;
+    
+    // ¡Ruta recibe Vehiculo como parámetro!
+    // No depende de cómo se crea Vehiculo
+    public Ruta(Vehiculo vehiculo) {
+        this.vehiculo = vehiculo;
+    }
+}
+
+// Uso
+Vehiculo vehiculo = new Vehiculo(vehiculoId);
+Ruta ruta = new Ruta(vehiculo);  // Inyectamos la dependencia
+</code></pre>
+    </div>
+    <p style="margin-top: 10px;">
+        <strong>Ventaja:</strong> Ruta no depende de cómo se crea Vehiculo. 
+        Es independiente.
+    </p>
+</div>
+
+            <h3>Beneficios del Bajo Acoplamiento</h3>
+            <ul>
+                <li><strong>Flexibilidad:</strong> Puedes cambiar implementaciones sin afectar otras clases</li>
+                <li><strong>Testabilidad:</strong> Puedes crear mocks o stubs para testing</li>
+                <li><strong>Reutilización:</strong> Las clases son más independientes</li>
+                <li><strong>Mantenibilidad:</strong> Los cambios tienen menos efecto dominó</li>
+                <li><strong>Escalabilidad:</strong> Es más fácil agregar nuevas funcionalidades</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>💡 Técnica Clave:</strong> Inyección de Dependencias. Pasa las dependencias como parámetros en lugar de crearlas internamente.
+            </div>
+        </div>
+
+        <!-- SECCIÓN: HIGH COHESION -->
+        <div id="high-cohesion" class="section">
+            <h2>4. High Cohesion (Alta Cohesión)</h2>
+            
+            <h3>Definición</h3>
+            <p><strong>Mantén las responsabilidades relacionadas juntas. Separa las no relacionadas.</strong></p>
+
+            <h3>El Problema: Baja Cohesión</h3>
+            <p>La cohesión es el grado en que las responsabilidades de una clase están relacionadas entre sí. Si una clase hace muchas cosas no relacionadas, tiene baja cohesión.</p>
+
+<div class="example-box">
+    <h4>❌ Diseño Incorrecto (Baja Cohesión)</h4>
+    <div class="code-block">
+<pre><code>
+public class Envio {
+    // Atributos de dominio
+    private String id;
+    private Cliente cliente;
+    private Ubicacion origen;
+    private Ubicacion destino;
+    
+    // Métodos de dominio
+    public double calcularCosto() { ... }
+    public void marcarComoEntregado() { ... }
+    
+    // ¡Métodos de persistencia (no relacionados!)
+    public void guardarEnBaseDatos() { ... }
+    public void cargarDeBaseDatos(String id) { ... }
+    
+    // ¡Métodos de notificación (no relacionados!)
+    public void enviarNotificacionAlCliente() { ... }
+    public void registrarEnLog() { ... }
+}
+</code></pre>
+    </div>
+    <p style="margin-top: 10px;">
+        <strong>Problema:</strong> Envio mezcla lógica de negocio, persistencia y notificaciones. 
+        Baja cohesión.
+    </p>
+</div>
+
+            <h3>La Solución: Separar Responsabilidades</h3>
+            <p>Crea clases separadas para cada responsabilidad no relacionada:</p>
+
+<div class="example-box">
+    <h4>✅ Diseño Correcto (Alta Cohesión)</h4>
+    <div class="code-block">
+<pre><code>
+// Clase de dominio: solo lógica de negocio
+public class Envio {
+    private String id;
+    private Cliente cliente;
+    private Ubicacion origen;
+    private Ubicacion destino;
+    
+    public double calcularCosto() { ... }
+    public void marcarComoEntregado() { ... }
+}
+
+// Clase para persistencia
+public class EnvioRepository {
+    public void guardar(Envio envio) { ... }
+    public Envio obtenerPorId(String id) { ... }
+}
+
+// Clase para notificaciones
+public class NotificadorDeEnvios {
+    public void notificarAlCliente(Envio envio) { ... }
+}
+
+// Clase para logging
+public class LoggerDeEnvios {
+    public void registrar(Envio envio, String evento) { ... }
+}
+</code></pre>
+    </div>
+</div>
+
+            <h3>Beneficios de la Alta Cohesión</h3>
+            <ul>
+                <li><strong>Claridad:</strong> Es fácil entender qué hace cada clase</li>
+                <li><strong>Mantenibilidad:</strong> Los cambios en una responsabilidad no afectan otras</li>
+                <li><strong>Reutilización:</strong> Una clase cohesiva es más fácil de reutilizar</li>
+                <li><strong>Testabilidad:</strong> Es más fácil testear una clase con una responsabilidad clara</li>
+                <li><strong>Escalabilidad:</strong> Es más fácil agregar nuevas responsabilidades</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>💡 Pregunta Clave:</strong> ¿Tiene sentido que esta clase haga esto? Si la respuesta es no, probablemente debería estar en otra clase.
+            </div>
+        </div>
+
+        <!-- SECCIÓN: DIAGRAMAS DE INTERACCIÓN -->
+        <div id="diagramas" class="section">
+            <h2>5. Diagramas de Interacción</h2>
+            
+            <h3>¿Qué Son?</h3>
+            <p>Los diagramas de interacción visualizan cómo colaboran los objetos en el tiempo. Muestran:</p>
+            <ul>
+                <li>Qué objetos participan</li>
+                <li>En qué orden se comunican</li>
+                <li>Qué mensajes se envían entre ellos</li>
+                <li>Qué valores retornan</li>
+            </ul>
+
+            <h3>Tipos de Diagramas de Interacción</h3>
+            <table class="comparison-table">
+                <tr>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Cuándo Usar</th>
+                </tr>
+                <tr>
+                    <td><strong>Diagrama de Secuencia</strong></td>
+                    <td>Muestra el tiempo en el eje vertical (línea de tiempo)</td>
+                    <td>Para entender el flujo temporal de interacciones</td>
+                </tr>
+                <tr>
+                    <td><strong>Diagrama de Colaboración</strong></td>
+                    <td>Muestra las relaciones entre objetos (mapa de comunicaciones)</td>
+                    <td>Para entender la estructura de relaciones</td>
+                </tr>
+            </table>
+
+<h3>Ejemplo: Crear una Ruta en LogiSmart</h3>
+<p>Veamos un diagrama de secuencia para el caso de uso "Crear una Ruta":</p>
+
+<div class="diagram">
+<pre><code>
+Actor          UI              Sistema         Vehiculo        Ruta
+  |             |                |               |              |
+  |--Crear Ruta-|                |               |              |
+  |             |--crearRuta---->|               |              |
+  |             |                |--obtener----->|              |
+  |             |                |<--Vehiculo----|              |
+  |             |                |--new Ruta------------------->|
+  |             |                |               |<--crear------|
+  |             |                |<--Ruta--------|              |
+  |             |<--Ruta---------|               |              |
+  |<--Mostrar---|                |               |              |
+</code></pre>
+</div>
+
+            <h3>Cómo Leer un Diagrama de Secuencia</h3>
+            <ol>
+                <li><strong>Actores/Objetos:</strong> En la parte superior, de izquierda a derecha</li>
+                <li><strong>Líneas de vida:</strong> Líneas verticales que representan la existencia del objeto</li>
+                <li><strong>Mensajes:</strong> Flechas que van de un objeto a otro (arriba hacia abajo = tiempo)</li>
+                <li><strong>Retornos:</strong> Flechas punteadas que muestran valores retornados</li>
+                <li><strong>Activaciones:</strong> Rectángulos que muestran cuándo el objeto está activo</li>
+            </ol>
+
+            <h3>Ventajas de los Diagramas de Interacción</h3>
+            <ul>
+                <li><strong>Visualización:</strong> Es más fácil entender el flujo que leyendo código</li>
+                <li><strong>Comunicación:</strong> Puedes explicar el diseño a otros de forma clara</li>
+                <li><strong>Validación:</strong> Puedes verificar que los objetos se comunican correctamente</li>
+                <li><strong>Identificación de problemas:</strong> Puedes ver si hay acoplamiento excesivo o responsabilidades mal asignadas</li>
+                <li><strong>Documentación:</strong> Es una forma de documentar el comportamiento del sistema</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>💡 Consejo:</strong> Dibuja diagramas de secuencia para los casos de uso más importantes. Te ayudarán a validar tu diseño y comunicarlo a otros.
+            </div>
+        </div>
+
+        <!-- SECCIÓN: RESUMEN -->
+        <div id="resumen" class="section">
+            <h2>Resumen: GRASP Parte I</h2>
+
+            <h3>Los 4 Patrones</h3>
+            <table class="comparison-table">
+                <tr>
+                    <th>Patrón</th>
+                    <th>Pregunta</th>
+                    <th>Respuesta</th>
+                </tr>
+                <tr>
+                    <td><strong>Expert</strong></td>
+                    <td>¿A quién le asigno esta responsabilidad?</td>
+                    <td>A la clase que tiene la información necesaria</td>
+                </tr>
+                <tr>
+                    <td><strong>Creator</strong></td>
+                    <td>¿Quién debe crear instancias?</td>
+                    <td>La clase que la contiene o la que la usa</td>
+                </tr>
+                <tr>
+                    <td><strong>Low Coupling</strong></td>
+                    <td>¿Cómo minimizo dependencias?</td>
+                    <td>Inyectando dependencias, no creándolas internamente</td>
+                </tr>
+                <tr>
+                    <td><strong>High Cohesion</strong></td>
+                    <td>¿Cómo mantengo responsabilidades relacionadas?</td>
+                    <td>Separando responsabilidades no relacionadas en otras clases</td>
+                </tr>
+            </table>
+
+            <h3>Cómo Aplicar GRASP</h3>
+            <p>Cuando diseñes, hazte estas preguntas:</p>
+            <ol>
+                <li><strong>Expert:</strong> ¿Quién es el experto en esta información?</li>
+                <li><strong>Creator:</strong> ¿Quién debería crear este objeto?</li>
+                <li><strong>Low Coupling:</strong> ¿Cómo puedo reducir dependencias?</li>
+                <li><strong>High Cohesion:</strong> ¿Tiene sentido que esta clase haga esto?</li>
+                <li><strong>Diagramas:</strong> ¿Cómo colaboran los objetos? Dibuja un diagrama.</li>
+            </ol>
+
+            <h3>Próximos Pasos</h3>
+            <p>En la práctica de hoy (Hito 4), van a:</p>
+            <ul>
+                <li>Revisar el diagrama de clases del Hito anterior</li>
+                <li>Aplicar Expert para verificar que las responsabilidades están bien asignadas</li>
+                <li>Aplicar Creator para verificar que está claro quién crea qué</li>
+                <li>Aplicar Low Coupling para reducir dependencias innecesarias</li>
+                <li>Aplicar High Cohesion para separar responsabilidades no relacionadas</li>
+                <li>Crear diagramas de secuencia para los casos de uso importantes</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Smooth scrolling para los links del sidebar
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Highlight del link activo mientras scrolleas
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section, .intro-section');
+            const scrollPosition = window.scrollY + 100;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionBottom = sectionTop + section.offsetHeight;
+
+                if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                    const sectionId = section.getAttribute('id');
+                    document.querySelectorAll('.sidebar a').forEach(link => {
+                        link.style.borderLeftColor = 'transparent';
+                        if (link.getAttribute('href') === '#' + sectionId) {
+                            link.style.borderLeftColor = '#4ade80';
+                            link.style.background = 'rgba(255, 255, 255, 0.1)';
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

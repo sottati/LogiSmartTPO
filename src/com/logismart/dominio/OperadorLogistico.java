@@ -1,5 +1,8 @@
 package com.logismart.dominio;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 public class OperadorLogistico extends Usuario {
 	private String empresaId;
 	private String zonaOperacion;
@@ -9,13 +12,13 @@ public class OperadorLogistico extends Usuario {
 			String id,
 			String username,
 			String email,
-			String passwordHash,
+			String password,
 			String rol,
 			String estado,
 			String empresaId,
 			String zonaOperacion,
 			String turno) {
-		super(id, username, email, passwordHash, rol, estado);
+		super(id, username, email, password, rol, estado);
 		this.empresaId = empresaId;
 		this.zonaOperacion = zonaOperacion;
 		this.turno = turno;
@@ -54,6 +57,17 @@ public class OperadorLogistico extends Usuario {
 
 	public void planificarRuta() {
 		
+	}
+
+	public Envio crearEnvio(String prioridad, LocalDateTime fechaProgramada) {
+		return new Envio(UUID.randomUUID().toString(), empresaId, prioridad, fechaProgramada);
+	}
+
+	public Ruta planificarRuta(Vehiculo vehiculo, Transportista transportista) {
+		Ruta ruta = new Ruta(UUID.randomUUID().toString(), 0.0, 0, "PLANIFICADA");
+		ruta.asignarVehiculo(vehiculo);
+		ruta.asignarTransportista(transportista);
+		return ruta;
 	}
 	
 	public void asignarRuta() {

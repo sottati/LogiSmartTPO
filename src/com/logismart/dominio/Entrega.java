@@ -9,6 +9,12 @@ public class Entrega {
 	private String observaciones;
 	private String pruebaAdjunta;
 
+	public Entrega(String id) {
+		this.id = id;
+		this.resultado = "PENDIENTE";
+		this.observaciones = "";
+	}
+
 	public Entrega(String id, String resultado, LocalDateTime fechaHora, String observaciones) {
 		this.id = id;
 		this.resultado = resultado;

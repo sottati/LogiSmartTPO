@@ -66,4 +66,9 @@ public class Ruta {
 	public void agregarParada(PuntoEntrega punto) {
 		this.paradas.add(punto);
 	}
+
+	public void agregarParada(String direccion, double lat, double lng, String ventanaHorario, int ordenParada) {
+		PuntoEntrega punto = new PuntoEntrega(direccion, lat, lng, ventanaHorario, ordenParada);
+		this.paradas.add(punto);
+	}
 }

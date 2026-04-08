@@ -15,16 +15,15 @@ public class Envio {
 	private SeguimientoEnvio seguimiento;
 	private Entrega entrega;
 
-	public Envio(String id, String empresaId, String estado, String prioridad, LocalDateTime fechaProgramada,
-			SeguimientoEnvio seguimiento, Entrega entrega) {
+	public Envio(String id, String empresaId, String prioridad, LocalDateTime fechaProgramada) {
 		this.id = id;
 		this.empresaId = empresaId;
-		this.estado = estado;
+		this.estado = "PENDIENTE";
 		this.prioridad = prioridad;
 		this.fechaProgramada = fechaProgramada;
 		this.ordenes = new ArrayList<>();
-		this.seguimiento = seguimiento;
-		this.entrega = entrega;
+		this.seguimiento = new SeguimientoEnvio(id + "-seg", "PENDIENTE");
+		this.entrega = new Entrega(id + "-ent");
 	}
 
 	public String getId() {

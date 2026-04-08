@@ -1,0 +1,1135 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITO 4 - LogiSmart | Patrones GRASP (Parte I)</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --primary: #1a365d;
+        --primary-light: #2b6cb0;
+        --accent: #ed8936;
+        --bg: #f7fafc;
+        --surface: #ffffff;
+        --text: #1a202c;
+        --text-secondary: #4a5568;
+        --border: #e2e8f0;
+        --warn: #c53030;
+        --warn-bg: #fff5f5;
+        --ok: #276749;
+        --ok-bg: #f0fff4;
+      }
+
+      html { scroll-behavior: smooth; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+        font-size: 15px;
+      }
+
+      .cover {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--surface);
+        background-image: radial-gradient(var(--border) 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--text);
+        text-align: center;
+        padding: 2rem;
+        border-bottom: 8px solid var(--primary);
+      }
+
+      .cover-content { max-width: 900px; width: 100%; }
+
+      .cover .university {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+      }
+
+      .cover .subject {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--primary-light);
+        margin-bottom: 4rem;
+      }
+
+      .cover h1 {
+        font-size: 5rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.03em;
+      }
+
+      .cover .subtitle {
+        font-size: 1.25rem;
+        font-weight: 400;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        margin-bottom: 5rem;
+      }
+
+      .cover .team {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        border-top: 2px solid var(--bg);
+        padding-top: 3rem;
+      }
+
+      .team-member strong { display: block; font-size: 1.1rem; color: var(--text); margin-bottom: 0.25rem; }
+      .team-member div { font-size: 0.85rem; color: var(--text-secondary); font-family: monospace; }
+
+      .cover .date {
+        margin-top: 4rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .side-nav {
+        position: fixed;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        padding: 0.6rem 0.5rem;
+      }
+
+      .side-nav a {
+        display: block;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .side-nav a:hover { color: var(--primary); border-left-color: var(--border); }
+      .side-nav a.active { color: var(--primary); font-weight: 700; border-left-color: var(--accent); }
+
+      .container { max-width: 980px; margin: 0 auto; padding: 3rem 2rem; }
+
+      .section {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+        border: 1px solid var(--border);
+      }
+
+      .section-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: var(--primary);
+        color: white;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+      }
+
+      .section h2 { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.3rem; }
+
+      .section-desc {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.1rem;
+      }
+
+      h3 { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 1rem; margin-top: 2rem; }
+      h3:first-of-type { margin-top: 0; }
+
+      table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+      thead th {
+        background: var(--primary);
+        color: white;
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      tbody td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+      tbody tr:hover { background: #f0f5ff; }
+
+      pre.mermaid {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem;
+        min-height: 120px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .badge-ok  { background: var(--ok-bg);   color: var(--ok); }
+      .badge-obs { background: #fffbeb;         color: #92400e; }
+      .badge-no  { background: var(--warn-bg);  color: var(--warn); }
+
+      .callout {
+        border-left: 4px solid var(--accent);
+        background: #fffbf5;
+        padding: 1rem 1.25rem;
+        border-radius: 0 8px 8px 0;
+        margin: 1.25rem 0;
+        font-size: 0.9rem;
+      }
+      .callout-warn { border-left-color: var(--warn); background: var(--warn-bg); }
+      .callout-ok   { border-left-color: #38a169;     background: var(--ok-bg); }
+      .callout strong { display: block; margin-bottom: 0.3rem; }
+
+      pre.code-block {
+        background: #1e1e2e;
+        color: #cdd6f4;
+        padding: 1.25rem;
+        border-radius: 8px;
+        font-family: 'Cascadia Code', 'Fira Code', monospace;
+        font-size: 0.82rem;
+        line-height: 1.6;
+        overflow-x: auto;
+        margin: 1rem 0;
+        white-space: pre;
+      }
+
+      .diagram-wrapper { overflow-x: auto; margin: 1rem 0; }
+
+      .note-list li { margin-left: 1.25rem; margin-bottom: 0.5rem; }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin: 1rem 0;
+      }
+      .col-box {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+      }
+      .col-box h4 { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.75rem; }
+
+      @media (max-width: 1200px) { .side-nav { display: none; } }
+      @media (max-width: 640px) {
+        .cover h1 { font-size: 2.2rem; }
+        .cover .team { grid-template-columns: 1fr; gap: 1rem; }
+        .section { padding: 1.5rem; }
+        .two-col { grid-template-columns: 1fr; }
+      }
+      @media print {
+        body { background: white; font-size: 12pt; }
+        .side-nav { display: none; }
+        .cover { min-height: auto; padding: 3rem 2rem; page-break-after: always; }
+        .section { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+        <h1>HITO 4</h1>
+        <div class="subtitle">
+          Refinamiento del Modelo de Dominio - Patrones GRASP (Parte I)
+        </div>
+        <div class="team">
+          <div class="team-member">
+            <strong>Rosario Presedo</strong>
+            <div>LU: 1146894</div>
+          </div>
+          <div class="team-member">
+            <strong>Simon Ottati</strong>
+            <div>LU: 1155931</div>
+          </div>
+        </div>
+        <div class="date">Martes Noche &bull; 7 de Abril de 2026</div>
+      </div>
+    </div>
+
+    <nav class="side-nav">
+      <a href="#s1">1. Responsabilidades</a>
+      <a href="#s2">2. Patron Expert</a>
+      <a href="#s3">3. Patron Creator</a>
+      <a href="#s4">4. Coupling/Cohesion</a>
+      <a href="#s5">5. Diag. de Secuencia</a>
+    </nav>
+
+    <div class="container">
+
+      <!-- ===== SECCION 1 ===== -->
+      <div id="s1" class="section">
+        <div class="section-number">1</div>
+        <h2>Analisis de Responsabilidades</h2>
+        <p class="section-desc">
+          Revision de cada clase del diagrama para verificar que sus responsabilidades son claras, cohesivas y bien asignadas.
+          <span class="badge badge-ok">Si</span> = correcto tal como esta &nbsp;
+          <span class="badge badge-obs">Si (obs.)</span> = correcto con mejora posible &nbsp;
+          <span class="badge badge-no">No (en dominio)</span> = clase o responsabilidad mal ubicada.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Clase</th>
+              <th>Responsabilidades Principales</th>
+              <th>Tiene sentido</th>
+              <th>Observaciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Usuario</strong></td>
+              <td>Almacenar identidad, autenticar, gestionar sesion</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>AdminEmpresa</strong></td>
+              <td>Configurar cuenta Empresa, consultar reportes, gestionar suscripcion</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>OperadorLogistico</strong></td>
+              <td>Importar ordenes, gestionar flota, planificar y asignar rutas</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>Transportista</strong></td>
+              <td>Ejecutar recorrido, actualizar posicion GPS, registrar entrega, reportar incidente</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>ClienteFinal</strong></td>
+              <td>Consultar tracking, ver ETA, confirmar recepcion</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>AdminPlataforma</strong></td>
+              <td>Alta/baja empresas, monitorear servicio, gestionar billing</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>Empresa</strong></td>
+              <td>Representar al tenant: datos identificatorios, estado, activacion/suspension</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>Orden</strong></td>
+              <td>Representar un pedido importado y su estado de procesamiento</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>Envio</strong></td>
+              <td>Ciclo operativo: agrupar ordenes, gestionar estado, coordinar seguimiento y entrega</td>
+              <td><span class="badge badge-obs">Si (obs.)</span></td>
+              <td>El constructor recibe <code>SeguimientoEnvio</code> y <code>Entrega</code> desde afuera. Segun Creator (contencion), Envio deberia crearlos internamente.</td>
+            </tr>
+            <tr>
+              <td><strong>Ruta</strong></td>
+              <td>Definir secuencia de paradas, asignar vehiculo y transportista</td>
+              <td><span class="badge badge-obs">Si (obs.)</span></td>
+              <td>Le falta <code>calcularDistanciaTotal()</code> como metodo derivado de sus paradas. Actualmente <code>distanciaKm</code> se ingresa manualmente en el constructor, lo que viola Expert.</td>
+            </tr>
+            <tr>
+              <td><strong>PuntoEntrega</strong></td>
+              <td>Representar un destino puntual con coordenadas y ventana horaria</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>Flota</strong></td>
+              <td>Agrupar vehiculos de una Empresa; obtener disponibles</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>Vehiculo</strong></td>
+              <td>Representar unidad de transporte; validar capacidad de carga y estado operativo</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>SeguimientoEnvio</strong></td>
+              <td>Registrar estado actual, historial de posiciones GPS y ETA vigente</td>
+              <td><span class="badge badge-obs">Si (obs.)</span></td>
+              <td><code>publicarTracking()</code> introduce una responsabilidad de notificacion/infraestructura ajena al dominio. Debe extraerse a una capa de servicio.</td>
+            </tr>
+            <tr>
+              <td><strong>PosicionGPS</strong></td>
+              <td>Almacenar coordenadas geograficas con timestamp y precision</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>ETA</strong></td>
+              <td>Representar el tiempo estimado de llegada con nivel de confianza</td>
+              <td><span class="badge badge-obs">Si (obs.)</span></td>
+              <td><code>recalcular()</code> le asigna a ETA la responsabilidad de saber como recalcularse, pero ETA no tiene la informacion necesaria para eso (necesita datos del recorrido que pertenecen a <code>SeguimientoEnvio</code>). Segun Expert, esa responsabilidad es de SeguimientoEnvio.</td>
+            </tr>
+            <tr>
+              <td><strong>Entrega</strong></td>
+              <td>Registrar el resultado final: exito, falla, observaciones, prueba</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>Suscripcion</strong></td>
+              <td>Gestionar el contrato SaaS: plan, estado, monto, vencimiento</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>Cobro</strong></td>
+              <td>Representar una transaccion de pago del fee mensual</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Responsabilidad bien delimitada.</td>
+            </tr>
+            <tr>
+              <td><strong>Reporte</strong></td>
+              <td>Consolidar metricas de performance de una Empresa en un periodo</td>
+              <td><span class="badge badge-obs">Si (obs.)</span></td>
+              <td><code>exportar()</code> y <code>compartir()</code> son operaciones de I/O e infraestructura, ajenas al dominio. Reducen la cohesion de la clase.</td>
+            </tr>
+            <tr>
+              <td><strong>Metrica</strong></td>
+              <td>Indicador cuantitativo: nombre, valor, unidad, timestamp</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Indicador cuantitativo que da contenido a los Reportes. Alta cohesion.</td>
+            </tr>
+            <tr>
+              <td><strong>BCrypt</strong></td>
+              <td>Hashear y comparar contrasenas usando hashing</td>
+              <td><span class="badge badge-no">No (en dominio)</span></td>
+              <td>Clase de infraestructura/utilidad ubicada en el paquete de dominio. Viola High Cohesion del paquete. Debe moverse a <code>com.logismart.util</code> o similar.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Hallazgos</h3>
+        <p>
+          Al revisar el modelo, la mayoria de las clases del dominio tienen <strong>alta cohesion</strong>: sus metodos estan relacionados con una sola responsabilidad de negocio. Sin embargo, se identificaron <strong>cuatro puntos concretos de mejora</strong>:
+        </p>
+        <ul class="note-list" style="margin-top:0.75rem">
+          <li>
+            <strong>BCrypt en el paquete de dominio</strong>: es infraestructura tecnica y no deberia estar aqui.
+            Su presencia acopla el dominio a la decision de usar hashing, lo que dificulta cambiar la implementacion de hashing.
+          </li>
+          <li>
+            <strong>Reporte.exportar() / compartir()</strong>: son operaciones de I/O ajenas al dominio.
+            Deben moverse a un <code>ReporteService</code> en la capa de aplicacion.
+          </li>
+          <li>
+            <strong>SeguimientoEnvio.publicarTracking()</strong>: notificar a sistemas externos no es una responsabilidad del dominio. Se extrae a <code>TrackingService</code>, igual que <code>NotificadorDeEnvios</code> en el ejemplo de clase.
+          </li>
+          <li>
+            <strong>ETA.recalcular()</strong>: le asigna a ETA la responsabilidad de recalcularse, pero ETA no tiene la informacion necesaria para hacerlo (necesita datos del recorrido que pertenecen a <code>SeguimientoEnvio</code>). Segun Expert, esa responsabilidad es de SeguimientoEnvio.
+          </li>
+        </ul>
+      </div>
+
+      <!-- ===== SECCION 2 ===== -->
+      <div id="s2" class="section">
+        <div class="section-number">2</div>
+        <h2>Aplicacion del Patron Expert</h2>
+        <p class="section-desc">
+          Verificacion de que cada responsabilidad clave esta asignada a la clase que tiene la informacion necesaria
+          para cumplirla. Se analizan los 4 casos especificos del enunciado y se presenta el diagrama actualizado.
+        </p>
+
+        <h3>2.1 Calcular la distancia total de una ruta</h3>
+        <div class="callout">
+          <strong>Experto identificado: Ruta</strong>
+          Ruta contiene la lista de <code>PuntoEntrega</code> en orden, cada uno con <code>lat</code> y <code>lng</code>.
+          Es el unico objeto con acceso directo a todos los segmentos del recorrido. Delega el acceso a coordenadas
+          individuales a <code>PuntoEntrega</code>.
+        </div>
+        <table>
+          <thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>
+          <tbody>
+            <tr><td>Que informacion necesita</td><td>Lista ordenada de paradas con lat/lng de cada punto</td></tr>
+            <tr><td>Quien tiene esa informacion</td><td><strong>Ruta</strong> - atributo <code>paradas: List&lt;PuntoEntrega&gt;</code></td></tr>
+            <tr><td>Hay delegacion</td><td>Si: Ruta delega a PuntoEntrega el acceso a coordenadas; acumula la distancia total</td></tr>
+            <tr><td>Esta en la clase correcta actualmente</td><td><strong>No</strong>: <code>distanciaKm</code> se recibe como parametro del constructor en lugar de calcularse desde las paradas</td></tr>
+          </tbody>
+        </table>
+        <p><strong>Cambio propuesto:</strong> agregar <code>calcularDistanciaTotal(): double</code> a <code>Ruta</code>, calculando la distancia entre cada par de paradas consecutivas usando sus coordenadas.</p>
+
+        <h3>2.2 Calcular el costo total de una ruta</h3>
+        <div class="callout">
+          <strong>Experto identificado: Ruta</strong>
+          El costo operativo depende de la distancia total (que Ruta calcula) y del tipo de vehiculo asignado
+          (que Ruta referencia). Ruta tiene acceso a ambos datos sin necesitar informacion externa adicional.
+        </div>
+        <table>
+          <thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>
+          <tbody>
+            <tr><td>Que informacion necesita</td><td>Distancia total de la ruta + tipo de vehiculo (para estimar consumo y tarifa)</td></tr>
+            <tr><td>Quien tiene esa informacion</td><td><strong>Ruta</strong> - calcula distancia + tiene referencia a <code>Vehiculo</code></td></tr>
+            <tr><td>Hay delegacion</td><td>Si: Ruta delega a Vehiculo para obtener <code>tipo</code> y <code>capacidadKg</code></td></tr>
+            <tr><td>Esta en la clase correcta actualmente</td><td><strong>No</strong>: no existe ningun metodo de calculo de costo en el modelo</td></tr>
+          </tbody>
+        </table>
+        <p><strong>Cambio propuesto:</strong> agregar <code>calcularCostoEstimado(): double</code> a <code>Ruta</code>.</p>
+
+        <h3>2.3 Validar si un vehiculo puede transportar un envio</h3>
+        <div class="callout callout-ok">
+          <strong>Experto identificado: Vehiculo - ya implementado correctamente</strong>
+          Vehiculo conoce su <code>capacidadKg</code> y <code>disponibilidad</code>.
+          El metodo <code>puedeCargar(double pesoTotal)</code> aplica ademas una regla de negocio
+          (margen de seguridad del 90%). Es el unico objeto con toda la informacion para resolver esto.
+        </div>
+        <table>
+          <thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>
+          <tbody>
+            <tr><td>Que informacion necesita</td><td>capacidadKg, disponibilidad, peso total del envio (parametro)</td></tr>
+            <tr><td>Quien tiene esa informacion</td><td><strong>Vehiculo</strong> - capacidad y disponibilidad son atributos propios</td></tr>
+            <tr><td>Hay delegacion</td><td>No: Vehiculo resuelve de forma autonoma. El peso llega como parametro desde el llamador.</td></tr>
+            <tr><td>Esta en la clase correcta actualmente</td><td><strong>Si</strong> - <code>Vehiculo.puedeCargar(double)</code> ya implementado con margen del 90%</td></tr>
+          </tbody>
+        </table>
+
+        <h3>2.4 Determinar el estado de un envio</h3>
+        <div class="callout callout-ok">
+          <strong>Experto identificado: Envio - ya implementado correctamente</strong>
+          Envio gestiona su propio ciclo de vida mediante <code>iniciar()</code>, <code>cancelar()</code>
+          y <code>cerrar()</code>, que transicionan el atributo <code>estado</code>.
+          El estado pertenece al Envio y solo el puede modificarlo.
+        </div>
+        <table>
+          <thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>
+          <tbody>
+            <tr><td>Que informacion necesita</td><td>Estado actual del envio + reglas de transicion de ciclo de vida</td></tr>
+            <tr><td>Quien tiene esa informacion</td><td><strong>Envio</strong> - atributo <code>estado: String</code> con metodos de transicion</td></tr>
+            <tr><td>Hay delegacion</td><td>No: Envio maneja su propio estado internamente</td></tr>
+            <tr><td>Esta en la clase correcta actualmente</td><td><strong>Si</strong> - <code>iniciar()</code>, <code>cancelar()</code>, <code>cerrar()</code> ya implementados</td></tr>
+          </tbody>
+        </table>
+
+        <h3>2.5 Diagrama UML actualizado - cambios Expert</h3>
+        <p style="margin-bottom:1rem">
+          Se agregan <code>calcularDistanciaTotal(): double</code> y <code>calcularCostoEstimado(): double</code>
+          a <code>Ruta</code>. El resto del diagrama permanece como en el Hito 2.
+        </p>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+classDiagram
+direction TB
+
+class Ruta {
+  -id: String
+  -distanciaKm: double
+  -duracionEstimadaMin: int
+  -estado: String
+  -paradas: List~PuntoEntrega~
+  +optimizar()
+  +recalcular()
+  +asignarTransportista(t)
+  +asignarVehiculo(v)
+  +agregarParada(p)
+  +calcularDistanciaTotal() double
+  +calcularCostoEstimado() double
+}
+
+class PuntoEntrega {
+  -direccion: String
+  -lat: double
+  -lng: double
+  -ventanaHorario: String
+  -ordenParada: int
+  +validarVentana()
+}
+
+class Vehiculo {
+  -id: String
+  -patente: String
+  -capacidadKg: double
+  -tipo: String
+  -disponibilidad: boolean
+  +puedeCargar(pesoKg) boolean
+  +estaOperativo() boolean
+  +asignarRuta()
+  +liberar()
+}
+
+Ruta "1" *-- "1..*" PuntoEntrega : define
+Ruta "1" --> "1" Vehiculo : asigna
+          </pre>
+        </div>
+        <div class="callout" style="margin-top:0.5rem">
+          <strong>Nota de diseño:</strong> <code>calcularDistanciaTotal()</code> itera sobre
+          <code>paradas</code> y usa las coordenadas de <code>PuntoEntrega</code> para calcular
+          la distancia entre puntos consecutivos.
+          <code>calcularCostoEstimado()</code> usa esa distancia y el <code>tipo</code> del
+          <code>Vehiculo</code> asignado para estimar el costo operativo por km.
+        </div>
+      </div>
+
+      <!-- ===== SECCION 3 ===== -->
+      <div id="s3" class="section">
+        <div class="section-number">3</div>
+        <h2>Aplicacion del Patron Creator</h2>
+        <p class="section-desc">
+          Identificacion de quien debe crear cada clase aplicando las reglas de Creator:
+          <strong>Contencion</strong> (B compone A), <strong>Agregacion</strong> (B agrega A),
+          <strong>Datos</strong> (B tiene los datos para inicializar A),
+          <strong>Uso Frecuente</strong> (B usa A frecuentemente).
+        </p>
+
+        <h3>3.1 Tabla de creadores</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Clase creada</th>
+              <th>Creador propuesto</th>
+              <th>Regla de Creator</th>
+              <th>Justificacion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>PuntoEntrega</strong></td>
+              <td>Ruta</td>
+              <td>Contencion</td>
+              <td>Ruta compone la lista de paradas. Es el unico contexto en que se crean PuntosDeEntrega.</td>
+            </tr>
+            <tr>
+              <td><strong>PosicionGPS</strong></td>
+              <td>SeguimientoEnvio</td>
+              <td>Contencion</td>
+              <td>SeguimientoEnvio compone el historial de posiciones GPS del recorrido.</td>
+            </tr>
+            <tr>
+              <td><strong>SeguimientoEnvio</strong></td>
+              <td>Envio</td>
+              <td>Contencion (composicion)</td>
+              <td>El seguimiento existe mientras exista el Envio y es parte de su ciclo de vida completo.</td>
+            </tr>
+            <tr>
+              <td><strong>Entrega</strong></td>
+              <td>Envio</td>
+              <td>Contencion (composicion)</td>
+              <td>La entrega cierra el ciclo operativo del Envio. No tiene vida independiente.</td>
+            </tr>
+            <tr>
+              <td><strong>Orden</strong></td>
+              <td>OperadorLogistico</td>
+              <td>Datos + Uso Frecuente</td>
+              <td>El operador importa ordenes desde el e-commerce y tiene todos los datos para inicializarlas.</td>
+            </tr>
+            <tr>
+              <td><strong>Envio</strong></td>
+              <td>OperadorLogistico</td>
+              <td>Datos + Uso Frecuente</td>
+              <td>El operador concentra la informacion necesaria: empresaId, ordenes, prioridad, fecha programada.</td>
+            </tr>
+            <tr>
+              <td><strong>Ruta</strong></td>
+              <td>OperadorLogistico</td>
+              <td>Datos</td>
+              <td>El operador tiene el Envio, el Vehiculo disponible y el Transportista para inicializar la Ruta.</td>
+            </tr>
+            <tr>
+              <td><strong>Cobro</strong></td>
+              <td>Suscripcion</td>
+              <td>Contencion</td>
+              <td>Suscripcion compone el historial de cobros. Genera el Cobro al vencer el periodo mensual.</td>
+            </tr>
+            <tr>
+              <td><strong>Metrica</strong></td>
+              <td>Reporte</td>
+              <td>Contencion</td>
+              <td>Reporte compone sus metricas al momento de ser generado.</td>
+            </tr>
+            <tr>
+              <td><strong>Vehiculo</strong></td>
+              <td>Flota</td>
+              <td>Contencion / Agregacion</td>
+              <td>Flota agrupa vehiculos para gestion operativa, pero el vehiculo puede existir y gestionarse fuera de la flota; por eso es agregacion y no composicion.</td>
+            </tr>
+            <tr>
+              <td><strong>Suscripcion</strong></td>
+              <td>AdminPlataforma</td>
+              <td>Datos + Uso Frecuente</td>
+              <td>AdminPlataforma conoce los datos necesarios para inicializar la suscripcion y la usa con frecuencia al alta, renovacion y administracion del plan.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>3.2 Problemas identificados</h3>
+        <div class="callout callout-warn">
+          <strong>Problema 1: Envio no crea SeguimientoEnvio ni Entrega internamente</strong>
+          En la implementacion actual, el constructor de <code>Envio</code> recibe <code>SeguimientoEnvio</code>
+          y <code>Entrega</code> como parametros externos. Segun Creator (regla de Contencion), Envio deberia
+          crearlos internamente porque los compone por ciclo de vida. Recibirlos desde afuera obliga al creador
+          externo (OperadorLogistico) a conocer los detalles de construccion de objetos internos del Envio,
+          aumentando el acoplamiento innecesariamente.
+        </div>
+        <div class="callout callout-warn">
+          <strong>Problema 2: PuntoEntrega se construye fuera de Ruta</strong>
+          <code>Ruta.agregarParada(PuntoEntrega punto)</code> recibe el objeto ya construido desde afuera.
+          Segun Creator, Ruta deberia ofrecer un metodo factory que cree el <code>PuntoEntrega</code>
+          internamente a partir de los datos necesarios (direccion, coordenadas, ventana horaria).
+        </div>
+
+        <h3>3.3 Pseudocodigo de creacion - soluciones propuestas</h3>
+
+        <p><strong>Caso 1: Envio crea SeguimientoEnvio y Entrega internamente (Creator - Contencion)</strong></p>
+        <pre class="code-block">// PROPUESTA: Envio crea sus partes internas
+public class Envio {
+    private SeguimientoEnvio seguimiento;
+    private Entrega entrega;
+
+    public Envio(String id, String empresaId, String prioridad, LocalDateTime fechaProgramada) {
+        this.id = id;
+        this.empresaId = empresaId;
+        this.estado = "PENDIENTE";
+        this.prioridad = prioridad;
+        this.fechaProgramada = fechaProgramada;
+        this.ordenes = new ArrayList&lt;&gt;();
+        // Envio es Creator de sus componentes internos por composicion
+        this.seguimiento = new SeguimientoEnvio(id + "-seg", "PENDIENTE");
+        this.entrega     = new Entrega(id + "-ent");
+    }
+}</pre>
+
+        <p><strong>Caso 2: Ruta encapsula la creacion de PuntoEntrega (Creator - Contencion)</strong></p>
+        <pre class="code-block">// PROPUESTA: Ruta ofrece factory method para agregar paradas
+public class Ruta {
+    // Sobrecarga: acepta datos primitivos y crea PuntoEntrega internamente
+    public void agregarParada(String direccion, double lat, double lng,
+                              String ventanaHorario, int ordenParada) {
+        PuntoEntrega punto = new PuntoEntrega(direccion, lat, lng, ventanaHorario, ordenParada);
+        this.paradas.add(punto);
+    }
+}</pre>
+
+        <p><strong>Caso 3: SeguimientoEnvio crea PosicionGPS (Creator - Contencion)</strong></p>
+        <pre class="code-block">// SeguimientoEnvio registra nueva posicion, creandola internamente (Creator - Contencion)
+public class SeguimientoEnvio {
+    public void registrarPosicion(double lat, double lng, double precision) {
+        // SeguimientoEnvio es Creator de PosicionGPS (lo contiene)
+        PosicionGPS pos = new PosicionGPS(lat, lng, LocalDateTime.now(), precision);
+        this.historialPosiciones.add(pos);
+        this.ultimaActualizacion = LocalDateTime.now();
+    }
+}</pre>
+
+        <p><strong>Caso 4: OperadorLogistico crea Envio y Ruta (Creator - Datos)</strong></p>
+        <pre class="code-block">// OperadorLogistico tiene todos los datos para crear Envio y Ruta
+public class OperadorLogistico extends Usuario {
+
+    public Envio crearEnvio(String prioridad, LocalDateTime fecha) {
+        // Operador es Creator de Envio: tiene empresaId y datos de negocio
+        return new Envio(UUID.randomUUID().toString(), this.empresaId, prioridad, fecha);
+    }
+
+    public Ruta planificarRuta(Vehiculo vehiculo, Transportista transportista) {
+        // Operador es Creator de Ruta: tiene vehiculo y transportista disponibles
+        Ruta ruta = new Ruta(UUID.randomUUID().toString(), 0.0, 0, "PLANIFICADA");
+        ruta.asignarVehiculo(vehiculo);
+        ruta.asignarTransportista(transportista);
+        return ruta;
+    }
+}</pre>
+      </div>
+
+      <!-- ===== SECCION 4 ===== -->
+      <div id="s4" class="section">
+        <div class="section-number">4</div>
+        <h2>Analisis de Coupling y Cohesion</h2>
+        <p class="section-desc">
+          Identificacion de dependencias entre clases, deteccion de problemas de acoplamiento y cohesion,
+          y propuesta de mejoras con diagramas antes/despues.
+        </p>
+
+        <h3>4.1 Diagrama de dependencias (estado actual)</h3>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+flowchart LR
+    AdminEmpresa -->|hereda| Usuario
+    OperadorLogistico -->|hereda| Usuario
+    Transportista -->|hereda| Usuario
+    ClienteFinal -->|hereda| Usuario
+    AdminPlataforma -->|hereda| Usuario
+    Usuario --> BCrypt
+
+    OperadorLogistico --> Envio
+    OperadorLogistico --> Ruta
+    OperadorLogistico --> Orden
+    OperadorLogistico --> Flota
+    ClienteFinal --> Envio
+    Transportista --> Entrega
+    Transportista --> SeguimientoEnvio
+
+    Empresa --> Flota
+    Empresa --> Envio
+    Empresa --> Reporte
+    Empresa --> Suscripcion
+
+    Envio --> Orden
+    Envio --> SeguimientoEnvio
+    Envio --> Entrega
+
+    Ruta --> PuntoEntrega
+    Ruta --> Vehiculo
+    Ruta --> Transportista
+    Flota --> Vehiculo
+
+    SeguimientoEnvio --> PosicionGPS
+    SeguimientoEnvio --> ETA
+    Suscripcion --> Cobro
+    AdminPlataforma --> Suscripcion
+    Reporte --> Metrica
+    AdminEmpresa --> Reporte
+          </pre>
+        </div>
+
+        <h3>4.2 Analisis de acoplamiento</h3>
+        <table>
+          <thead>
+            <tr><th>Clase</th><th>Depende de</th><th>Nivel</th><th>Evaluacion</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Ruta</strong></td>
+              <td>PuntoEntrega, Vehiculo, Transportista</td>
+              <td>Medio</td>
+              <td>Aceptable: todas las dependencias son necesarias. Vehiculo y Transportista se reciben por setter injection (bajo acoplamiento).</td>
+            </tr>
+            <tr>
+              <td><strong>Envio</strong></td>
+              <td>Orden, SeguimientoEnvio, Entrega</td>
+              <td>Medio</td>
+              <td>Aceptable: Envio compone estos objetos. El problema esta en recibirlos por constructor en lugar de crearlos (ver Creator).</td>
+            </tr>
+            <tr>
+              <td><strong>OperadorLogistico</strong></td>
+              <td>Envio, Ruta, Orden, Flota</td>
+              <td>Medio-alto</td>
+              <td>Esperado para un actor de orquestacion del flujo operativo. No hay dependencias innecesarias.</td>
+            </tr>
+            <tr>
+              <td><strong>Usuario</strong></td>
+              <td>BCrypt</td>
+              <td>Bajo (pero problematico)</td>
+              <td><strong>Problema:</strong> BCrypt es infraestructura tecnica. El dominio no deberia depender de una implementacion especifica de hashing.</td>
+            </tr>
+            <tr>
+              <td><strong>Reporte</strong></td>
+              <td>Metrica</td>
+              <td>Bajo</td>
+              <td>Correcto: Reporte compone Metricas. Las dependencias de exportacion/comparticion no deben estar en el dominio.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-ok">
+          <strong>Sin dependencias ciclicas:</strong> Ninguna clase depende de otra que a su vez dependa de ella. Esto mantiene el modelo simple y facilita entender, mantener y extender el codigo.
+        </div>
+
+        <h3>4.3 Problemas de cohesion detectados y propuestas de extraccion</h3>
+        <div class="two-col">
+          <div class="col-box">
+            <h4>Antes - baja cohesion en 3 clases</h4>
+            <pre class="mermaid">
+classDiagram
+class Reporte {
+  +generar()
+  +exportar()
+  +compartir()
+}
+note for Reporte "exportar y compartir\nson responsabilidades\nde infraestructura"
+
+class SeguimientoEnvio {
+  +actualizarEstado()
+  +registrarPosicion()
+  +publicarTracking()
+}
+note for SeguimientoEnvio "publicarTracking pertenece\na la capa de aplicacion"
+
+class ETA {
+  -valorMinutos
+  +recalcular()
+}
+note for ETA "ETA no tiene la info\npara recalcular (Expert)"
+            </pre>
+          </div>
+          <div class="col-box">
+            <h4>Despues - alta cohesion, responsabilidades separadas</h4>
+            <pre class="mermaid">
+classDiagram
+class Reporte {
+  +generar()
+}
+
+class ReporteService {
+  +exportar(reporte)
+  +compartir(reporte)
+}
+
+class SeguimientoEnvio {
+  +actualizarEstado()
+  +registrarPosicion()
+  +actualizarETA(min, confianza)
+}
+
+class TrackingService {
+  +publicarTracking(seguimiento)
+}
+
+class ETA {
+  -valorMinutos
+  -actualizadoEn
+  -nivelConfianza
+}
+
+ReporteService ..> Reporte : usa
+TrackingService ..> SeguimientoEnvio : usa
+            </pre>
+          </div>
+        </div>
+
+        <h3>4.4 Reduccion de acoplamiento - Low Coupling aplicado</h3>
+        <p>
+          El modelo ya aplica correctamente la inyeccion de dependencias en los casos criticos:
+          <code>Ruta.asignarVehiculo(Vehiculo v)</code> y <code>Ruta.asignarTransportista(Transportista t)</code>
+          reciben las dependencias como parametros en lugar de instanciarlas internamente.
+          Esto mantiene a Ruta desacoplada del ciclo de vida de Vehiculo y Transportista.
+        </p>
+        <p style="margin-top:0.75rem">
+          El uso de <code>empresaId: String</code> en <code>Envio</code> (en lugar de una referencia
+          directa a <code>Empresa</code>) es una decision deliberada de bajo acoplamiento: Envio no necesita
+          toda la informacion de Empresa, solo su identificador para trazabilidad.
+        </p>
+        <div class="callout callout-ok">
+          <strong>Propuesta adicional - mover BCrypt fuera del dominio:</strong>
+          Mover <code>BCrypt.java</code> al paquete <code>com.logismart.util</code>.
+          Asi el paquete de dominio queda con una unica responsabilidad bien definida (logica de negocio)
+          y no depende de una clase tecnica de hashing.
+        </div>
+      </div>
+
+      <!-- ===== SECCION 5 ===== -->
+      <div id="s5" class="section">
+        <div class="section-number">5</div>
+        <h2>Diagramas de Secuencia</h2>
+        <p class="section-desc">
+          Tres diagramas de secuencia para los casos de uso mas importantes, mostrando como colaboran
+          los objetos del dominio en orden temporal con las mejoras GRASP aplicadas.
+        </p>
+
+        <h3>5.1 Crear un Envio (CU-01)</h3>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+sequenceDiagram
+    actor OP as OperadorLogistico
+    participant EV as Envio
+    participant SEG as SeguimientoEnvio
+    participant ENT as Entrega
+    participant ORD as Orden
+
+    OP->>+EV: new Envio(id, empresaId, prioridad, fechaProgramada)
+    Note over EV: Creator aplica: Envio crea sus partes internas
+    EV->>+SEG: new SeguimientoEnvio(segId, "PENDIENTE")
+    SEG-->>-EV: seguimiento creado
+    EV->>+ENT: new Entrega(entId)
+    ENT-->>-EV: entrega creada
+    EV-->>-OP: envio listo (estado = PENDIENTE)
+
+    OP->>+ORD: new Orden(ordId, canal, fecha, bultos)
+    ORD-->>-OP: orden creada (estado = PENDIENTE)
+
+    OP->>+EV: agregarOrden(orden)
+    EV-->>-OP: ok
+
+    OP->>+EV: iniciar()
+    Note over EV: Expert aplica: Envio gestiona su propio estado
+    EV-->>-OP: estado = EN_CURSO
+          </pre>
+        </div>
+        <p><strong>Validacion:</strong>
+          Los objetos se comunican en el orden correcto del flujo de negocio.
+          Aplicando Creator, <code>SeguimientoEnvio</code> y <code>Entrega</code> son creados por
+          <code>Envio</code>, no por el <code>OperadorLogistico</code>, reduciendo el acoplamiento del llamador.
+          Aplicando Expert, <code>Envio.iniciar()</code> es quien determina y gestiona el cambio de estado.
+          No hay comunicaciones directas innecesarias entre el Operador y los objetos internos del Envio.
+        </p>
+
+        <h3>5.2 Planificar Ruta y asignar Envio (CU-03)</h3>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+sequenceDiagram
+    actor OP as OperadorLogistico
+    participant F as Flota
+    participant V as Vehiculo
+    participant R as Ruta
+    participant T as Transportista
+    participant EV as Envio
+
+    OP->>+F: obtenerDisponibles()
+    F-->>-OP: List de vehiculos disponibles
+
+    OP->>+V: puedeCargar(pesoTotalOrdenes)
+    Note over V: Expert aplica: Vehiculo valida su propia capacidad
+    V-->>-OP: true (capacidad OK con margen 90%)
+
+    OP->>+R: new Ruta(id, 0.0, 0, "PLANIFICADA")
+    R-->>-OP: ruta creada
+
+    OP->>+R: asignarVehiculo(vehiculo)
+    Note over R: Low Coupling: Ruta recibe Vehiculo por inyeccion
+    R-->>-OP: ok
+    OP->>V: asignarRuta()
+    Note over V: disponibilidad = false
+
+    OP->>+R: asignarTransportista(transportista)
+    R-->>-OP: ok
+
+    loop Para cada orden del Envio
+      OP->>+R: agregarParada(dir, lat, lng, ventana, orden)
+      Note over R: Creator aplica: Ruta crea PuntoEntrega internamente
+      R-->>-OP: parada agregada
+    end
+
+    OP->>+R: calcularDistanciaTotal()
+    Note over R: Expert aplica: Ruta calcula desde sus paradas
+    R-->>-OP: distanciaKm calculada
+
+    OP->>+EV: iniciar()
+    EV-->>-OP: estado = EN_CURSO
+          </pre>
+        </div>
+        <p><strong>Validacion:</strong>
+          El flujo evidencia los cuatro patrones GRASP aplicados:
+          <code>Vehiculo.puedeCargar()</code> (Expert),
+          <code>Ruta.agregarParada()</code> encapsula la creacion de <code>PuntoEntrega</code> (Creator),
+          <code>Ruta.calcularDistanciaTotal()</code> (Expert),
+          <code>Ruta.asignarVehiculo()</code> por setter injection (Low Coupling).
+          Las notas de comunicacion directa son las minimas necesarias: no hay acoplamiento excesivo.
+        </p>
+
+        <h3>5.3 Registrar Entrega (CU-08)</h3>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+sequenceDiagram
+    actor TR as Transportista
+    participant ENT as Entrega
+    participant SEG as SeguimientoEnvio
+    participant EV as Envio
+    participant TS as TrackingService
+    actor CF as ClienteFinal
+
+    TR->>+ENT: confirmarExitosa(observaciones, prueba)
+    Note over ENT: Expert aplica: Entrega gestiona su propio resultado
+    ENT-->>-TR: resultado = EXITOSA
+
+    TR->>+SEG: actualizarEstado("ENTREGADO", "entrega confirmada")
+    SEG-->>-TR: ok
+
+    TR->>+SEG: actualizarETA(0, 1.0)
+    Note over SEG: Expert aplica: SeguimientoEnvio actualiza la ETA
+    SEG-->>-TR: ETA actualizada (0 min, confianza 100%)
+
+    TR->>+EV: cerrar()
+    Note over EV: Expert aplica: Envio gestiona su propio estado
+    EV-->>-TR: estado = CERRADO
+
+    EV->>+TS: publicarTracking(seguimiento)
+    Note over TS: High Cohesion: la publicacion esta en TrackingService, fuera del dominio
+    TS-->>CF: notificacion de entrega exitosa
+    TS-->>-EV: ok
+          </pre>
+        </div>
+        <p><strong>Validacion:</strong>
+          Este diagrama refleja directamente la separacion de responsabilidades propuesta en la Actividad 4.
+          <code>publicarTracking()</code> fue extraida del dominio a <code>TrackingService</code>
+          (High Cohesion aplicado): el dominio solo gestiona estado, la notificacion la maneja
+          la capa de aplicacion. No hay dependencias ciclicas. La cadena de responsabilidades
+          (<code>Entrega</code> → <code>SeguimientoEnvio</code> → <code>Envio</code> → <code>TrackingService</code>)
+          sigue un orden logico y sin comunicaciones directas innecesarias.
+        </p>
+      </div>
+
+    </div>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          fontSize: "14px",
+          primaryColor: "#f8fbff",
+          primaryTextColor: "#0f172a",
+          primaryBorderColor: "#1a365d",
+          lineColor: "#1a365d",
+          tertiaryColor: "#f8fafc",
+          edgeLabelBackground: "#ffffff",
+        },
+      });
+
+      const nav = document.querySelector(".side-nav");
+      const sections = document.querySelectorAll(".section[id]");
+
+      if (nav) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const link = nav.querySelector(`a[href="#${entry.target.id}"]`);
+              if (link) {
+                link.classList.toggle("active", entry.isIntersecting);
+              }
+            });
+          },
+          { rootMargin: "-30% 0px -60% 0px" },
+        );
+        sections.forEach((section) => observer.observe(section));
+      }
+    </script>
+  </body>
+</html>

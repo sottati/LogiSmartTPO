@@ -9,13 +9,13 @@ public class Transportista extends Usuario {
 			String id,
 			String username,
 			String email,
-			String passwordHash,
+			String password,
 			String rol,
 			String estado,
 			String licencia,
 			boolean disponibilidad,
 			String vehiculoAsignadoId) {
-		super(id, username, email, passwordHash, rol, estado);
+		super(id, username, email, password, rol, estado);
 		this.licencia = licencia;
 		this.disponibilidad = disponibilidad;
 		this.vehiculoAsignadoId = vehiculoAsignadoId;

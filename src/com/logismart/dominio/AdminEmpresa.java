@@ -9,13 +9,13 @@ public class AdminEmpresa extends Usuario {
 			String id,
 			String username,
 			String email,
-			String passwordHash,
+			String password,
 			String rol,
 			String estado,
 			String empresaId,
 			String permisosAdmin,
 			String notificaciones) {
-		super(id, username, email, passwordHash, rol, estado);
+		super(id, username, email, password, rol, estado);
 		this.empresaId = empresaId;
 		this.permisosAdmin = permisosAdmin;
 		this.notificaciones = notificaciones;

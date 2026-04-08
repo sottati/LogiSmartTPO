@@ -1,5 +1,7 @@
 package com.logismart.dominio;
 
+import com.logismart.util.BCrypt;
+
 public class Usuario {
 	private String id;
 	private String username;
@@ -37,8 +39,11 @@ public class Usuario {
 		this.email = email;
 	}
 
-	public String getPasswordHash() {
-		return passwordHash;
+	public boolean verificarPassword(String password) {
+		if (password == null || password.isBlank()) {
+			return false;
+		}
+		return passwordHash.equals(BCrypt.hash(password));
 	}
 
 	public String getRol() {

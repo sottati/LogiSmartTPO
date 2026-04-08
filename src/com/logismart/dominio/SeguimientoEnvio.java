@@ -12,6 +12,14 @@ public class SeguimientoEnvio {
 	private LocalDateTime ultimaActualizacion;
 	private List<PosicionGPS> historialPosiciones;
 
+	public SeguimientoEnvio(String id, String estadoActual) {
+		this.id = id;
+		this.estadoActual = estadoActual;
+		this.ultimoEvento = "CREADO";
+		this.ultimaActualizacion = LocalDateTime.now();
+		this.historialPosiciones = new ArrayList<>();
+	}
+
 	public SeguimientoEnvio(String id, String estadoActual, String ultimoEvento, LocalDateTime ultimaActualizacion) {
 		this.id = id;
 		this.estadoActual = estadoActual;
@@ -47,6 +55,12 @@ public class SeguimientoEnvio {
 
 	public void registrarPosicion(PosicionGPS posicionGPS) {
 		historialPosiciones.add(posicionGPS);
+		ultimaActualizacion = LocalDateTime.now();
+	}
+
+	public void registrarPosicion(double lat, double lng, double precision) {
+		PosicionGPS posicion = new PosicionGPS(lat, lng, LocalDateTime.now(), precision);
+		historialPosiciones.add(posicion);
 		ultimaActualizacion = LocalDateTime.now();
 	}
 
