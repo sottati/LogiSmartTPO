@@ -791,40 +791,29 @@ public class OperadorLogistico extends Usuario {
           <pre class="mermaid">
 flowchart LR
     AdminEmpresa -->|hereda| Usuario
+    AdminPlataforma -->|hereda| Usuario
+    ClienteFinal -->|hereda| Usuario
     OperadorLogistico -->|hereda| Usuario
     Transportista -->|hereda| Usuario
-    ClienteFinal -->|hereda| Usuario
-    AdminPlataforma -->|hereda| Usuario
+
     Usuario --> BCrypt
 
     OperadorLogistico --> Envio
     OperadorLogistico --> Ruta
-    OperadorLogistico --> Orden
-    OperadorLogistico --> Flota
-    ClienteFinal --> Envio
-    Transportista --> Entrega
-    Transportista --> SeguimientoEnvio
-
-    Empresa --> Flota
-    Empresa --> Envio
-    Empresa --> Reporte
-    Empresa --> Suscripcion
+    OperadorLogistico --> Vehiculo
+    OperadorLogistico --> Transportista
 
     Envio --> Orden
     Envio --> SeguimientoEnvio
     Envio --> Entrega
+    Orden --> Envio
 
-    Ruta --> PuntoEntrega
-    Ruta --> Vehiculo
     Ruta --> Transportista
-    Flota --> Vehiculo
+    Ruta --> Vehiculo
+    Ruta --> PuntoEntrega
 
+    Flota --> Vehiculo
     SeguimientoEnvio --> PosicionGPS
-    SeguimientoEnvio --> ETA
-    Suscripcion --> Cobro
-    AdminPlataforma --> Suscripcion
-    Reporte --> Metrica
-    AdminEmpresa --> Reporte
           </pre>
         </div>
 
