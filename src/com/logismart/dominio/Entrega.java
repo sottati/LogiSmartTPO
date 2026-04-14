@@ -9,6 +9,12 @@ public class Entrega {
 	private String observaciones;
 	private String pruebaAdjunta;
 
+	public Entrega(String id) {
+		this.id = id;
+		this.resultado = "PENDIENTE";
+		this.observaciones = "";
+	}
+
 	public Entrega(String id, String resultado, LocalDateTime fechaHora, String observaciones) {
 		this.id = id;
 		this.resultado = resultado;
@@ -39,6 +45,12 @@ public class Entrega {
 	public void confirmarExitosa() {
 		resultado = "EXITOSA";
 		fechaHora = LocalDateTime.now();
+	}
+
+	public void confirmarExitosa(String nuevasObservaciones, String nuevaPruebaAdjunta) {
+		confirmarExitosa();
+		observaciones = nuevasObservaciones;
+		adjuntarPrueba(nuevaPruebaAdjunta);
 	}
 
 	public void registrarFallida(String nuevasObservaciones) {

@@ -34,10 +34,4 @@ public class Reporte {
 	public void generar() {
 		generadoEn = LocalDateTime.now();
 	}
-
-	public void exportar() {
-	}
-
-	public void compartir() {
-	}
 }

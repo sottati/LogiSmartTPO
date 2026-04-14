@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Envio {
 	private String id;
-	private String empresaId;
+	private Empresa empresa;
 	private String estado;
 	private String prioridad;
 	private LocalDateTime fechaProgramada;
@@ -15,24 +15,23 @@ public class Envio {
 	private SeguimientoEnvio seguimiento;
 	private Entrega entrega;
 
-	public Envio(String id, String empresaId, String estado, String prioridad, LocalDateTime fechaProgramada,
-			SeguimientoEnvio seguimiento, Entrega entrega) {
+	public Envio(String id, Empresa empresa, String prioridad, LocalDateTime fechaProgramada) {
 		this.id = id;
-		this.empresaId = empresaId;
-		this.estado = estado;
+		this.empresa = empresa;
+		this.estado = "PENDIENTE";
 		this.prioridad = prioridad;
 		this.fechaProgramada = fechaProgramada;
 		this.ordenes = new ArrayList<>();
-		this.seguimiento = seguimiento;
-		this.entrega = entrega;
+		this.seguimiento = new SeguimientoEnvio(id + "-seg", "PENDIENTE");
+		this.entrega = new Entrega(id + "-ent");
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public String getEmpresaId() {
-		return empresaId;
+	public Empresa getEmpresa() {
+		return empresa;
 	}
 
 	public String getEstado() {
@@ -60,6 +59,7 @@ public class Envio {
 	}
 
 	public void agregarOrden(Orden orden) {
+		orden.asociarEnvio(this);
 		ordenes.add(orden);
 	}
 

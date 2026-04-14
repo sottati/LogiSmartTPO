@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 7: Patrones Creacionales II - Repaso + Abstract Factory, Builder, Prototype</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+        }
+        
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            margin: 10px 0;
+        }
+        
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .sidebar a:hover {
+            background: #667eea;
+            padding-left: 16px;
+        }
+        
+        .sidebar a.active {
+            background: #667eea;
+            font-weight: bold;
+            border-left: 4px solid #f39c12;
+            padding-left: 8px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            background: white;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+            scroll-margin-top: 20px;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            color: #764ba2;
+            font-size: 24px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        h3 {
+            color: #555;
+            font-size: 18px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: #444;
+        }
+        
+        strong {
+            color: #667eea;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .code-block {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #333;
+            white-space: pre;
+            display: block;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 0 4px;
+        }
+        
+        .badge.repaso {
+            background: #e8f4f8;
+            color: #0277bd;
+        }
+        
+        .badge.creational {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .badge.structural {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+        
+        .badge.behavioral {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
+        .box {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .box.important {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+        
+        .box.success {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .box.warning {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .comparison-item.bad {
+            border-left-color: #dc3545;
+        }
+        
+        .comparison-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .comparison-item.bad h4 {
+            color: #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .comparison-table {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>📚 Clase 7</h2>
+            <ul>
+                <li><a href="#repaso-intro">Repaso: Introducción</a></li>
+                <li><a href="#repaso-grasp">Repaso: GRASP II</a></li>
+                <li><a href="#repaso-creacionales">Repaso: Creacionales I</a></li>
+                <li><a href="#abstract-factory-intro">Abstract Factory</a></li>
+                <li><a href="#abstract-factory-impl">Implementación AF</a></li>
+                <li><a href="#builder-intro">Builder</a></li>
+                <li><a href="#builder-impl">Implementación Builder</a></li>
+                <li><a href="#prototype-intro">Prototype</a></li>
+                <li><a href="#prototype-impl">Implementación Prototype</a></li>
+                <li><a href="#comparacion">Comparación</a></li>
+                <li><a href="#resumen">Resumen</a></li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sección 1: Repaso Introducción -->
+            <div class="section" id="repaso-intro">
+                <h1>🔄 Repaso: Introducción</h1>
+                
+                <p>Antes de avanzar con los patrones creacionales más complejos, vamos a hacer un repaso rápido de lo que vimos en Clase 5 y 6.</p>
+                
+                <div class="box important">
+                    <h3>¿Por qué este repaso?</h3>
+                    <p>Los patrones que veremos hoy (Abstract Factory, Builder y Prototype) se construyen sobre los conceptos fundamentales que ya aprendimos. Es importante tener una base sólida.</p>
+                </div>
+                
+                <h2>Progresión de Patrones Creacionales</h2>
+                <table>
+                    <tr>
+                        <th>Clase</th>
+                        <th>Patrones</th>
+                        <th>Complejidad</th>
+                        <th>Problema Resuelto</th>
+                    </tr>
+                    <tr>
+                        <td><span class="badge repaso">Clase 6</span></td>
+                        <td>Singleton, Factory Method</td>
+                        <td>Baja-Media</td>
+                        <td>Crear 1 instancia o 1 tipo de objeto</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge repaso">Clase 7 (Hoy)</span></td>
+                        <td>Abstract Factory, Builder, Prototype</td>
+                        <td>Media-Alta</td>
+                        <td>Crear familias, objetos complejos, clonar</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!-- Sección 2: Repaso GRASP II -->
+            <div class="section" id="repaso-grasp">
+                <h1>🎯 Repaso: GRASP Parte II (Clase 5)</h1>
+                
+                <p>En Clase 5 vimos 5 patrones GRASP que nos ayudan a asignar responsabilidades correctamente:</p>
+                
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Problema</th>
+                        <th>Solución</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Controller</strong></td>
+                        <td>¿Quién maneja la lógica de la UI?</td>
+                        <td>Crear una clase intermediaria</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Polymorphism</strong></td>
+                        <td>¿Cómo evitar condicionales por tipo?</td>
+                        <td>Usar interfaces y herencia</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pure Fabrication</strong></td>
+                        <td>¿Qué hacer si no hay experto?</td>
+                        <td>Inventar una clase artificial</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Indirection</strong></td>
+                        <td>¿Cómo desacoplar componentes?</td>
+                        <td>Agregar un intermediario</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Protected Variations</strong></td>
+                        <td>¿Cómo proteger de cambios?</td>
+                        <td>Crear abstracciones</td>
+                    </tr>
+                </table>
+                
+                <div class="box success">
+                    <h3>✅ Conexión con Hito 5</h3>
+                    <p>En el Hito 5, aplicaste estos patrones a tu modelo de LogiSmart. Verificaste que cada clase tuviera responsabilidades claras y que el acoplamiento fuera bajo.</p>
+                </div>
+            </div>
+            
+            <!-- Sección 3: Repaso Creacionales I -->
+            <div class="section" id="repaso-creacionales">
+                <h1>🏭 Repaso: Patrones Creacionales I (Clase 6)</h1>
+                
+                <p>En Clase 6 comenzamos con los patrones creacionales. Vimos dos patrones fundamentales:</p>
+                
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Propósito</th>
+                        <th>Ejemplo en LogiSmart</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Singleton</strong></td>
+                        <td>Una única instancia en toda la app</td>
+                        <td>ConfiguracionSistema.getInstance()</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Factory Method</strong></td>
+                        <td>Crear objetos sin especificar clase exacta</td>
+                        <td>VehiculoFactory.crearVehiculo(tipo)</td>
+                    </tr>
+                </table>
+                
+                <h3>¿Por qué necesitamos tantos patrones creacionales?</h3>
+                <p>Porque cada patrón resuelve un problema diferente:</p>
+                <ul>
+                    <li><strong>Singleton:</strong> Cuando necesitas exactamente 1 instancia</li>
+                    <li><strong>Factory Method:</strong> Cuando necesitas crear 1 tipo de objeto, pero esconder la clase concreta</li>
+                    <li><strong>Abstract Factory:</strong> Cuando necesitas crear FAMILIAS de objetos relacionados (lo veremos hoy)</li>
+                    <li><strong>Builder:</strong> Cuando necesitas crear objetos complejos paso a paso (lo veremos hoy)</li>
+                    <li><strong>Prototype:</strong> Cuando necesitas clonar objetos existentes (lo veremos hoy)</li>
+                </ul>
+                
+                <div class="box success">
+                    <h3>✅ Conexión con Hito 6</h3>
+                    <p>En el Hito 6, implementaste Singleton y Factory Method en código Java. Hoy vamos a agregar 3 patrones más a tu implementación.</p>
+                </div>
+            </div>
+            
+            <!-- Sección 4: Abstract Factory Introducción -->
+            <div class="section" id="abstract-factory-intro">
+                <h1>🏭 Abstract Factory: Introducción</h1>
+                
+                <h2>El Problema</h2>
+                <p>Imagina que LogiSmart necesita funcionar en diferentes regiones: Argentina, Brasil y México. Cada región tiene:</p>
+                <ul>
+                    <li>Diferentes tipos de vehículos disponibles</li>
+                    <li>Diferentes proveedores de mapas</li>
+                    <li>Diferentes formas de calcular impuestos</li>
+                    <li>Diferentes regulaciones</li>
+                </ul>
+                
+                <div class="box">
+                    <h3>Código Incorrecto (❌)</h3>
+                    <pre class="code-block">if (region.equals("Argentina")) {
+    vehiculo = new AutoArgentino();
+    mapas = new GoogleMapsArgentina();
+    impuestos = new ImpuestosArgentina();
+} else if (region.equals("Brasil")) {
+    vehiculo = new AutoBrasil();
+    mapas = new HereMaps();
+    impuestos = new ImpuestosBrasil();
+} else if (region.equals("Mexico")) {
+    vehiculo = new AutoMexico();
+    mapas = new OpenStreetMap();
+    impuestos = new ImpuestosMexico();
+}</pre>
+                    <p><strong>Problemas:</strong> Código lleno de condicionales, difícil de mantener, acoplado a clases concretas</p>
+                </div>
+                
+                <h2>La Solución: Abstract Factory</h2>
+                <p><strong>Abstract Factory</strong> es un patrón que permite crear <strong>familias de objetos relacionados</strong> sin especificar sus clases concretas.</p>
+                
+                <div class="box success">
+                    <h3>Analogía</h3>
+                    <p>Es como tener una fábrica que produce todo lo que necesitas para una región específica. El cliente no necesita saber qué ingredientes específicos se usan; solo pide "quiero el menú argentino" y recibe todo lo que necesita.</p>
+                </div>
+            </div>
+            
+            <!-- Sección 5: Abstract Factory Implementación -->
+            <div class="section" id="abstract-factory-impl">
+                <h1>💻 Abstract Factory: Implementación</h1>
+                
+                <h2>Paso 1: Definir las Interfaces</h2>
+                <pre class="code-block">// Interfaz que define qué objetos debe crear
+public interface VehiculoFactory {
+    Vehiculo crearVehiculo();
+    ProveedorMapas crearProveedorMapas();
+    CalculadorImpuestos crearCalculadorImpuestos();
+}
+
+// Interfaces de los productos
+public interface Vehiculo { void conducir(); }
+public interface ProveedorMapas { void obtenerRuta(); }
+public interface CalculadorImpuestos { double calcular(double monto); }</pre>
+                
+                <h2>Paso 2: Implementaciones Concretas para Argentina</h2>
+                <pre class="code-block">public class VehiculoFactoryArgentina implements VehiculoFactory {
+    @Override
+    public Vehiculo crearVehiculo() {
+        return new AutoArgentino();
+    }
+
+    @Override
+    public ProveedorMapas crearProveedorMapas() {
+        return new GoogleMapsArgentina();
+    }
+
+    @Override
+    public CalculadorImpuestos crearCalculadorImpuestos() {
+        return new ImpuestosArgentina();
+    }
+}</pre>
+                
+                <h2>Paso 3: Uso en el Cliente</h2>
+                <pre class="code-block">public class LogiSmartApp {
+    private VehiculoFactory factory;
+
+    public LogiSmartApp(String region) {
+        if (region.equals("Argentina")) {
+            factory = new VehiculoFactoryArgentina();
+        } else if (region.equals("Brasil")) {
+            factory = new VehiculoFactoryBrasil();
+        }
+    }
+
+    public void iniciar() {
+        Vehiculo vehiculo = factory.crearVehiculo();
+        ProveedorMapas mapas = factory.crearProveedorMapas();
+        CalculadorImpuestos impuestos = factory.crearCalculadorImpuestos();
+    }
+}</pre>
+                
+                <div class="box success">
+                    <h3>✅ Ventajas</h3>
+                    <ul>
+                        <li>Garantiza que los objetos de una familia se crean juntos</li>
+                        <li>Desacopla el cliente de las clases concretas</li>
+                        <li>Fácil agregar nuevas regiones (nueva factory)</li>
+                        <li>Cambiar toda una familia de objetos es simple</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Sección 6: Builder Introducción -->
+            <div class="section" id="builder-intro">
+                <h1>🔨 Builder: Introducción</h1>
+                
+                <h2>El Problema</h2>
+                <p>Un Envio en LogiSmart tiene muchos atributos, muchos de ellos opcionales:</p>
+                <ul>
+                    <li>id (requerido)</li>
+                    <li>origen (requerido)</li>
+                    <li>destino (requerido)</li>
+                    <li>descripcion (opcional)</li>
+                    <li>peso (opcional)</li>
+                    <li>frágil (opcional)</li>
+                    <li>requiereSignatura (opcional)</li>
+                    <li>requiereRefrigeración (opcional)</li>
+                    <li>requiereAseguranza (opcional)</li>
+                    <li>instruccionesEspeciales (opcional)</li>
+                    <li>contactoEmergencia (opcional)</li>
+                    <li>horaEntregaPreferida (opcional)</li>
+                </ul>
+                
+                <div class="box">
+                    <h3>Código Incorrecto (❌)</h3>
+                    <pre class="code-block">// ¿Hacemos 2^11 constructores? ¡Imposible!
+Envio envio = new Envio("ENV001", "Buenos Aires", "Córdoba",
+                        "Medicinas", 2.5, true, true, true,
+                        true, "Mantener frío", "Dr. García",
+                        LocalTime.of(14, 0));</pre>
+                    <p><strong>Problemas:</strong> Código ilegible, imposible mantener, fácil de equivocarse</p>
+                </div>
+                
+                <h2>La Solución: Builder</h2>
+                <p><strong>Builder</strong> es un patrón que permite construir objetos complejos paso a paso. Separa la construcción de la representación.</p>
+                
+                <div class="box success">
+                    <h3>Analogía</h3>
+                    <p>Es como construir una casa. No haces todo de una vez. Primero los cimientos, luego las paredes, luego el techo, luego los acabados. Builder es como tener un constructor que sigue estos pasos.</p>
+                </div>
+            </div>
+            
+            <!-- Sección 7: Builder Implementación -->
+            <div class="section" id="builder-impl">
+                <h1>💻 Builder: Implementación</h1>
+                
+                <h2>Paso 1: Clase Envio con Constructor Privado</h2>
+                <pre class="code-block">public class Envio {
+    private String id;
+    private String origen;
+    private String destino;
+    private String descripcion;
+    // ... más atributos
+
+    // Constructor privado - solo Builder puede crear Envio
+    private Envio(EnvioBuilder builder) {
+        this.id = builder.id;
+        this.origen = builder.origen;
+        // ... asignar más atributos
+    }
+
+    // Getters
+    public String getId() { return id; }
+    public String getOrigen() { return origen; }
+    // ... más getters
+}</pre>
+                
+                <h2>Paso 2: Clase Builder</h2>
+                <pre class="code-block">public class EnvioBuilder {
+    private String id;
+    private String origen;
+    private String destino;
+    private String descripcion = "";
+    private double peso = 0;
+    private boolean fragil = false;
+    // ... más atributos
+
+    // Constructor con parámetros requeridos
+    public EnvioBuilder(String id, String origen, String destino) {
+        this.id = id;
+        this.origen = origen;
+        this.destino = destino;
+    }
+
+    // Métodos para parámetros opcionales - retornan this
+    public EnvioBuilder descripcion(String descripcion) {
+        this.descripcion = descripcion;
+        return this;
+    }
+
+    public EnvioBuilder peso(double peso) {
+        this.peso = peso;
+        return this;
+    }
+
+    public EnvioBuilder fragil(boolean fragil) {
+        this.fragil = fragil;
+        return this;
+    }
+
+    // ... más métodos
+
+    // Método build() que crea el Envio
+    public Envio build() {
+        return new Envio(this);
+    }
+}</pre>
+                
+                <h2>Paso 3: Uso - Código Correcto (✅)</h2>
+                <pre class="code-block">// Envio simple
+Envio envio1 = new EnvioBuilder("ENV001", "Buenos Aires", "Córdoba")
+    .build();
+
+// Envio complejo - ¡Mucho más legible!
+Envio envio2 = new EnvioBuilder("ENV002", "Buenos Aires", "Mendoza")
+    .descripcion("Medicinas urgentes")
+    .peso(2.5)
+    .fragil(true)
+    .requiereSignatura(true)
+    .requiereRefrigeracion(true)
+    .requiereAseguranza(true)
+    .instruccionesEspeciales("Mantener en frío")
+    .contactoEmergencia("Dr. García: 555-1234")
+    .horaEntregaPreferida(LocalTime.of(14, 0))
+    .build();</pre>
+                
+                <div class="box success">
+                    <h3>✅ Ventajas</h3>
+                    <ul>
+                        <li>Código muy legible y expresivo</li>
+                        <li>Fácil agregar nuevos atributos opcionales</li>
+                        <li>Evita constructores con muchos parámetros</li>
+                        <li>Garantiza que el objeto está completamente construido</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Sección 8: Prototype Introducción -->
+            <div class="section" id="prototype-intro">
+                <h1>🔄 Prototype: Introducción</h1>
+                
+                <h2>El Problema</h2>
+                <p>Tienes un Envio completamente configurado. Necesitas crear 100 envios más con la misma configuración. ¿Qué haces?</p>
+                
+                <div class="box">
+                    <h3>Código Incorrecto (❌)</h3>
+                    <pre class="code-block">// Llamar 100 veces al Builder - ¡Ineficiente!
+for (int i = 0; i &lt; 100; i++) {
+    Envio envio = new EnvioBuilder("ENV-" + i, "Buenos Aires", "Córdoba")
+        .descripcion("Medicinas")
+        .peso(2.5)
+        .fragil(true)
+        .requiereSignatura(true)
+        .requiereRefrigeracion(true)
+        .requiereAseguranza(true)
+        .instruccionesEspeciales("Mantener frío")
+        .contactoEmergencia("Dr. García")
+        .horaEntregaPreferida(LocalTime.of(14, 0))
+        .build();
+    envios.add(envio);
+}</pre>
+                    <p><strong>Problema:</strong> Ineficiente, repetitivo, lento</p>
+                </div>
+                
+                <h2>La Solución: Prototype</h2>
+                <p><strong>Prototype</strong> es un patrón que permite crear nuevas instancias clonando un objeto existente. Es mucho más eficiente que crear desde cero.</p>
+                
+                <div class="box success">
+                    <h3>Analogía</h3>
+                    <p>Es como hacer una fotocopia. En lugar de escribir un documento desde cero 100 veces, haces una copia del original 100 veces.</p>
+                </div>
+            </div>
+            
+            <!-- Sección 9: Prototype Implementación -->
+            <div class="section" id="prototype-impl">
+                <h1>💻 Prototype: Implementación</h1>
+                
+                <h2>Paso 1: Implementar Cloneable</h2>
+                <pre class="code-block">public class Envio implements Cloneable {
+    private String id;
+    private String origen;
+    private String destino;
+    // ... más atributos
+    private List&lt;String&gt; instrucciones;
+
+    // Implementar clone()
+    @Override
+    public Envio clone() {
+        try {
+            Envio clonado = (Envio) super.clone();
+            // IMPORTANTE: Clonar también las listas (Deep Copy)
+            clonado.instrucciones = new ArrayList&lt;&gt;(this.instrucciones);
+            return clonado;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}</pre>
+                
+                <h2>Paso 2: Uso - Código Correcto (✅)</h2>
+                <pre class="code-block">// Crear un prototipo
+Envio prototipo = new EnvioBuilder("ENV-PROTO", "Buenos Aires", "Córdoba")
+    .descripcion("Medicinas")
+    .peso(2.5)
+    .fragil(true)
+    .requiereSignatura(true)
+    .requiereRefrigeracion(true)
+    .requiereAseguranza(true)
+    .instruccionesEspeciales("Mantener frío")
+    .contactoEmergencia("Dr. García")
+    .horaEntregaPreferida(LocalTime.of(14, 0))
+    .build();
+
+// Crear 100 clones - ¡Mucho más rápido!
+for (int i = 0; i &lt; 100; i++) {
+    Envio clon = prototipo.clone();
+    clon.setId("ENV-" + i);
+    envios.add(clon);
+}</pre>
+                
+                <h2>⚠️ Importante: Shallow Copy vs Deep Copy</h2>
+                <table>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Qué Copia</th>
+                        <th>Problema</th>
+                        <th>Solución</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Shallow Copy</strong></td>
+                        <td>Valores primitivos</td>
+                        <td>Comparte referencias a objetos</td>
+                        <td>Cambiar lista afecta todos los clones</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Deep Copy</strong></td>
+                        <td>Todo, incluyendo objetos internos</td>
+                        <td>Más lento</td>
+                        <td>Cada clon es completamente independiente</td>
+                    </tr>
+                </table>
+                
+                <div class="box success">
+                    <h3>✅ Ventajas</h3>
+                    <ul>
+                        <li>Crear objetos es más rápido que con Builder</li>
+                        <li>Útil cuando tienes muchos atributos</li>
+                        <li>Útil cuando tienes objetos complejos</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Sección 10: Comparación -->
+            <div class="section" id="comparacion">
+                <h1>📊 Comparación: Cuándo Usar Cada Patrón</h1>
+                
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Cuándo Usar</th>
+                        <th>Ejemplo</th>
+                        <th>Complejidad</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Singleton</strong></td>
+                        <td>Necesitas exactamente 1 instancia</td>
+                        <td>Logger, Configuración</td>
+                        <td>Baja</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Factory Method</strong></td>
+                        <td>Crear 1 tipo de objeto, esconder clase</td>
+                        <td>VehiculoFactory.crear("auto")</td>
+                        <td>Baja-Media</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Abstract Factory</strong></td>
+                        <td>Crear FAMILIAS de objetos relacionados</td>
+                        <td>VehiculoFactoryArgentina</td>
+                        <td>Media</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Builder</strong></td>
+                        <td>Objetos complejos con muchas opciones</td>
+                        <td>Envio con 12+ atributos</td>
+                        <td>Media-Alta</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prototype</strong></td>
+                        <td>Clonar objetos existentes</td>
+                        <td>Crear 100 envios iguales</td>
+                        <td>Media</td>
+                    </tr>
+                </table>
+                
+                <h2>Árbol de Decisión</h2>
+                <pre class="code-block">¿Necesitas crear objetos?
+├─ ¿Necesitas exactamente 1 instancia?
+│  └─ SÍ → Singleton
+├─ ¿Necesitas crear familias de objetos?
+│  └─ SÍ → Abstract Factory
+├─ ¿El objeto es muy complejo con muchas opciones?
+│  └─ SÍ → Builder
+├─ ¿Necesitas clonar objetos existentes?
+│  └─ SÍ → Prototype
+└─ ¿Necesitas esconder la clase concreta?
+   └─ SÍ → Factory Method</pre>
+            </div>
+            
+            <!-- Sección 11: Resumen -->
+            <div class="section" id="resumen">
+                <h1>📋 Resumen: Los 5 Patrones Creacionales</h1>
+                
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Problema</th>
+                        <th>Solución</th>
+                        <th>Complejidad</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Singleton</strong></td>
+                        <td>1 instancia única</td>
+                        <td>Constructor privado + getInstance()</td>
+                        <td>Baja</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Factory Method</strong></td>
+                        <td>Esconder clase concreta</td>
+                        <td>Método factory</td>
+                        <td>Baja-Media</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Abstract Factory</strong></td>
+                        <td>Familias de objetos</td>
+                        <td>Factory de factories</td>
+                        <td>Media</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Builder</strong></td>
+                        <td>Objetos complejos</td>
+                        <td>Construcción paso a paso</td>
+                        <td>Media-Alta</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prototype</strong></td>
+                        <td>Clonar objetos</td>
+                        <td>Implementar Cloneable</td>
+                        <td>Media</td>
+                    </tr>
+                </table>
+                
+                <h2>En LogiSmart Podemos Usar Todos</h2>
+                <ul>
+                    <li><strong>Singleton:</strong> ConfiguracionSistema</li>
+                    <li><strong>Factory Method:</strong> VehiculoFactory</li>
+                    <li><strong>Abstract Factory:</strong> VehiculoFactoryArgentina, VehiculoFactoryBrasil</li>
+                    <li><strong>Builder:</strong> EnvioBuilder</li>
+                    <li><strong>Prototype:</strong> Clonar Envios</li>
+                </ul>
+                
+                <div class="box success">
+                    <h3>✅ Próximos Pasos</h3>
+                    <p>En el Hito 7, vas a implementar estos patrones en tu código de LogiSmart. Verás cómo se combinan para crear un sistema flexible y mantenible.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Highlight active section
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const sidebar = document.querySelector('.sidebar');
+            const links = sidebar.querySelectorAll('a');
+            
+            sections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top < 100) {
+                    links.forEach(l => l.classList.remove('active'));
+                    links[index].classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
