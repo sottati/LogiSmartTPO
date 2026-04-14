@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 6: Patrones de Diseño GoF - Creacionales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: #2c3e50;
+            color: white;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .nav-item {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .nav-item:hover {
+            background: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .nav-item.active {
+            background: #667eea;
+            border-left: 3px solid #fff;
+        }
+        
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background: white;
+            padding: 40px;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        h3 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            color: #555;
+            font-size: 16px;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .code-block {
+            background: #f4f4f4;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .code-block.correct {
+            border-left-color: #27ae60;
+            background: #f0fdf4;
+        }
+        
+        .code-block.incorrect {
+            border-left-color: #e74c3c;
+            background: #fef2f2;
+        }
+        
+        .example-box {
+            background: #f9f9f9;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .example-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .comparison-item.bad {
+            border-color: #e74c3c;
+            background: #fef2f2;
+        }
+        
+        .comparison-item.good {
+            border-color: #27ae60;
+            background: #f0fdf4;
+        }
+        
+        .comparison-item h4 {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .comparison-item.bad h4 {
+            color: #e74c3c;
+        }
+        
+        .comparison-item.good h4 {
+            color: #27ae60;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+        
+        .highlight strong {
+            color: #856404;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .intro-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .intro-section h1 {
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .intro-section p {
+            color: rgba(255,255,255,0.9);
+            font-size: 18px;
+        }
+        
+        .pattern-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s;
+        }
+        
+        .pattern-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .pattern-card h3 {
+            margin-top: 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .badge.creational {
+            background: #27ae60;
+        }
+        
+        .badge.structural {
+            background: #f39c12;
+        }
+        
+        .badge.behavioral {
+            background: #e74c3c;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: 200px;
+                display: flex;
+                overflow-x: auto;
+            }
+            
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>📚 Contenido</h2>
+            <div class="nav-item active" onclick="mostrarSeccion(0)">1. Introducción</div>
+            <div class="nav-item" onclick="mostrarSeccion(1)">2. ¿Qué son los Patrones?</div>
+            <div class="nav-item" onclick="mostrarSeccion(2)">3. Clasificación GoF</div>
+            <div class="nav-item" onclick="mostrarSeccion(3)">4. Patrones Creacionales</div>
+            <div class="nav-item" onclick="mostrarSeccion(4)">5. Singleton</div>
+            <div class="nav-item" onclick="mostrarSeccion(5)">6. Factory Method</div>
+            <div class="nav-item" onclick="mostrarSeccion(6)">7. Comparación</div>
+            <div class="nav-item" onclick="mostrarSeccion(7)">8. En LogiSmart</div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Sección 1: Introducción -->
+            <div class="section active">
+                <div class="intro-section">
+                    <h1>Clase 6: Patrones de Diseño GoF</h1>
+                    <p class="subtitle">Patrones Creacionales I: Singleton y Factory Method</p>
+                </div>
+                
+                <h2>Bienvenida</h2>
+                <p>Hasta ahora, hemos aprendido sobre <strong>GRASP</strong>, que son principios generales para asignar responsabilidades. Hoy comenzamos con los <strong>Patrones de Diseño</strong>, que son soluciones probadas a problemas específicos.</p>
+                
+                <h2>¿Qué Aprenderemos?</h2>
+                <ol>
+                    <li>Qué son los patrones de diseño</li>
+                    <li>Cómo se clasifican (Gang of Four)</li>
+                    <li>Los patrones creacionales</li>
+                    <li>Singleton: Una única instancia</li>
+                    <li>Factory Method: Crear sin acoplar</li>
+                    <li>Aplicación en LogiSmart</li>
+                </ol>
+                
+                <h2>Objetivos de la Clase</h2>
+                <ul>
+                    <li>Entender qué son los patrones de diseño</li>
+                    <li>Conocer la clasificación GoF</li>
+                    <li>Dominar Singleton y Factory Method</li>
+                    <li>Aplicar estos patrones en LogiSmart</li>
+                </ul>
+            </div>
+            
+            <!-- Sección 2: ¿Qué son los Patrones? -->
+            <div class="section">
+                <h1>¿Qué son los Patrones de Diseño?</h1>
+                
+                <h2>Definición</h2>
+                <p>Un <strong>Patrón de Diseño</strong> es una solución reutilizable a un problema común en el diseño de software. Es una descripción de cómo resolver un problema, no el código en sí.</p>
+                
+                <div class="highlight">
+                    <strong>Analogía:</strong> Un arquitecto no inventa cómo construir una puerta cada vez que diseña una casa. Usa patrones probados. Lo mismo hacemos en software.
+                </div>
+                
+                <h2>Características de un Buen Patrón</h2>
+                <table>
+                    <tr>
+                        <th>Característica</th>
+                        <th>Descripción</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Resuelve un problema específico</strong></td>
+                        <td>No es una solución genérica, sino para un contexto particular</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Es probado</strong></td>
+                        <td>Otros lo han usado exitosamente</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Es documentado</strong></td>
+                        <td>Tiene un nombre, descripción, ventajas y desventajas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Es reutilizable</strong></td>
+                        <td>Puedes aplicarlo en diferentes contextos</td>
+                    </tr>
+                </table>
+                
+                <h2>Estructura de un Patrón</h2>
+                <div class="example-box">
+                    <h4>Ejemplo: Patrón Singleton</h4>
+                    <p><strong>Nombre:</strong> Singleton</p>
+                    <p><strong>Problema:</strong> Necesito asegurar que una clase tenga una única instancia</p>
+                    <p><strong>Solución:</strong> Hacer el constructor privado y proporcionar un método estático para obtener la instancia</p>
+                    <p><strong>Ventajas:</strong> Control global, acceso único</p>
+                    <p><strong>Desventajas:</strong> Difícil de testear, oculta dependencias</p>
+                </div>
+                
+                <h2>Historia: Gang of Four (GoF)</h2>
+                <p>En 1994, cuatro autores publicaron el libro <strong>"Design Patterns: Elements of Reusable Object-Oriented Software"</strong>. Estos autores son conocidos como el <strong>Gang of Four (GoF)</strong>:</p>
+                <ul>
+                    <li><strong>Erich Gamma</strong></li>
+                    <li><strong>Richard Helm</strong></li>
+                    <li><strong>Ralph Johnson</strong></li>
+                    <li><strong>John Vlissides</strong></li>
+                </ul>
+                <p>El libro documentó <strong>23 patrones</strong> que se convirtieron en el estándar de la industria. Desde entonces, se han descubierto más patrones, pero los 23 del GoF siguen siendo los más importantes.</p>
+            </div>
+            
+            <!-- Sección 3: Clasificación GoF -->
+            <div class="section">
+                <h1>Clasificación GoF</h1>
+                
+                <p>Los 23 patrones del GoF se clasifican en tres categorías según el problema que resuelven:</p>
+                
+                <h2>1. Patrones Creacionales (5 patrones)</h2>
+                <p>Resuelven problemas de <strong>cómo crear objetos</strong>. El objetivo es crear objetos de forma flexible, sin acoplar el código al tipo específico de objeto.</p>
+                
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Descripción</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Singleton</strong></td>
+                        <td>Una única instancia en toda la aplicación</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Factory Method</strong></td>
+                        <td>Crear objetos sin especificar su clase exacta</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Abstract Factory</strong></td>
+                        <td>Crear familias de objetos relacionados</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Builder</strong></td>
+                        <td>Construir objetos complejos paso a paso</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prototype</strong></td>
+                        <td>Crear objetos clonando un prototipo</td>
+                    </tr>
+                </table>
+                
+                <h2>2. Patrones Estructurales (7 patrones)</h2>
+                <p>Resuelven problemas de <strong>cómo organizar las relaciones entre objetos</strong>. El objetivo es crear estructuras flexibles que combinen objetos y clases.</p>
+                
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Descripción</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Adapter</strong></td>
+                        <td>Hacer compatible una interfaz con otra</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bridge</strong></td>
+                        <td>Desacoplar abstracción de implementación</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Composite</strong></td>
+                        <td>Tratar objetos individuales y composiciones uniformemente</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Decorator</strong></td>
+                        <td>Agregar responsabilidades dinámicamente</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Facade</strong></td>
+                        <td>Proporcionar interfaz simplificada a un subsistema</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flyweight</strong></td>
+                        <td>Compartir objetos para ahorrar memoria</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proxy</strong></td>
+                        <td>Proporcionar un substituto o placeholder</td>
+                    </tr>
+                </table>
+                
+                <h2>3. Patrones de Comportamiento (11 patrones)</h2>
+                <p>Resuelven problemas de <strong>cómo comunicarse entre objetos</strong>. El objetivo es definir cómo los objetos interactúan y distribuyen responsabilidades.</p>
+                
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Descripción</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Chain of Responsibility</strong></td>
+                        <td>Pasar una solicitud a lo largo de una cadena de objetos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Command</strong></td>
+                        <td>Encapsular una solicitud como un objeto</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Interpreter</strong></td>
+                        <td>Definir una representación de un lenguaje</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Iterator</strong></td>
+                        <td>Acceder secuencialmente a elementos de una colección</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mediator</strong></td>
+                        <td>Definir un objeto que encapsula cómo interactúan otros objetos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memento</strong></td>
+                        <td>Capturar y externalizar el estado de un objeto</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Observer</strong></td>
+                        <td>Notificar a múltiples objetos sobre cambios de estado</td>
+                    </tr>
+                    <tr>
+                        <td><strong>State</strong></td>
+                        <td>Permitir que un objeto altere su comportamiento según su estado</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Strategy</strong></td>
+                        <td>Encapsular una familia de algoritmos intercambiables</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Template Method</strong></td>
+                        <td>Definir el esqueleto de un algoritmo en una clase base</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Visitor</strong></td>
+                        <td>Representar una operación a realizar sobre elementos de una estructura</td>
+                    </tr>
+                </table>
+                
+                <h2>Resumen</h2>
+                <table>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Cantidad</th>
+                        <th>Objetivo</th>
+                        <th>Pregunta</th>
+                    </tr>
+                    <tr>
+                        <td><span class="badge creational">Creacionales</span></td>
+                        <td>5</td>
+                        <td>Crear objetos</td>
+                        <td>¿Cómo creo esto?</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge structural">Estructurales</span></td>
+                        <td>7</td>
+                        <td>Organizar relaciones</td>
+                        <td>¿Cómo organizo esto?</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge behavioral">Comportamiento</span></td>
+                        <td>11</td>
+                        <td>Comunicación</td>
+                        <td>¿Cómo se comunican?</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!-- Sección 4: Patrones Creacionales -->
+            <div class="section">
+                <h1>Patrones Creacionales: Conceptos</h1>
+                
+                <h2>¿Por qué son importantes?</h2>
+                <p>Imagina que tienes un sistema donde necesitas crear muchos tipos de objetos: Envios, Vehiculos, Notificadores, etc. Si el código cliente sabe exactamente qué clase instanciar, entonces:</p>
+                <ol>
+                    <li>El código está fuertemente acoplado a las clases específicas</li>
+                    <li>Si necesitas cambiar cómo se crean los objetos, tienes que cambiar el código cliente</li>
+                    <li>Es difícil testear porque siempre creas objetos reales</li>
+                </ol>
+                
+                <h2>Principio Fundamental</h2>
+                <div class="highlight">
+                    <strong>"Depende de abstracciones, no de concreciones."</strong>
+                </div>
+                
+                <h2>Comparación: Antes vs Después</h2>
+                <div class="comparison">
+                    <div class="comparison-item bad">
+                        <h4>❌ Sin Patrón</h4>
+                        <div class="code-block incorrect">
+Envio envio = new EnvioExpress();
+// Acoplado a EnvioExpress
+// Si cambias la clase, cambias aquí
+                        </div>
+                    </div>
+                    <div class="comparison-item good">
+                        <h4>✅ Con Patrón</h4>
+                        <div class="code-block correct">
+Envio envio = factory.crearEnvio(
+    TipoEnvio.EXPRESS
+);
+// Desacoplado
+// Cambios centralizados
+                        </div>
+                    </div>
+                </div>
+                
+                <h2>Los 5 Patrones Creacionales</h2>
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Cuándo Usar</th>
+                        <th>Complejidad</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Singleton</strong></td>
+                        <td>Una única instancia (logger, config, BD)</td>
+                        <td>Baja</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Factory Method</strong></td>
+                        <td>Múltiples subclases, crear la correcta</td>
+                        <td>Media</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Abstract Factory</strong></td>
+                        <td>Familias de objetos relacionados</td>
+                        <td>Alta</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Builder</strong></td>
+                        <td>Objetos complejos con muchos parámetros</td>
+                        <td>Media</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prototype</strong></td>
+                        <td>Crear objetos es costoso, clonar es barato</td>
+                        <td>Media</td>
+                    </tr>
+                </table>
+                
+                <h2>Ventajas Generales</h2>
+                <ul>
+                    <li><strong>Flexibilidad:</strong> Fácil cambiar qué objetos se crean</li>
+                    <li><strong>Mantenibilidad:</strong> Cambios centralizados en la creación</li>
+                    <li><strong>Testabilidad:</strong> Fácil inyectar mocks</li>
+                    <li><strong>Escalabilidad:</strong> Fácil agregar nuevos tipos de objetos</li>
+                </ul>
+            </div>
+            
+            <!-- Sección 5: Singleton -->
+            <div class="section">
+                <h1>Singleton: Una Única Instancia</h1>
+                
+                <h2>El Problema</h2>
+                <p>Imagina que necesitas una clase que gestione la configuración del sistema. Necesitas que:</p>
+                <ol>
+                    <li>Haya una única instancia en toda la aplicación</li>
+                    <li>Todos accedan a la misma instancia</li>
+                    <li>No se pueda crear otra instancia</li>
+                </ol>
+                
+                <h2>Sin Singleton (❌ Incorrecto)</h2>
+                <div class="code-block incorrect">
+Config config1 = new Config();
+Config config2 = new Config();
+// ❌ Ahora tienes dos instancias diferentes
+// Si cambias config1, config2 no se entera
+                </div>
+                
+                <h2>Con Singleton (✅ Correcto)</h2>
+                <div class="code-block correct">
+class Config {
+    private static Config instancia;
+    
+    private Config() { // Constructor privado
+        // Inicialización
+    }
+    
+    public static Config obtenerInstancia() {
+        if (instancia == null) {
+            instancia = new Config();
+        }
+        return instancia;
+    }
+}
+
+// Uso:
+Config config = Config.obtenerInstancia();
+                </div>
+                
+                <h2>Problema: Thread Safety</h2>
+                <p>En un sistema multihilo, el código anterior tiene un problema. Dos hilos podrían crear dos instancias simultáneamente.</p>
+                
+                <h2>Soluciones</h2>
+                
+                <h3>Solución 1: Sincronizar</h3>
+                <div class="code-block">
+public static synchronized Config obtenerInstancia() {
+    if (instancia == null) {
+        instancia = new Config();
+    }
+    return instancia;
+}
+                </div>
+                
+                <h3>Solución 2: Eager Initialization</h3>
+                <div class="code-block">
+class Config {
+    private static final Config instancia = new Config();
+    
+    private Config() {}
+    
+    public static Config obtenerInstancia() {
+        return instancia;
+    }
+}
+                </div>
+                
+                <h3>Solución 3: Double-Checked Locking</h3>
+                <div class="code-block">
+public static Config obtenerInstancia() {
+    if (instancia == null) {
+        synchronized (Config.class) {
+            if (instancia == null) {
+                instancia = new Config();
+            }
+        }
+    }
+    return instancia;
+}
+                </div>
+                
+                <h2>Ventajas y Desventajas</h2>
+                <table>
+                    <tr>
+                        <th>Ventajas</th>
+                        <th>Desventajas</th>
+                    </tr>
+                    <tr>
+                        <td>Único punto de acceso</td>
+                        <td>Difícil de testear</td>
+                    </tr>
+                    <tr>
+                        <td>Lazy initialization</td>
+                        <td>Oculta dependencias</td>
+                    </tr>
+                    <tr>
+                        <td>Acceso global</td>
+                        <td>Puede ser un anti-patrón</td>
+                    </tr>
+                </table>
+                
+                <h2>Cuándo Usar</h2>
+                <ul>
+                    <li>Conexión a base de datos</li>
+                    <li>Logger del sistema</li>
+                    <li>Configuración de la aplicación</li>
+                    <li>Pool de conexiones</li>
+                    <li>Cache global</li>
+                </ul>
+                
+                <h2>En LogiSmart</h2>
+                <div class="example-box">
+                    <h4>Conexión a la Base de Datos</h4>
+                    <div class="code-block">
+class ConexionBD {
+    private static ConexionBD instancia;
+    private Connection conexion;
+    
+    private ConexionBD() {
+        // Conectar a la BD
+    }
+    
+    public static ConexionBD obtenerInstancia() {
+        if (instancia == null) {
+            instancia = new ConexionBD();
+        }
+        return instancia;
+    }
+    
+    public Connection getConexion() {
+        return conexion;
+    }
+}
+
+// Uso:
+class LogiSmartController {
+    private ConexionBD bd = ConexionBD.obtenerInstancia();
+    
+    public Envio crearEnvio(...) {
+        // Usar bd.getConexion()
+    }
+}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección 6: Factory Method -->
+            <div class="section">
+                <h1>Factory Method: Crear Sin Acoplar</h1>
+                
+                <h2>El Problema</h2>
+                <p>En LogiSmart tienes diferentes tipos de envíos:</p>
+                <ul>
+                    <li>EnvioExpress (24 horas)</li>
+                    <li>EnvioStandard (3-5 días)</li>
+                    <li>EnvioEconomico (7-10 días)</li>
+                </ul>
+                
+                <h2>Sin Factory Method (❌ Acoplamiento)</h2>
+                <div class="code-block incorrect">
+String tipo = "express";
+Envio envio;
+
+if (tipo.equals("express")) {
+    envio = new EnvioExpress();
+} else if (tipo.equals("standard")) {
+    envio = new EnvioStandard();
+} else {
+    envio = new EnvioEconomico();
+}
+// ❌ Código cliente acoplado a todas las subclases
+// ❌ Si agregas un tipo, cambias aquí
+                </div>
+                
+                <h2>Con Factory Method (✅ Desacoplado)</h2>
+                <div class="code-block correct">
+interface Envio {
+    void enviar();
+}
+
+class EnvioExpress implements Envio {
+    public void enviar() { /* ... */ }
+}
+
+class FabricaDeEnvios {
+    public static Envio crearEnvio(String tipo) {
+        switch (tipo) {
+            case "express":
+                return new EnvioExpress();
+            case "standard":
+                return new EnvioStandard();
+            default:
+                return new EnvioEconomico();
+        }
+    }
+}
+
+// Uso:
+Envio envio = FabricaDeEnvios.crearEnvio("express");
+// ✅ Código cliente desacoplado
+// ✅ Cambios centralizados en la factory
+                </div>
+                
+                <h2>Ventajas de Factory Method</h2>
+                <ul>
+                    <li><strong>Desacoplamiento:</strong> El código cliente no conoce las subclases</li>
+                    <li><strong>Centralización:</strong> La creación está en un solo lugar</li>
+                    <li><strong>Flexibilidad:</strong> Fácil agregar nuevos tipos</li>
+                    <li><strong>Testabilidad:</strong> Fácil inyectar mocks</li>
+                </ul>
+                
+                <h2>Cuándo Usar</h2>
+                <ul>
+                    <li>Tienes múltiples subclases y quieres crear la correcta dinámicamente</li>
+                    <li>La creación es compleja</li>
+                    <li>Quieres desacoplar el código cliente de las subclases</li>
+                </ul>
+                
+                <h2>En LogiSmart: 3 Ejemplos</h2>
+                
+                <h3>1. Factory de Envíos</h3>
+                <div class="code-block">
+class FabricaDeEnvios {
+    public static Envio crearEnvio(TipoEnvio tipo, Cliente cliente, 
+                                    Ubicacion origen, Ubicacion destino) {
+        switch (tipo) {
+            case EXPRESS:
+                return new EnvioExpress(cliente, origen, destino);
+            case STANDARD:
+                return new EnvioStandard(cliente, origen, destino);
+            case ECONOMICO:
+                return new EnvioEconomico(cliente, origen, destino);
+            default:
+                throw new IllegalArgumentException("Tipo inválido");
+        }
+    }
+}
+                </div>
+                
+                <h3>2. Factory de Notificadores</h3>
+                <div class="code-block">
+class FabricaDeNotificadores {
+    public static Notificador crearNotificador(TipoNotificador tipo) {
+        switch (tipo) {
+            case EMAIL:
+                return new NotificadorEmail();
+            case SMS:
+                return new NotificadorSMS();
+            case PUSH:
+                return new NotificadorPush();
+            default:
+                throw new IllegalArgumentException("Tipo inválido");
+        }
+    }
+}
+                </div>
+                
+                <h3>3. Factory de Vehículos</h3>
+                <div class="code-block">
+class FabricaDeVehiculos {
+    public static Vehiculo crearVehiculo(TipoVehiculo tipo) {
+        switch (tipo) {
+            case AUTO:
+                return new Auto();
+            case CAMION:
+                return new Camion();
+            case MOTO:
+                return new Moto();
+            default:
+                throw new IllegalArgumentException("Tipo inválido");
+        }
+    }
+}
+                </div>
+            </div>
+            
+            <!-- Sección 7: Comparación -->
+            <div class="section">
+                <h1>Comparación: Singleton vs Factory Method</h1>
+                
+                <table>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Singleton</th>
+                        <th>Factory Method</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Objetivo</strong></td>
+                        <td>Una única instancia</td>
+                        <td>Crear objetos del tipo correcto</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Uso</strong></td>
+                        <td>Acceso global</td>
+                        <td>Creación flexible</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Acoplamiento</strong></td>
+                        <td>Alto (depende de la clase)</td>
+                        <td>Bajo (depende de interfaz)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Testabilidad</strong></td>
+                        <td>Difícil</td>
+                        <td>Fácil</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Complejidad</strong></td>
+                        <td>Simple</td>
+                        <td>Moderada</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ejemplo</strong></td>
+                        <td>Base de datos</td>
+                        <td>Tipos de envíos</td>
+                    </tr>
+                </table>
+                
+                <h2>¿Cuándo Usar Cada Uno?</h2>
+                
+                <h3>Usa Singleton Cuando:</h3>
+                <ul>
+                    <li>Necesitas un único punto de acceso global</li>
+                    <li>Quieres controlar la instancia única</li>
+                    <li>La creación es costosa y quieres lazy initialization</li>
+                </ul>
+                
+                <h3>Usa Factory Method Cuando:</h3>
+                <ul>
+                    <li>Tienes múltiples tipos de objetos</li>
+                    <li>Quieres desacoplar el código cliente</li>
+                    <li>La creación es compleja o varía según el contexto</li>
+                </ul>
+            </div>
+            
+            <!-- Sección 8: En LogiSmart -->
+            <div class="section">
+                <h1>Aplicación en LogiSmart</h1>
+                
+                <h2>Arquitectura Propuesta</h2>
+                <p>En el Hito 6, aplicarás estos patrones a LogiSmart:</p>
+                
+                <h2>1. Singleton: ConexionBD</h2>
+                <div class="example-box">
+                    <h4>Gestión de la Base de Datos</h4>
+                    <div class="code-block">
+class ConexionBD {
+    private static ConexionBD instancia;
+    private Connection conexion;
+    
+    private ConexionBD() {
+        // Conectar a la BD
+    }
+    
+    public static ConexionBD obtenerInstancia() {
+        if (instancia == null) {
+            instancia = new ConexionBD();
+        }
+        return instancia;
+    }
+    
+    public void ejecutarQuery(String sql) { /* ... */ }
+}
+                    </div>
+                </div>
+                
+                <h2>2. Factory Method: Creación de Objetos</h2>
+                <div class="example-box">
+                    <h4>Factories para Diferentes Tipos</h4>
+                    <div class="code-block">
+// Factory de Envíos
+class FabricaDeEnvios {
+    public static Envio crearEnvio(TipoEnvio tipo, ...) { ... }
+}
+
+// Factory de Notificadores
+class FabricaDeNotificadores {
+    public static Notificador crearNotificador(TipoNotificador tipo) { ... }
+}
+
+// Factory de Vehículos
+class FabricaDeVehiculos {
+    public static Vehiculo crearVehiculo(TipoVehiculo tipo) { ... }
+}
+                    </div>
+                </div>
+                
+                <h2>3. Integración en LogiSmartController</h2>
+                <div class="code-block">
+class LogiSmartController {
+    private ConexionBD bd = ConexionBD.obtenerInstancia();
+    
+    public Envio crearEnvio(String tipo, Cliente cliente, ...) {
+        // Usar factory
+        Envio envio = FabricaDeEnvios.crearEnvio(
+            TipoEnvio.valueOf(tipo), 
+            cliente, 
+            origen, 
+            destino
+        );
+        
+        // Guardar en BD
+        bd.ejecutarQuery("INSERT INTO envios ...");
+        
+        // Notificar
+        Notificador notificador = FabricaDeNotificadores.crearNotificador(
+            TipoNotificador.EMAIL
+        );
+        notificador.notificar(cliente.getEmail(), "Envío creado");
+        
+        return envio;
+    }
+}
+                </div>
+                
+                <h2>Beneficios</h2>
+                <ul>
+                    <li>✅ Código desacoplado y flexible</li>
+                    <li>✅ Fácil agregar nuevos tipos de envíos, notificadores, vehículos</li>
+                    <li>✅ Fácil de testear con mocks</li>
+                    <li>✅ Cambios centralizados en las factories</li>
+                    <li>✅ Único punto de acceso a la BD</li>
+                </ul>
+                
+                <h2>Próxima Clase</h2>
+                <p>En la próxima clase veremos:</p>
+                <ul>
+                    <li><strong>Abstract Factory:</strong> Crear familias de objetos relacionados</li>
+                    <li><strong>Builder:</strong> Construir objetos complejos paso a paso</li>
+                    <li><strong>Prototype:</strong> Clonar objetos</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function mostrarSeccion(indice) {
+            const secciones = document.querySelectorAll('.section');
+            const items = document.querySelectorAll('.nav-item');
+            
+            secciones.forEach(s => s.classList.remove('active'));
+            items.forEach(i => i.classList.remove('active'));
+            
+            secciones[indice].classList.add('active');
+            items[indice].classList.add('active');
+        }
+    </script>
+</body>
+</html>

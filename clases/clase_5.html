@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 5: GRASP Parte II - Asignación de Responsabilidades</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .sidebar h1 {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin: 12px 0;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: #555;
+            font-size: 14px;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            background: white;
+            overflow-y: auto;
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 22px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            tab-size: 4;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .code-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .code-wrong {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+
+        .code-correct {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+
+        .label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .label-wrong {
+            color: #f44336;
+        }
+
+        .label-correct {
+            color: #4caf50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .example-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .example-box strong {
+            color: #1976d2;
+        }
+
+        .advantage-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .advantage-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .advantage-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .diagram {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            margin: -40px -40px 30px -40px;
+            border-radius: 0;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            margin: 0;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 200px;
+            }
+
+            .code-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .main {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1>📚 Clase 5</h1>
+            <ul>
+                <li><a href="#intro" class="nav-link active">Introducción</a></li>
+                <li><a href="#controller" class="nav-link">1. Controller</a></li>
+                <li><a href="#polymorphism" class="nav-link">2. Polymorphism</a></li>
+                <li><a href="#pure-fabrication" class="nav-link">3. Pure Fabrication</a></li>
+                <li><a href="#indirection" class="nav-link">4. Indirection</a></li>
+                <li><a href="#protected-variations" class="nav-link">5. Protected Variations</a></li>
+                <li><a href="#resumen" class="nav-link">Resumen</a></li>
+                <li><a href="#hito5" class="nav-link">Hito 5</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main">
+            <!-- Introducción -->
+            <div id="intro" class="section active">
+                <div class="header">
+                    <h1>🎯 GRASP Parte II</h1>
+                    <p>Asignación de Responsabilidades: Controller, Polymorphism, Pure Fabrication, Indirection, Protected Variations</p>
+                </div>
+
+                <h2>Introducción</h2>
+                <p>En la clase anterior vimos <strong>GRASP Parte I</strong>: Expert, Creator, Low Coupling y High Cohesion. Hoy veremos los 5 patrones restantes que nos permitirán diseñar sistemas más flexibles, mantenibles y escalables.</p>
+
+                <h3>¿Por Qué Estos Patrones?</h3>
+                <p>El software cambia. Los requisitos cambian. Las tecnologías cambian. Un buen diseño debe anticipar estos cambios y hacerlos fáciles de implementar sin romper el código existente.</p>
+
+                <p>Estos 5 patrones nos enseñan exactamente cómo hacer eso:</p>
+                <ul class="advantage-list">
+                    <li><strong>Controller:</strong> Quién maneja las solicitudes del usuario</li>
+                    <li><strong>Polymorphism:</strong> Usar interfaces para eliminar condicionales</li>
+                    <li><strong>Pure Fabrication:</strong> Inventar clases para salvar el diseño</li>
+                    <li><strong>Indirection:</strong> Desacoplar componentes a través de intermediarios</li>
+                    <li><strong>Protected Variations:</strong> Proteger el código de cambios futuros</li>
+                </ul>
+
+                <div class="footer">Práctica: Hito 5 del TPO</div>
+            </div>
+
+            <!-- Controller -->
+            <div id="controller" class="section">
+                <h2>1. Controller Pattern</h2>
+
+                <h3>El Problema</h3>
+                <p>Cuando la interfaz de usuario (UI) maneja directamente la lógica de negocio, se crea un <span class="highlight">acoplamiento fuerte</span>. Si cambias la UI, rompes la lógica. Si cambias la lógica, rompes la UI.</p>
+
+                <div class="code-comparison">
+                    <div>
+                        <span class="label label-wrong">❌ INCORRECTO</span>
+                        <div class="code-block code-wrong">
+class BibliotecaUI {
+    void prestarLibro() {
+        Libro libro = 
+            biblioteca.buscarLibro(isbn);
+        if (libro.isDisponible()) {
+            libro.setDisponible(false);
+            miembro.agregarLibro(libro);
+            registro.crear(miembro, libro);
+            // ... más lógica
+        }
+    }
+}
+                        </div>
+                    </div>
+                    <div>
+                        <span class="label label-correct">✅ CORRECTO</span>
+                        <div class="code-block code-correct">
+class BibliotecaController {
+    private Biblioteca biblioteca;
+    
+    public boolean prestarLibro(
+        String isbn, int idMiembro) {
+        Libro libro = 
+            biblioteca.buscarLibro(isbn);
+        Miembro miembro = 
+            biblioteca.obtenerMiembro(
+                idMiembro);
+        return biblioteca.prestarLibro(
+            libro, miembro);
+    }
+}
+                        </div>
+                    </div>
+                </div>
+
+                <h3>La Solución</h3>
+                <p>Crear una clase <strong>Controller</strong> que actúe como intermediaria entre la UI y el dominio. El Controller recibe las solicitudes, coordina las operaciones, y devuelve resultados.</p>
+
+                <h3>Ventajas</h3>
+                <ul class="advantage-list">
+                    <li><strong>Desacoplamiento:</strong> La UI no conoce los detalles del dominio</li>
+                    <li><strong>Testabilidad:</strong> Podemos testear el Controller sin la UI</li>
+                    <li><strong>Reutilización:</strong> El mismo Controller puede usarse con diferentes UIs</li>
+                    <li><strong>Mantenibilidad:</strong> Cambios en la UI no afectan el dominio</li>
+                </ul>
+
+                <h3>Tipos de Controllers</h3>
+                <table>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Ejemplo</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Facade Controller</strong></td>
+                        <td>Coordina múltiples objetos del dominio</td>
+                        <td>BibliotecaController</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Use Case Controller</strong></td>
+                        <td>Maneja un caso de uso específico</td>
+                        <td>PrestarLibroController</td>
+                    </tr>
+                </table>
+
+                <div class="footer">El Controller es como un "gerente" que coordina el trabajo</div>
+            </div>
+
+            <!-- Polymorphism -->
+            <div id="polymorphism" class="section">
+                <h2>2. Polymorphism Pattern</h2>
+
+                <h3>El Problema</h3>
+                <p>La proliferación de <span class="highlight">condicionales anidados</span> hace el código frágil y difícil de mantener.</p>
+
+                <div class="code-block code-wrong">
+// ❌ INCORRECTO: Condicionales anidados
+if (usuario instanceof Cliente) {
+    // Hacer algo para Cliente
+} else if (usuario instanceof Operador) {
+    // Hacer algo para Operador
+} else if (usuario instanceof Administrador) {
+    // Hacer algo para Administrador
+}
+                </div>
+
+                <p><strong>Problemas:</strong></p>
+                <ul class="advantage-list">
+                    <li>Violación del Principio Open/Closed</li>
+                    <li>Cada nuevo tipo requiere modificar el código existente</li>
+                    <li>Difícil de testear: necesitas testear cada rama</li>
+                </ul>
+
+                <h3>La Solución</h3>
+                <p>Usar <strong>Polymorphism</strong> (polimorfismo). Cada tipo de usuario implementa su propio comportamiento. El código que usa los usuarios no necesita saber qué tipo son.</p>
+
+                <div class="code-block code-correct">
+// ✅ CORRECTO: Polymorphism
+interface Usuario {
+    boolean puedePrestarLibro();
+    boolean puedeModificarCatalogo();
+}
+
+class Cliente implements Usuario {
+    public boolean puedePrestarLibro() { 
+        return true; 
+    }
+    public boolean puedeModificarCatalogo() { 
+        return false; 
+    }
+}
+
+class BibliotecaController {
+    void prestarLibro(Usuario usuario, Libro libro) {
+        if (usuario.puedePrestarLibro()) {
+            // Realizar préstamo
+        }
+    }
+}
+                </div>
+
+                <h3>Ventajas</h3>
+                <ul class="advantage-list">
+                    <li><strong>Extensibilidad:</strong> Agregar un nuevo tipo es fácil</li>
+                    <li><strong>Mantenibilidad:</strong> El código que usa usuarios no cambia</li>
+                    <li><strong>Testabilidad:</strong> Puedes crear usuarios mock</li>
+                    <li><strong>Claridad:</strong> El código expresa la intención claramente</li>
+                </ul>
+
+                <div class="footer">Polymorphism es uno de los pilares de la POO</div>
+            </div>
+
+            <!-- Pure Fabrication -->
+            <div id="pure-fabrication" class="section">
+                <h2>3. Pure Fabrication Pattern</h2>
+
+                <h3>El Problema</h3>
+                <p>A veces, aplicar Expert y Creator nos lleva a clases con demasiadas responsabilidades. Es como si tuviéramos que forzar una responsabilidad en una clase que no le corresponde naturalmente.</p>
+
+                <p><strong>Pregunta:</strong> ¿Quién debería ser responsable de enviar emails? ¿El Miembro? ¿La Biblioteca? Ninguno de los dos se siente "experto" en enviar emails.</p>
+
+                <h3>La Solución</h3>
+                <p><strong>Pure Fabrication</strong> es inventar una clase que no existe en el dominio real, pero que es útil en el diseño. Es como contratar a un especialista externo para hacer un trabajo que nadie en la empresa quiere hacer.</p>
+
+                <div class="code-comparison">
+                    <div>
+                        <span class="label label-wrong">❌ INCORRECTO</span>
+                        <div class="code-block code-wrong">
+class Miembro {
+    public void notificar(String msg) {
+        // Conectar a SMTP
+        // Autenticarse
+        // Enviar email
+        // Manejar errores
+        // ... 50 líneas
+    }
+}
+                        </div>
+                    </div>
+                    <div>
+                        <span class="label label-correct">✅ CORRECTO</span>
+                        <div class="code-block code-correct">
+class NotificadorDePrestamos {
+    private ServicioDeEmail servicio;
+    
+    public void notificar(
+        Miembro miembro, Libro libro) {
+        String msg = "Préstamo: " + 
+            libro.getTitulo();
+        servicio.enviar(
+            miembro.getEmail(), msg);
+    }
+}
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Ventajas</h3>
+                <ul class="advantage-list">
+                    <li><strong>Separación de Responsabilidades:</strong> Cada clase tiene una responsabilidad clara</li>
+                    <li><strong>Reutilización:</strong> El Notificador puede usarse en otros contextos</li>
+                    <li><strong>Testabilidad:</strong> Podemos testear el Notificador independientemente</li>
+                    <li><strong>Mantenibilidad:</strong> Cambios en notificación no afectan Miembro</li>
+                </ul>
+
+                <h3>Ejemplos Comunes</h3>
+                <p>Pure Fabrication es común en software profesional:</p>
+                <ul class="advantage-list">
+                    <li>Logger - Registra eventos</li>
+                    <li>EmailService - Envía emails</li>
+                    <li>PaymentProcessor - Procesa pagos</li>
+                    <li>ReportGenerator - Genera reportes</li>
+                </ul>
+
+                <div class="footer">Pure Fabrication es una clase artificial pero esencial en el diseño</div>
+            </div>
+
+            <!-- Indirection -->
+            <div id="indirection" class="section">
+                <h2>4. Indirection Pattern</h2>
+
+                <h3>El Problema</h3>
+                <p><span class="highlight">Acoplamiento fuerte</span> entre componentes. Si la Biblioteca depende directamente de un ServicioDeEmail específico, cambiar el proveedor requiere modificar la Biblioteca.</p>
+
+                <div class="code-block code-wrong">
+// ❌ INCORRECTO: Acoplamiento fuerte
+class Biblioteca {
+    private ServicioDeEmailGmail servicio;
+    
+    public void prestarLibro(Miembro m, Libro l) {
+        servicio.enviarEmail(m.getEmail(), 
+            "Préstamo confirmado");
+    }
+}
+
+// Si cambias de Gmail a SendGrid, 
+// tienes que cambiar Biblioteca
+                </div>
+
+                <h3>La Solución</h3>
+                <p><strong>Indirection</strong> (indirección): crear una interfaz que desacople los componentes. En lugar de que Biblioteca dependa de ServicioDeEmailGmail, depende de una interfaz Notificador.</p>
+
+                <div class="code-block code-correct">
+// ✅ CORRECTO: Indirection con interfaz
+interface Notificador {
+    void notificar(String email, String msg);
+}
+
+class Biblioteca {
+    private Notificador notificador;
+    
+    public void prestarLibro(Miembro m, Libro l) {
+        notificador.notificar(m.getEmail(), 
+            "Préstamo confirmado");
+    }
+}
+
+// Ahora puedes cambiar la implementación 
+// sin tocar Biblioteca
+                </div>
+
+                <h3>Ventajas</h3>
+                <ul class="advantage-list">
+                    <li><strong>Flexibilidad:</strong> Cambiar implementaciones es fácil</li>
+                    <li><strong>Testabilidad:</strong> Puedes usar mocks en tests</li>
+                    <li><strong>Desacoplamiento:</strong> Las clases no dependen de detalles</li>
+                    <li><strong>Escalabilidad:</strong> Agregar nuevas implementaciones es simple</li>
+                </ul>
+
+                <h3>Indirection con Inyección de Dependencias</h3>
+                <div class="code-block">
+// Inyección de dependencias en constructor
+class Biblioteca {
+    private Notificador notificador;
+    
+    public Biblioteca(Notificador notificador) {
+        this.notificador = notificador;
+    }
+}
+
+// En la aplicación:
+Notificador notificador = new NotificadorEmail();
+Biblioteca biblioteca = new Biblioteca(notificador);
+
+// Si quieres cambiar a SMS:
+Notificador notificador = new NotificadorSMS();
+Biblioteca biblioteca = new Biblioteca(notificador);
+                </div>
+
+                <div class="footer">Indirection es la base de la inyección de dependencias</div>
+            </div>
+
+            <!-- Protected Variations -->
+            <div id="protected-variations" class="section">
+                <h2>5. Protected Variations Pattern</h2>
+
+                <h3>El Problema</h3>
+                <p>¿Cómo protegemos nuestro código de <span class="highlight">cambios futuros</span> que no podemos predecir? Sabemos que el software cambia. ¿Cómo diseñamos para anticipar estos cambios?</p>
+
+                <h3>La Solución</h3>
+                <p><strong>Protected Variations</strong> (variaciones protegidas): identificar los <strong>puntos de variación</strong> (lugares donde es probable que haya cambios) y crear abstracciones que protejan el código.</p>
+
+                <p>Es como construir una casa con paredes modulares. Si necesitas cambiar la distribución, cambias las paredes, no los cimientos.</p>
+
+                <h3>Ejemplo: Cálculo de Multas</h3>
+                <p><strong>Punto de variación:</strong> Cómo se calcula la multa. Podría cambiar: multa fija, multa por día, multa con descuentos, etc.</p>
+
+                <div class="code-comparison">
+                    <div>
+                        <span class="label label-wrong">❌ INCORRECTO</span>
+                        <div class="code-block code-wrong">
+class RegistroDePrestamo {
+    public double calcularMulta(
+        Date fechaDevolucion) {
+        long dias = calcularDias(
+            fechaDevolucion);
+        return dias * 5.0; // Fija
+    }
+}
+
+// Si cambias la política,
+// tienes que cambiar esta clase
+                        </div>
+                    </div>
+                    <div>
+                        <span class="label label-correct">✅ CORRECTO</span>
+                        <div class="code-block code-correct">
+interface CalculadorDeMulta {
+    double calcular(long diasAtraso);
+}
+
+class RegistroDePrestamo {
+    private CalculadorDeMulta calc;
+    
+    public double calcularMulta(
+        Date fechaDevolucion) {
+        long dias = calcularDias(
+            fechaDevolucion);
+        return calc.calcular(dias);
+    }
+}
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Ventajas</h3>
+                <ul class="advantage-list">
+                    <li><strong>Anticipación:</strong> Identificas puntos de variación antes de cambios</li>
+                    <li><strong>Estabilidad:</strong> El código que usa abstracciones es estable</li>
+                    <li><strong>Flexibilidad:</strong> Cambios futuros son fáciles de implementar</li>
+                    <li><strong>Mantenibilidad:</strong> Menos código para cambiar</li>
+                </ul>
+
+                <h3>Puntos de Variación Comunes</h3>
+                <table>
+                    <tr>
+                        <th>Área</th>
+                        <th>Punto de Variación</th>
+                        <th>Solución</th>
+                    </tr>
+                    <tr>
+                        <td>Algoritmos</td>
+                        <td>Cálculos, validaciones</td>
+                        <td>Strategy Pattern</td>
+                    </tr>
+                    <tr>
+                        <td>Fuentes de datos</td>
+                        <td>BD, APIs, archivos</td>
+                        <td>Repository Pattern</td>
+                    </tr>
+                    <tr>
+                        <td>Servicios externos</td>
+                        <td>Email, SMS, pagos</td>
+                        <td>Adapter Pattern</td>
+                    </tr>
+                    <tr>
+                        <td>Políticas de negocio</td>
+                        <td>Multas, descuentos, permisos</td>
+                        <td>Strategy Pattern</td>
+                    </tr>
+                </table>
+
+                <div class="footer">Protected Variations es sobre ser proactivo, no reactivo</div>
+            </div>
+
+            <!-- Resumen -->
+            <div id="resumen" class="section">
+                <h2>Resumen de los 5 Patrones</h2>
+
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Problema</th>
+                        <th>Solución</th>
+                        <th>Beneficio</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Controller</strong></td>
+                        <td>¿Quién maneja solicitudes?</td>
+                        <td>Clase intermediaria</td>
+                        <td>Desacoplamiento UI-Dominio</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Polymorphism</strong></td>
+                        <td>Condicionales anidados</td>
+                        <td>Interfaces e implementaciones</td>
+                        <td>Código flexible y extensible</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pure Fabrication</strong></td>
+                        <td>Responsabilidades forzadas</td>
+                        <td>Clases artificiales útiles</td>
+                        <td>Separación de responsabilidades</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Indirection</strong></td>
+                        <td>Acoplamiento fuerte</td>
+                        <td>Interfaces que desacoplan</td>
+                        <td>Flexibilidad para cambios</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Protected Variations</strong></td>
+                        <td>Cambios futuros impredecibles</td>
+                        <td>Abstracciones en puntos de variación</td>
+                        <td>Código robusto y anticipatorio</td>
+                    </tr>
+                </table>
+
+                <h3>Cómo Trabajan Juntos</h3>
+                <p>Estos 5 patrones no son independientes. Trabajan juntos para crear un diseño flexible, mantenible y escalable:</p>
+
+                <div class="example-box">
+                    <strong>Ejemplo Integrado:</strong> Un Controller usa Polymorphism para manejar diferentes tipos de usuarios. Delega responsabilidades a Pure Fabrication (NotificadorDePrestamos). Usa Indirection (interfaces) para desacoplar componentes. Y anticipa cambios futuros con Protected Variations (estrategias de cálculo de multas).
+                </div>
+
+                <div class="footer">GRASP Parte I + GRASP Parte II = Diseño Robusto</div>
+            </div>
+
+            <!-- Hito 5 -->
+            <div id="hito5" class="section">
+                <h2>Hito 5 del TPO</h2>
+
+                <h3>Objetivo</h3>
+                <p>Aplicar los 5 patrones de GRASP Parte II a tu diseño de LogiSmart. El resultado será un diseño mucho más flexible y robusto que el Hito 4.</p>
+
+                <h3>Actividades</h3>
+                <table>
+                    <tr>
+                        <th>Actividad</th>
+                        <th>Tiempo</th>
+                        <th>Descripción</th>
+                    </tr>
+                    <tr>
+                        <td><strong>1. Análisis de Diseño</strong></td>
+                        <td>15 min</td>
+                        <td>Revisar tu Hito 4 e identificar dónde aplicar los 5 patrones</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2. Aplicar Controller</strong></td>
+                        <td>15 min</td>
+                        <td>Crear un LogiSmartController que coordine operaciones</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3. Aplicar Polymorphism</strong></td>
+                        <td>20 min</td>
+                        <td>Usar interfaces para eliminar condicionales</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4. Pure Fabrication e Indirection</strong></td>
+                        <td>20 min</td>
+                        <td>Crear clases de servicio y desacoplar componentes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>5. Protected Variations</strong></td>
+                        <td>15 min</td>
+                        <td>Identificar puntos de variación y protegerlos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>6. Documentación</strong></td>
+                        <td>5 min</td>
+                        <td>Justificar las decisiones de diseño</td>
+                    </tr>
+                </table>
+
+                <h3>Entregables</h3>
+                <ul class="advantage-list">
+                    <li>Diagrama de Clases actualizado (con Controller, interfaces, Pure Fabrication)</li>
+                    <li>Documento Markdown con análisis de cada patrón aplicado</li>
+                    <li>Diagramas de Secuencia para casos de uso principales</li>
+                    <li>Justificación de decisiones de diseño</li>
+                    <li>Identificación de puntos de variación y cómo se protegieron</li>
+                </ul>
+
+                <h3>Criterios de Evaluación</h3>
+                <table>
+                    <tr>
+                        <th>Criterio</th>
+                        <th>Peso</th>
+                    </tr>
+                    <tr>
+                        <td>Aplicación de Controller</td>
+                        <td>15%</td>
+                    </tr>
+                    <tr>
+                        <td>Uso de Polymorphism</td>
+                        <td>20%</td>
+                    </tr>
+                    <tr>
+                        <td>Pure Fabrication e Indirection</td>
+                        <td>20%</td>
+                    </tr>
+                    <tr>
+                        <td>Protected Variations</td>
+                        <td>15%</td>
+                    </tr>
+                    <tr>
+                        <td>Diagramas de Clases</td>
+                        <td>15%</td>
+                    </tr>
+                    <tr>
+                        <td>Documentación y Justificación</td>
+                        <td>15%</td>
+                    </tr>
+                </table>
+
+                <h3>Preguntas Guía</h3>
+                <p>Mientras trabajan en el Hito 5, háganse estas preguntas:</p>
+                <ul class="advantage-list">
+                    <li>¿Hay un Controller que coordina las operaciones principales?</li>
+                    <li>¿Hay condicionales que podrían reemplazarse con Polymorphism?</li>
+                    <li>¿Hay responsabilidades que no encajan naturalmente en ninguna clase?</li>
+                    <li>¿Hay acoplamiento fuerte entre componentes?</li>
+                    <li>¿Hay puntos de variación que deberían protegerse con abstracciones?</li>
+                    <li>¿Cada clase tiene una responsabilidad clara y única?</li>
+                    <li>¿El diseño es flexible para cambios futuros?</li>
+                </ul>
+
+                <div class="footer">Recuerda: El objetivo es entender cómo estos patrones mejoran el diseño</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.section');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remove active class from all links and sections
+                navLinks.forEach(l => l.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+                
+                // Add active class to clicked link and corresponding section
+                link.classList.add('active');
+                const sectionId = link.getAttribute('href').substring(1);
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Scroll to top
+                document.querySelector('.main').scrollTop = 0;
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
