@@ -10,6 +10,7 @@ public class SeguimientoEnvio {
 	private String estadoActual;
 	private String ultimoEvento;
 	private LocalDateTime ultimaActualizacion;
+	private ETA eta;
 	private List<PosicionGPS> historialPosiciones;
 
 	public SeguimientoEnvio(String id, String estadoActual) {
@@ -17,6 +18,7 @@ public class SeguimientoEnvio {
 		this.estadoActual = estadoActual;
 		this.ultimoEvento = "CREADO";
 		this.ultimaActualizacion = LocalDateTime.now();
+		this.eta = new ETA(0, LocalDateTime.now(), 0.0);
 		this.historialPosiciones = new ArrayList<>();
 	}
 
@@ -25,6 +27,7 @@ public class SeguimientoEnvio {
 		this.estadoActual = estadoActual;
 		this.ultimoEvento = ultimoEvento;
 		this.ultimaActualizacion = ultimaActualizacion;
+		this.eta = new ETA(0, LocalDateTime.now(), 0.0);
 		this.historialPosiciones = new ArrayList<>();
 	}
 
@@ -48,8 +51,17 @@ public class SeguimientoEnvio {
 		return Collections.unmodifiableList(historialPosiciones);
 	}
 
+	public ETA getEta() {
+		return eta;
+	}
+
 	public void actualizarEstado(String nuevoEstado) {
+		actualizarEstado(nuevoEstado, ultimoEvento);
+	}
+
+	public void actualizarEstado(String nuevoEstado, String nuevoEvento) {
 		estadoActual = nuevoEstado;
+		ultimoEvento = nuevoEvento;
 		ultimaActualizacion = LocalDateTime.now();
 	}
 
@@ -64,6 +76,8 @@ public class SeguimientoEnvio {
 		ultimaActualizacion = LocalDateTime.now();
 	}
 
-	public void publicarTracking() {
+	public void actualizarETA(int minutos, double nivelConfianza) {
+		eta.recalcular(minutos, nivelConfianza);
+		ultimaActualizacion = LocalDateTime.now();
 	}
 }

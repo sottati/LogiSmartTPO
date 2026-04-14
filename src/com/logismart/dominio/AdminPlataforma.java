@@ -9,13 +9,13 @@ public class AdminPlataforma extends Usuario {
 			String id,
 			String username,
 			String email,
-			String password,
+			String passwordHash,
 			String rol,
 			String estado,
 			String idInterno,
 			String nivelAcceso,
 			String area) {
-		super(id, username, email, password, rol, estado);
+		super(id, username, email, passwordHash, rol, estado);
 		this.idInterno = idInterno;
 		this.nivelAcceso = nivelAcceso;
 		this.area = area;

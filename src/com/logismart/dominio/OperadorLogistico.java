@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class OperadorLogistico extends Usuario {
-	private String empresaId;
+	private Empresa empresa;
 	private String zonaOperacion;
 	private String turno;
 
@@ -12,24 +12,24 @@ public class OperadorLogistico extends Usuario {
 			String id,
 			String username,
 			String email,
-			String password,
+			String passwordHash,
 			String rol,
 			String estado,
-			String empresaId,
+			Empresa empresa,
 			String zonaOperacion,
 			String turno) {
-		super(id, username, email, password, rol, estado);
-		this.empresaId = empresaId;
+		super(id, username, email, passwordHash, rol, estado);
+		this.empresa = empresa;
 		this.zonaOperacion = zonaOperacion;
 		this.turno = turno;
 	}
 
-	public String getEmpresaId() {
-		return empresaId;
+	public Empresa getEmpresa() {
+		return empresa;
 	}
 
-	public void setEmpresaId(String empresaId) {
-		this.empresaId = empresaId;
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
 	}
 
 	public String getZonaOperacion() {
@@ -60,7 +60,10 @@ public class OperadorLogistico extends Usuario {
 	}
 
 	public Envio crearEnvio(String prioridad, LocalDateTime fechaProgramada) {
-		return new Envio(UUID.randomUUID().toString(), empresaId, prioridad, fechaProgramada);
+		if (empresa == null) {
+			throw new IllegalStateException("El operador debe estar asociado a una empresa");
+		}
+		return new Envio(UUID.randomUUID().toString(), empresa, prioridad, fechaProgramada);
 	}
 
 	public Ruta planificarRuta(Vehiculo vehiculo, Transportista transportista) {

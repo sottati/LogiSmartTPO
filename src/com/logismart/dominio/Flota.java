@@ -6,13 +6,13 @@ import java.util.stream.Collectors;
 
 public class Flota {
 	private String id;
-	private String empresaId;
+	private Empresa empresa;
 	private Set<Vehiculo> vehiculos;
 	private String estado;
 	
-	public Flota(String id, String empresaId, Set<Vehiculo> vehiculos, String estado) {
+	public Flota(String id, Empresa empresa, Set<Vehiculo> vehiculos, String estado) {
 		this.id = id;
-		this.empresaId = empresaId;
+		this.empresa = empresa;
 		this.vehiculos = vehiculos;
 		this.estado = estado;
 	}
@@ -25,8 +25,8 @@ public class Flota {
 		return Collections.unmodifiableSet(vehiculos);
 	}
 
-	public String getEmpresaId() {
-		return empresaId;
+	public Empresa getEmpresa() {
+		return empresa;
 	}
 
 	public String getEstado() {

@@ -1,7 +1,7 @@
 package com.logismart.dominio;
 
 public class AdminEmpresa extends Usuario {
-	private String empresaId;
+	private Empresa empresa;
 	private String permisosAdmin;
 	private String notificaciones;
 
@@ -9,24 +9,24 @@ public class AdminEmpresa extends Usuario {
 			String id,
 			String username,
 			String email,
-			String password,
+			String passwordHash,
 			String rol,
 			String estado,
-			String empresaId,
+			Empresa empresa,
 			String permisosAdmin,
 			String notificaciones) {
-		super(id, username, email, password, rol, estado);
-		this.empresaId = empresaId;
+		super(id, username, email, passwordHash, rol, estado);
+		this.empresa = empresa;
 		this.permisosAdmin = permisosAdmin;
 		this.notificaciones = notificaciones;
 	}
 
-	public String getEmpresaId() {
-		return empresaId;
+	public Empresa getEmpresa() {
+		return empresa;
 	}
 
-	public void setEmpresaId(String empresaId) {
-		this.empresaId = empresaId;
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
 	}
 
 	public String getPermisosAdmin() {

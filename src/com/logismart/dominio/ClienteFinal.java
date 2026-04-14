@@ -9,13 +9,13 @@ public class ClienteFinal extends Usuario {
 			String id,
 			String username,
 			String email,
-			String password,
+			String passwordHash,
 			String rol,
 			String estado,
 			String nombre,
 			String telefono,
 			String direccionEntrega) {
-		super(id, username, email, password, rol, estado);
+		super(id, username, email, passwordHash, rol, estado);
 		this.nombre = nombre;
 		this.telefono = telefono;
 		this.direccionEntrega = direccionEntrega;

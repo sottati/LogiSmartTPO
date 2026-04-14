@@ -365,8 +365,8 @@
             <tr>
               <td><strong>Envio</strong></td>
               <td>Ciclo operativo: agrupar ordenes, gestionar estado, coordinar seguimiento y entrega</td>
-              <td><span class="badge badge-obs">Si (obs.)</span></td>
-              <td>El constructor recibe <code>SeguimientoEnvio</code> y <code>Entrega</code> desde afuera. Segun Creator (contencion), Envio deberia crearlos internamente.</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Aplica Creator por contencion: crea internamente <code>SeguimientoEnvio</code> y <code>Entrega</code>.</td>
             </tr>
             <tr>
               <td><strong>Ruta</strong></td>
@@ -395,8 +395,8 @@
             <tr>
               <td><strong>SeguimientoEnvio</strong></td>
               <td>Registrar estado actual, historial de posiciones GPS y ETA vigente</td>
-              <td><span class="badge badge-obs">Si (obs.)</span></td>
-              <td><code>publicarTracking()</code> introduce una responsabilidad de notificacion/infraestructura ajena al dominio. Debe extraerse a una capa de servicio.</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>La notificacion externa se extrae a <code>TrackingService</code>. El dominio queda enfocado en estado, posicion y ETA.</td>
             </tr>
             <tr>
               <td><strong>PosicionGPS</strong></td>
@@ -431,8 +431,8 @@
             <tr>
               <td><strong>Reporte</strong></td>
               <td>Consolidar metricas de performance de una Empresa en un periodo</td>
-              <td><span class="badge badge-obs">Si (obs.)</span></td>
-              <td><code>exportar()</code> y <code>compartir()</code> son operaciones de I/O e infraestructura, ajenas al dominio. Reducen la cohesion de la clase.</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td><code>exportar()</code> y <code>compartir()</code> se movieron a <code>ReporteService</code>. La entidad mantiene foco de negocio.</td>
             </tr>
             <tr>
               <td><strong>Metrica</strong></td>
@@ -443,30 +443,28 @@
             <tr>
               <td><strong>BCrypt</strong></td>
               <td>Hashear y comparar contrasenas usando hashing</td>
-              <td><span class="badge badge-no">No (en dominio)</span></td>
-              <td>Clase de infraestructura/utilidad ubicada en el paquete de dominio. Viola High Cohesion del paquete. Debe moverse a <code>com.logismart.util</code> o similar.</td>
+              <td><span class="badge badge-ok">Si</span></td>
+              <td>Clase tecnica en <code>com.logismart.util</code>, consumida desde servicios de aplicacion y no desde entidades de dominio.</td>
             </tr>
           </tbody>
         </table>
 
         <h3>Hallazgos</h3>
         <p>
-          Al revisar el modelo, la mayoria de las clases del dominio tienen <strong>alta cohesion</strong>: sus metodos estan relacionados con una sola responsabilidad de negocio. Sin embargo, se identificaron <strong>cuatro puntos concretos de mejora</strong>:
+          El modelo mantiene <strong>alta cohesion</strong> y, tras los ultimos cambios, ya se incorporaron mejoras clave de alineacion UML-codigo:
         </p>
         <ul class="note-list" style="margin-top:0.75rem">
           <li>
-            <strong>BCrypt en el paquete de dominio</strong>: es infraestructura tecnica y no deberia estar aqui.
-            Su presencia acopla el dominio a la decision de usar hashing, lo que dificulta cambiar la implementacion de hashing.
+            <strong>Relaciones por objeto (no solo IDs):</strong> <code>Envio</code>, <code>Flota</code>, <code>AdminEmpresa</code>, <code>OperadorLogistico</code> y <code>Transportista</code> ahora modelan asociaciones con objetos del dominio.
           </li>
           <li>
-            <strong>Reporte.exportar() / compartir()</strong>: son operaciones de I/O ajenas al dominio.
-            Deben moverse a un <code>ReporteService</code> en la capa de aplicacion.
+            <strong>Separacion dominio/tecnico:</strong> la logica de infraestructura queda en servicios de aplicacion (<code>ReporteService</code>, <code>TrackingService</code>, <code>AutenticacionService</code>).
           </li>
           <li>
-            <strong>SeguimientoEnvio.publicarTracking()</strong>: notificar a sistemas externos no es una responsabilidad del dominio. Se extrae a <code>TrackingService</code>, igual que <code>NotificadorDeEnvios</code> en el ejemplo de clase.
+            <strong>Coherencia de creacion (Creator):</strong> <code>Envio</code> crea internamente <code>SeguimientoEnvio</code> y <code>Entrega</code>, reduciendo acoplamiento del llamador.
           </li>
           <li>
-            <strong>ETA.recalcular()</strong>: le asigna a ETA la responsabilidad de recalcularse, pero ETA no tiene la informacion necesaria para hacerlo (necesita datos del recorrido que pertenecen a <code>SeguimientoEnvio</code>). Segun Expert, esa responsabilidad es de SeguimientoEnvio.
+            <strong>Punto pendiente de Expert:</strong> completar validacion integral de calculos en <code>Ruta</code> y reglas de ETA con escenarios de negocio reales.
           </li>
         </ul>
       </div>
@@ -664,7 +662,7 @@ Ruta "1" --> "1" Vehiculo : asigna
               <td><strong>Envio</strong></td>
               <td>OperadorLogistico</td>
               <td>Datos + Uso Frecuente</td>
-              <td>El operador concentra la informacion necesaria: empresaId, ordenes, prioridad, fecha programada.</td>
+              <td>El operador concentra la informacion necesaria: referencia a <code>Empresa</code>, ordenes, prioridad y fecha programada.</td>
             </tr>
             <tr>
               <td><strong>Ruta</strong></td>
@@ -700,13 +698,10 @@ Ruta "1" --> "1" Vehiculo : asigna
         </table>
 
         <h3>3.2 Problemas identificados</h3>
-        <div class="callout callout-warn">
-          <strong>Problema 1: Envio no crea SeguimientoEnvio ni Entrega internamente</strong>
-          En la implementacion actual, el constructor de <code>Envio</code> recibe <code>SeguimientoEnvio</code>
-          y <code>Entrega</code> como parametros externos. Segun Creator (regla de Contencion), Envio deberia
-          crearlos internamente porque los compone por ciclo de vida. Recibirlos desde afuera obliga al creador
-          externo (OperadorLogistico) a conocer los detalles de construccion de objetos internos del Envio,
-          aumentando el acoplamiento innecesariamente.
+        <div class="callout callout-ok">
+          <strong>Problema 1 resuelto: Envio crea SeguimientoEnvio y Entrega internamente</strong>
+          La implementacion actual ya aplica Creator por contencion: <code>Envio</code> inicializa sus
+          componentes internos en el constructor y evita que el creador externo conozca detalles internos.
         </div>
         <div class="callout callout-warn">
           <strong>Problema 2: PuntoEntrega se construye fuera de Ruta</strong>
@@ -723,9 +718,9 @@ public class Envio {
     private SeguimientoEnvio seguimiento;
     private Entrega entrega;
 
-    public Envio(String id, String empresaId, String prioridad, LocalDateTime fechaProgramada) {
+    public Envio(String id, Empresa empresa, String prioridad, LocalDateTime fechaProgramada) {
         this.id = id;
-        this.empresaId = empresaId;
+        this.empresa = empresa;
         this.estado = "PENDIENTE";
         this.prioridad = prioridad;
         this.fechaProgramada = fechaProgramada;
@@ -763,8 +758,8 @@ public class SeguimientoEnvio {
 public class OperadorLogistico extends Usuario {
 
     public Envio crearEnvio(String prioridad, LocalDateTime fecha) {
-        // Operador es Creator de Envio: tiene empresaId y datos de negocio
-        return new Envio(UUID.randomUUID().toString(), this.empresaId, prioridad, fecha);
+        // Operador es Creator de Envio: tiene referencia a Empresa y datos de negocio
+        return new Envio(UUID.randomUUID().toString(), this.empresa, prioridad, fecha);
     }
 
     public Ruta planificarRuta(Vehiculo vehiculo, Transportista transportista) {
@@ -796,7 +791,10 @@ flowchart LR
     OperadorLogistico -->|hereda| Usuario
     Transportista -->|hereda| Usuario
 
-    Usuario --> BCrypt
+    OperadorLogistico --> Empresa
+    AdminEmpresa --> Empresa
+    Flota --> Empresa
+    Transportista --> Vehiculo
 
     OperadorLogistico --> Envio
     OperadorLogistico --> Ruta
@@ -814,6 +812,11 @@ flowchart LR
 
     Flota --> Vehiculo
     SeguimientoEnvio --> PosicionGPS
+
+    AutenticacionService --> Usuario
+    AutenticacionService --> BCrypt
+    ReporteService --> Reporte
+    TrackingService --> SeguimientoEnvio
           </pre>
         </div>
 
@@ -833,19 +836,19 @@ flowchart LR
               <td><strong>Envio</strong></td>
               <td>Orden, SeguimientoEnvio, Entrega</td>
               <td>Medio</td>
-              <td>Aceptable: Envio compone estos objetos. El problema esta en recibirlos por constructor en lugar de crearlos (ver Creator).</td>
+              <td>Aceptable: Envio compone estos objetos y los crea internamente (Creator).</td>
             </tr>
             <tr>
               <td><strong>OperadorLogistico</strong></td>
-              <td>Envio, Ruta, Orden, Flota</td>
+              <td>Empresa, Envio, Ruta, Vehiculo, Transportista</td>
               <td>Medio-alto</td>
               <td>Esperado para un actor de orquestacion del flujo operativo. No hay dependencias innecesarias.</td>
             </tr>
             <tr>
-              <td><strong>Usuario</strong></td>
-              <td>BCrypt</td>
-              <td>Bajo (pero problematico)</td>
-              <td><strong>Problema:</strong> BCrypt es infraestructura tecnica. El dominio no deberia depender de una implementacion especifica de hashing.</td>
+              <td><strong>AutenticacionService</strong></td>
+              <td>Usuario, BCrypt</td>
+              <td>Medio</td>
+              <td>Correcto: la dependencia tecnica de hashing queda fuera del dominio y centralizada en capa de aplicacion.</td>
             </tr>
             <tr>
               <td><strong>Reporte</strong></td>
@@ -930,15 +933,14 @@ TrackingService ..> SeguimientoEnvio : usa
           Esto mantiene a Ruta desacoplada del ciclo de vida de Vehiculo y Transportista.
         </p>
         <p style="margin-top:0.75rem">
-          El uso de <code>empresaId: String</code> en <code>Envio</code> (en lugar de una referencia
-          directa a <code>Empresa</code>) es una decision deliberada de bajo acoplamiento: Envio no necesita
-          toda la informacion de Empresa, solo su identificador para trazabilidad.
+          Para alinear el modelo con UML, las asociaciones clave se expresan con objetos del dominio
+          (por ejemplo, <code>Envio - Empresa</code> y <code>Transportista - Vehiculo</code>) en vez de
+          mantener solo IDs sueltos. Esto mejora trazabilidad semantica del modelo sin introducir acoplamiento tecnico.
         </p>
         <div class="callout callout-ok">
-          <strong>Propuesta adicional - mover BCrypt fuera del dominio:</strong>
-          Mover <code>BCrypt.java</code> al paquete <code>com.logismart.util</code>.
-          Asi el paquete de dominio queda con una unica responsabilidad bien definida (logica de negocio)
-          y no depende de una clase tecnica de hashing.
+          <strong>Aplicado:</strong>
+          <code>BCrypt</code> se mantiene en <code>com.logismart.util</code> y su uso queda encapsulado
+          en <code>AutenticacionService</code>, preservando la separacion entre dominio e infraestructura.
         </div>
       </div>
 
@@ -961,7 +963,7 @@ sequenceDiagram
     participant ENT as Entrega
     participant ORD as Orden
 
-    OP->>+EV: new Envio(id, empresaId, prioridad, fechaProgramada)
+    OP->>+EV: new Envio(id, empresa, prioridad, fechaProgramada)
     Note over EV: Creator aplica: Envio crea sus partes internas
     EV->>+SEG: new SeguimientoEnvio(segId, "PENDIENTE")
     SEG-->>-EV: seguimiento creado

@@ -1,7 +1,5 @@
 package com.logismart.dominio;
 
-import com.logismart.util.BCrypt;
-
 public class Usuario {
 	private String id;
 	private String username;
@@ -10,11 +8,11 @@ public class Usuario {
 	private String rol;
 	private String estado;
 	
-	public Usuario(String id, String username, String email, String password, String rol, String estado) {
+	public Usuario(String id, String username, String email, String passwordHash, String rol, String estado) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
-		this.passwordHash = BCrypt.hash(password);
+		this.passwordHash = passwordHash;
 		this.rol = rol;
 		this.estado = estado;
 	}
@@ -39,11 +37,11 @@ public class Usuario {
 		this.email = email;
 	}
 
-	public boolean verificarPassword(String password) {
-		if (password == null || password.isBlank()) {
+	public boolean verificarPassword(String passwordHash) {
+		if (passwordHash == null || passwordHash.isBlank()) {
 			return false;
 		}
-		return passwordHash.equals(BCrypt.hash(password));
+		return this.passwordHash.equals(passwordHash);
 	}
 
 	public String getRol() {
@@ -66,11 +64,11 @@ public class Usuario {
 		
 	}
 	
-	public void cambiarPassword(String newPassword) {
-		if (newPassword == null || newPassword.isBlank()) {
+	public void cambiarPassword(String newPasswordHash) {
+		if (newPasswordHash == null || newPasswordHash.isBlank()) {
 			throw new IllegalArgumentException("La nueva password no puede estar vacia");
 		}
-		this.passwordHash = BCrypt.hash(newPassword);
+		this.passwordHash = newPasswordHash;
 	}
 
 	public void cerrarSesion() {

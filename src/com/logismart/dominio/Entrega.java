@@ -47,6 +47,12 @@ public class Entrega {
 		fechaHora = LocalDateTime.now();
 	}
 
+	public void confirmarExitosa(String nuevasObservaciones, String nuevaPruebaAdjunta) {
+		confirmarExitosa();
+		observaciones = nuevasObservaciones;
+		adjuntarPrueba(nuevaPruebaAdjunta);
+	}
+
 	public void registrarFallida(String nuevasObservaciones) {
 		resultado = "FALLIDA";
 		observaciones = nuevasObservaciones;

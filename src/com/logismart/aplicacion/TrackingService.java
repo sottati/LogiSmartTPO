@@ -1,0 +1,11 @@
+package com.logismart.aplicacion;
+
+import com.logismart.dominio.SeguimientoEnvio;
+
+public class TrackingService {
+	public void publicarTracking(SeguimientoEnvio seguimiento) {
+		if (seguimiento == null) {
+			throw new IllegalArgumentException("El seguimiento no puede ser nulo");
+		}
+	}
+}

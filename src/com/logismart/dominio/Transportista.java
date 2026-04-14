@@ -3,22 +3,22 @@ package com.logismart.dominio;
 public class Transportista extends Usuario {
 	private String licencia;
 	private boolean disponibilidad;
-	private String vehiculoAsignadoId;
+	private Vehiculo vehiculoAsignado;
 
 	public Transportista(
 			String id,
 			String username,
 			String email,
-			String password,
+			String passwordHash,
 			String rol,
 			String estado,
 			String licencia,
 			boolean disponibilidad,
-			String vehiculoAsignadoId) {
-		super(id, username, email, password, rol, estado);
+			Vehiculo vehiculoAsignado) {
+		super(id, username, email, passwordHash, rol, estado);
 		this.licencia = licencia;
 		this.disponibilidad = disponibilidad;
-		this.vehiculoAsignadoId = vehiculoAsignadoId;
+		this.vehiculoAsignado = vehiculoAsignado;
 	}
 
 	public String getLicencia() {
@@ -37,12 +37,12 @@ public class Transportista extends Usuario {
 		this.disponibilidad = disponibilidad;
 	}
 
-	public String getVehiculoAsignadoId() {
-		return vehiculoAsignadoId;
+	public Vehiculo getVehiculoAsignado() {
+		return vehiculoAsignado;
 	}
 
-	public void setVehiculoAsignadoId(String vehiculoAsignadoId) {
-		this.vehiculoAsignadoId = vehiculoAsignadoId;
+	public void setVehiculoAsignado(Vehiculo vehiculoAsignado) {
+		this.vehiculoAsignado = vehiculoAsignado;
 	}
 	
 	public void iniciarRecorrido() {
