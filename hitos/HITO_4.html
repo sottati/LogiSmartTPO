@@ -604,6 +604,307 @@ Ruta "1" --> "1" Vehiculo : asigna
           <code>calcularCostoEstimado()</code> usa esa distancia y el <code>tipo</code> del
           <code>Vehiculo</code> asignado para estimar el costo operativo por km.
         </div>
+
+        <h3>2.6 Diagrama UML completo actualizado (Hito 4)</h3>
+        <p style="margin-bottom:1rem">
+          Se mantiene el recorte de cambios puntuales en 2.5 y, ademas, se agrega el
+          diagrama integral actualizado con las mejoras aplicadas en el hito.
+        </p>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+classDiagram
+direction LR
+
+class Usuario {
+  -id: String
+  -username: String
+  -email: String
+  -passwordHash: String
+  -rol: String
+  -estado: String
+  +iniciarSesion(username, password)
+  +cambiarPassword(newPasswordHash)
+  +cerrarSesion()
+}
+
+class AdminEmpresa {
+  -empresa: Empresa
+  -permisosAdmin: String
+  -notificaciones: String
+  +configurarEmpresa()
+  +consultarReportes()
+  +gestionarSuscripcion()
+}
+
+class OperadorLogistico {
+  -empresa: Empresa
+  -zonaOperacion: String
+  -turno: String
+  +importarOrdenes()
+  +gestionarFlota()
+  +planificarRuta()
+  +crearEnvio(prioridad, fechaProgramada) Envio
+  +planificarRuta(vehiculo, transportista) Ruta
+  +asignarRuta()
+}
+
+class Transportista {
+  -licencia: String
+  -disponibilidad: boolean
+  -vehiculoAsignado: Vehiculo
+  +iniciarRecorrido()
+  +actualizarPosicion()
+  +registrarEntrega()
+  +reportarIncidente()
+}
+
+class ClienteFinal {
+  -nombre: String
+  -telefono: String
+  -direccionEntrega: String
+  +consultarTracking()
+  +verETA()
+  +confirmarRecepcion()
+}
+
+class AdminPlataforma {
+  -idInterno: String
+  -nivelAcceso: String
+  -area: String
+  +darAltaEmpresa()
+  +darBajaEmpresa()
+  +monitorearServicio()
+  +gestionarBilling()
+}
+
+class Empresa {
+  -id: String
+  -razonSocial: String
+  -cuit: String
+  -estado: String
+  -fechaAlta: LocalDate
+  +activar()
+  +suspender()
+  +actualizarDatos(nuevaRazonSocial, nuevoCuit)
+}
+
+class Flota {
+  -id: String
+  -empresa: Empresa
+  -vehiculos: Set~Vehiculo~
+  -estado: String
+  +agregarVehiculo(vehiculo)
+  +quitarVehiculo(vehiculo)
+  +obtenerDisponibles() Set~Vehiculo~
+}
+
+class Vehiculo {
+  -id: String
+  -patente: String
+  -capacidadKg: double
+  -tipo: String
+  -disponibilidad: boolean
+  +puedeCargar(pesoTotalKg) boolean
+  +estaOperativo() boolean
+  +asignarRuta()
+  +liberar()
+  +actualizarCapacidad(nuevaCapacidadKg)
+}
+
+class Orden {
+  -id: String
+  -canalOrigen: String
+  -estado: String
+  -fechaCreacion: LocalDateTime
+  -totalBultos: int
+  -envio: Envio
+  +marcarPendienteEnvio()
+  +asociarEnvio(envio)
+  +actualizarEstado(nuevoEstado)
+}
+
+class Envio {
+  -id: String
+  -empresa: Empresa
+  -estado: String
+  -prioridad: String
+  -fechaProgramada: LocalDateTime
+  -ordenes: List~Orden~
+  -seguimiento: SeguimientoEnvio
+  -entrega: Entrega
+  +agregarOrden(orden)
+  +reprogramar(nuevaFechaProgramada)
+  +iniciar()
+  +cancelar()
+  +cerrar()
+}
+
+class Ruta {
+  -id: String
+  -distanciaKm: double
+  -duracionEstimadaMin: int
+  -estado: String
+  -transportistaAsignado: Transportista
+  -vehiculoAsignado: Vehiculo
+  -paradas: List~PuntoEntrega~
+  +optimizar()
+  +recalcular()
+  +asignarTransportista(transportista)
+  +asignarVehiculo(vehiculo)
+  +agregarParada(punto)
+  +calcularDistanciaTotal() double
+  +calcularCostoEstimado() double
+}
+
+class PuntoEntrega {
+  -direccion: String
+  -lat: double
+  -lng: double
+  -ventanaHorario: String
+  -ordenParada: int
+  +validarVentana() boolean
+  +actualizarCoordenadas(nuevaLat, nuevaLng)
+}
+
+class SeguimientoEnvio {
+  -id: String
+  -estadoActual: String
+  -ultimoEvento: String
+  -ultimaActualizacion: LocalDateTime
+  -eta: ETA
+  -historialPosiciones: List~PosicionGPS~
+  +actualizarEstado(nuevoEstado)
+  +actualizarEstado(nuevoEstado, nuevoEvento)
+  +registrarPosicion(posicionGPS)
+  +registrarPosicion(lat, lng, precision)
+  +actualizarETA(minutos, nivelConfianza)
+}
+
+class PosicionGPS {
+  -lat: double
+  -lng: double
+  -timestamp: LocalDateTime
+  -precision: double
+  +esValida() boolean
+  +distanciaA(otra) double
+}
+
+class ETA {
+  -valorMinutos: int
+  -actualizadoEn: LocalDateTime
+  -nivelConfianza: double
+  +recalcular(nuevoValorMinutos, nuevoNivelConfianza)
+  +vencio() boolean
+}
+
+class Entrega {
+  -id: String
+  -resultado: String
+  -fechaHora: LocalDateTime
+  -observaciones: String
+  -pruebaAdjunta: String
+  +confirmarExitosa()
+  +confirmarExitosa(nuevasObservaciones, nuevaPruebaAdjunta)
+  +registrarFallida(nuevasObservaciones)
+  +adjuntarPrueba(pruebaAdjunta)
+}
+
+class Suscripcion {
+  -id: String
+  -plan: String
+  -estado: String
+  -montoMensual: double
+  -proximoVencimiento: LocalDate
+  +activar()
+  +pausar()
+  +renovar()
+  +cambiarPlan(nuevoPlan, nuevoMontoMensual)
+}
+
+class Cobro {
+  -id: String
+  -monto: double
+  -estado: String
+  -fecha: LocalDateTime
+  -medioPago: String
+  +autorizar()
+  +registrarPago()
+  +marcarFallido()
+  +emitirComprobante() String
+}
+
+class Reporte {
+  -id: String
+  -periodo: String
+  -tipo: String
+  -generadoEn: LocalDateTime
+  +generar()
+}
+
+class Metrica {
+  -nombre: String
+  -valor: double
+  -unidad: String
+  -timestamp: LocalDateTime
+  +actualizarValor(nuevoValor)
+  +normalizar(divisor)
+  +comparar(otra) int
+}
+
+class ReporteService {
+  +exportar(reporte) String
+  +compartir(reporte, destino)
+}
+
+class TrackingService {
+  +publicarTracking(seguimiento)
+}
+
+class AutenticacionService {
+  +hashearPassword(passwordPlano) String
+  +validarPassword(usuario, passwordPlano) boolean
+  +cambiarPassword(usuario, nuevaPasswordPlano)
+}
+
+class BCrypt {
+  +hash(password) String
+}
+
+AdminEmpresa --|> Usuario
+OperadorLogistico --|> Usuario
+Transportista --|> Usuario
+ClienteFinal --|> Usuario
+AdminPlataforma --|> Usuario
+
+Empresa "1" o-- "1" Flota : tiene
+Flota "1" *-- "1..*" Vehiculo : compone
+Empresa "1" o-- "0..*" Envio : opera
+Empresa "1" o-- "0..*" Reporte : genera
+Reporte "1" *-- "1..*" Metrica : incluye
+
+Envio "1" *-- "1..*" Orden : agrupa
+Envio "1" --> "1" Ruta : utiliza
+Ruta "1" *-- "1..*" PuntoEntrega : define
+Orden "0..*" --> "1" PuntoEntrega : entregaEn
+Ruta "1" --> "1" Vehiculo : asigna
+Ruta "1" --> "1" Transportista : ejecutadaPor
+
+Envio "1" *-- "1" SeguimientoEnvio : traza
+SeguimientoEnvio "1" *-- "1..*" PosicionGPS : registra
+SeguimientoEnvio "1" --> "1" ETA : estima
+Envio "1" *-- "1" Entrega : finalizaEn
+ClienteFinal "1" --> "0..*" Envio : consulta
+
+Empresa "1" --> "1" Suscripcion : posee
+Suscripcion "1" *-- "0..*" Cobro : genera
+AdminPlataforma "1" --> "0..*" Suscripcion : administra
+
+ReporteService ..> Reporte : usa
+TrackingService ..> SeguimientoEnvio : usa
+AutenticacionService ..> Usuario : usa
+AutenticacionService ..> BCrypt : delega hashing
+          </pre>
+        </div>
       </div>
 
       <!-- ===== SECCION 3 ===== -->
