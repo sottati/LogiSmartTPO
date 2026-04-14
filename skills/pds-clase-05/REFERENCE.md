@@ -1,12 +1,12 @@
 # Clase 5: GRASP Parte II
 
-Fuente: `clase_5.html` (contenido de `main-content`).
+## Por qué estos 5 patrones
 
-## Idea general
+El software cambia constantemente: los requisitos evolucionan, la tecnología cambia, el negocio se transforma. Un buen diseño de software tiene que anticipar esas realidades. Los 5 patrones de GRASP Parte II enseñan exactamente eso: cómo construir sistemas que puedan evolucionar sin romperse.
 
-La clase continua GRASP con cinco patrones orientados a hacer el diseño mas flexible, mantenible y escalable.
+Código rígido es difícil de cambiar. Código flexible con buenos patrones hace que los cambios sean baratos y seguros.
 
-Los patrones vistos son:
+## Los 5 patrones
 
 1. Controller
 2. Polymorphism
@@ -16,148 +16,148 @@ Los patrones vistos son:
 
 ## 1. Controller
 
-El Controller actua como intermediario entre la UI y el dominio.
+El Controller actúa como intermediario entre la interfaz de usuario y la lógica de dominio. Recibe las solicitudes de la UI, coordina las operaciones necesarias y devuelve el resultado.
 
-Problema:
+Dos variantes:
 
-- cuando la UI maneja directamente la logica de negocio, el sistema queda fuertemente acoplado
+- **Facade Controller**: un único controlador para todo el sistema o subsistema
+- **Use Case Controller**: un controlador por caso de uso
 
-Solucion:
+Beneficios:
 
-- crear una clase controller que reciba solicitudes, coordine operaciones y devuelva resultados
+- Desacopla la UI del dominio
+- Mejora la testabilidad (se puede probar el dominio sin UI)
+- Permite reutilizar la lógica con distintas interfaces
+- Centraliza la coordinación de operaciones
 
-Tipos mencionados:
-
-- Facade Controller
-- Use Case Controller
-
-Ventajas:
-
-- desacoplamiento
-- testabilidad
-- reutilizacion
-- mantenibilidad
+Ejemplo en LogiSmart: `LogiSmartController` recibe la solicitud de crear un envío, coordina la validación, la creación y la notificación, sin que la UI conozca esos detalles.
 
 ## 2. Polymorphism
 
-Se usa para eliminar condicionales anidados y evitar codigo fragil.
+El polimorfismo reemplaza condicionales por tipo con comportamiento variable según el tipo del objeto. Usa interfaces o supertipos con implementaciones concretas distintas.
 
-Problema tipico:
+Problema que resuelve:
 
-- `instanceof`
-- `if/else` largos
-- violacion de Open/Closed
+```java
+// Mal: condicional por tipo
+if (envio.getTipo().equals("express")) {
+    calcularTarifaExpress(envio);
+} else if (envio.getTipo().equals("normal")) {
+    calcularTarifaNormal(envio);
+}
+```
 
-Solucion:
+Solución:
 
-- definir una interfaz o supertipo
-- hacer que cada tipo concrete su comportamiento
+```java
+// Bien: polimorfismo
+envio.calcularTarifa(); // cada tipo sabe cómo calcular la suya
+```
 
-Ejemplo conceptual:
+Beneficios:
 
-- `Usuario` define capacidades
-- `Cliente`, `Operador` o `Administrador` implementan su version
-
-Ventajas:
-
-- extensibilidad
-- mantenibilidad
-- testabilidad
-- codigo mas expresivo
+- Elimina condicionales por tipo
+- Facilita agregar nuevos tipos sin modificar código existente
+- Mejora la legibilidad y mantenibilidad
 
 ## 3. Pure Fabrication
 
-Se inventa una clase que no pertenece al dominio real pero que ayuda al diseño.
+Pure Fabrication crea clases artificiales que no representan conceptos del dominio pero mejoran la distribución de responsabilidades. Se usa cuando Expert o Creator obligarían a poner responsabilidades donde no corresponden.
 
-Cuandos se usa:
+Ejemplo: una clase `NotificadorDeEnvios` no es un concepto del dominio logístico, pero tiene sentido crearla para encapsular la lógica de notificación en un lugar único y reutilizable.
 
-- cuando aplicar Expert o Creator forzaria responsabilidades incorrectas
-- cuando una tarea no encaja naturalmente en una entidad del dominio
+Otros ejemplos de Pure Fabrication:
 
-Ejemplos de este tipo de clase:
+- `EnvioRepository` (persistencia)
+- `LogiSmartController` (coordinación)
+- `TarifaCalculator` (cálculo de tarifas)
 
-- servicio de notificaciones
-- logger
-- processor de pagos
-- generador de reportes
+Beneficios:
 
-Ventajas:
-
-- separacion de responsabilidades
-- reutilizacion
-- testabilidad
-- mejor mantenibilidad
+- Mantiene las clases de dominio limpias
+- Agrupa comportamientos relacionados artificialmente
+- Mejora la reutilización
 
 ## 4. Indirection
 
-Introduce un intermediario para desacoplar componentes.
+Indirection introduce un intermediario entre dos componentes para reducir el acoplamiento directo entre ellos.
 
-Problema:
+El intermediario puede ser una interfaz, una clase de servicio o cualquier capa de abstracción.
 
-- dependencias directas entre componentes concretos
+Beneficios:
 
-Solucion:
+- Permite cambiar implementaciones sin afectar al cliente
+- Facilita el uso de mocks en tests
+- Permite inyección de dependencias
+- Desacopla componentes que cambian a ritmos distintos
 
-- usar una interfaz o abstraccion entre ambos lados
-
-Esto facilita:
-
-- cambiar implementaciones sin tocar el cliente
-- usar mocks en pruebas
-- integrar inyeccion de dependencias
+Ejemplo en LogiSmart: en vez de que `GestorDeEnvios` dependa directamente de `EmailNotifier`, depende de la interfaz `Notificador`. Así se puede cambiar a SMS o WhatsApp sin tocar `GestorDeEnvios`.
 
 ## 5. Protected Variations
 
-Protege el sistema de cambios futuros mediante abstracciones en puntos de variacion.
+Protected Variations identifica los puntos del sistema que probablemente van a cambiar y los aísla detrás de abstracciones. El objetivo es que el cambio en una parte no rompa otras partes.
 
-Idea clave:
+Puntos típicos de variación:
 
-- identificar donde es probable que cambie el comportamiento
-- aislar ese cambio detras de una interfaz o estrategia
+- Algoritmos (diferentes formas de calcular tarifas)
+- Fuentes de datos (base de datos, API, archivo)
+- Servicios externos (proveedores de mapas, pasarelas de pago)
+- Reglas de negocio (políticas de precios, regulaciones)
 
-Ejemplo de variaciones comunes:
+Técnica: usar interfaces o clases abstractas para aislar el punto de variación. El cliente programa contra la abstracción, no contra la implementación concreta.
 
-- algoritmos
-- fuentes de datos
-- servicios externos
-- politicas de negocio
+Beneficios:
 
-Ventajas:
+- Cambios aislados no generan efecto dominó
+- El sistema es extensible sin ser modificado (Open/Closed)
+- Facilita las pruebas con implementaciones alternativas
 
-- anticipacion
-- estabilidad
-- flexibilidad
-- menos codigo afectado por cambios
+## Aplicación en LogiSmart (Hito 5)
 
-## Como trabajan juntos
+El Hito 5 requiere aplicar estos patrones:
 
-Los cinco patrones se complementan:
+- Agregar un controlador principal que coordine los casos de uso
+- Reemplazar condicionales por tipo con polimorfismo
+- Crear clases de servicio (Pure Fabrication) donde corresponda
+- Aislar los puntos de variación identificados
+- Documentar las decisiones de diseño
 
-- Controller coordina solicitudes
-- Polymorphism evita condicionales
-- Pure Fabrication saca responsabilidades que no pertenecen al dominio
-- Indirection desacopla componentes
-- Protected Variations protege puntos de cambio
+---
 
-## Aplicacion en LogiSmart
+## Perspectiva del profesor
 
-La clase usa ejemplos como:
+### Insights clave
 
-- `BibliotecaController` como analogia de Controller
-- interfaces para usuarios o notificadores
-- clases de servicio como Pure Fabrication
-- interfaces para desacoplar servicios
-- estrategias para politicas de negocio variables
+El profesor enfatizó que estos 5 patrones tienen un propósito unificado: hacer que el software sea capaz de cambiar sin romperse.
 
-## Hito 5
+> "El software cambia. Los requisitos cambian, la tecnología cambia. Un buen diseño tiene que anticipar eso. Estos 5 patrones te enseñan cómo."
 
-El hito pide aplicar GRASP Parte II al diseno de LogiSmart.
+La flexibilidad no es un lujo: es una necesidad económica. Código rígido tiene un costo real: cada cambio tarda más, rompe más cosas, genera más bugs. Inversamente, código bien diseñado con estos patrones hace que los cambios sean rápidos y seguros.
 
-Las tareas principales son:
+El núcleo de los 5 patrones es: más código flexible = más mantenible = menos bugs = desarrollo más rápido.
 
-- analizar el diseno previo
-- agregar un controller principal
-- reemplazar condicionales por polimorfismo
-- crear clases de servicio cuando haga falta
-- aislar puntos de variacion
-- documentar las decisiones tomadas
+Un error común es esperar a que algo cambie para recién pensar en flexibilidad. La clave de Protected Variations es ser proactivo: identificar qué va a cambiar antes de que cambie, y blindar esos puntos.
+
+> "El código muy rígido es muy difícil de cambiar. Y el cambio no es opcional en desarrollo de software real."
+
+Sobre Pure Fabrication: a veces la mejor decisión de diseño es inventar una clase que no existe en el dominio. Si eso mejora la cohesión y reduce el acoplamiento, es una decisión válida y elegante.
+
+### Analogías y ejemplos reales
+
+**El controlador como gerente**: el Controller es como un gerente que coordina trabajadores. La UI no necesita saber cómo funciona cada parte del sistema; solo le dice al controlador qué hacer, y él coordina el resto.
+
+**Polimorfismo como control remoto universal**: el mismo botón hace cosas distintas según el dispositivo. El cliente (el que aprieta el botón) no necesita saber si está controlando un televisor, un proyector o un sistema de audio.
+
+**Pure Fabrication como contratar un especialista**: cuando ningún miembro del equipo tiene la habilidad para una tarea, contratás a alguien externo. Pure Fabrication es lo mismo: cuando ninguna clase existente debería tener la responsabilidad, creás una clase nueva para eso.
+
+**Indirection como intermediario de negocios**: en el mundo real, si dos empresas no quieren tener una relación directa, usan un intermediario. En software, la interfaz es ese intermediario que permite cambiar cualquiera de las dos partes sin que la otra se entere.
+
+**Protected Variations como paredes modulares**: si diseñás una casa con paredes modulares, podés cambiar la distribución sin tocar los cimientos. Si diseñás tu software con puntos de variación bien aislados, podés cambiar implementaciones sin tocar el resto del sistema.
+
+### Consejo profesional
+
+- No esperés a que el cambio llegue para pensar en flexibilidad. Identificá los puntos de variación desde el diseño inicial.
+- Cuando veas una cadena de if-else por tipo, pensá en polimorfismo. Es casi siempre la solución correcta.
+- El Controller es el primer lugar donde aplicar la separación de responsabilidades entre UI y dominio.
+- Estos 5 patrones trabajan juntos como sistema: Controller desacopla la UI, Polymorphism elimina condicionales, Pure Fabrication limpia el dominio, Indirection reduce dependencias, Protected Variations aísla el cambio.
+- El objetivo siempre vuelve a lo mismo: flexibilidad, mantenibilidad, escalabilidad. Si una decisión de diseño mejora esas tres cosas, probablemente sea correcta.

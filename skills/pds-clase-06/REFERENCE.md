@@ -1,148 +1,184 @@
-# Clase 6: Patrones de Diseno GoF - Creacionales
+# Clase 6: Patrones de Diseño GoF – Creacionales
 
-Fuente: `clase_6.html` (contenido de `main-content`).
+## Qué es un patrón de diseño
 
-## Que es un patron de diseno
+Un patrón de diseño es una solución reutilizable a un problema común de diseño de software. Características de un buen patrón:
 
-Un patron de diseno es una solucion reutilizable a un problema comun de diseno de software.
+- Resuelve un problema específico en un contexto concreto
+- Está probado y documentado
+- Tiene nombre, estructura y consecuencias conocidas
+- Es reutilizable en distintos proyectos
 
-Caracteristicas de un buen patron:
-
-- resuelve un problema especifico
-- esta probado
-- esta documentado
-- es reutilizable
+La estructura canónica de un patrón incluye: nombre, problema, solución, consecuencias (ventajas y desventajas) y cuándo usarlo.
 
 ## Gang of Four (GoF)
 
-En 1994, el libro de Gamma, Helm, Johnson y Vlissides documento 23 patrones clasificados en tres grupos:
+En 1994, Gamma, Helm, Johnson y Vlissides documentaron 23 patrones de diseño clasificados en tres grupos:
 
-1. Creacionales
-2. Estructurales
-3. De comportamiento
+1. **Creacionales**: cómo crear objetos
+2. **Estructurales**: cómo componer clases y objetos
+3. **De comportamiento**: cómo asignar responsabilidades y comunicación
 
-## Patrones creacionales
+Esta clase cubre los patrones creacionales. GRASP nos dio principios; los patrones GoF nos dan soluciones concretas para aplicar esos principios.
 
-Resuelven problemas de como crear objetos sin acoplar el codigo al tipo concreto.
+## Patrones Creacionales
 
-Los 5 patrones creacionales son:
+Los patrones creacionales resuelven cómo crear objetos sin acoplar el código al tipo concreto. Si el cliente instancia directamente subclases, queda acoplado a todas ellas. Los patrones creacionales encapsulan esa lógica de creación.
 
-1. Singleton
-2. Factory Method
-3. Abstract Factory
-4. Builder
-5. Prototype
-
-En la clase se profundiza en los dos primeros.
+Los 5 patrones creacionales son: Singleton, Factory Method, Abstract Factory, Builder y Prototype. En esta clase se profundiza en los primeros dos.
 
 ## Singleton
 
-Singleton asegura que una clase tenga una unica instancia y ofrece un unico punto de acceso.
+Singleton garantiza que una clase tenga una única instancia y ofrece un único punto de acceso global a ella.
 
-Problema:
+**Problema**: no queremos múltiples instancias de configuración, conexión a base de datos o logger. Múltiples instancias generan inconsistencias.
 
-- no queremos multiples instancias de configuracion, conexion o logger
+**Solución clásica**:
 
-Solucion clasica:
+```java
+public class ConexionBD {
+    private static ConexionBD instancia;
 
-- constructor privado
-- instancia estatica
-- metodo publico para obtenerla
+    private ConexionBD() { } // constructor privado
 
-Punto importante:
+    public static ConexionBD getInstance() {
+        if (instancia == null) {
+            instancia = new ConexionBD();
+        }
+        return instancia;
+    }
+}
+```
 
-- en sistemas multihilo hay que cuidar la thread safety
+**Thread safety**: en sistemas multi-hilo, hay que proteger la creación de la instancia. Soluciones:
 
-Soluciones vistas:
+- Sincronizar el método `getInstance()`
+- Eager initialization (instanciar al cargar la clase)
+- Double-checked locking
 
-- sincronizar el metodo
-- eager initialization
-- double-checked locking
+**Ventajas**:
+- Único punto de acceso
+- Control centralizado
+- Inicialización diferida
 
-Ventajas:
+**Desventajas**:
+- Dificulta el testing (las dependencias ocultas son difíciles de mockear)
+- Puede convertirse en anti-patrón si se abusa de él
+- Oculta dependencias
 
-- unico punto de acceso
-- control centralizado
-- inicializacion diferida en algunas variantes
-
-Desventajas:
-
-- dificulta testing
-- oculta dependencias
-- puede terminar usandose como anti-patron
-
-Uso tipico:
-
-- base de datos
-- logger
-- configuracion
-- cache global
+**Usos típicos**: conexión a base de datos, logger, configuración global, caché.
 
 ## Factory Method
 
-Factory Method crea objetos sin acoplar el codigo cliente a las clases concretas.
+Factory Method crea objetos sin acoplar el código cliente a las clases concretas. El cliente no sabe qué clase exacta se instancia; solo conoce la interfaz.
 
-Problema:
+**Problema**: si el cliente instancia directamente subclases, cada nuevo tipo requiere modificar el cliente.
 
-- si el cliente instancia directamente subclases, queda acoplado a todas ellas
+**Solución**:
 
-Solucion:
+```java
+// Interfaz
+public interface Notificador {
+    void enviar(String mensaje);
+}
 
-- encapsular la creacion en una factory
-- devolver una abstraccion o interfaz
+// Implementaciones concretas
+public class EmailNotificador implements Notificador { ... }
+public class SMSNotificador implements Notificador { ... }
 
-Ejemplos en LogiSmart:
+// Factory
+public class NotificadorFactory {
+    public static Notificador crear(String tipo) {
+        if (tipo.equals("email")) return new EmailNotificador();
+        if (tipo.equals("sms")) return new SMSNotificador();
+        throw new IllegalArgumentException("Tipo desconocido: " + tipo);
+    }
+}
 
-- fabrica de envios
-- fabrica de notificadores
-- fabrica de vehiculos
+// Cliente
+Notificador n = NotificadorFactory.crear("email");
+n.enviar("Envío despachado");
+```
 
-Ventajas:
+**Ventajas**:
+- Desacopla el cliente de las clases concretas
+- Centraliza la lógica de creación
+- Facilita agregar nuevos tipos sin tocar el cliente
+- Mejora la testabilidad
 
-- desacoplamiento
-- centralizacion de la creacion
-- facilidad para agregar nuevos tipos
-- mejor testabilidad
+**Ejemplos en LogiSmart**:
+- Fábrica de envíos según tipo (express, normal, refrigerado)
+- Fábrica de notificadores (email, SMS, push)
+- Fábrica de vehículos según zona
 
-## Singleton vs Factory Method
+## Singleton vs. Factory Method
 
-Singleton:
+| Patrón | Cuándo usar |
+|---|---|
+| Singleton | Cuando necesitás exactamente 1 instancia de un recurso global |
+| Factory Method | Cuando la creación varía según el contexto y querés desacoplarla |
 
-- busca una unica instancia
-- util para recursos globales
+Regla práctica: usá Singleton para acceso único a un recurso compartido. Usá Factory Method cuando la creación cambia según el contexto.
 
-Factory Method:
+## Arquitectura propuesta para LogiSmart
 
-- busca crear el tipo correcto de objeto
-- util cuando hay variantes y queres desacoplar la creacion
+```
+ConexionBD (Singleton)
+    └── accedida por todos los repositorios
 
-Regla practica:
+NotificadorFactory (Factory Method)
+    ├── EmailNotificador
+    ├── SMSNotificador
+    └── PushNotificador
 
-- usa Singleton para acceso unico a un recurso compartido
-- usa Factory Method cuando la creacion cambia segun el contexto
+VehiculoFactory (Factory Method)
+    ├── Moto
+    ├── Auto
+    └── Camion
 
-## Aplicacion en LogiSmart
-
-La clase propone una arquitectura donde:
-
-- `ConexionBD` usa Singleton
-- las factories crean envios, notificadores y vehiculos
-- un `LogiSmartController` coordina el uso de esos objetos
-
-Beneficios esperados:
-
-- codigo desacoplado
-- cambios centralizados
-- facil extension
-- mejor testabilidad
+LogiSmartController
+    └── coordina el uso de todos los anteriores
+```
 
 ## Hito 6
 
-El hito pide aplicar patrones creacionales en LogiSmart.
+El Hito 6 pide aplicar patrones creacionales en LogiSmart:
 
-Las tareas principales son:
+- Identificar dónde corresponde Singleton
+- Decidir qué objetos se crean con factories
+- Justificar el uso de cada patrón
+- Integrar la solución en el controlador principal
 
-- definir donde conviene Singleton
-- decidir que objetos se crean con factories
-- justificar por que se usan esos patrones
-- integrar la solucion en el controlador principal
+---
+
+## Perspectiva del profesor
+
+### Insights clave
+
+El profesor explicó que los patrones de diseño son el resultado de trabajo colectivo de décadas: alguien se quemó la cabeza resolviendo un problema, lo documentó y lo compartió. Usarlos bien no es memorizar su estructura: es entender qué problema resuelven.
+
+> "Hubo un grupo de personas que se quemaron la cabeza para resolver un problema de diseño, documentaron todo ese proceso y lo compartieron con el mundo."
+
+GRASP nos enseña principios de asignación de responsabilidades. Los patrones GoF nos dan soluciones concretas para problemas comunes que aparecen al aplicar esos principios. Son capas complementarias, no alternativas.
+
+Los patrones no son reglas ni obligaciones: son guías y buenas prácticas. No significa que deban aplicarse en todos los proyectos. Son mejoras incrementales que se aplican cuando el contexto lo justifica.
+
+El Singleton tiene un riesgo real: si se abusa de él, el sistema se llena de estado global difícil de testear. A veces la inyección de dependencias es una mejor alternativa. El profesor fue explícito en señalar tanto las ventajas como las limitaciones.
+
+> "Los patrones no son reglas. Son guías. Son buenas prácticas. Un buen analista y diseñador es más valioso que alguien que conoce todas las herramientas pero no sabe cuándo usarlas."
+
+### Analogías y ejemplos reales
+
+**Singleton para la base de datos**: si cada operación abre una conexión nueva a la base de datos, el sistema colapsa bajo carga. Singleton garantiza que todos los módulos compartan la misma conexión (o pool). Es la diferencia entre un sistema que escala y uno que no.
+
+**Factory Method para tipos de envío**: un sistema logístico real tiene envíos de 24 horas, 3 días y 7 días. Cada uno tiene reglas distintas de tarifa, prioridad y seguimiento. Si el código del cliente conoce cada tipo directamente, cada vez que agregás un tipo nuevo, modificás el cliente. Con Factory Method, agregás una nueva clase y registrás el tipo en la factory: el cliente no cambia.
+
+**Los 23 patrones GoF en 2026**: el libro se publicó en 1994 y sigue siendo la referencia estándar. Algunos problemas de software son tan fundamentales que las soluciones son atemporales. El lenguaje cambia, los frameworks cambian, los patrones permanecen.
+
+### Consejo profesional
+
+- Antes de aplicar un patrón, entendé el problema que resuelve. Aplicar un patrón sin necesidad es over-engineering.
+- Singleton es útil para recursos globales compartidos, pero cuidado con el testing: una clase que depende de un Singleton es difícil de probar de forma aislada. Considerá inyección de dependencias como alternativa.
+- Factory Method es tu mejor herramienta cuando el tipo exacto de objeto a crear varía según el contexto. No necesitás saber el tipo concreto en el cliente.
+- Siempre documentá por qué elegiste un patrón, no solo cómo lo implementaste. La justificación es parte del diseño.
+- Los patrones creacionales son el primer paso hacia una arquitectura desacoplada. Lo que construís en el Hito 6 es la base para los patrones estructurales y de comportamiento que vienen después.

@@ -1,275 +1,113 @@
-# Clase 2: Del Analisis al Diseno
+# Clase 2: Del Análisis al Diseño
 
-Fuente: `clase_2.html` (solo contenido de `main-content`).
+## Del QUÉ al CÓMO
 
-## Del analisis al diseno
+El análisis responde QUÉ hace el sistema (casos de uso, requisitos). El diseño responde CÓMO lo hace (estructura interna, clases, relaciones). El modelo de dominio es el puente entre ambas etapas.
 
-La clase avanza del **QUE** (casos de uso y analisis) al **COMO** (estructura interna del sistema).
+## Programación Orientada a Objetos vs. Procedural
 
-Primer artefacto de diseno: **Modelo de Dominio**.
+En la programación procedural, los datos y las funciones están separados. En POO, los objetos encapsulan estado (atributos) y comportamiento (métodos) en una unidad coherente.
 
-## Que es el modelo de dominio
+Ventajas de POO:
 
-Es un vocabulario visual del problema:
+- Metodologías reutilizables
+- Construcción incremental por etapas
+- Entendimiento del ecosistema completo, no solo de una parte
+- Mejor calidad de código con menos reescritura
 
-- conceptos/entidades relevantes del dominio
-- relaciones entre esos conceptos
+## Los Tres Pilares del Objeto
 
-No es aun diseno de implementacion detallada: es modelado del problema.
+Todo objeto tiene:
 
-Ejemplos de conceptos por dominio:
+1. **Identidad**: es único, distinguible de otros objetos del mismo tipo
+2. **Estado**: conjunto de valores de sus atributos en un momento dado
+3. **Comportamiento**: operaciones que puede realizar o recibir
 
-- E-commerce: Cliente, Producto, Orden, Carrito, Pago, Envio.
-- Aerolineas: Pasajero, Vuelo, Asiento, Aeropuerto, Equipaje, Reserva.
-- LogiSmart: Cliente, Envio, Vehiculo, Ruta, Operador, Punto de Entrega.
+Una clase es la plantilla o definición abstracta. Un objeto es una instancia concreta en memoria. Múltiples objetos pueden instanciarse desde una misma clase.
 
-Herramienta central: **Diagrama de Clases UML**.
+## Encapsulación
 
-## POO vs procedural
+La encapsulación oculta el estado interno del objeto y expone comportamiento controlado. Protege la integridad del objeto mediante modificadores de acceso:
 
-Procedural:
+- `+` público: accesible desde cualquier clase
+- `-` privado: accesible solo desde la propia clase
+- `#` protegido: accesible desde la clase y sus subclases
 
-- datos y funciones separados.
+El objetivo no es paranoia de seguridad: es gestionar el cambio. Si el estado interno cambia, el impacto queda contenido dentro de la clase, no se propaga por todo el sistema.
 
-POO:
+## Diagrama de Clases UML
 
-- datos + comportamiento unidos en objetos.
-- cada objeto tiene estado y metodos sobre su propio estado.
+El diagrama de clases es el artefacto central del diseño orientado a objetos. Cada clase se representa con tres secciones:
 
-Ejemplo cuenta bancaria:
+1. Nombre de la clase
+2. Atributos con visibilidad y tipo
+3. Métodos con parámetros y tipo de retorno
 
-- Procedural: `saldo` separado de `depositar()/extraer()`.
-- POO: objeto `CuentaBancaria` encapsula saldo y controla cambios via metodos.
+UML es un lenguaje técnico de comunicación universal. No depende del lenguaje de programación y permite comunicar diseño a cualquier equipo técnico.
 
-Ventajas POO:
+## Relaciones Entre Clases
 
-- modularidad
-- reutilizacion
-- mantenibilidad
-- escalabilidad
+### Asociación
+Relación básica "conoce a". Una clase tiene una referencia a otra. Se indica con multiplicidad (1..*, 0..1, etc.).
 
-## 3 pilares de un objeto
+### Agregación
+Relación débil "tiene un". Las partes pueden existir independientemente del todo. Se representa con un diamante vacío.
 
-1. **Identidad**: unicidad del objeto.
-2. **Estado**: atributos/datos.
-3. **Comportamiento**: metodos/acciones.
+### Composición
+Relación fuerte "es parte de". Las partes no pueden existir sin el todo. Se representa con un diamante relleno.
 
-Analogia auto:
+### Herencia
+Relación "es un". Una subclase extiende a la superclase, heredando atributos y métodos. Se representa con una flecha con triángulo vacío. Aplica el principio de sustitución de Liskov.
 
-- identidad: chasis
-- estado: velocidad, combustible, etc.
-- comportamiento: acelerar, frenar, girar
+## Alta Cohesión y Bajo Acoplamiento
 
-## Clases y objetos
+**Alta cohesión**: cada clase tiene una única responsabilidad clara. Sus métodos y atributos están fuertemente relacionados entre sí.
 
-Clase:
+**Bajo acoplamiento**: las clases dependen lo menos posible entre sí. Un cambio en una clase no obliga a cambiar otras.
 
-- plantilla o definicion abstracta.
+Estos dos principios son el corazón del buen diseño orientado a objetos. No son metas absolutas: requieren equilibrio consciente según el contexto.
 
-Objeto:
+## Hito 2
 
-- instancia concreta en memoria.
+El Hito 2 transforma el análisis del Hito 1 en un modelo de dominio:
 
-Comparativa:
+- Identificar clases candidatas a partir de los sustantivos de los casos de uso
+- Definir atributos y métodos de cada clase
+- Establecer relaciones justificadas entre clases
+- Revisar cohesión y acoplamiento del diseño
 
-| Aspecto | Clase | Objeto |
-| --- | --- | --- |
-| Naturaleza | Plantilla abstracta | Instancia concreta |
-| Cantidad | Una por tipo | Multiples instancias |
-| Existencia | Codigo fuente | Memoria en ejecucion |
-| Estado | Define atributos | Tiene estado propio |
-| Ejemplo | Clase `Cliente` | `Juan Perez`, `Maria Garcia` |
+---
 
-## Encapsulacion
+## Perspectiva del profesor
 
-Principio: ocultar estado interno y exponer comportamiento controlado.
+### Insights clave
 
-Objetivo:
+El profesor insistió en que el QUÉ y el CÓMO son las dos preguntas más importantes en el desarrollo de software. Entender el QUÉ (requisitos) sin descuidar el CÓMO (estructura) es lo que diferencia a un buen desarrollador de uno que solo escribe código que funciona.
 
-- proteger integridad del objeto
-- evitar cambios invalidos directos
+> "No necesitás aplicar el mismo nivel de control a cada dato. El balance entre complejidad y riesgo real importa."
 
-Ejemplo:
+La encapsulación no es un dogma de seguridad: es una herramienta de gestión del cambio. Cuando el estado interno de un objeto está bien encapsulado, modificarlo no genera efectos en cascada por todo el sistema.
 
-- `saldo` privado, cambio solo via `extraer(monto)` con validaciones.
+Sobre herencia vs. composición: no toda relación "tiene sentido" como herencia. La herencia rígida puede hacer que una subclase se rompa cuando cambia la superclase. A veces la composición es más robusta.
 
-Visibilidad UML:
+El objetivo del diseño orientado a objetos es construir un ecosistema donde cada parte tiene un rol claro y puede ser reutilizada, modificada o reemplazada sin afectar el resto.
 
-| Modificador | Simbolo | Acceso | Uso tipico |
-| --- | --- | --- | --- |
-| public | + | desde cualquier lugar | metodos de comportamiento |
-| private | - | solo dentro de la clase | atributos de estado |
-| protected | # | clase y subclases | extension por herencia |
+> "La clave es lograr mejores productos, en menos tiempo, a través del diseño inteligente y la reutilización de código."
 
-Beneficios:
+### Analogías y ejemplos reales
 
-- menor acoplamiento
-- mayor cohesion
-- cambio interno sin romper contrato publico
+**La bóveda bancaria**: la encapsulación es como una bóveda. No todo necesita estar en la bóveda. Controlás qué información es accesible y a quién. El exceso de protección paraliza; la falta de protección genera caos.
 
-## UML: diagrama de clases
+**La ciudad sobre-fortalecida**: un sistema con demasiado acoplamiento o rigidez es como una ciudad medieval sobre-fortalecida: extremadamente segura pero imposible de modificar. Llega un punto donde "no toques nada o todo se cae". El objetivo es flexibilidad con estructura.
 
-Una clase UML tiene 3 secciones:
+**Herencia y el hijo que se rompe**: cuando la superclase cambia, las subclases pueden romperse sin que nadie lo esperara. La herencia mal usada crea dependencias frágiles. La composición permite cambiar partes sin afectar el todo.
 
-```text
-+-------------------------------+
-| NombreDeLaClase               |
-+-------------------------------+
-| - atributo1: Tipo             |
-| - atributo2: Tipo             |
-+-------------------------------+
-| + metodo1(param): Retorno     |
-| + metodo2(): void             |
-+-------------------------------+
-```
+**El equipo dividido sin visión de ecosistema**: si el equipo A programa el módulo de despacho y el equipo B programa recepción sin entender el ecosistema completo, ambos pueden resolver bien su parte y producir un sistema que no encaja. El diseño del dominio es lo que genera coherencia.
 
-Sintaxis:
+### Consejo profesional
 
-- Atributo: `visibilidad nombre: tipo [= valorInicial]`
-- Metodo: `visibilidad nombre(parametros): tipoRetorno`
-
-Ejemplo (CuentaBancaria):
-
-```text
-+----------------------------------+
-| CuentaBancaria                   |
-+----------------------------------+
-| - numeroCuenta: String           |
-| - titular: String                |
-| - saldo: double = 0.0            |
-| - clave: String                  |
-+----------------------------------+
-| + depositar(monto: double): void |
-| + extraer(monto: double): bool   |
-| + obtenerSaldo(): double         |
-| + cambiarClave(nueva: String)    |
-| - validarClave(clave: String)    |
-+----------------------------------+
-```
-
-Observacion de clase:
-
-- atributos privados
-- metodos publicos
-
-## Relaciones entre clases
-
-### 1) Asociacion ("conoce a")
-
-- relacion basica entre clases
-- se modela con linea simple
-- puede tener multiplicidad
-
-Ejemplo Cliente-Orden:
-
-- un cliente: `0..*` ordenes
-- una orden: `1` cliente
-
-### 2) Agregacion ("tiene un" debil)
-
-- parte-todo debil
-- rombo blanco
-- partes pueden existir sin el todo
-
-Ejemplo:
-
-- Departamento tiene Profesores.
-- si desaparece Departamento, Profesores siguen.
-
-### 3) Composicion ("es parte de" fuerte)
-
-- parte-todo fuerte
-- rombo negro
-- partes no existen sin el todo
-
-Ejemplo:
-
-- Orden compuesta por ItemsDeOrden.
-- si se elimina orden, items desaparecen.
-
-Tabla comparativa:
-
-| Tipo | Simbolo | Significado | Dependencia |
-| --- | --- | --- | --- |
-| Asociacion | Linea simple | Conoce a | Debil |
-| Agregacion | Rombo blanco | Tiene un (debil) | Debil |
-| Composicion | Rombo negro | Es parte de (fuerte) | Fuerte |
-
-## Herencia: relacion "es un"
-
-- subclase hereda atributos/metodos de superclase
-- se representa con flecha triangular vacia
-
-Regla de uso:
-
-- prueba de Liskov (sustitucion)
-- una clase hija debe poder usarse donde se espera la padre
-
-Ejemplo LogiSmart:
-
-- `Usuario` base: email, password, cambiarPassword().
-- `Cliente` hereda y agrega: historial, calificacion, solicitarEnvio().
-- `Operador` hereda y agrega: numeroEmpleado, asignaciones, aceptarEnvio().
-
-Advertencia:
-
-- priorizar composicion cuando aplique.
-- ejemplo correcto: Auto tiene un Motor (no Auto hereda de Motor).
-
-## Principios de diseno: cohesion y acoplamiento
-
-### Alta cohesion
-
-- una clase, una responsabilidad clara.
-- evita clases "Dios" con funciones de dominios mezclados.
-
-Ejemplo baja cohesion:
-
-- `Usuario` con autenticar + guardarBD + enviarEmail + calcularImpuestos.
-
-Mejor separacion:
-
-- `Usuario`
-- `AutenticacionService`
-- `RepositorioUsuario`
-- `EmailService`
-- `ImpuestoService`
-
-### Bajo acoplamiento
-
-- minimizar dependencias entre clases.
-- cambios en A no deberian romper B/C/D.
-
-Ejemplo alto acoplamiento:
-
-- `Orden` crea directamente `BaseDatos` y `Email`.
-
-Mejora:
-
-- inyeccion de dependencias (recibir dependencias).
-
-Beneficios globales:
-
-- mantenibilidad
-- testabilidad
-- reutilizacion
-- escalabilidad
-
-## Hito 2: modelo de dominio de LogiSmart
-
-Objetivo del hito:
-
-- transformar analisis de Hito 1 en diagrama de clases del modelo de dominio.
-
-Trabajo pedido:
-
-1. Identificar clases candidatas desde sustantivos de casos de uso.
-2. Definir atributos/metodos con visibilidad correcta.
-3. Establecer relaciones, tipo y multiplicidad justificadas.
-4. Revisar cohesion y acoplamiento.
-5. Debatir y justificar decisiones (no hay unica respuesta).
-
-Importancia:
-
-- diagrama como columna vertebral de clases siguientes.
-- patrones de diseno futuros se apoyan en este modelo.
+- Al diseñar una clase, preguntate: ¿en qué es experta esta clase? ¿Qué sabe que nadie más debería saber?
+- El diagrama de clases no es documentación decorativa: es el lenguaje técnico con el que hablan los equipos y los clientes técnicos.
+- Cuando tengas dudas entre herencia y composición, inclinarte por composición suele ser más seguro.
+- Diseñá pensando en reutilización desde el inicio. Un objeto bien diseñado hoy evita reescribir código mañana.
+- No sobre-encapsules ni sobre-expongas: el balance depende del contexto real del problema.

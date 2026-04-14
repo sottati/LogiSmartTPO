@@ -1,213 +1,107 @@
 # Clase 1: De la Idea a la Arquitectura
 
-Fuente: `clase_01.html` (solo contenido de `main-content`).
+## El verdadero desafío del software
 
-## Introduccion: el verdadero desafio
-
-La materia apunta a disenar y construir software profesional, no solo a programar.
-
-Idea central:
-
-- El mayor desafio no es escribir codigo dificil.
-- El mayor desafio es decidir **que** construir y **como estructurarlo**.
-- Codigo que funciona no alcanza: debe ser mantenible, flexible y escalable.
-
-Analogia del vehiculo:
-
-- Si no se aclara el problema al inicio, se puede construir una bicicleta cuando se necesitaba un camion.
-- Corregir eso tarde es costosisimo.
+El mayor desafío no es escribir código difícil. Es decidir qué construir y cómo estructurarlo. El código es una herramienta, como un martillo o un destornillador. El valor real está en la decisión arquitectónica que precede a escribir la primera línea.
 
 ## Fuzzy Front-End
 
-El "Fuzzy Front-End" es la fase inicial borrosa: hay idea y problema de negocio, pero mucha incertidumbre.
+El Fuzzy Front-End es la etapa inicial de un proyecto donde todo es incierto: el problema no está claro, los requisitos son ambiguos y las decisiones son costosas de revertir. La mayoría de los proyectos fracasan aquí, antes de escribir una sola línea de código.
 
-Por que es critica:
-
-- Muchos proyectos fracasan ahi, antes de codificar.
-- Error comun: construir sin plano.
-
-Mision del curso:
-
-- Llevar ingenieria a la fase borrosa.
-- Usar proceso sistematico para pasar de idea difusa a plan robusto.
-- Marco elegido: Proceso Unificado.
+El objetivo de la materia es aplicar rigor de ingeniería a esta etapa difusa, usando el Proceso Unificado (RUP) como marco metodológico.
 
 ## Proceso Unificado (RUP)
 
-RUP es un marco/fundacion para construir software en forma profesional, adaptable y orientado a riesgos.
+RUP organiza el desarrollo en torno a tres pilares:
 
-Tres pilares:
+1. **Iterativo e incremental**: el proyecto se divide en ciclos cortos, cada uno con análisis, diseño, implementación y pruebas. Cada iteración entrega un incremento funcional y verificable.
+2. **Casos de uso**: el foco está en los objetivos del usuario, no en las funciones del sistema. Los casos de uso son el hilo conductor de todo el proceso.
+3. **Arquitectura céntrica**: las decisiones de calidad (rendimiento, seguridad, escalabilidad, mantenibilidad) guían la arquitectura antes que los detalles de implementación.
 
-1. Iterativo e incremental.
-2. Guiado por casos de uso.
-3. Centrado en la arquitectura.
+## Casos de Uso
 
-## Pilar 1: Iterativo e incremental
+Un caso de uso describe una interacción entre un actor y el sistema para lograr un objetivo concreto.
 
-Se abandona cascada lineal unica. El proyecto se divide en iteraciones cortas.
+Estructura de un caso de uso:
 
-Cada iteracion recorre:
+- Actor principal
+- Precondiciones
+- Flujo básico (pasos del escenario principal)
+- Flujos alternativos (excepciones, variantes)
+- Postcondiciones
 
-- analisis
-- diseno
-- implementacion
-- pruebas
+Ejemplo: reserva en restaurante. El actor es el cliente. El flujo básico describe cómo realiza la reserva exitosamente. Los flujos alternativos cubren mesa no disponible, datos inválidos, etc.
 
-Resultado por iteracion:
+## Atributos de Calidad
 
-- un incremento funcional y probado.
+Los atributos de calidad son requisitos no funcionales que determinan la arquitectura:
 
-Ejemplo e-commerce por iteraciones:
+- **Rendimiento**: tiempo de respuesta bajo carga
+- **Seguridad**: protección contra accesos no autorizados
+- **Confiabilidad**: disponibilidad y tolerancia a fallos
+- **Escalabilidad**: capacidad de crecer sin rediseñar
+- **Mantenibilidad**: facilidad de modificar y extender el sistema
+- **Usabilidad**: facilidad de uso para el usuario final
 
-1. Catalogo y busqueda.
-2. Carrito.
-3. Checkout y pagos.
-4. Recomendaciones.
+Cada atributo tiene impacto directo en decisiones de diseño. No existe una arquitectura perfecta; existe la arquitectura correcta para las prioridades específicas de cada negocio.
 
-Ventajas:
+## Trade-offs de Arquitectura
 
-- Feedback temprano.
-- Reduccion de riesgo.
-- Adaptabilidad ante cambios de requisitos.
+Las decisiones arquitectónicas implican compromisos inevitables:
 
-## Pilar 2: Casos de uso
+- Seguridad vs. rendimiento
+- Escalabilidad vs. simplicidad
+- Flexibilidad vs. usabilidad
 
-En lugar de pensar en features sueltas, se trabaja con objetivos del usuario.
+El trabajo del arquitecto es entender qué prioridades dominan en el contexto del negocio y tomar decisiones fundamentadas.
 
-Definicion:
+## Visión y Alcance
 
-- Caso de uso = narrativa de interaccion actor-sistema para lograr valor.
+La visión es el documento que actúa como "norte" del proyecto. Define:
 
-Estructura base:
+- El problema que se resuelve
+- Los actores principales
+- Los objetivos del sistema
+- Las restricciones conocidas
 
-| Componente | Descripcion |
-| --- | --- |
-| Nombre | Verbo + objeto. Ej: "Generar Reporte de Ventas" |
-| Actor principal | Quien inicia |
-| Precondiciones | Que debe ser cierto antes |
-| Flujo basico | Camino feliz |
-| Flujos alternativos | Desvios, errores |
-| Postcondiciones | Estado resultante |
+El diagrama de contexto (Nivel 0) muestra los límites del sistema y sus interacciones con actores externos, sin entrar en detalles internos.
 
-Ejemplo detallado: Reservar Mesa
+## Hito 1
 
-```text
-Caso de Uso: Reservar Mesa
-Actor Principal: Cliente
-Precondicion: Cliente autenticado.
-Resumen: Busca restaurante, elige fecha/hora/comensales y confirma reserva.
+El Hito 1 aplica estos conceptos al caso LogiSmart:
 
-Flujo Basico:
-1) Cliente busca restaurante.
-2) Sistema muestra coincidencias.
-3) Cliente selecciona restaurante.
-4) Sistema muestra detalle y disponibilidad.
-5) Cliente elige fecha/hora/personas.
-6) Sistema valida disponibilidad.
-7) Cliente confirma.
-8) Sistema registra reserva, envia email y notifica al restaurante.
+- Analizar el dominio del problema
+- Identificar actores y sus objetivos
+- Definir casos de uso principales
+- Documentar visión y alcance
+- Construir el diagrama de contexto
 
-Flujo Alternativo: sin disponibilidad
-6a) Sistema informa y sugiere horarios alternativos.
+---
 
-Postcondicion:
-Reserva registrada y partes notificadas.
-```
+## Perspectiva del profesor
 
-Por que son poderosos:
+### Insights clave
 
-- Centran el diseno en valor de usuario.
-- Generan lenguaje comun entre negocio/dev/test.
-- Sirven como base para diseno (clases/metodos/secuencias).
-- Sirven como base para pruebas.
+El profesor Salas Joaquin planteó desde la primera clase que programar no es el núcleo del trabajo del desarrollador de software. La diferencia entre construir un buen sistema y uno deficiente está en lo que sucede antes de escribir código.
 
-## Pilar 3: Atributos de calidad y arquitectura
+> "La programación es una herramienta. El verdadero desafío es decidir QUÉ construir y CÓMO estructurarlo."
 
-Casos de uso dicen el **QUE**.
-Atributos de calidad dicen el **COMO**.
+Un sistema puede funcionar perfectamente en términos técnicos y ser un fracaso total porque resuelve el problema equivocado. Esto ocurre cuando se saltea el análisis y se va directo a implementar.
 
-Son requerimientos no funcionales que condicionan decisiones arquitectonicas.
+El Fuzzy Front-End no es un obstáculo a eliminar rápido: es la etapa más importante. Dedicarle tiempo acorta el total del proyecto porque evita rediseños costosos.
 
-Comparacion conceptual:
+RUP no es burocracia: es el resultado de aprender de décadas de proyectos fracasados. Los requisitos cambian, la tecnología cambia, el negocio cambia. Un modelo en cascada no sobrevive a esa realidad.
 
-- Dos sistemas pueden tener el mismo caso de uso (ej. comprar producto).
-- Pero arquitectura cambia mucho segun exigencias de performance, escala o confiabilidad.
+### Analogías y ejemplos reales
 
-Atributos clave:
+**La bicicleta y el camión**: si no hacés las preguntas correctas desde el principio, podés construir una bicicleta cuando el cliente necesitaba un camión. Convertir una bicicleta en camión es gigantesco, o imposible. El costo de no entender bien el problema al inicio es exponencial.
 
-- Performance (latencia/throughput).
-- Seguridad (autenticacion/autorizacion/encriptacion).
-- Confiabilidad (fallas, continuidad).
-- Usabilidad (facilidad de uso).
-- Escalabilidad (crecimiento de carga).
-- Mantenibilidad (evolucion y costo futuro).
+**Amazon vs. un comercio pequeño**: dos sistemas de e-commerce con funcionalidad idéntica (hacer un pedido) requieren arquitecturas radicalmente distintas. La diferencia no está en lo que hacen sino en los atributos de calidad que priorizan: carga, disponibilidad, geografía, seguridad. La arquitectura correcta no es la más sofisticada, sino la que responde a las prioridades reales del negocio.
 
-Impactos tipicos en arquitectura:
+### Consejo profesional
 
-- Performance -> cache, DB optimizada, algoritmos eficientes.
-- Seguridad -> capas de autenticacion, cifrado en transito y reposo.
-- Confiabilidad -> redundancia, replicacion, recovery.
-- Escalabilidad -> distribuido, microservicios, balanceo.
-
-## Trade-offs
-
-No existe arquitectura perfecta. Mejorar un atributo suele afectar otro.
-
-Ejemplos:
-
-- Seguridad vs performance.
-- Flexibilidad vs usabilidad.
-- Escalabilidad vs simplicidad.
-
-Trabajo del arquitecto:
-
-- Entender prioridades de negocio.
-- Tomar decisiones justificadas.
-- Elegir compromisos adecuados al contexto.
-
-## Documentando la vision
-
-Para salir del Fuzzy Front-End se formalizan decisiones.
-
-### Declaracion de vision
-
-Frase corta que actua como "estrella polar".
-Debe responder:
-
-- para quien es
-- que problema resuelve
-- que lo diferencia
-
-Ejemplo de vision (LogiSmart):
-
-> Convertirnos en el sistema nervioso central de la logistica para cada PyME en Latinoamerica, transformando su cadena de suministro de un centro de costos a una ventaja competitiva, a traves de una plataforma inteligente, accesible y radicalmente facil de usar.
-
-### Diagrama de contexto (nivel 0)
-
-Representa el sistema como caja negra y sus interacciones externas.
-
-Sirve para:
-
-- definir limites del sistema
-- identificar actores
-- listar sistemas externos integrados
-- delimitar responsabilidades
-
-## Introduccion a la practica (Hito 1)
-
-Caso: LogiSmart.
-Objetivo: producir Vision y Alcance inicial aplicando conceptos de clase.
-
-Trabajo esperado del equipo:
-
-1. Analizar dominio.
-2. Identificar actores y stakeholders.
-3. Definir catalogo de casos de uso.
-4. Detallar 3 casos de uso clave.
-5. Analizar atributos de calidad e implicaciones.
-6. Consolidar documento de Vision y Alcance.
-
-Importancia del hito:
-
-- Es la fundacion del resto del proyecto del cuatrimestre.
-- Decisiones iniciales condicionan clases siguientes.
+- Invertí tiempo en entender el problema antes de proponer soluciones técnicas.
+- No hay arquitectura perfecta: sí hay la arquitectura correcta para ese contexto y esas prioridades.
+- Documentá la visión y el alcance desde el día uno. Es el contrato de entendimiento con el cliente.
+- Los casos de uso son herramientas de comunicación, no solo documentación. Usarlos para validar que entendiste bien el objetivo del usuario.
+- Aprendé a convivir con la incertidumbre inicial: el objetivo es reducirla, no eliminarla de golpe.
