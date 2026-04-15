@@ -1180,14 +1180,6 @@ sequenceDiagram
             <li>Los algoritmos variables se protegen con <strong>Protected Variations</strong>: el Controller invoca interfaces, no clases concretas.</li>
           </ol>
         </div>
-
-        <h3>7.4 Próximos pasos</h3>
-        <ul class="note-list">
-          <li>Refactorizar <code>Ruta.calcularCostoEstimado()</code> para delegar en <code>CalculadorDeCosto</code> inyectado (eliminar los condicionales sobre <code>tipo</code> de vehículo que permanecen del Hito 4).</li>
-          <li>Implementar <code>IVehiculo</code> como interfaz con subtipos <code>Camion</code>, <code>Moto</code> y <code>Auto</code> para completar el Polymorphism sobre vehículos.</li>
-          <li>Agregar tests unitarios que validen el comportamiento polimórfico de cada interfaz.</li>
-          <li>Conectar <code>RepositorioDeEnvios</code> a una base de datos real mediante un adaptador (Hexagonal Architecture).</li>
-        </ul>
       </div>
 
     </div>
