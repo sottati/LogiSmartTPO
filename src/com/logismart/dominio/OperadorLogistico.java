@@ -3,7 +3,7 @@ package com.logismart.dominio;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class OperadorLogistico extends Usuario {
+public class OperadorLogistico extends Usuario implements IPermisos {
 	private Empresa empresa;
 	private String zonaOperacion;
 	private String turno;
@@ -74,6 +74,31 @@ public class OperadorLogistico extends Usuario {
 	}
 	
 	public void asignarRuta() {
-		
+	}
+
+	// IPermisos: OperadorLogistico tiene permisos completos de operacion
+	@Override
+	public boolean puedeCrearEnvio() {
+		return true;
+	}
+
+	@Override
+	public boolean puedeAsignarRuta() {
+		return true;
+	}
+
+	@Override
+	public boolean puedeVerReportes() {
+		return true;
+	}
+
+	@Override
+	public boolean puedeGestionarFlota() {
+		return true;
+	}
+
+	@Override
+	public boolean puedeAdministrarEmpresas() {
+		return false;
 	}
 }

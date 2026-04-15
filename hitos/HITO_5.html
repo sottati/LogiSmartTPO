@@ -1,0 +1,1231 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITO 5 - LogiSmart | Patrones GRASP (Parte II)</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --primary: #1a365d;
+        --primary-light: #2b6cb0;
+        --accent: #ed8936;
+        --bg: #f7fafc;
+        --surface: #ffffff;
+        --text: #1a202c;
+        --text-secondary: #4a5568;
+        --border: #e2e8f0;
+        --warn: #c53030;
+        --warn-bg: #fff5f5;
+        --ok: #276749;
+        --ok-bg: #f0fff4;
+      }
+
+      html { scroll-behavior: smooth; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+        font-size: 15px;
+      }
+
+      .cover {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--surface);
+        background-image: radial-gradient(var(--border) 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--text);
+        text-align: center;
+        padding: 2rem;
+        border-bottom: 8px solid var(--primary);
+      }
+
+      .cover-content { max-width: 900px; width: 100%; }
+
+      .cover .university {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+      }
+
+      .cover .subject {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--primary-light);
+        margin-bottom: 4rem;
+      }
+
+      .cover h1 {
+        font-size: 5rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.03em;
+      }
+
+      .cover .subtitle {
+        font-size: 1.25rem;
+        font-weight: 400;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        margin-bottom: 5rem;
+      }
+
+      .cover .team {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        border-top: 2px solid var(--bg);
+        padding-top: 3rem;
+      }
+
+      .team-member strong { display: block; font-size: 1.1rem; color: var(--text); margin-bottom: 0.25rem; }
+      .team-member div { font-size: 0.85rem; color: var(--text-secondary); font-family: monospace; }
+
+      .cover .date {
+        margin-top: 4rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .side-nav {
+        position: fixed;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        padding: 0.6rem 0.5rem;
+      }
+
+      .side-nav a {
+        display: block;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .side-nav a:hover { color: var(--primary); border-left-color: var(--border); }
+      .side-nav a.active { color: var(--primary); font-weight: 700; border-left-color: var(--accent); }
+
+      .container { max-width: 980px; margin: 0 auto; padding: 3rem 2rem; }
+
+      .section {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+        border: 1px solid var(--border);
+      }
+
+      .section-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: var(--primary);
+        color: white;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+      }
+
+      .section h2 { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.3rem; }
+
+      .section-desc {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.1rem;
+      }
+
+      h3 { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 1rem; margin-top: 2rem; }
+      h3:first-of-type { margin-top: 0; }
+
+      table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+      thead th {
+        background: var(--primary);
+        color: white;
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      tbody td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+      tbody tr:hover { background: #f0f5ff; }
+
+      pre.mermaid {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem;
+        min-height: 120px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .badge-ok  { background: var(--ok-bg);   color: var(--ok); }
+      .badge-obs { background: #fffbeb;         color: #92400e; }
+      .badge-no  { background: var(--warn-bg);  color: var(--warn); }
+
+      .callout {
+        border-left: 4px solid var(--accent);
+        background: #fffbf5;
+        padding: 1rem 1.25rem;
+        border-radius: 0 8px 8px 0;
+        margin: 1.25rem 0;
+        font-size: 0.9rem;
+      }
+      .callout-warn { border-left-color: var(--warn); background: var(--warn-bg); }
+      .callout-ok   { border-left-color: #38a169;     background: var(--ok-bg); }
+      .callout strong { display: block; margin-bottom: 0.3rem; }
+
+      pre.code-block {
+        background: #1e1e2e;
+        color: #cdd6f4;
+        padding: 1.25rem;
+        border-radius: 8px;
+        font-family: 'Cascadia Code', 'Fira Code', monospace;
+        font-size: 0.82rem;
+        line-height: 1.6;
+        overflow-x: auto;
+        margin: 1rem 0;
+        white-space: pre;
+      }
+
+      .diagram-wrapper { overflow-x: auto; margin: 1rem 0; }
+
+      .note-list li { margin-left: 1.25rem; margin-bottom: 0.5rem; }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin: 1rem 0;
+      }
+      .col-box {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+      }
+      .col-box h4 { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.75rem; }
+
+      .pattern-tag {
+        display: inline-block;
+        background: var(--primary);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-right: 0.4rem;
+      }
+
+      @media (max-width: 1200px) { .side-nav { display: none; } }
+      @media (max-width: 640px) {
+        .cover h1 { font-size: 2.2rem; }
+        .cover .team { grid-template-columns: 1fr; gap: 1rem; }
+        .section { padding: 1.5rem; }
+        .two-col { grid-template-columns: 1fr; }
+      }
+      @media print {
+        body { background: white; font-size: 12pt; }
+        .side-nav { display: none; }
+        .cover { min-height: auto; padding: 3rem 2rem; page-break-after: always; }
+        .section { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+        <h1>HITO 5</h1>
+        <div class="subtitle">
+          Asignación de Responsabilidades GRASP - Parte II<br>
+          Controller · Polymorphism · Pure Fabrication · Indirection · Protected Variations
+        </div>
+        <div class="team">
+          <div class="team-member">
+            <strong>Rosario Presedo</strong>
+            <div>LU: 1146894</div>
+          </div>
+          <div class="team-member">
+            <strong>Simon Ottati</strong>
+            <div>LU: 1155931</div>
+          </div>
+        </div>
+        <div class="date">Martes Noche &bull; 14 de Abril de 2026</div>
+      </div>
+    </div>
+
+    <nav class="side-nav">
+      <a href="#s1">1. Análisis Hito 4</a>
+      <a href="#s2">2. Controller</a>
+      <a href="#s3">3. Polymorphism</a>
+      <a href="#s4">4. Pure Fabrication</a>
+      <a href="#s5">5. Protected Variations</a>
+      <a href="#s6">6. Diagramas</a>
+      <a href="#s7">7. Conclusiones</a>
+    </nav>
+
+    <div class="container">
+
+      <!-- ===== SECCION 1 ===== -->
+      <div id="s1" class="section">
+        <div class="section-number">1</div>
+        <h2>Análisis del Diseño del Hito 4</h2>
+        <p class="section-desc">
+          Revisión del modelo GRASP Parte I aplicado en el Hito 4. Se identifican los problemas que
+          quedan sin resolver y se propone cómo GRASP Parte II los aborda.
+        </p>
+
+        <h3>1.1 Problemas identificados en el diseño del Hito 4</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Problema</th>
+              <th>Ubicación</th>
+              <th>Patrón que lo resuelve</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>P1</td>
+              <td>No existe intermediario entre la UI y el dominio. <code>OperadorLogistico</code> coordina operaciones que involucran múltiples clases, lo cual mezcla roles de actor y orquestador.</td>
+              <td><code>OperadorLogistico</code></td>
+              <td><span class="badge" style="background:#2b6cb0;color:white">Controller</span></td>
+            </tr>
+            <tr>
+              <td>P2</td>
+              <td>Los permisos de cada tipo de usuario no están modelados. Cualquier código que necesite verificar si un usuario puede realizar una acción debería usar <code>instanceof</code>, generando condicionales frágiles.</td>
+              <td><code>Usuario</code> y subclases</td>
+              <td><span class="badge" style="background:#276749;color:white">Polymorphism</span></td>
+            </tr>
+            <tr>
+              <td>P3</td>
+              <td>El mecanismo de notificación no existe. <code>TrackingService</code> solo publica tracking pero no notifica al cliente por ningún canal. La elección de canal (Email/SMS/Push) generaría un <code>switch</code> o múltiples <code>if</code>.</td>
+              <td><code>TrackingService</code>, ausencia de notificador</td>
+              <td><span class="badge" style="background:#276749;color:white">Polymorphism</span> <span class="badge" style="background:#553c9a;color:white">Indirection</span></td>
+            </tr>
+            <tr>
+              <td>P4</td>
+              <td>No hay un servicio que centralice el envío de notificaciones. La responsabilidad podría quedar en <code>Envio</code> o en el Controller, reduciendo su cohesión.</td>
+              <td>Ausencia de clase especializada</td>
+              <td><span class="badge" style="background:#975a16;color:white">Pure Fabrication</span></td>
+            </tr>
+            <tr>
+              <td>P5</td>
+              <td>No hay persistencia de envíos. La responsabilidad de guardar/recuperar envíos no encaja ni en <code>Envio</code> ni en <code>Logismart</code>.</td>
+              <td>Ausencia de repositorio</td>
+              <td><span class="badge" style="background:#975a16;color:white">Pure Fabrication</span></td>
+            </tr>
+            <tr>
+              <td>P6</td>
+              <td>La selección de ruta óptima usa un criterio fijo (distancia). Cambiar el algoritmo requeriría modificar <code>Ruta</code> o el Controller.</td>
+              <td><code>Ruta.calcularDistanciaTotal()</code></td>
+              <td><span class="badge" style="background:#276749;color:white">Polymorphism</span> <span class="badge" style="background:#c05621;color:white">Protected Variations</span></td>
+            </tr>
+            <tr>
+              <td>P7</td>
+              <td>El cálculo de costo en <code>Ruta.calcularCostoEstimado()</code> tiene la lógica de tarifa codificada con condicionales sobre el tipo de vehículo. Agregar una nueva política rompe el método.</td>
+              <td><code>Ruta.calcularCostoEstimado()</code></td>
+              <td><span class="badge" style="background:#c05621;color:white">Protected Variations</span></td>
+            </tr>
+            <tr>
+              <td>P8</td>
+              <td>La asignación de vehículos carece de política explícita. Si cambia el criterio (disponibilidad → capacidad → proximidad), hay que modificar el Controller.</td>
+              <td>Ausencia de asignador</td>
+              <td><span class="badge" style="background:#c05621;color:white">Protected Variations</span></td>
+            </tr>
+            <tr>
+              <td>P9</td>
+              <td>El ETA se fija manualmente en el Controller. No existe un modelo de cálculo de tiempo que pueda variar (con/sin tráfico, por franja horaria).</td>
+              <td>Ausencia de calculador de tiempo</td>
+              <td><span class="badge" style="background:#c05621;color:white">Protected Variations</span></td>
+            </tr>
+            <tr>
+              <td>P10</td>
+              <td>La exportación de reportes tiene un único formato. <code>ReporteService</code> necesita condicionales para soportar PDF, JSON, Excel.</td>
+              <td><code>ReporteService</code></td>
+              <td><span class="badge" style="background:#c05621;color:white">Protected Variations</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== SECCION 2 ===== -->
+      <div id="s2" class="section">
+        <div class="section-number">2</div>
+        <h2>Aplicación del Patrón Controller</h2>
+        <p class="section-desc">
+          Se crea <code>LogiSmartController</code> como intermediario entre la UI y el dominio.
+          Resuelve el <strong>Problema P1</strong>: ninguna clase coordinaba operaciones que involucran
+          múltiples objetos del dominio sin mezclar roles.
+        </p>
+
+        <h3>2.1 Responsabilidades del Controller</h3>
+        <div class="two-col">
+          <div class="col-box">
+            <h4>Lo que SÍ hace el Controller</h4>
+            <ul class="note-list">
+              <li>Recibe solicitudes de la UI (métodos públicos)</li>
+              <li>Valida permisos usando <code>IPermisos</code> (Polymorphism)</li>
+              <li>Delega validación de datos a <code>ValidadorDeEnvios</code></li>
+              <li>Coordina colaboración entre múltiples objetos del dominio</li>
+              <li>Usa servicios de Pure Fabrication para notificar y persistir</li>
+              <li>Devuelve resultados o lanza excepciones significativas</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <h4>Lo que NO hace el Controller</h4>
+            <ul class="note-list">
+              <li>No contiene lógica de negocio propia</li>
+              <li>No crea directamente objetos del dominio (delega en Expert/Creator)</li>
+              <li>No conoce el canal de notificación (Indirection)</li>
+              <li>No conoce el algoritmo de selección de ruta (Protected Variations)</li>
+              <li>No accede a la base de datos directamente (Pure Fabrication)</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>2.2 Métodos principales</h3>
+        <pre class="code-block">public class LogiSmartController {
+
+    // Pure Fabrications inyectadas por constructor
+    private final RepositorioDeEnvios repositorioEnvios;
+    private final ServicioDeNotificaciones notificaciones;
+    private final ValidadorDeEnvios validador;
+    private final CalculadorDeRutas calculadorRutas;
+    private final AsignadorDeVehiculos asignadorVehiculos;
+    private final CalculadorDeCosto calculadorCosto;
+    private final CalculadorDeTiempo calculadorTiempo;
+
+    // CU-01: Crear envio
+    public Envio crearEnvio(IPermisos solicitante, Empresa empresa,
+                            ClienteFinal cliente, String prioridad, LocalDateTime fecha) {
+        if (!solicitante.puedeCrearEnvio())                    // Polymorphism
+            throw new SecurityException("Sin permiso");
+        var resultado = validador.validarCreacion(...);        // Pure Fabrication
+        Envio envio = new Envio(UUID.randomUUID()...);         // Creator / Expert
+        repositorioEnvios.guardar(envio);                      // Pure Fabrication
+        notificaciones.notificarCreacionDeEnvio(envio, cliente); // PF + Indirection
+        return envio;
+    }
+
+    // CU-03: Asignar ruta
+    public Ruta asignarRuta(IPermisos solicitante, String idEnvio,
+                            List&lt;Ruta&gt; rutas, Flota flota, ClienteFinal cliente) {
+        if (!solicitante.puedeAsignarRuta()) throw new SecurityException(...);
+        Vehiculo v = asignadorVehiculos.asignar(flota, envio)  // Protected Variations
+                         .orElseThrow(...);
+        Ruta ruta = calculadorRutas.seleccionarRuta(envio, rutas); // PF + Polymorphism
+        int eta = calculadorTiempo.estimarMinutos(ruta);           // Protected Variations
+        envio.iniciar();                                            // Expert (Hito 4)
+        notificaciones.notificarAsignacionDeRuta(envio, ruta, cliente);
+        return ruta;
+    }
+
+    // CU-04: Calcular costo
+    public double calcularCosto(String idEnvio) {
+        return calculadorCosto.calcular(buscarEnvioOFallar(idEnvio)); // Protected Variations
+    }
+
+    // CU-05: Obtener estado | CU-06: Cancelar envio | CU-07: Ver reportes
+}</pre>
+
+        <h3>2.3 Diagrama del Controller</h3>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+classDiagram
+direction TB
+
+class LogiSmartController {
+  +crearEnvio(solicitante, empresa, cliente, prioridad, fecha) Envio
+  +agregarOrden(solicitante, idEnvio, orden)
+  +asignarRuta(solicitante, idEnvio, rutas, flota, cliente) Ruta
+  +calcularCosto(idEnvio) double
+  +obtenerEstado(idEnvio) String
+  +cancelarEnvio(solicitante, idEnvio, cliente)
+  +verificarPermisoReporte(solicitante)
+}
+
+class IPermisos {
+  &lt;&lt;interface&gt;&gt;
+  +puedeCrearEnvio() boolean
+  +puedeAsignarRuta() boolean
+  +puedeVerReportes() boolean
+}
+
+class RepositorioDeEnvios {
+  +guardar(envio)
+  +buscarPorId(id) Optional~Envio~
+}
+
+class ServicioDeNotificaciones {
+  +notificarCreacionDeEnvio(envio, cliente)
+  +notificarAsignacionDeRuta(envio, ruta, cliente)
+}
+
+class ValidadorDeEnvios {
+  +validarCreacion(...) ResultadoValidacion
+  +validarAsignacionRuta(...) ResultadoValidacion
+}
+
+class CalculadorDeRutas {
+  +seleccionarRuta(envio, rutas) Ruta
+}
+
+LogiSmartController --> IPermisos : verifica permisos
+LogiSmartController --> RepositorioDeEnvios : persiste
+LogiSmartController --> ServicioDeNotificaciones : notifica
+LogiSmartController --> ValidadorDeEnvios : valida
+LogiSmartController --> CalculadorDeRutas : selecciona ruta
+          </pre>
+        </div>
+      </div>
+
+      <!-- ===== SECCION 3 ===== -->
+      <div id="s3" class="section">
+        <div class="section-number">3</div>
+        <h2>Aplicación del Patrón Polymorphism</h2>
+        <p class="section-desc">
+          Se eliminan los condicionales <code>instanceof</code> creando interfaces con múltiples
+          implementaciones. Resuelve los <strong>Problemas P2, P3 y P6</strong>.
+        </p>
+
+        <h3>3.1 IPermisos - Tipos de Usuario</h3>
+        <div class="callout callout-warn">
+          <strong>Problema (P2): Sin interfaz de permisos</strong>
+          Cualquier código que verifique si un usuario puede realizar una acción necesitaría:
+          <code>if (u instanceof OperadorLogistico) { ... } else if (u instanceof AdminEmpresa) { ... }</code>
+        </div>
+        <div class="callout callout-ok">
+          <strong>Solución: Interfaz IPermisos implementada por cada tipo de usuario</strong>
+          El Controller simplemente llama <code>solicitante.puedeCrearEnvio()</code> sin conocer el tipo concreto.
+        </div>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+classDiagram
+direction LR
+
+class IPermisos {
+  &lt;&lt;interface&gt;&gt;
+  +puedeCrearEnvio() boolean
+  +puedeAsignarRuta() boolean
+  +puedeVerReportes() boolean
+  +puedeGestionarFlota() boolean
+  +puedeAdministrarEmpresas() boolean
+}
+
+class OperadorLogistico {
+  +puedeCrearEnvio() true
+  +puedeAsignarRuta() true
+  +puedeVerReportes() true
+  +puedeGestionarFlota() true
+  +puedeAdministrarEmpresas() false
+}
+
+class AdminEmpresa {
+  +puedeCrearEnvio() true
+  +puedeAsignarRuta() false
+  +puedeVerReportes() true
+  +puedeGestionarFlota() false
+  +puedeAdministrarEmpresas() false
+}
+
+class Transportista {
+  +puedeCrearEnvio() false
+  +puedeAsignarRuta() false
+  +puedeVerReportes() false
+  +puedeGestionarFlota() false
+  +puedeAdministrarEmpresas() false
+}
+
+class ClienteFinal {
+  +puedeCrearEnvio() false
+  +puedeAsignarRuta() false
+  +puedeVerReportes() false
+  +puedeGestionarFlota() false
+  +puedeAdministrarEmpresas() false
+}
+
+class AdminPlataforma {
+  +puedeCrearEnvio() true
+  +puedeAsignarRuta() true
+  +puedeVerReportes() true
+  +puedeGestionarFlota() true
+  +puedeAdministrarEmpresas() true
+}
+
+OperadorLogistico ..|> IPermisos
+AdminEmpresa ..|> IPermisos
+Transportista ..|> IPermisos
+ClienteFinal ..|> IPermisos
+AdminPlataforma ..|> IPermisos
+          </pre>
+        </div>
+
+        <h3>3.2 Notificador - Canal de notificación</h3>
+        <div class="callout callout-warn">
+          <strong>Problema (P3): Canal de notificación con condicionales</strong>
+          Sin la interfaz, el código sería:
+          <code>if (canal == "EMAIL") { ... } else if (canal == "SMS") { ... }</code>
+        </div>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+classDiagram
+direction LR
+
+class Notificador {
+  &lt;&lt;interface&gt;&gt;
+  +notificar(destinatario, asunto, mensaje)
+  +getCanal() String
+}
+
+class NotificadorEmail {
+  +notificar(email, asunto, mensaje)
+  +getCanal() "EMAIL"
+}
+
+class NotificadorSMS {
+  +notificar(telefono, asunto, mensaje)
+  +getCanal() "SMS"
+}
+
+class NotificadorPush {
+  +notificar(token, asunto, mensaje)
+  +getCanal() "PUSH"
+}
+
+NotificadorEmail ..|> Notificador
+NotificadorSMS ..|> Notificador
+NotificadorPush ..|> Notificador
+          </pre>
+        </div>
+
+        <h3>3.3 CalculadorDeRuta - Estrategia de selección de ruta</h3>
+        <div class="callout callout-warn">
+          <strong>Problema (P6): Algoritmo de ruta fijo</strong>
+          Sin la interfaz, cambiar la estrategia de selección implicaría modificar <code>Ruta</code> o el Controller.
+        </div>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+classDiagram
+direction LR
+
+class CalculadorDeRuta {
+  &lt;&lt;interface&gt;&gt;
+  +calcular(envio, rutas) Ruta
+  +getDescripcion() String
+}
+
+class RutaMasCercana {
+  +calcular(envio, rutas) Ruta
+  +getDescripcion() "Menor distancia (km)"
+}
+
+class RutaMenosCongestionada {
+  +calcular(envio, rutas) Ruta
+  +getDescripcion() "Menor duración estimada"
+}
+
+class RutaMasBarata {
+  +calcular(envio, rutas) Ruta
+  +getDescripcion() "Menor costo operativo"
+}
+
+RutaMasCercana ..|> CalculadorDeRuta
+RutaMenosCongestionada ..|> CalculadorDeRuta
+RutaMasBarata ..|> CalculadorDeRuta
+          </pre>
+        </div>
+      </div>
+
+      <!-- ===== SECCION 4 ===== -->
+      <div id="s4" class="section">
+        <div class="section-number">4</div>
+        <h2>Aplicación de Pure Fabrication e Indirection</h2>
+        <p class="section-desc">
+          Se crean clases artificiales que no representan conceptos del dominio real pero son
+          necesarias para mantener alta cohesión y bajo acoplamiento.
+          Resuelve los <strong>Problemas P4 y P5</strong>.
+        </p>
+
+        <h3>4.1 Tabla de Pure Fabrications</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Clase</th>
+              <th>Responsabilidad</th>
+              <th>Por qué no encaja en el dominio</th>
+              <th>Patrón adicional</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ServicioDeNotificaciones</strong></td>
+              <td>Construir mensajes contextuales y enviarlos al cliente vía canal configurado</td>
+              <td>No es responsabilidad de <code>Envio</code> (entidad de dominio), ni del Controller (perdería cohesión)</td>
+              <td><span class="pattern-tag">Indirection</span> sobre <code>Notificador</code></td>
+            </tr>
+            <tr>
+              <td><strong>RepositorioDeEnvios</strong></td>
+              <td>Persistir, recuperar y buscar envíos por ID o estado</td>
+              <td>La persistencia no es responsabilidad de <code>Envio</code> (violaría Expert). No encaja en <code>Logismart</code> (fachada del sistema)</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td><strong>ValidadorDeEnvios</strong></td>
+              <td>Centralizar reglas de validación: creación de envíos y asignación de rutas</td>
+              <td>Validar en el Controller lo haría un "fat controller". Validar en <code>Envio</code> rompe Expert (no tiene todos los datos de contexto)</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td><strong>CalculadorDeRutas</strong></td>
+              <td>Orquestar la selección de ruta óptima usando la estrategia configurada</td>
+              <td>No encaja en <code>Ruta</code> (una ruta no se elige a sí misma) ni en <code>OperadorLogistico</code> (pierde cohesión)</td>
+              <td><span class="pattern-tag">Indirection</span> sobre <code>CalculadorDeRuta</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>4.2 Indirection: ServicioDeNotificaciones como intermediario</h3>
+        <div class="callout">
+          <strong>GRASP Indirection:</strong> <code>ServicioDeNotificaciones</code> actúa como intermediario
+          entre el Controller y la implementación concreta del canal. El Controller no sabe si se usa
+          Email, SMS o Push - solo le pide al servicio que notifique.
+        </div>
+        <pre class="code-block">// ServicioDeNotificaciones depende de la interfaz Notificador (no de la clase concreta)
+public class ServicioDeNotificaciones {
+    private final Notificador notificador;  // inyectado: Email, SMS o Push
+
+    public void notificarCreacionDeEnvio(Envio envio, ClienteFinal cliente) {
+        String asunto = "Envio creado - ID: " + envio.getId();
+        String mensaje = String.format("Hola %s, tu envio %s fue registrado...",
+                cliente.getNombre(), envio.getId());
+        notificador.notificar(cliente.getEmail(), asunto, mensaje);
+        // El Controller NO sabe si esto envia un Email, SMS o Push
+    }
+}</pre>
+
+        <h3>4.3 CalculadorDeRutas como fachada sobre la estrategia</h3>
+        <pre class="code-block">// CalculadorDeRutas encapsula el punto de variacion y permite cambiar estrategia en runtime
+public class CalculadorDeRutas {
+    private CalculadorDeRuta estrategia;  // RutaMasCercana, RutaMasBarata, etc.
+
+    public Ruta seleccionarRuta(Envio envio, List&lt;Ruta&gt; rutas) {
+        return estrategia.calcular(envio, rutas);
+    }
+
+    // Cambio de estrategia en tiempo de ejecucion (Protected Variations)
+    public void cambiarEstrategia(CalculadorDeRuta nueva) {
+        this.estrategia = nueva;
+    }
+}</pre>
+      </div>
+
+      <!-- ===== SECCION 5 ===== -->
+      <div id="s5" class="section">
+        <div class="section-number">5</div>
+        <h2>Aplicación del Patrón Protected Variations</h2>
+        <p class="section-desc">
+          Se identifican los puntos de variación más probables y se los protege con interfaces.
+          Resuelve los <strong>Problemas P7, P8, P9 y P10</strong>.
+        </p>
+
+        <h3>5.1 Puntos de variación identificados</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Interfaz</th>
+              <th>Punto de variación</th>
+              <th>Implementaciones creadas</th>
+              <th>Qué podría cambiar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>CalculadorDeCosto</strong></td>
+              <td>Política de tarifa del envío</td>
+              <td><code>CalculadorDeCostoFijo</code>, <code>CalculadorDeCostoPorPeso</code>, <code>CalculadorDeCostoPorDistancia</code></td>
+              <td>Tarifa fija → por peso → por distancia → combinada (negocio cambia cada temporada)</td>
+            </tr>
+            <tr>
+              <td><strong>AsignadorDeVehiculos</strong></td>
+              <td>Criterio de selección de vehículo</td>
+              <td><code>AsignadorPorDisponibilidad</code>, <code>AsignadorPorCapacidad</code></td>
+              <td>Disponibilidad simple → ajuste por capacidad → proximidad geográfica (requiere GPS)</td>
+            </tr>
+            <tr>
+              <td><strong>CalculadorDeTiempo</strong></td>
+              <td>Modelo de estimación de ETA</td>
+              <td><code>CalculadorDeTiempoSimple</code>, <code>CalculadorDeTiempoConTrafico</code></td>
+              <td>Modelo lineal → con tráfico → con franja horaria → con API externa de tráfico</td>
+            </tr>
+            <tr>
+              <td><strong>GeneradorDeReportes</strong></td>
+              <td>Formato de exportación del reporte</td>
+              <td><code>GeneradorDeReportesPDF</code>, <code>GeneradorDeReportesJSON</code></td>
+              <td>PDF → JSON → Excel → CSV → dashboard interactivo</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>5.2 CalculadorDeCosto - Ejemplo completo</h3>
+        <pre class="code-block">// Protected Variations: la politica de costo es un punto de variacion
+interface CalculadorDeCosto {
+    double calcular(Envio envio);
+}
+
+class CalculadorDeCostoFijo implements CalculadorDeCosto {
+    private final double tarifaFija;
+    public double calcular(Envio envio) { return tarifaFija; }
+}
+
+class CalculadorDeCostoPorPeso implements CalculadorDeCosto {
+    private final double costoPorBulto;
+    public double calcular(Envio envio) {
+        int bultos = envio.getOrdenes().stream().mapToInt(Orden::getTotalBultos).sum();
+        return bultos * costoPorBulto;
+    }
+}
+
+class CalculadorDeCostoPorDistancia implements CalculadorDeCosto {
+    private final double costoPorKm;
+    public double calcular(Envio envio) { return ruta.calcularDistanciaTotal() * costoPorKm; }
+}
+
+// En el Controller, nunca cambia, sin importar la politica:
+double costo = calculadorCosto.calcular(envio);  // OCP: abierto a extension, cerrado a modificacion</pre>
+
+        <h3>5.3 CalculadorDeTiempo - Factor de congestión por franja horaria</h3>
+        <pre class="code-block">class CalculadorDeTiempoConTrafico implements CalculadorDeTiempo {
+    public int estimarMinutos(Ruta ruta) {
+        double factor = factorDeCongestion(LocalTime.now());
+        double velocidad = 60.0 / factor;
+        int transito  = (int)((ruta.calcularDistanciaTotal() / velocidad) * 60);
+        int paradas   = ruta.getParadas().size() * 12;
+        return transito + paradas;
+    }
+
+    // 7-10h y 17-20h: hora pico (factor 2x) | 10-17h: moderado (1.3x) | resto: libre (1x)
+    private double factorDeCongestion(LocalTime h) { ... }
+}</pre>
+      </div>
+
+      <!-- ===== SECCION 6 ===== -->
+      <div id="s6" class="section">
+        <div class="section-number">6</div>
+        <h2>Diagramas Actualizados</h2>
+        <p class="section-desc">
+          Diagrama de clases completo del Hito 5 y diagramas de secuencia de los tres casos de uso
+          principales, mostrando cómo colaboran los cinco patrones GRASP Parte II.
+        </p>
+
+        <h3>6.1 Diagrama de Clases Completo - Hito 5</h3>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+classDiagram
+direction LR
+
+%% ---- CONTROLLER ----
+class LogiSmartController {
+  +crearEnvio(solicitante, empresa, cliente, prioridad, fecha) Envio
+  +asignarRuta(solicitante, idEnvio, rutas, flota, cliente) Ruta
+  +calcularCosto(idEnvio) double
+  +obtenerEstado(idEnvio) String
+  +cancelarEnvio(solicitante, idEnvio, cliente)
+}
+
+%% ---- POLYMORPHISM: permisos ----
+class IPermisos {
+  &lt;&lt;interface&gt;&gt;
+  +puedeCrearEnvio() boolean
+  +puedeAsignarRuta() boolean
+  +puedeVerReportes() boolean
+  +puedeGestionarFlota() boolean
+  +puedeAdministrarEmpresas() boolean
+}
+class OperadorLogistico
+class AdminEmpresa
+class Transportista
+class ClienteFinal
+class AdminPlataforma
+OperadorLogistico ..|> IPermisos
+AdminEmpresa ..|> IPermisos
+Transportista ..|> IPermisos
+ClienteFinal ..|> IPermisos
+AdminPlataforma ..|> IPermisos
+
+%% ---- PURE FABRICATION ----
+class RepositorioDeEnvios {
+  +guardar(envio)
+  +buscarPorId(id) Optional~Envio~
+  +listarPorEstado(estado) List~Envio~
+}
+class ValidadorDeEnvios {
+  +validarCreacion(...) ResultadoValidacion
+  +validarAsignacionRuta(...) ResultadoValidacion
+}
+class ServicioDeNotificaciones {
+  +notificarCreacionDeEnvio(envio, cliente)
+  +notificarAsignacionDeRuta(envio, ruta, cliente)
+  +notificarEntregaExitosa(envio, cliente)
+}
+class CalculadorDeRutas {
+  +seleccionarRuta(envio, rutas) Ruta
+  +cambiarEstrategia(nueva)
+}
+
+%% ---- INDIRECTION: Notificador ----
+class Notificador {
+  &lt;&lt;interface&gt;&gt;
+  +notificar(destinatario, asunto, mensaje)
+  +getCanal() String
+}
+class NotificadorEmail
+class NotificadorSMS
+class NotificadorPush
+NotificadorEmail ..|> Notificador
+NotificadorSMS ..|> Notificador
+NotificadorPush ..|> Notificador
+
+%% ---- POLYMORPHISM: CalculadorDeRuta ----
+class CalculadorDeRuta {
+  &lt;&lt;interface&gt;&gt;
+  +calcular(envio, rutas) Ruta
+}
+class RutaMasCercana
+class RutaMenosCongestionada
+class RutaMasBarata
+RutaMasCercana ..|> CalculadorDeRuta
+RutaMenosCongestionada ..|> CalculadorDeRuta
+RutaMasBarata ..|> CalculadorDeRuta
+
+%% ---- PROTECTED VARIATIONS ----
+class CalculadorDeCosto {
+  &lt;&lt;interface&gt;&gt;
+  +calcular(envio) double
+}
+class CalculadorDeCostoFijo
+class CalculadorDeCostoPorPeso
+class CalculadorDeCostoPorDistancia
+CalculadorDeCostoFijo ..|> CalculadorDeCosto
+CalculadorDeCostoPorPeso ..|> CalculadorDeCosto
+CalculadorDeCostoPorDistancia ..|> CalculadorDeCosto
+
+class AsignadorDeVehiculos {
+  &lt;&lt;interface&gt;&gt;
+  +asignar(flota, envio) Optional~Vehiculo~
+}
+class AsignadorPorDisponibilidad
+class AsignadorPorCapacidad
+AsignadorPorDisponibilidad ..|> AsignadorDeVehiculos
+AsignadorPorCapacidad ..|> AsignadorDeVehiculos
+
+class CalculadorDeTiempo {
+  &lt;&lt;interface&gt;&gt;
+  +estimarMinutos(ruta) int
+}
+class CalculadorDeTiempoSimple
+class CalculadorDeTiempoConTrafico
+CalculadorDeTiempoSimple ..|> CalculadorDeTiempo
+CalculadorDeTiempoConTrafico ..|> CalculadorDeTiempo
+
+class GeneradorDeReportes {
+  &lt;&lt;interface&gt;&gt;
+  +exportar(reporte) String
+  +getFormato() String
+}
+class GeneradorDeReportesPDF
+class GeneradorDeReportesJSON
+GeneradorDeReportesPDF ..|> GeneradorDeReportes
+GeneradorDeReportesJSON ..|> GeneradorDeReportes
+
+%% ---- RELACIONES CONTROLLER ----
+LogiSmartController --> IPermisos : verifica
+LogiSmartController --> RepositorioDeEnvios : persiste
+LogiSmartController --> ValidadorDeEnvios : valida
+LogiSmartController --> ServicioDeNotificaciones : notifica
+LogiSmartController --> CalculadorDeRutas : selecciona ruta
+LogiSmartController --> AsignadorDeVehiculos : asigna vehiculo
+LogiSmartController --> CalculadorDeCosto : calcula costo
+LogiSmartController --> CalculadorDeTiempo : estima ETA
+
+%% ---- RELACIONES SERVICIOS ----
+ServicioDeNotificaciones --> Notificador : delega
+CalculadorDeRutas --> CalculadorDeRuta : usa estrategia
+          </pre>
+        </div>
+
+        <h3>6.2 Diagrama de Secuencia - CU-01: Crear Envío (con Controller)</h3>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+sequenceDiagram
+    actor UI as UI / API
+    participant C as LogiSmartController
+    participant P as IPermisos
+    participant V as ValidadorDeEnvios
+    participant EV as Envio
+    participant R as RepositorioDeEnvios
+    participant N as ServicioDeNotificaciones
+    participant NOT as Notificador
+
+    UI->>+C: crearEnvio(solicitante, empresa, cliente, prioridad, fecha)
+    C->>+P: puedeCrearEnvio()
+    Note over P: Polymorphism: cada tipo responde segun su permiso
+    P-->>-C: true
+    C->>+V: validarCreacion(idCliente, prioridad, fecha)
+    Note over V: Pure Fabrication: valida sin contaminar Envio
+    V-->>-C: ResultadoValidacion(esValido=true)
+    C->>+EV: new Envio(id, empresa, prioridad, fecha)
+    Note over EV: Creator (Hito 4): Envio crea SeguimientoEnvio y Entrega
+    EV-->>-C: envio (estado=PENDIENTE)
+    C->>+R: guardar(envio)
+    Note over R: Pure Fabrication: persistencia desacoplada
+    R-->>-C: ok
+    C->>+N: notificarCreacionDeEnvio(envio, cliente)
+    N->>+NOT: notificar(email, asunto, mensaje)
+    Note over NOT: Indirection: Controller no sabe si es Email, SMS o Push
+    NOT-->>-N: ok
+    N-->>-C: ok
+    C-->>-UI: envio creado
+          </pre>
+        </div>
+
+        <h3>6.3 Diagrama de Secuencia - CU-03: Asignar Ruta (con Polymorphism y Protected Variations)</h3>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+sequenceDiagram
+    actor UI as UI / API
+    participant C as LogiSmartController
+    participant AV as AsignadorDeVehiculos
+    participant CR as CalculadorDeRutas
+    participant CDR as CalculadorDeRuta
+    participant CT as CalculadorDeTiempo
+    participant EV as Envio
+    participant SEG as SeguimientoEnvio
+    participant N as ServicioDeNotificaciones
+
+    UI->>+C: asignarRuta(solicitante, idEnvio, rutas, flota, cliente)
+    C->>C: verificar puedeAsignarRuta() [Polymorphism]
+    C->>+AV: asignar(flota, envio)
+    Note over AV: Protected Variations: criterio configurable
+    AV-->>-C: vehiculo seleccionado
+    C->>+CR: seleccionarRuta(envio, rutasDisponibles)
+    CR->>+CDR: calcular(envio, rutas)
+    Note over CDR: Polymorphism: RutaMasCercana, MenosCongestionada o MasBarata
+    CDR-->>-CR: ruta optima
+    CR-->>-C: ruta
+    C->>+CT: estimarMinutos(ruta)
+    Note over CT: Protected Variations: Simple o ConTrafico
+    CT-->>-C: minutosEstimados
+    C->>+SEG: actualizarETA(minutos, confianza)
+    Note over SEG: Expert (Hito 4): SeguimientoEnvio actualiza ETA
+    SEG-->>-C: ok
+    C->>+EV: iniciar()
+    Note over EV: Expert (Hito 4): Envio gestiona su estado
+    EV-->>-C: estado = EN_CURSO
+    C->>+N: notificarAsignacionDeRuta(envio, ruta, cliente)
+    N-->>-C: ok
+    C-->>-UI: ruta asignada
+          </pre>
+        </div>
+
+        <h3>6.4 Diagrama de Secuencia - CU-Notificación (con Pure Fabrication e Indirection)</h3>
+        <div class="diagram-wrapper">
+          <pre class="mermaid">
+sequenceDiagram
+    participant C as LogiSmartController
+    participant SN as ServicioDeNotificaciones
+    participant NOT as Notificador
+    participant EMAIL as NotificadorEmail
+    actor CF as ClienteFinal
+
+    Note over C,CF: La cadena de Indirection desacopla el Controller del canal
+    C->>+SN: notificarCreacionDeEnvio(envio, cliente)
+    Note over SN: Pure Fabrication: construye el mensaje de negocio
+    SN->>+NOT: notificar(email, asunto, mensaje)
+    Note over NOT: Indirection: interfaz abstracta, implementacion concreta oculta
+    NOT->>+EMAIL: notificar(email, asunto, mensaje)
+    Note over EMAIL: Polymorphism: podria ser SMS o Push sin cambiar SN ni Controller
+    EMAIL-->>CF: [EMAIL enviado al cliente]
+    EMAIL-->>-NOT: ok
+    NOT-->>-SN: ok
+    SN-->>-C: ok
+          </pre>
+        </div>
+      </div>
+
+      <!-- ===== SECCION 7 ===== -->
+      <div id="s7" class="section">
+        <div class="section-number">7</div>
+        <h2>Conclusiones y Justificación de Decisiones</h2>
+        <p class="section-desc">
+          Síntesis de cómo los cinco patrones trabajan en conjunto y qué beneficios concretos aporta
+          el nuevo diseño respecto al Hito 4.
+        </p>
+
+        <h3>7.1 Cómo cambió el diseño</h3>
+        <table>
+          <thead>
+            <tr><th>Patrón</th><th>Dónde se aplicó</th><th>Problema resuelto</th><th>Beneficio concreto</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Controller</strong></td>
+              <td><code>LogiSmartController</code></td>
+              <td><code>OperadorLogistico</code> mezclaba rol de actor y orquestador</td>
+              <td>La UI tiene un punto de entrada único; el dominio no sabe de la UI</td>
+            </tr>
+            <tr>
+              <td><strong>Polymorphism</strong></td>
+              <td><code>IPermisos</code>, <code>Notificador</code>, <code>CalculadorDeRuta</code></td>
+              <td>Condicionales <code>instanceof</code> y <code>switch</code> dispersos</td>
+              <td>Agregar un nuevo tipo de usuario, canal o estrategia = agregar clase, no modificar existente</td>
+            </tr>
+            <tr>
+              <td><strong>Pure Fabrication</strong></td>
+              <td><code>ServicioDeNotificaciones</code>, <code>RepositorioDeEnvios</code>, <code>ValidadorDeEnvios</code>, <code>CalculadorDeRutas</code></td>
+              <td>Responsabilidades técnicas contaminando entidades del dominio</td>
+              <td>Las entidades del dominio permanecen cohesivas; la infraestructura está aislada</td>
+            </tr>
+            <tr>
+              <td><strong>Indirection</strong></td>
+              <td><code>ServicioDeNotificaciones → Notificador</code>, <code>CalculadorDeRutas → CalculadorDeRuta</code></td>
+              <td>Acoplamiento directo entre servicios de aplicación e implementaciones concretas</td>
+              <td>Cambiar de Email a SMS no requiere tocar el Controller ni <code>ServicioDeNotificaciones</code></td>
+            </tr>
+            <tr>
+              <td><strong>Protected Variations</strong></td>
+              <td><code>CalculadorDeCosto</code>, <code>AsignadorDeVehiculos</code>, <code>CalculadorDeTiempo</code>, <code>GeneradorDeReportes</code></td>
+              <td>Algoritmos y políticas codificados en el Controller o en entidades del dominio</td>
+              <td>Cambiar una política = nueva implementación de la interfaz, sin tocar el Controller</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>7.2 Métricas de mejora del diseño</h3>
+        <div class="two-col">
+          <div class="col-box">
+            <h4>Hito 4 - Situación de partida</h4>
+            <ul class="note-list">
+              <li>Sin Controller: la UI accedía directamente al dominio</li>
+              <li>Sin permisos polimórficos: riesgo de <code>instanceof</code> en cada verificación</li>
+              <li>Sin servicio de notificaciones: canal hardcodeado en <code>TrackingService</code></li>
+              <li>Sin persistencia: los envíos no sobrevivían entre llamadas</li>
+              <li>Algoritmos fijos: costo, asignación y tiempo de entrega sin abstracción</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <h4>Hito 5 - Diseño refactorizado</h4>
+            <ul class="note-list">
+              <li><strong>1 Controller</strong> coordina todas las operaciones principales</li>
+              <li><strong>3 interfaces de Polymorphism</strong>: IPermisos, Notificador, CalculadorDeRuta</li>
+              <li><strong>4 Pure Fabrications</strong>: SrvNotificaciones, Repositorio, Validador, CalcRutas</li>
+              <li><strong>4 interfaces de Protected Variations</strong> con 10 implementaciones</li>
+              <li><strong>0 condicionales</strong> <code>instanceof</code> en el Controller</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>7.3 Integración de los cinco patrones</h3>
+        <div class="callout callout-ok">
+          <strong>Los patrones trabajan en cadena:</strong>
+          <ol style="margin-top:0.5rem;margin-left:1.25rem">
+            <li>La UI llama al <strong>Controller</strong>, que es el único punto de entrada.</li>
+            <li>El Controller verifica permisos usando <strong>Polymorphism</strong> (<code>IPermisos</code>), sin <code>instanceof</code>.</li>
+            <li>El Controller delega en <strong>Pure Fabrications</strong> (validar, persistir, notificar, seleccionar ruta).</li>
+            <li>Las Pure Fabrications usan <strong>Indirection</strong> para hablar con implementaciones concretas a través de interfaces.</li>
+            <li>Los algoritmos variables se protegen con <strong>Protected Variations</strong>: el Controller invoca interfaces, no clases concretas.</li>
+          </ol>
+        </div>
+
+        <h3>7.4 Próximos pasos</h3>
+        <ul class="note-list">
+          <li>Refactorizar <code>Ruta.calcularCostoEstimado()</code> para delegar en <code>CalculadorDeCosto</code> inyectado (eliminar los condicionales sobre <code>tipo</code> de vehículo que permanecen del Hito 4).</li>
+          <li>Implementar <code>IVehiculo</code> como interfaz con subtipos <code>Camion</code>, <code>Moto</code> y <code>Auto</code> para completar el Polymorphism sobre vehículos.</li>
+          <li>Agregar tests unitarios que validen el comportamiento polimórfico de cada interfaz.</li>
+          <li>Conectar <code>RepositorioDeEnvios</code> a una base de datos real mediante un adaptador (Hexagonal Architecture).</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          fontSize: "14px",
+          primaryColor: "#f8fbff",
+          primaryTextColor: "#0f172a",
+          primaryBorderColor: "#1a365d",
+          lineColor: "#1a365d",
+          tertiaryColor: "#f8fafc",
+          edgeLabelBackground: "#ffffff",
+        },
+      });
+
+      const nav = document.querySelector(".side-nav");
+      const sections = document.querySelectorAll(".section[id]");
+
+      if (nav) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const link = nav.querySelector(`a[href="#${entry.target.id}"]`);
+              if (link) {
+                link.classList.toggle("active", entry.isIntersecting);
+              }
+            });
+          },
+          { rootMargin: "-30% 0px -60% 0px" },
+        );
+        sections.forEach((section) => observer.observe(section));
+      }
+    </script>
+  </body>
+</html>

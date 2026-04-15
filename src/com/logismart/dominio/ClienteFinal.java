@@ -1,6 +1,6 @@
 package com.logismart.dominio;
 
-public class ClienteFinal extends Usuario {
+public class ClienteFinal extends Usuario implements IPermisos {
 	private String nombre;
 	private String telefono;
 	private String direccionEntrega;
@@ -54,4 +54,29 @@ public class ClienteFinal extends Usuario {
 	public void confirmarRecepcion() {
 	}
 
+	// IPermisos: ClienteFinal solo puede consultar su propio envio
+	@Override
+	public boolean puedeCrearEnvio() {
+		return false;
+	}
+
+	@Override
+	public boolean puedeAsignarRuta() {
+		return false;
+	}
+
+	@Override
+	public boolean puedeVerReportes() {
+		return false;
+	}
+
+	@Override
+	public boolean puedeGestionarFlota() {
+		return false;
+	}
+
+	@Override
+	public boolean puedeAdministrarEmpresas() {
+		return false;
+	}
 }
