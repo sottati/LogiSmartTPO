@@ -303,8 +303,9 @@
       <a href="#s3">3. Polymorphism</a>
       <a href="#s4">4. Pure Fabrication</a>
       <a href="#s5">5. Protected Variations</a>
-      <a href="#s6">6. Diagramas</a>
-      <a href="#s7">7. Conclusiones</a>
+      <a href="#s6">6. Documentación</a>
+      <a href="#s7">7. Diagramas</a>
+      <a href="#s8">8. Conclusiones</a>
     </nav>
 
     <div class="container">
@@ -856,13 +857,287 @@ double costo = calculadorCosto.calcular(envio);  // OCP: abierto a extension, ce
       <!-- ===== SECCION 6 ===== -->
       <div id="s6" class="section">
         <div class="section-number">6</div>
+        <h2>Actividad 6 - Documentación de Decisiones de Diseño</h2>
+        <p class="section-desc">
+          Para cada patrón GRASP Parte II aplicado se documenta: dónde se aplicó, qué problema resolvió,
+          cómo mejora el diseño y qué interfaces o clases se crearon.
+        </p>
+
+        <!-- ---- CONTROLLER ---- -->
+        <h3>6.1 Controller</h3>
+        <table>
+          <thead>
+            <tr><th style="width:22%">Pregunta</th><th>Respuesta</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>¿Dónde lo aplicaste?</strong></td>
+              <td>
+                En la clase <code>LogiSmartController</code>, ubicada en
+                <code>com.logismart.aplicacion</code>. Es el único punto de entrada desde la UI
+                para los casos de uso principales del sistema.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Cuál fue el problema que resolvió?</strong></td>
+              <td>
+                <code>OperadorLogistico</code> concentraba tanto el rol de actor del dominio
+                como el de orquestador de operaciones multi-clase (crear envíos, asignar rutas,
+                gestionar flota). Esto mezclaba responsabilidades de capa de presentación con
+                lógica de dominio, violando la separación de capas.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Cómo mejora el diseño?</strong></td>
+              <td>
+                <ul class="note-list">
+                  <li>La UI tiene un único punto de entrada con métodos claros por caso de uso.</li>
+                  <li>Las entidades del dominio (<code>Envio</code>, <code>Ruta</code>, <code>Vehiculo</code>) no saben de la UI.</li>
+                  <li>El Controller delega toda la lógica: permisos a <code>IPermisos</code>, validación a <code>ValidadorDeEnvios</code>, persistencia a <code>RepositorioDeEnvios</code>.</li>
+                  <li>Cambiar la interfaz gráfica (web → mobile → CLI) no requiere tocar el dominio.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Qué interfaces o clases creaste?</strong></td>
+              <td>
+                <span class="badge badge-ok">Nueva clase</span> <code>LogiSmartController</code> -
+                con métodos: <code>crearEnvio()</code>, <code>agregarOrden()</code>,
+                <code>asignarRuta()</code>, <code>calcularCosto()</code>,
+                <code>obtenerEstado()</code>, <code>cancelarEnvio()</code>,
+                <code>verificarPermisoReporte()</code>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- ---- POLYMORPHISM ---- -->
+        <h3>6.2 Polymorphism</h3>
+        <table>
+          <thead>
+            <tr><th style="width:22%">Pregunta</th><th>Respuesta</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>¿Dónde lo aplicaste?</strong></td>
+              <td>
+                En tres puntos de variación:
+                <ol style="margin-left:1.2rem;margin-top:0.4rem">
+                  <li><strong>Permisos de usuario:</strong> interfaz <code>IPermisos</code> implementada por las 5 subclases de <code>Usuario</code>.</li>
+                  <li><strong>Canal de notificación:</strong> interfaz <code>Notificador</code> con implementaciones Email, SMS y Push.</li>
+                  <li><strong>Estrategia de selección de ruta:</strong> interfaz <code>CalculadorDeRuta</code> con tres criterios distintos.</li>
+                </ol>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Cuál fue el problema que resolvió?</strong></td>
+              <td>
+                Sin interfaces, el código que verificaba permisos o elegía canal usaría
+                <code>instanceof</code> o <code>switch</code>: frágiles ante nuevos tipos.
+                Por ejemplo: <code>if (u instanceof OperadorLogistico) { ... }
+                else if (u instanceof AdminEmpresa) { ... }</code>.
+                Cada nuevo rol o canal obligaría a modificar el Controller.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Cómo mejora el diseño?</strong></td>
+              <td>
+                <ul class="note-list">
+                  <li>Agregar un nuevo tipo de usuario = nueva clase que implementa <code>IPermisos</code>. El Controller no cambia.</li>
+                  <li>Agregar un canal (WhatsApp) = nueva clase que implementa <code>Notificador</code>. <code>ServicioDeNotificaciones</code> no cambia.</li>
+                  <li>Agregar un criterio de ruta = nueva clase que implementa <code>CalculadorDeRuta</code>. El Controller no cambia.</li>
+                  <li>Cumple el <em>Open/Closed Principle</em>: abierto a extensión, cerrado a modificación.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Qué interfaces o clases creaste?</strong></td>
+              <td>
+                <span class="badge badge-ok">3 interfaces nuevas</span>
+                <code>IPermisos</code> · <code>Notificador</code> · <code>CalculadorDeRuta</code><br><br>
+                <span class="badge badge-obs">8 implementaciones</span>
+                <code>NotificadorEmail</code> · <code>NotificadorSMS</code> · <code>NotificadorPush</code> ·
+                <code>RutaMasCercana</code> · <code>RutaMenosCongestionada</code> · <code>RutaMasBarata</code><br>
+                <span class="badge badge-obs">5 clases modificadas</span>
+                <code>AdminEmpresa</code> · <code>OperadorLogistico</code> · <code>Transportista</code> ·
+                <code>ClienteFinal</code> · <code>AdminPlataforma</code> (implementan <code>IPermisos</code>)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- ---- PURE FABRICATION ---- -->
+        <h3>6.3 Pure Fabrication</h3>
+        <table>
+          <thead>
+            <tr><th style="width:22%">Pregunta</th><th>Respuesta</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>¿Dónde lo aplicaste?</strong></td>
+              <td>
+                En cuatro clases artificiales de la capa <code>com.logismart.aplicacion</code>,
+                creadas para resolver responsabilidades que no encajan en ninguna entidad del dominio:
+                <code>ServicioDeNotificaciones</code>, <code>RepositorioDeEnvios</code>,
+                <code>ValidadorDeEnvios</code> y <code>CalculadorDeRutas</code>.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Cuál fue el problema que resolvió?</strong></td>
+              <td>
+                Tres responsabilidades no tenían hogar natural en el dominio:
+                <ul class="note-list" style="margin-top:0.4rem">
+                  <li>Enviar notificaciones: no es responsabilidad de <code>Envio</code> ni del Controller.</li>
+                  <li>Persistir envíos: una entidad no debería saber cómo guardarse a sí misma.</li>
+                  <li>Validar datos de entrada: el Controller se volvería un "fat controller" si lo hiciera él solo.</li>
+                  <li>Seleccionar ruta óptima: ni <code>Ruta</code> se elige a sí misma, ni el Controller debe conocer el algoritmo.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Cómo mejora el diseño?</strong></td>
+              <td>
+                <ul class="note-list">
+                  <li>Las entidades del dominio (<code>Envio</code>, <code>Ruta</code>) mantienen alta cohesión: solo modelan el negocio.</li>
+                  <li>El Controller permanece delgado: delega en los servicios especializados.</li>
+                  <li>Cada Pure Fabrication tiene una sola responsabilidad, facilitando el testing y el reemplazo independiente.</li>
+                  <li><code>RepositorioDeEnvios</code> puede conectarse a una BD real sin cambiar el Controller ni el dominio.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Qué interfaces o clases creaste?</strong></td>
+              <td>
+                <span class="badge badge-ok">4 clases nuevas</span>
+                <code>ServicioDeNotificaciones</code> (capa aplicacion) ·
+                <code>RepositorioDeEnvios</code> (capa aplicacion) ·
+                <code>ValidadorDeEnvios</code> (capa aplicacion) ·
+                <code>CalculadorDeRutas</code> (capa aplicacion - también actúa como Indirection)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- ---- INDIRECTION ---- -->
+        <h3>6.4 Indirection</h3>
+        <table>
+          <thead>
+            <tr><th style="width:22%">Pregunta</th><th>Respuesta</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>¿Dónde lo aplicaste?</strong></td>
+              <td>
+                En dos cadenas de delegación:
+                <ol style="margin-left:1.2rem;margin-top:0.4rem">
+                  <li><code>ServicioDeNotificaciones</code> actúa como intermediario entre el Controller y la interfaz <code>Notificador</code> (Email, SMS, Push).</li>
+                  <li><code>CalculadorDeRutas</code> actúa como intermediario entre el Controller y la interfaz <code>CalculadorDeRuta</code> (las 3 estrategias).</li>
+                </ol>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Cuál fue el problema que resolvió?</strong></td>
+              <td>
+                Sin el intermediario, el Controller dependería directamente de <code>NotificadorEmail</code>
+                o de <code>RutaMasCercana</code>. Cambiar el canal o el algoritmo de ruta requeriría
+                modificar el Controller (alta dependencia directa = alto acoplamiento).
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Cómo mejora el diseño?</strong></td>
+              <td>
+                <ul class="note-list">
+                  <li>El Controller solo conoce la interfaz abstracta, nunca la implementación concreta.</li>
+                  <li>Cambiar de Email a SMS = cambiar el <code>Notificador</code> inyectado. El Controller y <code>ServicioDeNotificaciones</code> no se modifican.</li>
+                  <li>Cambiar la estrategia de ruta = llamar a <code>calculadorRutas.cambiarEstrategia(nueva)</code>. El Controller no cambia.</li>
+                  <li>Bajo acoplamiento entre capas: la capa de aplicación no conoce detalles de la capa de infraestructura.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Qué interfaces o clases creaste?</strong></td>
+              <td>
+                Los intermediarios ya detallados en Pure Fabrication:
+                <code>ServicioDeNotificaciones</code> y <code>CalculadorDeRutas</code>.
+                Las interfaces que abstraen el destino:
+                <span class="badge badge-ok">2 interfaces</span>
+                <code>Notificador</code> · <code>CalculadorDeRuta</code>
+                (también clasificadas bajo Polymorphism, dado que los dos patrones se aplican juntos en estos puntos).
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- ---- PROTECTED VARIATIONS ---- -->
+        <h3>6.5 Protected Variations</h3>
+        <table>
+          <thead>
+            <tr><th style="width:22%">Pregunta</th><th>Respuesta</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>¿Dónde lo aplicaste?</strong></td>
+              <td>
+                En cuatro puntos de variación de la capa <code>com.logismart.infraestructura</code>:
+                <ul class="note-list" style="margin-top:0.4rem">
+                  <li><strong>Política de tarifa:</strong> interfaz <code>CalculadorDeCosto</code> (paquete <code>costo</code>).</li>
+                  <li><strong>Asignación de vehículo:</strong> interfaz <code>AsignadorDeVehiculos</code> (paquete <code>vehiculo</code>).</li>
+                  <li><strong>Estimación de tiempo de entrega:</strong> interfaz <code>CalculadorDeTiempo</code> (paquete <code>tiempo</code>).</li>
+                  <li><strong>Formato de exportación de reportes:</strong> interfaz <code>GeneradorDeReportes</code> (paquete <code>reporte</code>).</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Cuál fue el problema que resolvió?</strong></td>
+              <td>
+                Los algoritmos de costo, asignación de vehículo, cálculo de tiempo y exportación
+                de reportes eran puntos de variación altamente probables: el negocio puede cambiar la
+                política de tarifas por temporada, agregar soporte de tráfico real al ETA, o exportar
+                reportes en un nuevo formato. Sin abstracción, cada cambio requería modificar
+                el Controller o las entidades del dominio.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Cómo mejora el diseño?</strong></td>
+              <td>
+                <ul class="note-list">
+                  <li>Cada variación está encapsulada detrás de su interfaz. El Controller llama a <code>calcular()</code>, <code>asignar()</code>, <code>estimarMinutos()</code> o <code>exportar()</code> sin saber la implementación.</li>
+                  <li>Agregar una nueva política = nueva clase que implementa la interfaz. Zero modificaciones al Controller.</li>
+                  <li>Las implementaciones son intercambiables en runtime via inyección de dependencias (constructor del Controller).</li>
+                  <li>Cumple el <em>Open/Closed Principle</em> en los cuatro puntos de variación.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>¿Qué interfaces o clases creaste?</strong></td>
+              <td>
+                <span class="badge badge-ok">4 interfaces nuevas</span>
+                <code>CalculadorDeCosto</code> · <code>AsignadorDeVehiculos</code> ·
+                <code>CalculadorDeTiempo</code> · <code>GeneradorDeReportes</code><br><br>
+                <span class="badge badge-obs">10 implementaciones nuevas</span>
+                <code>CalculadorDeCostoFijo</code> · <code>CalculadorDeCostoPorPeso</code> ·
+                <code>CalculadorDeCostoPorDistancia</code> ·
+                <code>AsignadorPorDisponibilidad</code> · <code>AsignadorPorCapacidad</code> ·
+                <code>CalculadorDeTiempoSimple</code> · <code>CalculadorDeTiempoConTrafico</code> ·
+                <code>GeneradorDeReportesPDF</code> · <code>GeneradorDeReportesJSON</code> ·
+                <code>RutaMasBarata</code> (también cubre Protected Variations sobre el criterio de ruta)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+      <!-- ===== SECCION 7 (ex-6) ===== -->
+      <div id="s7" class="section">
+        <div class="section-number">7</div>
         <h2>Diagramas Actualizados</h2>
         <p class="section-desc">
           Diagrama de clases completo del Hito 5 y diagramas de secuencia de los tres casos de uso
           principales, mostrando cómo colaboran los cinco patrones GRASP Parte II.
         </p>
 
-        <h3>6.1 Diagrama de Clases Completo - Hito 5</h3>
+        <h3>7.1 Diagrama de Clases Completo - Hito 5</h3>
         <div class="diagram-wrapper">
           <pre class="mermaid">
 classDiagram
@@ -998,7 +1273,7 @@ CalculadorDeRutas --> CalculadorDeRuta : usa estrategia
           </pre>
         </div>
 
-        <h3>6.2 Diagrama de Secuencia - CU-01: Crear Envío (con Controller)</h3>
+        <h3>Caso de uso 1: Crear Envío (con Controller)</h3>
         <div class="diagram-wrapper">
           <pre class="mermaid">
 sequenceDiagram
@@ -1033,7 +1308,7 @@ sequenceDiagram
           </pre>
         </div>
 
-        <h3>6.3 Diagrama de Secuencia - CU-03: Asignar Ruta (con Polymorphism y Protected Variations)</h3>
+        <h3>Caso de uso 2: Asignar Ruta (con Polymorphism)</h3>
         <div class="diagram-wrapper">
           <pre class="mermaid">
 sequenceDiagram
@@ -1072,7 +1347,7 @@ sequenceDiagram
           </pre>
         </div>
 
-        <h3>6.4 Diagrama de Secuencia - CU-Notificación (con Pure Fabrication e Indirection)</h3>
+        <h3>Caso de uso 3: Notificar (con Pure Fabrication)</h3>
         <div class="diagram-wrapper">
           <pre class="mermaid">
 sequenceDiagram
@@ -1097,9 +1372,9 @@ sequenceDiagram
         </div>
       </div>
 
-      <!-- ===== SECCION 7 ===== -->
-      <div id="s7" class="section">
-        <div class="section-number">7</div>
+      <!-- ===== SECCION 8 (ex-7) ===== -->
+      <div id="s8" class="section">
+        <div class="section-number">8</div>
         <h2>Conclusiones y Justificación de Decisiones</h2>
         <p class="section-desc">
           Síntesis de cómo los cinco patrones trabajan en conjunto y qué beneficios concretos aporta
@@ -1179,6 +1454,63 @@ sequenceDiagram
             <li>Las Pure Fabrications usan <strong>Indirection</strong> para hablar con implementaciones concretas a través de interfaces.</li>
             <li>Los algoritmos variables se protegen con <strong>Protected Variations</strong>: el Controller invoca interfaces, no clases concretas.</li>
           </ol>
+        </div>
+
+        <h3>7.4 Beneficios concretos del nuevo diseño</h3>
+        <div class="two-col">
+          <div class="col-box">
+            <h4>✅ Mantenibilidad</h4>
+            <ul class="note-list">
+              <li>Cambios localizados: nueva política = nueva clase, cero modificación al Controller</li>
+              <li>Entidades del dominio cohesivas: no mezclan lógica de negocio con infraestructura</li>
+              <li>Claridad de responsabilidades: cada clase sabe qué hace sin ambigüedad</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <h4>✅ Testabilidad</h4>
+            <ul class="note-list">
+              <li>Inyección de dependencias: fácil crear mocks de interfaces</li>
+              <li>Pruebas del Controller sin tocar persistencia, notificaciones ni algoritmos reales</li>
+              <li>Cada clase testeable en aislamiento</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <h4>✅ Escalabilidad</h4>
+            <ul class="note-list">
+              <li>Agregar nuevos canales de notificación sin modificar nada existente</li>
+              <li>Nuevas políticas de costo, asignación o tiempo = nuevas implementations</li>
+              <li>El sistema crece sin explosión de condicionales</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <h4>✅ Bajo acoplamiento</h4>
+            <ul class="note-list">
+              <li>UI no conoce el dominio directamente: MediaPlayer via Controller</li>
+              <li>Implementaciones concretas desconocidas en capas superiores</li>
+              <li>Máxima flexibilidad para cambiar detalles de implementación</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>7.5 Próximos pasos</h3>
+        <div class="callout callout-info" style="border-left-color: #2b6cb0;">
+          <strong>Hacia el Hito 6 - Patrones Creacionales:</strong>
+          <ol style="margin-top:0.5rem;margin-left:1.25rem">
+            <li><strong>Singleton para recursos únicos:</strong> Aplicar a <code>AdminPlataforma</code> (un único administrador del sistema) y potencialmente a <code>ConexionBD</code> si se implementa persistencia.</li>
+            <li><strong>Factory Method para creación desacoplada:</strong> Crear <code>VehiculoFactory</code>, <code>EnvioFactory</code> y <code>NotificadorFactory</code> para instanciar objetos sin acoplar el cliente.</li>
+            <li><strong>Abstract Factory para familias regionales:</strong> Si LogiSmart expande a múltiples regiones, crear <code>VehiculoFactoryArgentina</code>, <code>VehiculoFactoryBrasil</code>, etc.</li>
+            <li><strong>Builder para objetos complejos:</strong> Implementar <code>EnvioBuilder</code> para construir <code>Envio</code> con múltiples atributos opcionales de forma legible.</li>
+            <li><strong>Prototype para clonación eficiente:</strong> Si se necesita duplicar envíos con la misma configuración en lote.</li>
+          </ol>
+        </div>
+        <div class="callout callout-warn" style="border-left-color: #c53030; margin-top: 1.5rem;">
+          <strong>⚠️ Validaciones antes de Hito 6:</strong>
+          <ul style="margin-top:0.5rem;margin-left:1.25rem">
+            <li>Verificar que el Controller no tiene lógica de negocios (solo orquesta).</li>
+            <li>Confirmar que cada interfaz de polymorphism tiene al menos 2 implementaciones.</li>
+            <li>Revisar que las Pure Fabrications no dependen una de otra (grafo de dependencias acíclico).</li>
+            <li>Documentar qué variaciones están protegidas y por qué.</li>
+          </ul>
         </div>
       </div>
 
