@@ -1,517 +1,128 @@
-# Clase 3: Del Diseno a la Implementacion
+# Clase 3: Del Diseño a la Implementación
 
-Fuente: `clase_03.html` (solo contenido de `main-content`).
+## Por qué separar diseño de implementación
 
-## Subtitulo
+Separar el diseño de la implementación permite:
 
-Traduciendo Diagramas de Clases UML a Codigo Java en Eclipse.
+- Pensar en forma abstracta antes de comprometerse con detalles de código
+- Comunicar la arquitectura en un lenguaje universal (UML) independiente del lenguaje de programación
+- Detectar errores de diseño antes de escribir código, cuando el costo de corregirlos es mucho menor
+- Mantener la visión global del sistema mientras se implementan las partes
 
-## Del diseno a la implementacion
+## Eclipse IDE
 
-La clase toma el trabajo del Hito 2 y lo lleva a codigo.
+Eclipse es el entorno de desarrollo integrado utilizado en la materia. Ofrece:
 
-- Antes: rol de arquitectos, modelando estructura con UML.
-- Ahora: rol de constructores, implementando esa estructura en Java.
+- Editor inteligente con resaltado de sintaxis y autocompletado
+- Compilación integrada con detección de errores en tiempo de escritura
+- Depurador integrado para seguir la ejecución paso a paso
+- Gestión de proyectos y paquetes
 
-### Por que separar diseno de implementacion
+Para crear un nuevo proyecto Java: File > New > Java Project.
 
-En ingenieria de software profesional, disenar primero permite:
+## Estructura de Paquetes
 
-#### Pensamiento abstracto
+Los paquetes organizan las clases en grupos lógicos. La convención es usar el dominio invertido como prefijo, por ejemplo `com.logismart`.
 
-- enfocarse en estructura sin distracciones de sintaxis.
+Estructura recomendada para LogiSmart:
 
-#### Comunicacion universal
-
-- un UML puede ser implementado en Java, Python o C#.
-
-#### Deteccion temprana de errores
-
-- corregir una relacion en el diagrama es mucho mas barato que refactorizar mucho codigo.
-
-#### Vision global
-
-- el diagrama permite ver el sistema completo antes de entrar al detalle del codigo.
-
-## Eclipse IDE: herramienta de construccion
-
-Un IDE es una suite para escribir, compilar, depurar y gestionar codigo.
-
-### Por que Eclipse
-
-- es robusto,
-- muy usado en desarrollo Java empresarial,
-- open source,
-- gratuito,
-- con comunidad grande.
-
-### Que ofrece Eclipse
-
-#### Editor inteligente
-
-- autocompletado,
-- resaltado de sintaxis,
-- deteccion de errores en tiempo real.
-
-#### Compilador integrado
-
-- traduce Java a bytecode para la JVM.
-
-#### Depurador
-
-- permite ejecutar linea por linea,
-- inspeccionar variables,
-- encontrar errores.
-
-#### Gestion de proyectos
-
-- organiza archivos, librerias y dependencias.
-
-### Instalacion de Eclipse
-
-- descargar desde `https://www.eclipse.org/downloads/`
-- elegir `Eclipse IDE for Java Developers`
-- seguir instalador.
-
-## Creando un proyecto Java en Eclipse
-
-Un proyecto es la carpeta especial donde viven codigo, librerias y configuracion.
-
-### Paso a paso: crear un proyecto
-
-1. `File > New > Java Project`
-2. Definir `Project Name`, por ejemplo `LogiSmartTPO`
-3. Verificar una version de Java (`JavaSE-11` o superior)
-4. Dejar layout por defecto
-5. `Finish`
-
-Resultado esperado del layout por defecto:
-
-- `src` para codigo fuente
-- `bin` para codigo compilado
-
-### Creando paquetes
-
-Se recomienda usar nombre de dominio invertido.
-
-Ejemplo:
-
-- `com.logismart.dominio`
-
-Pasos:
-
-1. Click derecho en `src`
-2. `New > Package`
-3. Nombre: `com.logismart.dominio`
-4. `Finish`
-
-#### Estructura de proyecto recomendada
-
-- `com.logismart.dominio`: clases del modelo de dominio
-- `com.logismart.servicio`: servicios y logica de negocio
+- `com.logismart.dominio`: clases del modelo (entidades)
+- `com.logismart.servicio`: lógica de negocio
 - `com.logismart.persistencia`: acceso a base de datos
 - `com.logismart.ui`: interfaz de usuario
 
-## Traduciendo clases UML a codigo Java
+## Traducción de UML a Java
 
-La traduccion de UML a Java es casi 1 a 1.
+La traducción de diagramas UML a código Java sigue una correspondencia directa:
 
-### Creando una clase en Eclipse
+**Visibilidad**:
+- `-` privado → `private`
+- `+` público → `public`
+- `#` protegido → `protected`
 
-1. Click derecho en el package `com.logismart.dominio`
-2. `New > Class`
-3. Nombre: `Vehiculo`
-4. `Finish`
+**Atributos**: se traducen a campos privados tipados. Ejemplo: `- nombre: String` → `private String nombre;`
 
-Eclipse genera el esqueleto:
+**Métodos**: se traducen a métodos Java con sus parámetros y tipo de retorno.
 
-```java
-package com.logismart.dominio;
+## Constructores y Atributos
 
-public class Vehiculo {
+Los constructores inicializan el estado del objeto. Se usa la palabra clave `this` para distinguir parámetros del constructor de los atributos de instancia.
 
-}
-```
+Eclipse puede generar automáticamente getters y setters desde Source > Generate Getters and Setters.
 
-### De UML a Java: traduccion directa
+## Implementación de Relaciones
 
-UML:
-
-```text
-Clase: Vehiculo
-Atributos:
-- id: String
-- patente: String
-- marca: String
-- capacidadPeso: double
-```
-
-Java:
+**Asociación simple**: se implementa como un campo del tipo de la clase asociada.
 
 ```java
-public class Vehiculo {
-    private String id;
-    private String patente;
-    private String marca;
-    private double capacidadPeso;
-}
+private Cliente cliente;
 ```
 
-Regla de traduccion:
-
-- UML: `visibilidad nombre: tipo`
-- Java: `visibilidad tipo nombre;`
-- `-` en UML -> `private`
-- `+` en UML -> `public`
-
-## Atributos y constructores
-
-Los atributos deben ser privados para respetar encapsulacion.
-
-Ejemplo de atributos:
+**Composición (uno a muchos)**: se implementa con `ArrayList<Tipo>` y métodos para agregar y obtener elementos.
 
 ```java
-public class Vehiculo {
-    private String id;
-    private String patente;
-    private String marca;
-    private String modelo;
-    private int anio;
-    private double capacidadPeso;
-    private double capacidadVolumen;
+private ArrayList<PuntoDeEntrega> puntos = new ArrayList<>();
+
+public void agregarPunto(PuntoDeEntrega punto) {
+    puntos.add(punto);
 }
 ```
 
-### Que es un constructor
-
-- metodo especial llamado al crear un objeto con `new`
-- sirve para inicializar estado
-- si no se define, Java genera uno vacio por defecto
-- buena practica: definir uno propio
-
-Ejemplo:
-
-```java
-public class Vehiculo {
-    private String id;
-    private String patente;
-    private String marca;
-    private double capacidadPeso;
-
-    public Vehiculo(String id, String patente, String marca, double capacidadPeso) {
-        this.id = id;
-        this.patente = patente;
-        this.marca = marca;
-        this.capacidadPeso = capacidadPeso;
-    }
-}
-```
-
-### Uso de `this`
-
-- desambigua entre parametro y atributo de la clase.
-
-### Usando el constructor
-
-```java
-Vehiculo v1 = new Vehiculo("V001", "ABC-123", "Toyota", 1000.0);
-Vehiculo v2 = new Vehiculo("V002", "XYZ-789", "Ford", 1500.0);
-```
-
-## Getters y setters
-
-Como los atributos son privados, el acceso externo se hace con metodos publicos.
-
-### Getter
-
-- retorna el valor de un atributo privado
-- convencion: `get` + nombre del atributo
-
-Ejemplo:
-
-```java
-public class Vehiculo {
-    private String patente;
-
-    public String getPatente() {
-        return this.patente;
-    }
-}
-```
-
-### Setter
-
-- modifica el valor de un atributo privado
-- convencion: `set` + nombre del atributo
-
-Ejemplo:
-
-```java
-public class Vehiculo {
-    private String marca;
-
-    public void setMarca(String nuevaMarca) {
-        this.marca = nuevaMarca;
-    }
-}
-```
-
-### Generacion automatica en Eclipse
-
-1. Click derecho en el codigo de la clase
-2. `Source > Generate Getters and Setters...`
-3. Seleccionar atributos
-4. `OK`
-
-Resultado tipico:
-
-```java
-public String getId() {
-    return id;
-}
-
-public void setId(String id) {
-    this.id = id;
-}
-
-public String getPatente() {
-    return patente;
-}
-
-public void setPatente(String patente) {
-    this.patente = patente;
-}
-```
-
-### Usando getters y setters
-
-```java
-Vehiculo v1 = new Vehiculo("V001", "ABC-123", "Toyota", 1000.0);
-
-String patente = v1.getPatente();
-
-v1.setMarca("Honda");
-
-System.out.println(v1.getMarca());
-```
-
-## Traduciendo relaciones: asociacion y composicion
-
-### Asociacion simple
-
-Si una clase conoce a otra, en codigo se modela como atributo del tipo de la otra clase.
-
-Ejemplo UML:
-
-```text
-Ruta -------- Vehiculo (1 a 1)
-```
-
-Java:
-
-```java
-public class Ruta {
-    private Vehiculo vehiculoAsignado;
-}
-```
-
-### Composicion (1 a muchos)
-
-Si una clase se compone de multiples objetos, se usa una coleccion.
-
-Ejemplo:
-
-```java
-import java.util.ArrayList;
-import java.util.List;
-
-public class Ruta {
-    private String id;
-    private Vehiculo vehiculoAsignado;
-    private List<PuntoDeEntrega> puntosDeEntrega;
-
-    public Ruta(String id, Vehiculo vehiculo) {
-        this.id = id;
-        this.vehiculoAsignado = vehiculo;
-        this.puntosDeEntrega = new ArrayList<>();
-    }
-
-    public void agregarPuntoDeEntrega(PuntoDeEntrega punto) {
-        this.puntosDeEntrega.add(punto);
-    }
-
-    public List<PuntoDeEntrega> getPuntosDeEntrega() {
-        return this.puntosDeEntrega;
-    }
-}
-```
-
-### Que es `ArrayList`
-
-- una lista dinamica de Java
-- puede crecer o achicarse
-- `List<PuntoDeEntrega>` significa lista de objetos `PuntoDeEntrega`
-
-## Herencia en Java: relacion "es un"
-
-En UML se representa con flecha triangular vacia. En Java se implementa con `extends`.
-
-### Creando una jerarquia de usuarios
-
-Caso:
-
-- `Usuario` como clase base
-- `Cliente` y `Operador` como clases hijas
-
-#### Paso 1: clase base `Usuario`
-
-```java
-public class Usuario {
-    private String id;
-    private String email;
-    private String password;
-
-    public Usuario(String id, String email, String password) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-    }
-
-    public boolean autenticar(String passwordIngresado) {
-        return this.password.equals(passwordIngresado);
-    }
-
-    // Getters y setters...
-}
-```
-
-#### Paso 2: clase hija `Cliente`
+**Herencia**: se implementa con la palabra clave `extends`. El constructor de la subclase llama al de la superclase con `super()`.
 
 ```java
 public class Cliente extends Usuario {
-    private String razonSocial;
-    private String cuit;
-
-    public Cliente(String id, String email, String password, String razonSocial) {
-        super(id, email, password);
-        this.razonSocial = razonSocial;
-    }
-
-    public String getRazonSocial() {
-        return this.razonSocial;
+    public Cliente(String nombre, String email) {
+        super(nombre, email);
     }
 }
 ```
 
-### Uso de `super`
+## Jerarquía de Herencia: Ejemplo
 
-- permite acceder a miembros de la clase padre
-- `super(id, email, password)` llama al constructor de `Usuario`
+Clase base `Usuario` con lógica de autenticación compartida. Subclases `Cliente` y `Operador` extienden con comportamientos específicos. Cada subclase llama a `super()` para inicializar los atributos heredados.
 
-### Usando la herencia
+## Hito 3
 
-```java
-Cliente c1 = new Cliente("U001", "juan@logismart.com", "pass123", "Juan's Logistics");
+El Hito 3 requiere implementar en código Java funcional el diseño UML producido en el Hito 2:
 
-boolean autenticado = c1.autenticar("pass123");
+- Crear el proyecto Java con la estructura de paquetes
+- Traducir cada clase UML a una clase Java
+- Implementar las relaciones como campos y colecciones
+- Implementar la jerarquía de herencia si corresponde
+- Verificar que el código compila y ejecuta correctamente
 
-String razon = c1.getRazonSocial();
-```
+---
 
-### Prueba de Liskov
+## Perspectiva del profesor
 
-- un `Cliente` puede ser tratado como `Usuario`
-- esa es la base de una herencia correcta
+### Insights clave
 
-## Implementando comportamiento: metodos con logica
+El profesor planteó en esta clase una pregunta fundamental que guía toda la carrera: ¿cuál es la diferencia crítica entre un programador experimentado y uno que recién empieza? La respuesta no es conocer más herramientas ni escribir más rápido.
 
-Hasta este punto las clases guardan estado. La POO busca combinar estado con comportamiento.
+> "Las primeras clases son de entender, presentar, proyectar las ideas antes de poner una línea de código."
 
-### Ejemplo: metodo con logica de negocio
+El código correcto que resuelve el problema equivocado es un fracaso. El código mediocre que resuelve exactamente el problema correcto puede ser exitoso. La calidad del código importa, pero importa menos que entender qué construir.
 
-Caso: `Ruta.agregarPuntoDeEntrega()` validando capacidad del vehiculo.
+Sobre el uso de herramientas de IA en desarrollo: son poderosas cuando se les dan parámetros correctos y contexto completo. Si le dás información incompleta a una IA, te va a dar lo primero que se le ocurra basado en su base de conocimiento, no lo que realmente necesitás. La calidad del output depende de la calidad del input, y eso requiere entender el dominio.
 
-```java
-public class Ruta {
-    private Vehiculo vehiculoAsignado;
-    private List<PuntoDeEntrega> puntosDeEntrega;
+La diferencia crítica entre programadores está en el entendimiento del código, no en la velocidad para escribirlo. El que entiende puede hacer diagnóstico, puede anticipar problemas, puede diseñar soluciones. El que solo escribe, choca con la pared cuando las cosas salen mal.
 
-    public boolean agregarPuntoDeEntrega(PuntoDeEntrega nuevoPunto) {
-        double pesoTotal = 0;
+> "Lo más importante del código: que sea usable, mantenible, con una arquitectura pensada. Y cómo definís eso depende de entender el contexto."
 
-        for (PuntoDeEntrega p : this.puntosDeEntrega) {
-            pesoTotal += p.getEnvio().getPeso();
-        }
+### Analogías y ejemplos reales
 
-        if (this.vehiculoAsignado.verificarCapacidad(
-            pesoTotal + nuevoPunto.getEnvio().getPeso())) {
-            this.puntosDeEntrega.add(nuevoPunto);
-            System.out.println("Punto agregado exitosamente.");
-            return true;
-        } else {
-            System.out.println("Error: Capacidad del vehiculo excedida.");
-            return false;
-        }
-    }
-}
-```
+**El desarrollador como arquitecto**: así como un arquitecto no empieza a colocar ladrillos sin planos, el desarrollador no empieza a escribir código sin diseño. Hacerlo así genera deuda técnica que se paga cara más adelante.
 
-Idea central del ejemplo:
+**Dar parámetros incompletos a una IA**: si le pedís a Claude Code o cualquier herramienta que diseñe algo sin contexto, va a darte algo genérico basado en lo que conoce. El que sabe usar esas herramientas es el que sabe qué pedirle y con qué contexto. Eso requiere dominio del problema.
 
-- `Ruta` colabora con `Vehiculo` y `PuntoDeEntrega`
-- cada objeto conserva su propia responsabilidad
-- `Ruta` no implementa internamente la validacion del vehiculo
-- eso favorece bajo acoplamiento
+**El código que explota en producción**: hay sistemas que funcionan perfecto en desarrollo y explotan el día que hay carga real o un caso edge que no se previó. La diferencia está en si el diseño contempló esos escenarios desde el inicio.
 
-## Hito 3: implementacion en Eclipse
+### Consejo profesional
 
-El Hito 3 consiste en implementar en Java el diagrama del Hito 2 dentro de un proyecto Eclipse.
-
-### Que deben entregar
-
-- estructura de packages correcta
-- todas las clases del diagrama implementadas como `.java`
-- atributos con visibilidad correcta
-- constructores para inicializar objetos
-- getters y setters para todos los atributos
-- relaciones implementadas con atributos y `extends` segun corresponda
-- metodos principales definidos, aunque todavia sin toda la logica compleja
-
-### Objetivo del Hito 3
-
-- hacer una traduccion fiel del diseno a codigo
-- dejar una base de codigo solida y bien estructurada
-- preparar esa base para clases futuras con patrones y logica mas compleja
-
-## Recursos adicionales
-
-### Tutoriales de Eclipse
-
-- `https://www.eclipse.org/documentation/`
-- `https://www.youtube.com/results?search_query=eclipse+java+tutorial`
-
-### Java y POO
-
-- `https://docs.oracle.com/javase/tutorial/`
-- `https://www.baeldung.com/java-oop`
-- `https://www.geeksforgeeks.org/object-oriented-programming-oops-concept-in-java/`
-
-### Getters y setters
-
-- `https://www.baeldung.com/java-getters-setters`
-- `https://www.oracle.com/java/technologies/javase/codeconventions-namingconventions.html`
-
-### Herencia en Java
-
-- `https://www.baeldung.com/java-inheritance`
-- `https://www.geeksforgeeks.org/inheritance-in-java/`
-
-### Collections (`List`, `ArrayList`)
-
-- `https://www.baeldung.com/java-collections`
-- `https://docs.oracle.com/javase/tutorial/collections/`
-
-### Debugging en Eclipse
-
-- `https://www.eclipse.org/community/eclipse_newsletter/2017/june/article1.php`
-- `https://www.youtube.com/watch?v=kkFhLr53DTY`
+- Antes de abrir el IDE, revisá tu diagrama de clases. Si no lo entendés, no vas a poder traducirlo bien.
+- Usá la estructura de paquetes desde el primer día. Reorganizar un proyecto mal estructurado es costoso.
+- Los getters y setters no son decoración: son el mecanismo de acceso controlado al estado del objeto. Generarlos en Eclipse es rápido, pero entendé por qué existen.
+- Aprendé a leer los errores del compilador. Eclipse te dice exactamente qué está mal y dónde.
+- El código que escribís hoy lo vas a leer vos o alguien más en semanas o meses. Escribilo para que sea entendible, no solo para que compile.
+- Herramienta de IA como Claude Code son multiplicadores de productividad solo si entendés lo que producen. Si no podés revisar el output, no podés confiar en él.

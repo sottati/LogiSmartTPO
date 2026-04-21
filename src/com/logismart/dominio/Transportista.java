@@ -1,6 +1,6 @@
 package com.logismart.dominio;
 
-public class Transportista extends Usuario {
+public class Transportista extends Usuario implements IPermisos {
 	private String licencia;
 	private boolean disponibilidad;
 	private Vehiculo vehiculoAsignado;
@@ -58,6 +58,31 @@ public class Transportista extends Usuario {
 	}
 
 	public void reportarIncidente() {
-		
+	}
+
+	// IPermisos: Transportista solo ejecuta entregas, no crea ni asigna
+	@Override
+	public boolean puedeCrearEnvio() {
+		return false;
+	}
+
+	@Override
+	public boolean puedeAsignarRuta() {
+		return false;
+	}
+
+	@Override
+	public boolean puedeVerReportes() {
+		return false;
+	}
+
+	@Override
+	public boolean puedeGestionarFlota() {
+		return false;
+	}
+
+	@Override
+	public boolean puedeAdministrarEmpresas() {
+		return false;
 	}
 }

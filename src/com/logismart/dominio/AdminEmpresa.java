@@ -1,6 +1,6 @@
 package com.logismart.dominio;
 
-public class AdminEmpresa extends Usuario {
+public class AdminEmpresa extends Usuario implements IPermisos {
 	private Empresa empresa;
 	private String permisosAdmin;
 	private String notificaciones;
@@ -47,11 +47,36 @@ public class AdminEmpresa extends Usuario {
 	
 	public void configurarEmpresa() {
 	}
-	
+
 	public void consultarReportes() {
 	}
 
 	public void gestionarSuscripcion() {
 	}
 
+	// IPermisos: AdminEmpresa gestiona su empresa, consulta reportes, pero no asigna rutas
+	@Override
+	public boolean puedeCrearEnvio() {
+		return true;
+	}
+
+	@Override
+	public boolean puedeAsignarRuta() {
+		return false;
+	}
+
+	@Override
+	public boolean puedeVerReportes() {
+		return true;
+	}
+
+	@Override
+	public boolean puedeGestionarFlota() {
+		return false;
+	}
+
+	@Override
+	public boolean puedeAdministrarEmpresas() {
+		return false;
+	}
 }

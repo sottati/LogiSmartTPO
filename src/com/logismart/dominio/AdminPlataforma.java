@@ -1,6 +1,6 @@
 package com.logismart.dominio;
 
-public class AdminPlataforma extends Usuario {
+public class AdminPlataforma extends Usuario implements IPermisos {
 	private String idInterno;
 	private String nivelAcceso;
 	private String area;
@@ -58,6 +58,31 @@ public class AdminPlataforma extends Usuario {
 	}
 
 	public void gestionarBilling() {
-		
+	}
+
+	// IPermisos: AdminPlataforma tiene acceso total a nivel plataforma
+	@Override
+	public boolean puedeCrearEnvio() {
+		return true;
+	}
+
+	@Override
+	public boolean puedeAsignarRuta() {
+		return true;
+	}
+
+	@Override
+	public boolean puedeVerReportes() {
+		return true;
+	}
+
+	@Override
+	public boolean puedeGestionarFlota() {
+		return true;
+	}
+
+	@Override
+	public boolean puedeAdministrarEmpresas() {
+		return true;
 	}
 }
