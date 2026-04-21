@@ -8,13 +8,20 @@ import com.logismart.dominio.IPermisos;
 import com.logismart.dominio.Orden;
 import com.logismart.dominio.Ruta;
 import com.logismart.dominio.Vehiculo;
+import com.logismart.infraestructura.fabrica.FabricaDeEnvios;
+import com.logismart.infraestructura.fabrica.FabricaDeNotificadores;
+import com.logismart.infraestructura.fabrica.FabricaDeVehiculos;
+import com.logismart.infraestructura.fabrica.TipoEnvio;
+import com.logismart.infraestructura.fabrica.TipoNotificador;
+import com.logismart.infraestructura.fabrica.TipoVehiculo;
 import com.logismart.infraestructura.costo.CalculadorDeCosto;
 import com.logismart.infraestructura.tiempo.CalculadorDeTiempo;
 import com.logismart.infraestructura.vehiculo.AsignadorDeVehiculos;
+import com.logismart.infraestructura.singleton.ConexionBD;
+import com.logismart.infraestructura.singleton.Logger;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * GRASP Controller: Intermediario entre la UI (o API REST) y el dominio.
@@ -29,6 +36,9 @@ import java.util.UUID;
  *  - Devolver resultados o lanzar excepciones significativas
  */
 public class LogiSmartController {
+
+    private final ConexionBD bd = ConexionBD.obtenerInstancia();
+    private final Logger logger = Logger.obtenerInstancia();
 
     private final RepositorioDeEnvios repositorioEnvios;
     private final ServicioDeNotificaciones notificaciones;
@@ -55,6 +65,25 @@ public class LogiSmartController {
         this.calculadorTiempo    = calculadorTiempo;
     }
 
+    public LogiSmartController(
+            RepositorioDeEnvios repositorioEnvios,
+            TipoNotificador tipoNotificador,
+            ValidadorDeEnvios validador,
+            CalculadorDeRutas calculadorRutas,
+            AsignadorDeVehiculos asignadorVehiculos,
+            CalculadorDeCosto calculadorCosto,
+            CalculadorDeTiempo calculadorTiempo) {
+        this(
+                repositorioEnvios,
+                crearServicioDeNotificaciones(tipoNotificador),
+                validador,
+                calculadorRutas,
+                asignadorVehiculos,
+                calculadorCosto,
+                calculadorTiempo
+        );
+    }
+
     // -------------------------------------------------------------------------
     // CU-01: Crear envio
     // -------------------------------------------------------------------------
@@ -71,22 +100,29 @@ public class LogiSmartController {
      */
     public Envio crearEnvio(IPermisos solicitante, Empresa empresa,
                             ClienteFinal cliente, String prioridad, LocalDateTime fecha) {
+        return crearEnvio(solicitante, empresa, cliente, TipoEnvio.desdePrioridad(prioridad), fecha);
+    }
+
+    public Envio crearEnvio(IPermisos solicitante, Empresa empresa,
+                            ClienteFinal cliente, TipoEnvio tipoEnvio, LocalDateTime fecha) {
         // Validar permisos (Polymorphism: no hay instanceof, cada tipo sabe su permiso)
         if (!solicitante.puedeCrearEnvio()) {
             throw new SecurityException("El usuario no tiene permiso para crear envios");
         }
 
         // Validar datos de entrada (Pure Fabrication: ValidadorDeEnvios)
-        var resultado = validador.validarCreacion(cliente.getId(), prioridad, fecha);
+        var resultado = validador.validarCreacion(cliente.getId(), tipoEnvio.getPrioridadAsociada(), fecha);
         if (!resultado.esValido()) {
             throw new IllegalArgumentException("Datos invalidos: " + resultado.errores());
         }
 
-        // Crear envio (Expert: Envio crea internamente SeguimientoEnvio y Entrega)
-        Envio envio = new Envio(UUID.randomUUID().toString(), empresa, prioridad, fecha);
+        // Crear envio (Factory Method: el controller no conoce subclases)
+        Envio envio = FabricaDeEnvios.crearEnvio(tipoEnvio, empresa, fecha);
 
         // Persistir (Pure Fabrication: RepositorioDeEnvios)
         repositorioEnvios.guardar(envio);
+        bd.ejecutarQuery("INSERT INTO envios (id, prioridad) VALUES ('" + envio.getId() + "', '" + envio.getPrioridad() + "')");
+        logger.log("Envio creado: " + envio.getId() + " tipo=" + tipoEnvio.name());
 
         // Notificar (Pure Fabrication + Indirection: ServicioDeNotificaciones -> Notificador)
         notificaciones.notificarCreacionDeEnvio(envio, cliente);
@@ -129,36 +165,43 @@ public class LogiSmartController {
         if (!solicitante.puedeAsignarRuta()) {
             throw new SecurityException("El usuario no tiene permiso para asignar rutas");
         }
+        try {
+            Envio envio = buscarEnvioOFallar(idEnvio);
 
-        Envio envio = buscarEnvioOFallar(idEnvio);
+            // Seleccionar vehiculo (Protected Variations: AsignadorDeVehiculos)
+            Vehiculo vehiculo = asignadorVehiculos.asignar(flota, envio)
+                    .orElseThrow(() -> new IllegalStateException("No hay vehiculos disponibles para el envio " + idEnvio));
 
-        // Seleccionar vehiculo (Protected Variations: AsignadorDeVehiculos)
-        Vehiculo vehiculo = asignadorVehiculos.asignar(flota, envio)
-                .orElseThrow(() -> new IllegalStateException("No hay vehiculos disponibles para el envio " + idEnvio));
+            // Seleccionar ruta optima (Pure Fabrication + Polymorphism: CalculadorDeRutas)
+            Ruta ruta = calculadorRutas.seleccionarRuta(envio, rutasDisponibles);
 
-        // Validar la asignacion (Pure Fabrication: ValidadorDeEnvios)
-        var resultado = validador.validarAsignacionRuta(envio, rutasDisponibles.get(0), vehiculo);
-        if (!resultado.esValido()) {
-            throw new IllegalArgumentException("Asignacion invalida: " + resultado.errores());
+            // Validar la asignacion (Pure Fabrication: ValidadorDeEnvios)
+            var resultado = validador.validarAsignacionRuta(envio, ruta, vehiculo);
+            if (!resultado.esValido()) {
+                throw new IllegalArgumentException("Asignacion invalida: " + resultado.errores());
+            }
+
+            ruta.asignarVehiculo(vehiculo);
+            vehiculo.asignarRuta();
+
+            // Calcular y actualizar ETA (Protected Variations: CalculadorDeTiempo)
+            int minutosEstimados = calculadorTiempo.estimarMinutos(ruta);
+            envio.getSeguimiento().actualizarETA(minutosEstimados, 0.85);
+
+            // Iniciar el envio (Expert: Envio gestiona su propio estado)
+            envio.iniciar();
+            repositorioEnvios.guardar(envio);
+            bd.ejecutarQuery("UPDATE envios SET estado='EN_CURSO' WHERE id='" + envio.getId() + "'");
+            logger.log("Ruta asignada: envio=" + idEnvio + " ruta=" + ruta.getId() + " vehiculo=" + vehiculo.getId());
+
+            // Notificar (Pure Fabrication + Indirection)
+            notificaciones.notificarAsignacionDeRuta(envio, ruta, cliente);
+
+            return ruta;
+        } catch (Exception e) {
+            logger.logError("asignarRuta", e);
+            throw e;
         }
-
-        // Seleccionar ruta optima (Pure Fabrication + Polymorphism: CalculadorDeRutas)
-        Ruta ruta = calculadorRutas.seleccionarRuta(envio, rutasDisponibles);
-        ruta.asignarVehiculo(vehiculo);
-        vehiculo.asignarRuta();
-
-        // Calcular y actualizar ETA (Protected Variations: CalculadorDeTiempo)
-        int minutosEstimados = calculadorTiempo.estimarMinutos(ruta);
-        envio.getSeguimiento().actualizarETA(minutosEstimados, 0.85);
-
-        // Iniciar el envio (Expert: Envio gestiona su propio estado)
-        envio.iniciar();
-        repositorioEnvios.guardar(envio);
-
-        // Notificar (Pure Fabrication + Indirection)
-        notificaciones.notificarAsignacionDeRuta(envio, ruta, cliente);
-
-        return ruta;
     }
 
     // -------------------------------------------------------------------------
@@ -193,7 +236,21 @@ public class LogiSmartController {
         Envio envio = buscarEnvioOFallar(idEnvio);
         envio.cancelar();
         repositorioEnvios.guardar(envio);
+        bd.ejecutarQuery("UPDATE envios SET estado='CANCELADO' WHERE id='" + envio.getId() + "'");
+        logger.log("Envio cancelado: " + envio.getId());
         notificaciones.notificarCancelacion(envio, cliente);
+    }
+
+    public Vehiculo registrarVehiculoEnFlota(IPermisos solicitante, Flota flota, TipoVehiculo tipoVehiculo, String patente) {
+        if (!solicitante.puedeGestionarFlota()) {
+            throw new SecurityException("El usuario no tiene permiso para gestionar flota");
+        }
+        Vehiculo vehiculo = FabricaDeVehiculos.crearVehiculo(tipoVehiculo, patente);
+        flota.agregarVehiculo(vehiculo);
+        bd.ejecutarQuery("INSERT INTO vehiculos (id, tipo, patente) VALUES ('"
+                + vehiculo.getId() + "', '" + vehiculo.getTipo() + "', '" + vehiculo.getPatente() + "')");
+        logger.log("Vehiculo creado por factory: " + vehiculo.getId() + " tipo=" + tipoVehiculo.name());
+        return vehiculo;
     }
 
     // -------------------------------------------------------------------------
@@ -213,5 +270,9 @@ public class LogiSmartController {
     private Envio buscarEnvioOFallar(String idEnvio) {
         return repositorioEnvios.buscarPorId(idEnvio)
                 .orElseThrow(() -> new IllegalArgumentException("Envio no encontrado: " + idEnvio));
+    }
+
+    private static ServicioDeNotificaciones crearServicioDeNotificaciones(TipoNotificador tipoNotificador) {
+        return new ServicioDeNotificaciones(FabricaDeNotificadores.crearNotificador(tipoNotificador));
     }
 }

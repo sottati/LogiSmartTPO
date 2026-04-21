@@ -1,5 +1,7 @@
 - Proyecto: Proceso de Desarrollo de Software
 
+- Mantener `DIAGRAMA_DE_CLASES_ACTUAL.html` en root como fuente de verdad del diagrama completo. En cada hito debe actualizarse junto al entregable; los diagramas dentro de `hitos/HITO_*.html` son parciales/historicos.
+
 - Cuando aparezca o cambie `clase_*.html`, convertirlo a skill local en `skills/`.
 - Cada clase debe ser una skill separada: `skills/<slug-clase>/`.
 - Estructura obligatoria por skill:

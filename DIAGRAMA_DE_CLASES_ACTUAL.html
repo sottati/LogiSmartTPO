@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DIAGRAMA_DE_CLASES_ACTUAL - LogiSmart</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --primary: #12324b;
+        --secondary: #1f4f74;
+        --bg: #f5f8fc;
+        --surface: #ffffff;
+        --text: #112030;
+        --muted: #4c5f72;
+        --border: #d8e2ec;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .wrap {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 1.25rem;
+      }
+
+      .header {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+      }
+
+      h1 {
+        color: var(--primary);
+        font-size: clamp(1.25rem, 2.5vw, 1.9rem);
+      }
+
+      .meta {
+        margin-top: 0.45rem;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .legend {
+        margin-top: 0.8rem;
+        display: flex;
+        gap: 0.45rem;
+        flex-wrap: wrap;
+      }
+
+      .tag {
+        font-size: 0.78rem;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.2rem 0.55rem;
+        background: #f8fbff;
+        color: var(--secondary);
+      }
+
+      .diagram {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.8rem;
+        overflow-x: auto;
+      }
+
+      pre.mermaid {
+        min-width: 1200px;
+        background: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="header">
+        <h1>Diagrama de Clases Actual - LogiSmart</h1>
+        <div class="meta">Fuente de verdad global del modelo. Actualizado en Hito 6 (Singleton + Factory Method).</div>
+        <div class="legend">
+          <span class="tag">Controller</span>
+          <span class="tag">Polymorphism</span>
+          <span class="tag">Pure Fabrication</span>
+          <span class="tag">Indirection</span>
+          <span class="tag">Protected Variations</span>
+          <span class="tag">Singleton</span>
+          <span class="tag">Factory Method</span>
+        </div>
+      </section>
+
+      <section class="diagram">
+        <pre class="mermaid">classDiagram
+direction LR
+
+%% ========== CAPA APLICACION ==========
+class LogiSmartController {
+  -ConexionBD bd
+  -Logger logger
+  +crearEnvio(..., prioridad, fecha) Envio
+  +crearEnvio(..., tipoEnvio, fecha) Envio
+  +asignarRuta(..., rutas, flota, cliente) Ruta
+  +calcularCosto(idEnvio) double
+  +cancelarEnvio(...)
+  +registrarVehiculoEnFlota(..., tipoVehiculo, patente) Vehiculo
+}
+
+class RepositorioDeEnvios {
+  +guardar(envio)
+  +buscarPorId(id) Optional~Envio~
+  +listarPorEstado(estado) List~Envio~
+}
+
+class ValidadorDeEnvios {
+  +validarCreacion(idCliente, prioridad, fecha) ResultadoValidacion
+  +validarAsignacionRuta(envio, ruta, vehiculo) ResultadoValidacion
+}
+
+class ServicioDeNotificaciones {
+  +notificarCreacionDeEnvio(envio, cliente)
+  +notificarAsignacionDeRuta(envio, ruta, cliente)
+  +notificarCancelacion(envio, cliente)
+}
+
+class CalculadorDeRutas {
+  +seleccionarRuta(envio, rutas) Ruta
+  +cambiarEstrategia(nueva)
+}
+
+%% ========== DOMINIO ==========
+class Envio {
+  +getId() String
+  +getPrioridad() String
+  +getEstado() String
+  +agregarOrden(orden)
+  +iniciar()
+  +cancelar()
+}
+
+class Orden {
+  +getTotalBultos() int
+}
+
+class Ruta {
+  +getId() String
+  +calcularDistanciaTotal() double
+  +calcularCostoEstimado() double
+  +getDuracionEstimadaMin() int
+  +asignarVehiculo(vehiculo)
+}
+
+class Flota {
+  +obtenerDisponibles() Set~Vehiculo~
+  +agregarVehiculo(vehiculo)
+}
+
+class Vehiculo {
+  +getId() String
+  +getTipo() String
+  +getPatente() String
+  +isDisponible() boolean
+  +puedeCargar(pesoTotalKg) boolean
+  +asignarRuta()
+}
+
+class ClienteFinal
+class Empresa
+
+class IPermisos {
+  <<interface>>
+  +puedeCrearEnvio() boolean
+  +puedeAsignarRuta() boolean
+  +puedeVerReportes() boolean
+  +puedeGestionarFlota() boolean
+  +puedeAdministrarEmpresas() boolean
+}
+
+class OperadorLogistico
+class AdminEmpresa
+class Transportista
+class AdminPlataforma
+
+OperadorLogistico ..|> IPermisos
+AdminEmpresa ..|> IPermisos
+Transportista ..|> IPermisos
+AdminPlataforma ..|> IPermisos
+ClienteFinal ..|> IPermisos
+
+%% ========== POLYMORPHISM + INDIRECTION ==========
+class Notificador {
+  <<interface>>
+  +notificar(destinatario, asunto, mensaje)
+  +getCanal() String
+}
+class NotificadorEmail
+class NotificadorSMS
+class NotificadorPush
+NotificadorEmail ..|> Notificador
+NotificadorSMS ..|> Notificador
+NotificadorPush ..|> Notificador
+
+class CalculadorDeRuta {
+  <<interface>>
+  +calcular(envio, rutas) Ruta
+}
+class RutaMasCercana
+class RutaMenosCongestionada
+class RutaMasBarata
+RutaMasCercana ..|> CalculadorDeRuta
+RutaMenosCongestionada ..|> CalculadorDeRuta
+RutaMasBarata ..|> CalculadorDeRuta
+
+%% ========== PROTECTED VARIATIONS ==========
+class CalculadorDeCosto {
+  <<interface>>
+  +calcular(envio) double
+}
+class CalculadorDeCostoFijo
+class CalculadorDeCostoPorPeso
+class CalculadorDeCostoPorDistancia
+CalculadorDeCostoFijo ..|> CalculadorDeCosto
+CalculadorDeCostoPorPeso ..|> CalculadorDeCosto
+CalculadorDeCostoPorDistancia ..|> CalculadorDeCosto
+
+class AsignadorDeVehiculos {
+  <<interface>>
+  +asignar(flota, envio) Optional~Vehiculo~
+}
+class AsignadorPorDisponibilidad
+class AsignadorPorCapacidad
+AsignadorPorDisponibilidad ..|> AsignadorDeVehiculos
+AsignadorPorCapacidad ..|> AsignadorDeVehiculos
+
+class CalculadorDeTiempo {
+  <<interface>>
+  +estimarMinutos(ruta) int
+}
+class CalculadorDeTiempoSimple
+class CalculadorDeTiempoConTrafico
+CalculadorDeTiempoSimple ..|> CalculadorDeTiempo
+CalculadorDeTiempoConTrafico ..|> CalculadorDeTiempo
+
+%% ========== SINGLETON ==========
+class ConexionBD {
+  <<Singleton>>
+  -instancia
+  +obtenerInstancia() ConexionBD
+  +ejecutarQuery(sql)
+}
+
+class Logger {
+  <<Singleton>>
+  -instancia
+  +obtenerInstancia() Logger
+  +log(mensaje)
+  +logError(contexto, error)
+}
+
+%% ========== FACTORY METHOD ==========
+class FabricaDeEnvios {
+  <<Factory>>
+  +crearEnvio(tipo, empresa, fecha) Envio
+}
+class FabricaDeNotificadores {
+  <<Factory>>
+  +crearNotificador(tipo) Notificador
+}
+class FabricaDeVehiculos {
+  <<Factory>>
+  +crearVehiculo(tipo, patente) Vehiculo
+}
+
+class TipoEnvio {
+  <<enum>>
+  EXPRESS
+  STANDARD
+  ECONOMICO
+}
+class TipoNotificador {
+  <<enum>>
+  EMAIL
+  SMS
+  PUSH
+}
+class TipoVehiculo {
+  <<enum>>
+  AUTO
+  CAMION
+  MOTO
+}
+
+%% ========== RELACIONES ==========
+LogiSmartController --> RepositorioDeEnvios
+LogiSmartController --> ServicioDeNotificaciones
+LogiSmartController --> ValidadorDeEnvios
+LogiSmartController --> CalculadorDeRutas
+LogiSmartController --> AsignadorDeVehiculos
+LogiSmartController --> CalculadorDeCosto
+LogiSmartController --> CalculadorDeTiempo
+LogiSmartController --> ConexionBD
+LogiSmartController --> Logger
+
+ServicioDeNotificaciones --> Notificador
+CalculadorDeRutas --> CalculadorDeRuta
+
+FabricaDeNotificadores --> Notificador
+FabricaDeEnvios --> TipoEnvio
+FabricaDeEnvios --> Envio
+FabricaDeVehiculos --> TipoVehiculo
+FabricaDeVehiculos --> Vehiculo
+
+Envio --> Empresa
+Envio --> Orden
+Ruta --> Vehiculo
+Flota --> Vehiculo
+        </pre>
+      </section>
+    </main>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          primaryColor: "#f4f8ff",
+          primaryTextColor: "#0f172a",
+          primaryBorderColor: "#12324b",
+          lineColor: "#1f4f74",
+          tertiaryColor: "#f8fbff",
+          edgeLabelBackground: "#ffffff"
+        }
+      });
+    </script>
+  </body>
+</html>
