@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diagrama de Clases — LogiSmart</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --primary: #12324b;
+        --primary-2: #1f4f74;
+        --accent: #dc6b1f;
+        --bg: #f5f8fc;
+        --surface: #ffffff;
+        --text: #112030;
+        --muted: #4c5f72;
+        --border: #d8e2ec;
+        --panel-w: 300px;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      /* ── Page layout ── */
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr var(--panel-w);
+        min-height: 100vh;
+      }
+
+      /* ── Main (diagram) column ── */
+      .main-col {
+        padding: 1.25rem;
+        overflow: hidden;
+      }
+
+      .diagram-header {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.1rem 1.4rem;
+        margin-bottom: 1rem;
+      }
+
+      .diagram-header h1 {
+        color: var(--primary);
+        font-size: clamp(1.1rem, 2vw, 1.55rem);
+      }
+
+      .diagram-header p {
+        margin-top: 0.3rem;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .diagram-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.8rem;
+        overflow-x: auto;
+      }
+
+      pre.mermaid {
+        min-width: 1400px;
+        background: none;
+      }
+
+      /* ── Side panel column ── */
+      .side-col {
+        border-left: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .side-inner {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 1.4rem 1.1rem 2rem;
+      }
+
+      .side-inner::-webkit-scrollbar { width: 4px; }
+      .side-inner::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+      .panel-title {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 1.1rem;
+      }
+
+      /* ── Hito blocks ── */
+      .hito-block { margin-bottom: 1.25rem; }
+
+      .hito-block-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .hito-badge {
+        flex-shrink: 0;
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--primary);
+      }
+
+      .hito-block-header h2 {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--primary);
+        line-height: 1.2;
+      }
+
+      .hito-block-header span {
+        font-size: 0.72rem;
+        color: var(--muted);
+        font-weight: 400;
+      }
+
+      /* ── Pattern entries ── */
+      .pattern {
+        padding: 0.5rem 0.7rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        margin-bottom: 0.45rem;
+        background: var(--bg);
+      }
+
+      .pattern-name {
+        font-size: 0.77rem;
+        font-weight: 700;
+        color: var(--primary-2);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-bottom: 0.2rem;
+      }
+
+      .pattern-tag {
+        display: inline-block;
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 0.05rem 0.35rem;
+        border-radius: 3px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .tag-grasp { background: #dce9ff; color: #12324b; }
+      .tag-gof   { background: #fff0e3; color: #7a3200; }
+
+      .pattern-desc {
+        font-size: 0.74rem;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      .pattern-desc code {
+        background: #e8eff7;
+        border-radius: 3px;
+        padding: 0 0.25rem;
+        font-size: 0.71rem;
+      }
+
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 1rem 0;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 900px) {
+        .layout { grid-template-columns: 1fr; }
+        .side-col { border-left: none; border-top: 1px solid var(--border); }
+        .side-inner { position: static; height: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+
+      <!-- ── Diagram column ── -->
+      <main class="main-col">
+        <div class="diagram-header">
+          <h1>Diagrama de Clases — LogiSmart</h1>
+          <p>Modelo acumulativo del sistema. Refleja todos los patrones aplicados a lo largo del TPO.</p>
+        </div>
+
+        <div class="diagram-wrap">
+          <pre class="mermaid">classDiagram
+direction LR
+
+class LogiSmartController {
+  -ConexionBD bd
+  -Logger logger
+  +crearEnvio(solicitante, empresa, prioridad, fecha) Envio
+  +crearEnvio(solicitante, empresa, tipoEnvio, fecha) Envio
+  +asignarRuta(solicitante, idEnvio, rutas, flota, cliente) Ruta
+  +calcularCosto(idEnvio) double
+  +cancelarEnvio(solicitante, idEnvio, cliente)
+  +registrarVehiculoEnFlota(solicitante, tipoVehiculo, patente) Vehiculo
+}
+
+class RepositorioDeEnvios {
+  +guardar(envio)
+  +buscarPorId(id) Optional~Envio~
+  +listarPorEstado(estado) List~Envio~
+}
+
+class ValidadorDeEnvios {
+  +validarCreacion(idCliente, prioridad, fecha) ResultadoValidacion
+  +validarAsignacionRuta(envio, ruta, vehiculo) ResultadoValidacion
+}
+
+class ServicioDeNotificaciones {
+  +notificarCreacionDeEnvio(envio, cliente)
+  +notificarAsignacionDeRuta(envio, ruta, cliente)
+  +notificarCancelacion(envio, cliente)
+}
+
+class CalculadorDeRutas {
+  +seleccionarRuta(envio, rutas) Ruta
+  +cambiarEstrategia(nueva)
+}
+
+class Envio {
+  +getId() String
+  +getPrioridad() String
+  +getEstado() String
+  +agregarOrden(orden)
+  +iniciar()
+  +cancelar()
+}
+
+class Orden {
+  +getTotalBultos() int
+}
+
+class Ruta {
+  +getId() String
+  +calcularDistanciaTotal() double
+  +calcularCostoEstimado() double
+  +getDuracionEstimadaMin() int
+  +asignarVehiculo(vehiculo)
+}
+
+class Flota {
+  +obtenerDisponibles() Set~Vehiculo~
+  +agregarVehiculo(vehiculo)
+}
+
+class Vehiculo {
+  +getId() String
+  +getTipo() String
+  +getPatente() String
+  +isDisponible() boolean
+  +puedeCargar(pesoTotalKg) boolean
+  +asignarRuta()
+}
+
+class ClienteFinal
+class Empresa
+
+class IPermisos {
+  &lt;&lt;interface&gt;&gt;
+  +puedeCrearEnvio() boolean
+  +puedeAsignarRuta() boolean
+  +puedeVerReportes() boolean
+  +puedeGestionarFlota() boolean
+  +puedeAdministrarEmpresas() boolean
+}
+
+class OperadorLogistico
+class AdminEmpresa
+class Transportista
+class AdminPlataforma
+
+OperadorLogistico ..|&gt; IPermisos
+AdminEmpresa ..|&gt; IPermisos
+Transportista ..|&gt; IPermisos
+AdminPlataforma ..|&gt; IPermisos
+ClienteFinal ..|&gt; IPermisos
+
+class Notificador {
+  &lt;&lt;interface&gt;&gt;
+  +notificar(destinatario, asunto, mensaje)
+  +getCanal() String
+}
+class NotificadorEmail
+class NotificadorSMS
+class NotificadorPush
+NotificadorEmail ..|&gt; Notificador
+NotificadorSMS ..|&gt; Notificador
+NotificadorPush ..|&gt; Notificador
+
+class CalculadorDeRuta {
+  &lt;&lt;interface&gt;&gt;
+  +calcular(envio, rutas) Ruta
+}
+class RutaMasCercana
+class RutaMenosCongestionada
+class RutaMasBarata
+RutaMasCercana ..|&gt; CalculadorDeRuta
+RutaMenosCongestionada ..|&gt; CalculadorDeRuta
+RutaMasBarata ..|&gt; CalculadorDeRuta
+
+class CalculadorDeCosto {
+  &lt;&lt;interface&gt;&gt;
+  +calcular(envio) double
+}
+class CalculadorDeCostoFijo
+class CalculadorDeCostoPorPeso
+class CalculadorDeCostoPorDistancia
+CalculadorDeCostoFijo ..|&gt; CalculadorDeCosto
+CalculadorDeCostoPorPeso ..|&gt; CalculadorDeCosto
+CalculadorDeCostoPorDistancia ..|&gt; CalculadorDeCosto
+
+class AsignadorDeVehiculos {
+  &lt;&lt;interface&gt;&gt;
+  +asignar(flota, envio) Optional~Vehiculo~
+}
+class AsignadorPorDisponibilidad
+class AsignadorPorCapacidad
+AsignadorPorDisponibilidad ..|&gt; AsignadorDeVehiculos
+AsignadorPorCapacidad ..|&gt; AsignadorDeVehiculos
+
+class CalculadorDeTiempo {
+  &lt;&lt;interface&gt;&gt;
+  +estimarMinutos(ruta) int
+}
+class CalculadorDeTiempoSimple
+class CalculadorDeTiempoConTrafico
+CalculadorDeTiempoSimple ..|&gt; CalculadorDeTiempo
+CalculadorDeTiempoConTrafico ..|&gt; CalculadorDeTiempo
+
+class GeneradorDeReportes {
+  &lt;&lt;interface&gt;&gt;
+  +exportar(reporte) String
+  +getFormato() String
+}
+class GeneradorDeReportesPDF
+class GeneradorDeReportesJSON
+GeneradorDeReportesPDF ..|&gt; GeneradorDeReportes
+GeneradorDeReportesJSON ..|&gt; GeneradorDeReportes
+
+class ConexionBD {
+  &lt;&lt;Singleton&gt;&gt;
+  -instancia ConexionBD
+  +obtenerInstancia() ConexionBD
+  +ejecutarQuery(sql)
+}
+
+class Logger {
+  &lt;&lt;Singleton&gt;&gt;
+  -instancia Logger
+  +obtenerInstancia() Logger
+  +log(mensaje)
+  +logError(contexto, error)
+}
+
+class FabricaDeEnvios {
+  &lt;&lt;Factory&gt;&gt;
+  +crearEnvio(tipo, empresa, fecha) Envio
+}
+class FabricaDeNotificadores {
+  &lt;&lt;Factory&gt;&gt;
+  +crearNotificador(tipo) Notificador
+}
+class FabricaDeVehiculos {
+  &lt;&lt;Factory&gt;&gt;
+  +crearVehiculo(tipo, patente) Vehiculo
+}
+
+class TipoEnvio {
+  &lt;&lt;enum&gt;&gt;
+  EXPRESS
+  STANDARD
+  ECONOMICO
+}
+class TipoNotificador {
+  &lt;&lt;enum&gt;&gt;
+  EMAIL
+  SMS
+  PUSH
+}
+class TipoVehiculo {
+  &lt;&lt;enum&gt;&gt;
+  AUTO
+  CAMION
+  MOTO
+}
+
+LogiSmartController --&gt; RepositorioDeEnvios
+LogiSmartController --&gt; ServicioDeNotificaciones
+LogiSmartController --&gt; ValidadorDeEnvios
+LogiSmartController --&gt; CalculadorDeRutas
+LogiSmartController --&gt; AsignadorDeVehiculos
+LogiSmartController --&gt; CalculadorDeCosto
+LogiSmartController --&gt; CalculadorDeTiempo
+LogiSmartController --&gt; ConexionBD
+LogiSmartController --&gt; Logger
+
+ServicioDeNotificaciones --&gt; Notificador
+CalculadorDeRutas --&gt; CalculadorDeRuta
+
+FabricaDeNotificadores --&gt; Notificador
+FabricaDeEnvios --&gt; TipoEnvio
+FabricaDeEnvios --&gt; Envio
+FabricaDeVehiculos --&gt; TipoVehiculo
+FabricaDeVehiculos --&gt; Vehiculo
+
+Envio --&gt; Empresa
+Envio --&gt; Orden
+Ruta --&gt; Vehiculo
+Flota --&gt; Vehiculo</pre>
+        </div>
+      </main>
+
+      <!-- ── Patterns side panel ── -->
+      <aside class="side-col">
+        <div class="side-inner">
+          <p class="panel-title">Patrones aplicados por hito</p>
+
+          <!-- Hito 4 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge">4</div>
+              <div>
+                <h2>Hito 4</h2>
+                <span>GRASP — Parte I</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Creator
+              </div>
+              <div class="pattern-desc">
+                <code>Envio</code> es responsable de agregar y gestionar sus <code>Orden</code>es, ya que contiene los datos necesarios para crearlas.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Information Expert
+              </div>
+              <div class="pattern-desc">
+                <code>Ruta</code> calcula su propia distancia y costo estimado. <code>Envio</code> gestiona su propio estado (iniciar, cancelar).
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                High Cohesion
+              </div>
+              <div class="pattern-desc">
+                Cada clase tiene una responsabilidad específica y acotada: <code>Ruta</code> no gestiona notificaciones; <code>Flota</code> solo administra vehículos.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Low Coupling
+              </div>
+              <div class="pattern-desc">
+                Las entidades de dominio (<code>Envio</code>, <code>Ruta</code>, <code>Vehiculo</code>) no referencian directamente la infraestructura ni entre sí más de lo necesario.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 5 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge">5</div>
+              <div>
+                <h2>Hito 5</h2>
+                <span>GRASP — Parte II</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Controller
+              </div>
+              <div class="pattern-desc">
+                <code>LogiSmartController</code> es el único punto de entrada desde la UI. Orquesta sin contener lógica de negocio.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Polymorphism
+              </div>
+              <div class="pattern-desc">
+                <code>IPermisos</code> (5 impl.), <code>Notificador</code> (3 impl.), <code>CalculadorDeRuta</code> (3 impl.). Elimina <code>instanceof</code> y <code>switch</code>.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Pure Fabrication
+              </div>
+              <div class="pattern-desc">
+                Clases artificiales sin correlato en el dominio: <code>ServicioDeNotificaciones</code>, <code>RepositorioDeEnvios</code>, <code>ValidadorDeEnvios</code>, <code>CalculadorDeRutas</code>.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Indirection
+              </div>
+              <div class="pattern-desc">
+                <code>ServicioDeNotificaciones</code> intermedia entre el Controller y <code>Notificador</code>. <code>CalculadorDeRutas</code> intermedia hacia <code>CalculadorDeRuta</code>.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Protected Variations
+              </div>
+              <div class="pattern-desc">
+                Puntos de variación protegidos por interfaces: <code>CalculadorDeCosto</code> (3 impl.), <code>AsignadorDeVehiculos</code> (2 impl.), <code>CalculadorDeTiempo</code> (2 impl.), <code>GeneradorDeReportes</code> (2 impl.).
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 6 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge" style="background: var(--accent);">6</div>
+              <div>
+                <h2>Hito 6</h2>
+                <span>GoF — Creacionales I</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Singleton
+              </div>
+              <div class="pattern-desc">
+                <code>ConexionBD</code>: acceso único a persistencia, evita estados divergentes.<br>
+                <code>Logger</code>: trazas unificadas y ordenadas del sistema.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Factory Method
+              </div>
+              <div class="pattern-desc">
+                <code>FabricaDeEnvios</code> (Express / Standard / Económico),
+                <code>FabricaDeNotificadores</code> (Email / SMS / Push),
+                <code>FabricaDeVehiculos</code> (Auto / Camión / Moto).
+                El controller queda desacoplado de las subclases concretas.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+    </div>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          primaryColor: "#f4f8ff",
+          primaryTextColor: "#0f172a",
+          primaryBorderColor: "#12324b",
+          lineColor: "#1f4f74",
+          tertiaryColor: "#f8fbff",
+          edgeLabelBackground: "#ffffff"
+        }
+      });
+    </script>
+  </body>
+</html>

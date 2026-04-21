@@ -30,6 +30,7 @@
         line-height: 1.6;
       }
 
+      /* ── Cover ── */
       .cover {
         min-height: 70vh;
         display: grid;
@@ -43,6 +44,24 @@
         border-bottom: 8px solid var(--primary);
       }
 
+      .cover-content { max-width: 720px; width: 100%; }
+
+      .university {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.4rem;
+      }
+
+      .subject {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--primary-2);
+        margin-bottom: 2rem;
+      }
+
       .cover h1 {
         font-size: clamp(2.4rem, 8vw, 4.8rem);
         color: var(--primary);
@@ -53,16 +72,44 @@
         margin-top: 0.75rem;
         font-size: 1.1rem;
         color: var(--muted);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 0.85rem 0;
+        margin-bottom: 2rem;
       }
 
-      .cover .meta {
-        margin-top: 2.2rem;
+      .team {
         display: grid;
-        gap: 0.35rem;
-        color: var(--primary-2);
-        font-weight: 500;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        max-width: 420px;
+        margin: 0 auto 2rem;
+        border-top: 2px solid var(--bg);
+        padding-top: 1.75rem;
       }
 
+      .team-member strong {
+        display: block;
+        font-size: 1rem;
+        color: var(--text);
+        margin-bottom: 0.2rem;
+      }
+
+      .team-member span {
+        font-size: 0.82rem;
+        color: var(--muted);
+        font-family: monospace;
+      }
+
+      .cover-date {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      /* ── Layout ── */
       .container {
         max-width: 1080px;
         margin: 0 auto;
@@ -84,7 +131,7 @@
         margin-bottom: 0.25rem;
       }
 
-      .section p {
+      .section > p {
         color: var(--muted);
         margin-bottom: 0.8rem;
       }
@@ -130,6 +177,8 @@
         line-height: 1.45;
       }
 
+      pre.mermaid { background: none; }
+
       code {
         background: #eef3fa;
         border-radius: 4px;
@@ -138,7 +187,7 @@
 
       .pill {
         display: inline-block;
-        margin-top: 0.4rem;
+        margin-top: 0.6rem;
         background: var(--ok-bg);
         color: var(--ok);
         border: 1px solid #b9e7cb;
@@ -161,6 +210,7 @@
         overflow-x: auto;
       }
 
+      /* ── Side nav ── */
       .side-nav {
         position: fixed;
         left: 0;
@@ -194,24 +244,31 @@
       .side-nav a.active { color: var(--primary); font-weight: 700; border-left-color: var(--accent); }
 
       @media (max-width: 1200px) { .side-nav { display: none; } }
-
       @media (max-width: 800px) {
         .grid-2 { grid-template-columns: 1fr; }
+        .team { grid-template-columns: 1fr; max-width: 220px; }
       }
     </style>
   </head>
   <body>
+
     <header class="cover">
-      <div>
-        <div>Universidad Argentina de la Empresa</div>
-        <div>Proceso de Desarrollo de Software</div>
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
         <h1>HITO 6</h1>
-        <div class="subtitle">Patrones Creacionales I - Singleton + Factory Method</div>
-        <div class="meta">
-          <div>Proyecto: LogiSmart</div>
-          <div>Fecha: Abril 2026</div>
-          <div>Integracion con Hito 5 (GRASP Parte II)</div>
+        <div class="subtitle">Patrones Creacionales I — Singleton + Factory Method</div>
+        <div class="team">
+          <div class="team-member">
+            <strong>Rosario Presedo</strong>
+            <span>LU: 1146894</span>
+          </div>
+          <div class="team-member">
+            <strong>Simon Ottati</strong>
+            <span>LU: 1155931</span>
+          </div>
         </div>
+        <div class="cover-date">Abril 2026</div>
       </div>
     </header>
 
@@ -226,22 +283,23 @@
     </nav>
 
     <main class="container">
+
       <section class="section" id="s1">
-        <h2>1. Analisis de Candidatos a Singleton</h2>
-        <p>Se identificaron recursos que deben tener una unica instancia para evitar inconsistencias o sobrecostos.</p>
+        <h2>1. Análisis de Candidatos a Singleton</h2>
+        <p>Se identificaron recursos que deben tener una única instancia para evitar inconsistencias o sobrecostos.</p>
         <table>
           <thead>
             <tr>
               <th>Recurso</th>
-              <th>Por que unico</th>
-              <th>Problema con multiples instancias</th>
+              <th>Por qué único</th>
+              <th>Problema con múltiples instancias</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>ConexionBD</code></td>
               <td>Punto central de acceso a persistencia</td>
-              <td>Estados divergentes y auditoria fragmentada</td>
+              <td>Estados divergentes y auditoría fragmentada</td>
             </tr>
             <tr>
               <td><code>Logger</code></td>
@@ -250,34 +308,36 @@
             </tr>
             <tr>
               <td>ConfiguracionApp (candidato)</td>
-              <td>Parametros globales del runtime</td>
-              <td>Versiones de config distintas por modulo</td>
+              <td>Parámetros globales del runtime</td>
+              <td>Versiones de configuración distintas por módulo</td>
             </tr>
             <tr>
               <td>CacheGlobal (candidato)</td>
-              <td>Cache compartida para lectura rapida</td>
-              <td>Cache desincronizada segun origen</td>
+              <td>Caché compartida para lectura rápida</td>
+              <td>Caché desincronizada según origen</td>
             </tr>
           </tbody>
         </table>
       </section>
 
       <section class="section" id="s2">
-        <h2>2. Implementacion de Singletons</h2>
-        <p>Se implementaron dos singletons thread-safe con <code>double-checked locking</code> y <code>volatile</code>.</p>
+        <h2>2. Implementación de Singletons</h2>
+        <p>Se implementaron dos Singletons thread-safe con <code>double-checked locking</code> y <code>volatile</code>.</p>
         <div class="grid-2">
           <div>
             <h3>2.1 ConexionBD.java</h3>
             <pre>public final class ConexionBD {
   private static volatile ConexionBD instancia;
-  private final List&lt;String&gt; historialQueries = new CopyOnWriteArrayList&lt;&gt;();
+  private final List&lt;String&gt; historialQueries
+    = new CopyOnWriteArrayList&lt;&gt;();
 
   private ConexionBD() {}
 
   public static ConexionBD obtenerInstancia() {
     if (instancia == null) {
       synchronized (ConexionBD.class) {
-        if (instancia == null) instancia = new ConexionBD();
+        if (instancia == null)
+          instancia = new ConexionBD();
       }
     }
     return instancia;
@@ -295,7 +355,8 @@
   public static Logger obtenerInstancia() {
     if (instancia == null) {
       synchronized (Logger.class) {
-        if (instancia == null) instancia = new Logger();
+        if (instancia == null)
+          instancia = new Logger();
       }
     }
     return instancia;
@@ -305,16 +366,16 @@
         </div>
         <h3>2.3 Thread Safety</h3>
         <ul>
-          <li>Constructor privado evita <code>new</code> desde cliente.</li>
-          <li><code>volatile</code> evita lecturas inconsistentes entre hilos.</li>
-          <li>Bloque <code>synchronized</code> solo corre en primera inicializacion.</li>
-          <li>Se reduce lock contention luego de crear instancia.</li>
+          <li>Constructor privado: evita instanciación con <code>new</code> desde el cliente.</li>
+          <li><code>volatile</code>: previene lecturas inconsistentes entre hilos.</li>
+          <li>Bloque <code>synchronized</code>: se ejecuta únicamente en la primera inicialización.</li>
+          <li>Se reduce la contención de lock luego de crear la instancia.</li>
         </ul>
       </section>
 
       <section class="section" id="s3">
-        <h2>3. Analisis de Candidatos a Factory Method</h2>
-        <p>Se detectaron puntos con variantes concretas y necesidad de desacoplar creacion.</p>
+        <h2>3. Análisis de Candidatos a Factory Method</h2>
+        <p>Se detectaron puntos con variantes concretas y necesidad de desacoplar la creación de objetos.</p>
         <table>
           <thead>
             <tr>
@@ -325,38 +386,39 @@
           </thead>
           <tbody>
             <tr>
-              <td>Envios</td>
-              <td>Express, Standard, Economico</td>
-              <td>Creacion hardcodeada en controller</td>
+              <td>Envíos</td>
+              <td>Express, Standard, Económico</td>
+              <td>Creación hardcodeada en el controller</td>
             </tr>
             <tr>
               <td>Notificadores</td>
               <td>Email, SMS, Push</td>
-              <td>Cliente conoce clase concreta</td>
+              <td>El cliente conocía la clase concreta</td>
             </tr>
             <tr>
-              <td>Vehiculos</td>
-              <td>Auto, Camion, Moto</td>
-              <td>Alta de objetos dispersa</td>
+              <td>Vehículos</td>
+              <td>Auto, Camión, Moto</td>
+              <td>Alta de objetos dispersa en múltiples puntos</td>
             </tr>
             <tr>
               <td>Calculadores de ruta (candidato futuro)</td>
-              <td>Cercana, Barata, MenosCongestionada</td>
-              <td>Instanciacion manual por caso</td>
+              <td>Cercana, Barata, Menos congestionada</td>
+              <td>Instanciación manual por caso de uso</td>
             </tr>
           </tbody>
         </table>
       </section>
 
       <section class="section" id="s4">
-        <h2>4. Implementacion de Factory Methods</h2>
-        <p>Se agregaron tres fabricas en <code>src/com/logismart/infraestructura/fabrica</code>.</p>
+        <h2>4. Implementación de Factory Methods</h2>
+        <p>Se agregaron tres fábricas en <code>src/com/logismart/infraestructura/fabrica</code>.</p>
 
         <h3>4.1 FabricaDeEnvios.java</h3>
-        <pre>public static Envio crearEnvio(TipoEnvio tipo, Empresa empresa, LocalDateTime fecha) {
+        <pre>public static Envio crearEnvio(TipoEnvio tipo, Empresa empresa,
+                               LocalDateTime fecha) {
   return switch (tipo) {
-    case EXPRESS -> new EnvioExpress(UUID.randomUUID().toString(), empresa, fecha);
-    case STANDARD -> new EnvioStandard(UUID.randomUUID().toString(), empresa, fecha);
+    case EXPRESS   -> new EnvioExpress(UUID.randomUUID().toString(), empresa, fecha);
+    case STANDARD  -> new EnvioStandard(UUID.randomUUID().toString(), empresa, fecha);
     case ECONOMICO -> new EnvioEconomico(UUID.randomUUID().toString(), empresa, fecha);
   };
 }</pre>
@@ -365,29 +427,31 @@
         <pre>public static Notificador crearNotificador(TipoNotificador tipo) {
   return switch (tipo) {
     case EMAIL -> new NotificadorEmail();
-    case SMS -> new NotificadorSMS();
-    case PUSH -> new NotificadorPush();
+    case SMS   -> new NotificadorSMS();
+    case PUSH  -> new NotificadorPush();
   };
 }</pre>
 
         <h3>4.3 FabricaDeVehiculos.java</h3>
         <pre>public static Vehiculo crearVehiculo(TipoVehiculo tipo, String patente) {
-  return new Vehiculo(UUID.randomUUID().toString(), patente, tipo.getCapacidadKgBase(), tipo.name(), true);
+  return new Vehiculo(UUID.randomUUID().toString(), patente,
+                      tipo.getCapacidadKgBase(), tipo.name(), true);
 }</pre>
-        <div class="pill">Resultado: controller desacoplado de subclases concretas</div>
+        <div class="pill">Resultado: el controller queda desacoplado de las subclases concretas</div>
       </section>
 
       <section class="section" id="s5">
-        <h2>5. Integracion en LogiSmartController</h2>
-        <p>El controller ahora usa Singletons para recursos unicos y Factories para creacion de objetos.</p>
+        <h2>5. Integración en LogiSmartController</h2>
+        <p>El controller usa los Singletons para recursos únicos y las Factories para la creación de objetos.</p>
 
         <h3>5.1 Campos agregados</h3>
-        <pre>private final ConexionBD bd = ConexionBD.obtenerInstancia();
-private final Logger logger = Logger.obtenerInstancia();</pre>
+        <pre>private final ConexionBD bd     = ConexionBD.obtenerInstancia();
+private final Logger     logger = Logger.obtenerInstancia();</pre>
 
-        <h3>5.2 Creacion de envio con factory</h3>
+        <h3>5.2 Creación de envío con factory</h3>
         <pre>public Envio crearEnvio(..., TipoEnvio tipoEnvio, LocalDateTime fecha) {
-  var resultado = validador.validarCreacion(cliente.getId(), tipoEnvio.getPrioridadAsociada(), fecha);
+  var resultado = validador.validarCreacion(
+      cliente.getId(), tipoEnvio.getPrioridadAsociada(), fecha);
   Envio envio = FabricaDeEnvios.crearEnvio(tipoEnvio, empresa, fecha);
   repositorioEnvios.guardar(envio);
   bd.ejecutarQuery("INSERT INTO envios ...");
@@ -396,8 +460,9 @@ private final Logger logger = Logger.obtenerInstancia();</pre>
   return envio;
 }</pre>
 
-        <h3>5.3 Creacion de vehiculo con factory</h3>
-        <pre>public Vehiculo registrarVehiculoEnFlota(..., TipoVehiculo tipo, String patente) {
+        <h3>5.3 Creación de vehículo con factory</h3>
+        <pre>public Vehiculo registrarVehiculoEnFlota(..., TipoVehiculo tipo,
+                                          String patente) {
   Vehiculo v = FabricaDeVehiculos.crearVehiculo(tipo, patente);
   flota.agregarVehiculo(v);
   logger.log("Vehiculo creado por factory: " + v.getId());
@@ -407,9 +472,9 @@ private final Logger logger = Logger.obtenerInstancia();</pre>
 
       <section class="section" id="s6">
         <h2>6. Diagramas del Hito 6</h2>
-        <p>Se muestran los patrones creacionales en contexto con el diseno previo de Hito 5.</p>
+        <p>Patrones creacionales integrados con el diseño GRASP del Hito 5.</p>
 
-        <h3>6.1 Diagrama de clases (hito parcial)</h3>
+        <h3>6.1 Diagrama de clases</h3>
         <div class="diagram">
           <pre class="mermaid">classDiagram
 direction LR
@@ -476,19 +541,13 @@ class Notificador {
   +notificar(dest, msg) void
 }
 
-class NotificadorEmail {
-  +notificar(dest, msg) void
-}
-class NotificadorSMS {
-  +notificar(dest, msg) void
-}
-class NotificadorPush {
-  +notificar(dest, msg) void
-}
+class NotificadorEmail { +notificar(dest, msg) void }
+class NotificadorSMS   { +notificar(dest, msg) void }
+class NotificadorPush  { +notificar(dest, msg) void }
 
 NotificadorEmail ..|> Notificador
-NotificadorSMS ..|> Notificador
-NotificadorPush ..|> Notificador
+NotificadorSMS   ..|> Notificador
+NotificadorPush  ..|> Notificador
 
 FabricaDeNotificadores ..> Notificador : crea
 FabricaDeEnvios ..> TipoEnvio : usa
@@ -501,7 +560,7 @@ LogiSmartController --> FabricaDeVehiculos
 LogiSmartController --> FabricaDeNotificadores</pre>
         </div>
 
-        <h3>6.2 Diagrama de secuencia - creacion de objetos</h3>
+        <h3>6.2 Diagrama de secuencia — creación de objetos</h3>
         <div class="diagram">
           <pre class="mermaid">sequenceDiagram
 actor UI as UI/API
@@ -527,12 +586,13 @@ C-->>-UI: Envio creado</pre>
       <section class="section" id="s7">
         <h2>7. Conclusiones</h2>
         <ul>
-          <li>Singleton resolvio recursos unicos y trazabilidad de operaciones.</li>
-          <li>Factory Method elimino conocimiento de subclases en cliente.</li>
-          <li>El controller mantiene rol de orquestacion y delega creacion.</li>
-          <li>El diseno quedo mas extensible para Hito 7 (Abstract Factory, Builder, Prototype).</li>
+          <li>Singleton resolvió la necesidad de recursos únicos y unificó la trazabilidad de operaciones en el sistema.</li>
+          <li>Factory Method eliminó el conocimiento de las subclases concretas en el controller, respetando el principio abierto/cerrado.</li>
+          <li>El controller mantiene su rol de orquestación y delega completamente la creación de objetos a las fábricas.</li>
+          <li>El diseño resultante es extensible para incorporar más patrones creacionales en entregas futuras.</li>
         </ul>
       </section>
+
     </main>
 
     <script type="module">
@@ -542,14 +602,12 @@ C-->>-UI: Envio creado</pre>
         startOnLoad: true,
         theme: "base",
         themeVariables: {
-          /* General */
           primaryColor: "#dce9ff",
           primaryTextColor: "#0d1b2a",
           primaryBorderColor: "#17324d",
           lineColor: "#17324d",
           tertiaryColor: "#f0f4fa",
           edgeLabelBackground: "#ffffff",
-          /* Sequence diagram */
           actorBkg: "#dce9ff",
           actorBorder: "#17324d",
           actorTextColor: "#0d1b2a",
@@ -569,7 +627,6 @@ C-->>-UI: Envio creado</pre>
         }
       });
 
-      /* Scrollspy para la barra de navegacion lateral */
       const nav = document.querySelector(".side-nav");
       const sections = document.querySelectorAll("section[id]");
       if (nav && sections.length) {
