@@ -1,9 +1,29 @@
 package com.logismart.infraestructura.fabrica;
 
+import com.logismart.dominio.Empresa;
+import com.logismart.dominio.Envio;
+
+import java.time.LocalDateTime;
+
 public enum TipoEnvio {
-    EXPRESS("ALTA", 1, 1.45),
-    STANDARD("MEDIA", 3, 1.00),
-    ECONOMICO("BAJA", 7, 0.85);
+    EXPRESS("ALTA", 1, 1.45) {
+        @Override
+        public Envio crearEnvio(String id, Empresa empresa, LocalDateTime fechaProgramada) {
+            return new EnvioExpress(id, empresa, fechaProgramada);
+        }
+    },
+    STANDARD("MEDIA", 3, 1.00) {
+        @Override
+        public Envio crearEnvio(String id, Empresa empresa, LocalDateTime fechaProgramada) {
+            return new EnvioStandard(id, empresa, fechaProgramada);
+        }
+    },
+    ECONOMICO("BAJA", 7, 0.85) {
+        @Override
+        public Envio crearEnvio(String id, Empresa empresa, LocalDateTime fechaProgramada) {
+            return new EnvioEconomico(id, empresa, fechaProgramada);
+        }
+    };
 
     private final String prioridadAsociada;
     private final int diasEntregaEstimados;
@@ -26,6 +46,8 @@ public enum TipoEnvio {
     public double getMultiplicadorCosto() {
         return multiplicadorCosto;
     }
+
+    public abstract Envio crearEnvio(String id, Empresa empresa, LocalDateTime fechaProgramada);
 
     public static TipoEnvio desdePrioridad(String prioridad) {
         if (prioridad == null || prioridad.isBlank()) {

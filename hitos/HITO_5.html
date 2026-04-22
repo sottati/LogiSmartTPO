@@ -1495,7 +1495,18 @@ sequenceDiagram
           </div>
         </div>
 
-        <h3>8.5 Próximos pasos</h3>
+        <h3>8.5 Trade-offs considerados</h3>
+        <div class="callout callout-info" style="border-left-color: #2b6cb0;">
+          <strong>Decisiones de diseño y sus costos</strong>
+          <ul class="note-list" style="margin-top:0.6rem">
+            <li>Se suman mas clases e interfaces (mayor complejidad inicial), a cambio de poder extender sin modificar el Controller.</li>
+            <li>Inyeccion de dependencias exige mas wiring en el bootstrap, pero habilita pruebas unitarias con mocks.</li>
+            <li>Indirection agrega una capa extra de llamadas, pero desacopla canales de notificacion y estrategias.</li>
+            <li>Protected Variations mejora la evolucion del sistema, pero requiere documentar bien los puntos de variacion.</li>
+          </ul>
+        </div>
+
+        <h3>8.6 Próximos pasos</h3>
         <div class="callout callout-info" style="border-left-color: #2b6cb0;">
           <strong>Hacia el Hito 6 - Patrones Creacionales:</strong>
           <ol style="margin-top:0.5rem;margin-left:1.25rem">

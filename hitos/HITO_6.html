@@ -468,6 +468,24 @@ private final Logger     logger = Logger.obtenerInstancia();</pre>
   logger.log("Vehiculo creado por factory: " + v.getId());
   return v;
 }</pre>
+
+        <h3>5.4 Mejora: factories polimorficas (sin switch)</h3>
+        <p>
+          Para evitar <code>switch</code> en la creacion, los enums encapsulan el comportamiento:
+          cada constante conoce como instanciar su clase concreta. Esto mantiene el
+          <em>Open/Closed</em> y reduce condicionales al agregar nuevos tipos.
+        </p>
+        <pre>// Ejemplo: el enum crea su objeto concreto
+public enum TipoNotificador {
+  EMAIL { public Notificador crearNotificador() { return new NotificadorEmail(); } },
+  SMS   { public Notificador crearNotificador() { return new NotificadorSMS(); } },
+  PUSH  { public Notificador crearNotificador() { return new NotificadorPush(); } };
+}
+
+// Factory delega en el enum
+public static Notificador crearNotificador(TipoNotificador tipo) {
+  return tipo.crearNotificador();
+}</pre>
       </section>
 
       <section class="section" id="s6">
@@ -588,6 +606,7 @@ C-->>-UI: Envio creado</pre>
         <ul>
           <li>Singleton resolvió la necesidad de recursos únicos y unificó la trazabilidad de operaciones en el sistema.</li>
           <li>Factory Method eliminó el conocimiento de las subclases concretas en el controller, respetando el principio abierto/cerrado.</li>
+          <li>Las factories evolucionaron a un enfoque polimórfico en enums, evitando <code>switch</code> para crear instancias.</li>
           <li>El controller mantiene su rol de orquestación y delega completamente la creación de objetos a las fábricas.</li>
           <li>El diseño resultante es extensible para incorporar más patrones creacionales en entregas futuras.</li>
         </ul>

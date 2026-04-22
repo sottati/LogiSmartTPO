@@ -27,11 +27,7 @@ public final class FabricaDeEnvios {
 
         String id = UUID.randomUUID().toString();
 
-        return switch (tipo) {
-            case EXPRESS -> new EnvioExpress(id, empresa, fechaProgramada);
-            case STANDARD -> new EnvioStandard(id, empresa, fechaProgramada);
-            case ECONOMICO -> new EnvioEconomico(id, empresa, fechaProgramada);
-        };
+        return tipo.crearEnvio(id, empresa, fechaProgramada);
     }
 
     public static TipoEnvio obtenerTipo(Envio envio) {
