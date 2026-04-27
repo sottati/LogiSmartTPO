@@ -1,0 +1,47 @@
+classDiagram
+    direction TB
+
+    class Envio {
+        <<Cloneable>>
+        -id: String
+        -empresa: Empresa
+        -estado: String
+        -origen: String
+        -destino: String
+        -descripcion: String
+        -peso: double
+        -fragil: boolean
+        -requiereSignatura: boolean
+        -requiereRefrigeracion: boolean
+        -requiereAseguranza: boolean
+        -instruccionesEspeciales: String
+        -contactoEmergencia: String
+        -horaEntregaPreferida: LocalTime
+        -Envio(EnvioBuilder)
+        +Envio(id, empresa, prioridad, fecha)
+        +clone() Envio
+        +setId(String)
+    }
+
+    class EnvioBuilder {
+        +id: String
+        +origen: String
+        +destino: String
+        +descripcion: String = ""
+        +peso: double = 0.0
+        +fragil: boolean = false
+        +EnvioBuilder(id, origen, destino)
+        +descripcion(d) EnvioBuilder
+        +peso(p) EnvioBuilder
+        +fragil(f) EnvioBuilder
+        +requiereSignatura(r) EnvioBuilder
+        +requiereRefrigeracion(r) EnvioBuilder
+        +requiereAseguranza(r) EnvioBuilder
+        +instruccionesEspeciales(i) EnvioBuilder
+        +contactoEmergencia(c) EnvioBuilder
+        +horaEntregaPreferida(h) EnvioBuilder
+        +build() Envio
+    }
+
+    Envio +-- EnvioBuilder : clase interna estática
+    EnvioBuilder ..> Envio : build() crea

@@ -1,0 +1,72 @@
+classDiagram
+    direction TB
+
+    class LogiSmartFactory {
+        <<interface>>
+        +crearVehiculo() Vehiculo
+        +crearCalculadorCostos() CalculadorCostos
+        +crearProveedorMapas() ProveedorMapas
+    }
+
+    class LogiSmartFactoryArgentina {
+        +crearVehiculo() Auto
+        +crearCalculadorCostos() CalculadorCostosArgentina
+        +crearProveedorMapas() GoogleMapsArgentina
+    }
+
+    class LogiSmartFactoryBrasil {
+        +crearVehiculo() Moto
+        +crearCalculadorCostos() CalculadorCostosBrasil
+        +crearProveedorMapas() HereMaps
+    }
+
+    class Vehiculo {
+        -id: String
+        -patente: String
+        -capacidadKg: double
+        -tipo: String
+        +conducir()
+        +getTipo() String
+    }
+
+    class Auto { +conducir() }
+    class Moto { +conducir() }
+
+    class CalculadorCostos {
+        <<interface>>
+        +calcularCosto(peso: double) double
+    }
+
+    class CalculadorCostosArgentina {
+        +calcularCosto(peso) : (100+peso*15)*1.21
+    }
+
+    class CalculadorCostosBrasil {
+        +calcularCosto(peso) : (80+peso*12)*1.12
+    }
+
+    class ProveedorMapas {
+        <<interface>>
+        +obtenerRuta(origen, destino) String
+    }
+
+    class GoogleMapsArgentina { +obtenerRuta() "Ruta AR: ..." }
+    class HereMaps            { +obtenerRuta() "Ruta BR: ..." }
+
+    LogiSmartFactory <|.. LogiSmartFactoryArgentina
+    LogiSmartFactory <|.. LogiSmartFactoryBrasil
+
+    LogiSmartFactoryArgentina ..> Auto                   : crea
+    LogiSmartFactoryArgentina ..> CalculadorCostosArgentina : crea
+    LogiSmartFactoryArgentina ..> GoogleMapsArgentina    : crea
+
+    LogiSmartFactoryBrasil ..> Moto                  : crea
+    LogiSmartFactoryBrasil ..> CalculadorCostosBrasil : crea
+    LogiSmartFactoryBrasil ..> HereMaps               : crea
+
+    Vehiculo <|-- Auto
+    Vehiculo <|-- Moto
+    CalculadorCostos <|.. CalculadorCostosArgentina
+    CalculadorCostos <|.. CalculadorCostosBrasil
+    ProveedorMapas <|.. GoogleMapsArgentina
+    ProveedorMapas <|.. HereMaps

@@ -76,6 +76,13 @@ public class OperadorLogistico extends Usuario implements IPermisos {
 	public void asignarRuta() {
 	}
 
+	public String getNombre() { return getUsername(); }
+
+	@Override
+	public void saludar() {
+		System.out.println("[Operador] Hola, soy el operador logístico " + getUsername() + ".");
+	}
+
 	// IPermisos: OperadorLogistico tiene permisos completos de operacion
 	@Override
 	public boolean puedeCrearEnvio() {

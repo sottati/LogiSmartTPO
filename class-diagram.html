@@ -311,6 +311,8 @@ class Envio {
   +iniciar()
   +cancelar()
   +cerrar()
+  +clone() Envio
+  +setId(id)
 }
 
 class Orden {
@@ -593,6 +595,70 @@ class TipoVehiculo {
   MOTO
 }
 
+%% ---- GOF: ABSTRACT FACTORY (Hito 7) ----
+class ConfiguracionSistema {
+  &lt;&lt;Singleton&gt;&gt;
+  -instancia ConfiguracionSistema
+  -empresa String
+  -version String
+  -region String
+  +getInstance() ConfiguracionSistema
+  +getRegion() String
+  +setRegion(region)
+}
+
+class LogiSmartFactory {
+  &lt;&lt;interface&gt;&gt;
+  +crearVehiculo() Vehiculo
+  +crearCalculadorCostos() CalculadorCostos
+  +crearProveedorMapas() ProveedorMapas
+}
+class LogiSmartFactoryArgentina
+class LogiSmartFactoryBrasil
+LogiSmartFactoryArgentina ..|&gt; LogiSmartFactory
+LogiSmartFactoryBrasil ..|&gt; LogiSmartFactory
+
+class CalculadorCostos {
+  &lt;&lt;interface&gt;&gt;
+  +calcularCosto(peso) double
+}
+class CalculadorCostosArgentina
+class CalculadorCostosBrasil
+CalculadorCostosArgentina ..|&gt; CalculadorCostos
+CalculadorCostosBrasil ..|&gt; CalculadorCostos
+
+class ProveedorMapas {
+  &lt;&lt;interface&gt;&gt;
+  +obtenerRuta(origen, destino) String
+}
+class GoogleMapsArgentina
+class HereMaps
+GoogleMapsArgentina ..|&gt; ProveedorMapas
+HereMaps ..|&gt; ProveedorMapas
+
+%% ---- GOF: BUILDER + PROTOTYPE (Hito 7) ----
+class EnvioBuilder {
+  &lt;&lt;Builder&gt;&gt;
+  -id String
+  -origen String
+  -destino String
+  -descripcion String
+  -peso double
+  -fragil boolean
+  +descripcion(d) EnvioBuilder
+  +peso(p) EnvioBuilder
+  +fragil(f) EnvioBuilder
+  +build() Envio
+}
+
+%% ---- VEHICULOS CONCRETOS (Hito 7) ----
+class Auto
+class Moto
+class Camion
+Auto --|&gt; Vehiculo
+Moto --|&gt; Vehiculo
+Camion --|&gt; Vehiculo
+
 %% ---- RELACIONES ----
 LogiSmartController --&gt; RepositorioDeEnvios
 LogiSmartController --&gt; ServicioDeNotificaciones
@@ -644,6 +710,15 @@ ReporteService ..&gt; Reporte : usa
 TrackingService ..&gt; SeguimientoEnvio : usa
 AutenticacionService ..&gt; Usuario : usa
 AutenticacionService ..&gt; BCrypt : delega hashing
+
+%% ---- RELACIONES HITO 7 ----
+LogiSmartFactoryArgentina --&gt; Auto
+LogiSmartFactoryArgentina --&gt; CalculadorCostosArgentina
+LogiSmartFactoryArgentina --&gt; GoogleMapsArgentina
+LogiSmartFactoryBrasil --&gt; Moto
+LogiSmartFactoryBrasil --&gt; CalculadorCostosBrasil
+LogiSmartFactoryBrasil --&gt; HereMaps
+EnvioBuilder ..&gt; Envio : construye
           </pre>
         </div>
       </main>
@@ -846,6 +921,59 @@ AutenticacionService ..&gt; BCrypt : delega hashing
                 <code>FabricaDeNotificadores</code> (Email / SMS / Push),
                 <code>FabricaDeVehiculos</code> (Auto / Camión / Moto).
                 El controller queda desacoplado de las subclases concretas.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 7 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge" style="background: var(--accent);">7</div>
+              <div>
+                <h2>Hito 7</h2>
+                <span>GoF - Creacionales II</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Abstract Factory
+              </div>
+              <div class="pattern-desc">
+                <code>LogiSmartFactory</code>: interfaz regional. <code>LogiSmartFactoryArgentina</code> y <code>LogiSmartFactoryBrasil</code> producen familias compatibles: <code>Vehiculo</code>, <code>CalculadorCostos</code>, <code>ProveedorMapas</code>.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Builder
+              </div>
+              <div class="pattern-desc">
+                <code>Envio.EnvioBuilder</code>: clase interna estática con API fluida. 9 campos opcionales con valores por defecto. Elimina constructores telescópicos.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Prototype
+              </div>
+              <div class="pattern-desc">
+                <code>Envio implements Cloneable</code>: <code>clone()</code> con copia profunda de <code>ordenes</code>. Permite crear cientos de envíos similares sin repetir la construcción completa.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Singleton (ampliado)
+              </div>
+              <div class="pattern-desc">
+                <code>ConfiguracionSistema</code>: nuevo Singleton con <code>getInstance()</code>, propiedad <code>region</code> mutable para soporte multi-región en tiempo de ejecución.
               </div>
             </div>
           </div>

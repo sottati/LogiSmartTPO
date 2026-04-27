@@ -1,0 +1,120 @@
+package com.logismart.app;
+
+import com.logismart.dominio.Envio;
+import com.logismart.infraestructura.singleton.ConfiguracionSistema;
+import com.logismart.infraestructura.singleton.Logger;
+
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Demostración completa de los cinco patrones creacionales integrados.
+ *
+ * Patrones demostrados en orden:
+ *   1. Singleton        (Logger, ConfiguracionSistema)
+ *   2. Abstract Factory (LogiSmartApp → región Argentina/Brasil)
+ *   3. Factory Method   (crearUsuario)
+ *   4. Builder          (Envio.EnvioBuilder)
+ *   5. Prototype        (Envio.clone)
+ */
+public class Main {
+
+    public static void main(String[] args) {
+
+        sep("1. SINGLETON");
+
+        Logger logger = Logger.getInstance();
+        ConfiguracionSistema config = ConfiguracionSistema.getInstance();
+        logger.info("Sistema iniciado: " + config);
+        System.out.println("Logger es Singleton: " + (logger == Logger.getInstance()));
+        System.out.println("Config es Singleton: " + (config == ConfiguracionSistema.getInstance()));
+
+        // ─────────────────────────────────────────────────────────────────────
+
+        sep("2. ABSTRACT FACTORY — LogiSmartApp Argentina");
+
+        LogiSmartApp app = new LogiSmartApp("Argentina");
+
+        // ─────────────────────────────────────────────────────────────────────
+
+        sep("3. FACTORY METHOD — Crear usuarios");
+
+        app.crearUsuario("cliente",  "Juan Pérez");
+        app.crearUsuario("operador", "María García");
+        app.crearUsuario("admin",    "Carlos López");
+
+        // ─────────────────────────────────────────────────────────────────────
+
+        sep("4. BUILDER — EnvioBuilder");
+
+        // Envío simple (solo campos requeridos)
+        Envio simple = new Envio.EnvioBuilder("ENV001", "Buenos Aires", "Córdoba")
+                .build();
+        System.out.println("Envío simple:   " + simple);
+
+        // Envío complejo (todos los atributos opcionales)
+        Envio complejo = new Envio.EnvioBuilder("ENV002", "Buenos Aires", "Mendoza")
+                .descripcion("Medicinas urgentes")
+                .peso(2.5)
+                .fragil(true)
+                .requiereSignatura(true)
+                .requiereRefrigeracion(true)
+                .requiereAseguranza(true)
+                .instruccionesEspeciales("Mantener en frío entre 2-8°C")
+                .contactoEmergencia("Dr. García: 555-1234")
+                .horaEntregaPreferida(LocalTime.of(14, 0))
+                .build();
+        System.out.println("Envío complejo: " + complejo);
+        System.out.println("  fragil=" + complejo.isFragil()
+                + ", refrigeración=" + complejo.isRequiereRefrigeracion()
+                + ", hora=" + complejo.getHoraEntregaPreferida());
+
+        app.crearEnvio("Buenos Aires", "Córdoba");
+
+        // ─────────────────────────────────────────────────────────────────────
+
+        sep("5. PROTOTYPE — Clonación masiva");
+
+        Envio prototipo = new Envio.EnvioBuilder("ENV-PROTO", "Buenos Aires", "Córdoba")
+                .descripcion("Medicinas")
+                .peso(2.5)
+                .fragil(true)
+                .build();
+
+        List<Envio> envios = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            Envio clon = prototipo.clone();
+            clon.setId("ENV-" + (1000 + i));
+            envios.add(clon);
+        }
+        System.out.println("Clones creados: " + envios.size());
+        System.out.println("Primer clon:    " + envios.get(0));
+        System.out.println("Último clon:    " + envios.get(99));
+        System.out.println("Prototipo (sin modificar): " + prototipo);
+
+        app.crearEnviosMultiples(100);
+
+        // ─────────────────────────────────────────────────────────────────────
+
+        sep("6. ABSTRACT FACTORY — Procesar envíos");
+
+        app.procesarEnvio("Buenos Aires", "Mendoza", 5.0);
+
+        LogiSmartApp appBR = new LogiSmartApp("Brasil");
+        appBR.procesarEnvio("São Paulo", "Rio de Janeiro", 3.0);
+
+        // ─────────────────────────────────────────────────────────────────────
+
+        sep("RESUMEN");
+        logger.info("Demostración completada exitosamente");
+        System.out.println("Total envíos AR: " + app.totalEnvios());
+        System.out.println("Total usuarios AR: " + app.totalUsuarios());
+    }
+
+    private static void sep(String titulo) {
+        System.out.println("\n══════════════════════════════════════════════");
+        System.out.println("  " + titulo);
+        System.out.println("══════════════════════════════════════════════");
+    }
+}

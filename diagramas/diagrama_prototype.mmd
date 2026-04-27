@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant Main
+    participant Builder as Envio.EnvioBuilder
+    participant Proto as Envio (Prototipo)
+    participant Clon as Envio (Clon i)
+
+    Main->>Builder: new EnvioBuilder("ENV-PROTO", "Bs As", "Córdoba")
+    Main->>Builder: .descripcion("Medicinas").peso(2.5).fragil(true)
+    Main->>Builder: .build()
+    Builder-->>Proto: new Envio(builder)
+
+    loop 100 veces (i = 0..99)
+        Main->>Proto: clone()
+        Proto-->>Clon: super.clone() → copia superficial
+        Main->>Clon: setId("ENV-" + (1000 + i))
+        Main->>Main: envios.add(clon)
+    end
+
+    Note over Proto: El prototipo no se modifica.<br/>Cada clon tiene su propio id<br/>pero comparte los demás atributos.

@@ -54,6 +54,11 @@ public class ClienteFinal extends Usuario implements IPermisos {
 	public void confirmarRecepcion() {
 	}
 
+	@Override
+	public void saludar() {
+		System.out.println("[Cliente] Hola, soy el cliente " + getNombre() + ".");
+	}
+
 	// IPermisos: ClienteFinal solo puede consultar su propio envio
 	@Override
 	public boolean puedeCrearEnvio() {
