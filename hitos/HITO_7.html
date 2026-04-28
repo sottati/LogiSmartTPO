@@ -1,0 +1,1070 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITO 7 - LogiSmart | Patrones Creacionales II</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+      :root {
+        --primary: #17324d;
+        --primary-2: #1f4d78;
+        --accent: #dc6b1f;
+        --bg: #f4f7fb;
+        --surface: #ffffff;
+        --text: #14202c;
+        --muted: #4f6172;
+        --border: #d9e2ec;
+        --ok: #165b3b;
+        --ok-bg: #ecfdf3;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(180deg, #f7f9fc 0%, #f2f6fa 100%);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      /* ── Cover ── */
+      .cover {
+        min-height: 70vh;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 2rem;
+        background:
+          radial-gradient(circle at 20% 20%, rgba(31, 77, 120, 0.12), transparent 45%),
+          radial-gradient(circle at 80% 10%, rgba(220, 107, 31, 0.10), transparent 35%),
+          var(--surface);
+        border-bottom: 8px solid var(--primary);
+      }
+
+      .cover-content { max-width: 720px; width: 100%; }
+
+      .university {
+        font-size: 0.8rem; font-weight: 700; letter-spacing: 0.2em;
+        text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem;
+      }
+
+      .subject {
+        font-size: 0.95rem; font-weight: 500;
+        color: var(--primary-2); margin-bottom: 2rem;
+      }
+
+      .cover h1 {
+        font-size: clamp(2.4rem, 8vw, 4.8rem);
+        color: var(--primary); letter-spacing: -0.03em;
+      }
+
+      .cover .subtitle {
+        margin-top: 0.75rem; font-size: 1.1rem; color: var(--muted);
+        border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+        padding: 0.85rem 0; margin-bottom: 2rem;
+      }
+
+      .team {
+        display: grid; grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem; max-width: 420px; margin: 0 auto 2rem;
+        border-top: 2px solid var(--bg); padding-top: 1.75rem;
+      }
+
+      .team-member strong { display: block; font-size: 1rem; color: var(--text); margin-bottom: 0.2rem; }
+      .team-member span { font-size: 0.82rem; color: var(--muted); font-family: monospace; }
+
+      .cover-date {
+        font-size: 0.85rem; font-weight: 600; color: var(--accent);
+        text-transform: uppercase; letter-spacing: 0.12em;
+      }
+
+      /* ── Layout ── */
+      .container {
+        max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem;
+      }
+
+      .section {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 12px; padding: 1.75rem; margin-bottom: 1.3rem;
+        box-shadow: 0 2px 5px rgba(20, 32, 44, 0.05);
+      }
+
+      .section-act {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+        text-transform: uppercase; color: var(--accent);
+        margin-bottom: 0.4rem;
+      }
+
+      h2 { color: var(--primary); font-size: 1.45rem; margin-bottom: 0.25rem; }
+      .section > p { color: var(--muted); margin-bottom: 0.8rem; }
+      h3 { margin: 1rem 0 0.4rem; color: var(--primary-2); font-size: 1.03rem; }
+      ul { margin-left: 1.2rem; }
+      li { margin-bottom: 0.35rem; }
+
+      table { width: 100%; border-collapse: collapse; margin-top: 0.6rem; font-size: 0.92rem; }
+      th, td { border: 1px solid var(--border); padding: 0.55rem 0.7rem; text-align: left; vertical-align: top; }
+      thead th {
+        background: var(--primary); color: #fff;
+        font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase;
+      }
+
+      pre {
+        background: #0f1722; color: #dce9ff; border-radius: 10px;
+        padding: 1rem; overflow-x: auto; font-size: 0.8rem; line-height: 1.45;
+      }
+      pre.mermaid { background: none; }
+
+      code {
+        background: #eef3fa; border-radius: 4px; padding: 0.05rem 0.3rem;
+      }
+
+      .pill {
+        display: inline-block; margin-top: 0.6rem;
+        background: var(--ok-bg); color: var(--ok);
+        border: 1px solid #b9e7cb; border-radius: 999px;
+        padding: 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 600;
+      }
+
+      .grid-2 { display: grid; gap: 1rem; grid-template-columns: 1fr 1fr; }
+      .grid-3 { display: grid; gap: 1rem; grid-template-columns: 1fr 1fr 1fr; }
+
+      .diagram {
+        border: 1px solid var(--border); border-radius: 10px;
+        padding: 0.6rem; overflow-x: auto; margin-top: 0.8rem;
+      }
+
+      .pattern-badge {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        background: #fff0e3; color: #7a3200; border: 1px solid #fbd38d;
+        border-radius: 6px; padding: 0.3rem 0.7rem;
+        font-size: 0.8rem; font-weight: 700; margin-bottom: 0.6rem;
+      }
+
+      /* ── Side nav ── */
+      .side-nav {
+        position: fixed; left: 0; top: 50%; transform: translateY(-50%);
+        z-index: 100; display: flex; flex-direction: column; gap: 0.15rem;
+        padding: 0.6rem 0.5rem; background: rgba(255,255,255,0.92);
+        border-right: 1px solid var(--border); border-radius: 0 10px 10px 0;
+        box-shadow: 2px 0 8px rgba(20,32,44,0.06);
+      }
+
+      .side-nav a {
+        display: block; padding: 0.35rem 0.75rem;
+        font-size: 0.7rem; font-weight: 500; color: var(--muted);
+        text-decoration: none; border-left: 3px solid transparent;
+        transition: all 0.2s ease; white-space: nowrap; border-radius: 0 4px 4px 0;
+      }
+
+      .side-nav a:hover { color: var(--primary); border-left-color: var(--border); }
+      .side-nav a.active { color: var(--primary); font-weight: 700; border-left-color: var(--accent); }
+
+      @media (max-width: 1200px) { .side-nav { display: none; } }
+      @media (max-width: 800px) {
+        .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        .team { grid-template-columns: 1fr; max-width: 220px; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <header class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+        <h1>HITO 7</h1>
+        <div class="subtitle">Patrones Creacionales II — Abstract Factory · Builder · Prototype</div>
+        <div class="team">
+          <div class="team-member">
+            <strong>Rosario Presedo</strong>
+            <span>LU: 1146894</span>
+          </div>
+          <div class="team-member">
+            <strong>Simon Ottati</strong>
+            <span>LU: 1155931</span>
+          </div>
+        </div>
+        <div class="cover-date">Abril 2026</div>
+      </div>
+    </header>
+
+    <nav class="side-nav">
+      <a href="#intro">Introducción</a>
+      <a href="#s1">Act 1 · Abstract Factory (diseño)</a>
+      <a href="#s2">Act 2 · Abstract Factory (impl.)</a>
+      <a href="#s3">Act 3 · Builder (diseño)</a>
+      <a href="#s4">Act 4 · Builder (impl.)</a>
+      <a href="#s5">Act 5 · Prototype</a>
+      <a href="#s6">Act 6 · Integración</a>
+    </nav>
+
+    <main class="container">
+
+      <!-- ── Introducción ── -->
+      <section class="section" id="intro">
+        <h2>Contexto e integración</h2>
+        <p>El Hito 7 agrega los tres patrones creacionales avanzados sobre la base construida en los Hitos 5 y 6.</p>
+        <table>
+          <thead>
+            <tr><th>Hito</th><th>Patrones</th><th>Aporte al sistema</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Hito 5</td><td>GRASP completos</td><td>Responsabilidades correctas: Controller, Polymorphism, Pure Fabrication, Protected Variations</td></tr>
+            <tr><td>Hito 6</td><td>Singleton + Factory Method</td><td>Logger, ConexionBD, FabricaDeEnvios, FabricaDeVehiculos, FabricaDeNotificadores</td></tr>
+            <tr><td>Hito 7</td><td>Abstract Factory + Builder + Prototype</td><td>Familias de objetos regionales, construcción declarativa de Envio, clonación masiva eficiente</td></tr>
+          </tbody>
+        </table>
+        <div class="grid-3" style="margin-top: 1rem;">
+          <div style="background:#fff8f3;border:1px solid #fbd38d;border-radius:8px;padding:0.8rem;">
+            <div style="font-weight:700;color:#7a3200;font-size:0.9rem;margin-bottom:0.3rem;">Abstract Factory</div>
+            <div style="font-size:0.83rem;color:var(--muted);">Crea familias coherentes de objetos (Vehículo + Costos + Mapas) según la región, sin que el cliente conozca las clases concretas.</div>
+          </div>
+          <div style="background:#f0f8ff;border:1px solid #bfdbfe;border-radius:8px;padding:0.8rem;">
+            <div style="font-weight:700;color:#1e3a5f;font-size:0.9rem;margin-bottom:0.3rem;">Builder</div>
+            <div style="font-size:0.83rem;color:var(--muted);">Construye Envio con hasta 12 atributos opcionales mediante API fluida, eliminando constructores telescópicos.</div>
+          </div>
+          <div style="background:#f0fdf4;border:1px solid #b9e7cb;border-radius:8px;padding:0.8rem;">
+            <div style="font-weight:700;color:#165b3b;font-size:0.9rem;margin-bottom:0.3rem;">Prototype</div>
+            <div style="font-size:0.83rem;color:var(--muted);">Clona un Envio prototipo en O(1) para generar lotes de envíos, evitando reconstruir cada instancia desde cero.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Actividad 1 ── -->
+      <section class="section" id="s1">
+        <div class="section-act">Actividad 1 · 15 min</div>
+        <h2>Abstract Factory — Diseño</h2>
+        <p>Se identificaron las diferencias entre regiones y se definió la interfaz de la Abstract Factory.</p>
+
+        <div class="pattern-badge">GoF · Abstract Factory</div>
+
+        <h3>1.1 Diferencias entre regiones</h3>
+        <table>
+          <thead>
+            <tr><th>Dimensión</th><th>Argentina</th><th>Brasil</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Vehículo típico</td><td>Auto (carga ciudad)</td><td>Moto (entrega rápida)</td></tr>
+            <tr><td>Cálculo de costo</td><td>IVA 21% → <code>(100 + peso×15) × 1.21</code></td><td>ICMS 12% → <code>(80 + peso×12) × 1.12</code></td></tr>
+            <tr><td>Proveedor de mapas</td><td>Google Maps AR</td><td>HERE Maps BR</td></tr>
+          </tbody>
+        </table>
+
+        <h3>1.2 Interfaz <code>LogiSmartFactory</code></h3>
+        <pre>// infraestructura/abstractfactory/LogiSmartFactory.java
+public interface LogiSmartFactory {
+    Vehiculo crearVehiculo();
+    CalculadorCostos crearCalculadorCostos();
+    ProveedorMapas crearProveedorMapas();
+}
+
+public interface CalculadorCostos {
+    double calcularCosto(double peso);
+}
+
+public interface ProveedorMapas {
+    String obtenerRuta(String origen, String destino);
+}</pre>
+
+        <h3>1.3 Implementaciones concretas</h3>
+        <div class="grid-2">
+          <div>
+            <pre>// LogiSmartFactoryArgentina.java
+public class LogiSmartFactoryArgentina
+        implements LogiSmartFactory {
+
+  public Vehiculo crearVehiculo() {
+    return new Auto();
+  }
+
+  public CalculadorCostos crearCalculadorCostos() {
+    return new CalculadorCostosArgentina();
+  }
+
+  public ProveedorMapas crearProveedorMapas() {
+    return new GoogleMapsArgentina();
+  }
+}</pre>
+          </div>
+          <div>
+            <pre>// LogiSmartFactoryBrasil.java
+public class LogiSmartFactoryBrasil
+        implements LogiSmartFactory {
+
+  public Vehiculo crearVehiculo() {
+    return new Moto();
+  }
+
+  public CalculadorCostos crearCalculadorCostos() {
+    return new CalculadorCostosBrasil();
+  }
+
+  public ProveedorMapas crearProveedorMapas() {
+    return new HereMaps();
+  }
+}</pre>
+          </div>
+        </div>
+
+        <h3>1.4 Diagrama Abstract Factory</h3>
+        <div class="diagram">
+          <pre class="mermaid">classDiagram
+direction TB
+
+class LogiSmartFactory {
+  &lt;&lt;interface&gt;&gt;
+  +crearVehiculo() Vehiculo
+  +crearCalculadorCostos() CalculadorCostos
+  +crearProveedorMapas() ProveedorMapas
+}
+
+class LogiSmartFactoryArgentina {
+  +crearVehiculo() Auto
+  +crearCalculadorCostos() CalculadorCostosArgentina
+  +crearProveedorMapas() GoogleMapsArgentina
+}
+
+class LogiSmartFactoryBrasil {
+  +crearVehiculo() Moto
+  +crearCalculadorCostos() CalculadorCostosBrasil
+  +crearProveedorMapas() HereMaps
+}
+
+class Vehiculo {
+  +conducir()
+  +getTipo() String
+}
+class Auto {
+  +conducir()
+}
+class Moto {
+  +conducir()
+}
+
+class CalculadorCostos {
+  &lt;&lt;interface&gt;&gt;
+  +calcularCosto(peso) double
+}
+class CalculadorCostosArgentina {
+  +calcularCosto(peso) double
+}
+class CalculadorCostosBrasil {
+  +calcularCosto(peso) double
+}
+
+class ProveedorMapas {
+  &lt;&lt;interface&gt;&gt;
+  +obtenerRuta(origen, destino) String
+}
+class GoogleMapsArgentina {
+  +obtenerRuta(origen, destino) String
+}
+class HereMaps {
+  +obtenerRuta(origen, destino) String
+}
+
+LogiSmartFactory &lt;|.. LogiSmartFactoryArgentina
+LogiSmartFactory &lt;|.. LogiSmartFactoryBrasil
+LogiSmartFactoryArgentina ..&gt; Auto : crea
+LogiSmartFactoryArgentina ..&gt; CalculadorCostosArgentina : crea
+LogiSmartFactoryArgentina ..&gt; GoogleMapsArgentina : crea
+LogiSmartFactoryBrasil ..&gt; Moto : crea
+LogiSmartFactoryBrasil ..&gt; CalculadorCostosBrasil : crea
+LogiSmartFactoryBrasil ..&gt; HereMaps : crea
+Vehiculo &lt;|-- Auto
+Vehiculo &lt;|-- Moto
+CalculadorCostos &lt;|.. CalculadorCostosArgentina
+CalculadorCostos &lt;|.. CalculadorCostosBrasil
+ProveedorMapas &lt;|.. GoogleMapsArgentina
+ProveedorMapas &lt;|.. HereMaps</pre>
+        </div>
+        <div class="pill">✅ Interfaz definida · ✅ 2 implementaciones concretas · ✅ 6 productos concretos</div>
+      </section>
+
+      <!-- ── Actividad 2 ── -->
+      <section class="section" id="s2">
+        <div class="section-act">Actividad 2 · 15 min</div>
+        <h2>Abstract Factory — Implementación</h2>
+        <p>Se implementó <code>LogiSmartApp</code> que recibe la región y delega toda la creación a la factory correspondiente.</p>
+
+        <div class="pattern-badge">GoF · Abstract Factory</div>
+
+        <h3>2.1 Clase <code>LogiSmartApp</code></h3>
+        <pre>public class LogiSmartApp {
+    private final LogiSmartFactory factory;
+    private final Vehiculo vehiculo;
+    private final CalculadorCostos calculador;
+    private final ProveedorMapas mapas;
+    private final Logger logger;
+
+    public LogiSmartApp(String region) {
+        this.logger = Logger.getInstance();
+
+        // Una sola decisión de región → toda la familia de objetos es consistente
+        if (region.equalsIgnoreCase("Argentina"))
+            this.factory = new LogiSmartFactoryArgentina();
+        else if (region.equalsIgnoreCase("Brasil"))
+            this.factory = new LogiSmartFactoryBrasil();
+        else
+            throw new IllegalArgumentException("Región no soportada: " + region);
+
+        this.vehiculo   = factory.crearVehiculo();       // Auto o Moto
+        this.calculador = factory.crearCalculadorCostos(); // IVA 21% o ICMS 12%
+        this.mapas      = factory.crearProveedorMapas();   // Google Maps AR o HERE Maps
+
+        logger.info("LogiSmartApp inicializado para: " + region);
+    }
+
+    public void procesarEnvio(String origen, String destino, double peso) {
+        logger.info("Procesando envío de " + origen + " a " + destino);
+        vehiculo.conducir();
+        double costo = calculador.calcularCosto(peso);
+        mapas.obtenerRuta(origen, destino);
+        logger.info("Costo calculado: $" + String.format("%.2f", costo));
+    }
+}</pre>
+
+        <h3>2.2 Por qué usar Abstract Factory aquí</h3>
+        <table>
+          <thead><tr><th>Sin Abstract Factory</th><th>Con Abstract Factory</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>El cliente crea cada objeto por separado y puede mezclar objetos de distintas regiones (Auto argentino + ICMS brasileño).</td>
+              <td>La factory garantiza coherencia: si la región es Argentina, todos los objetos son de Argentina.</td>
+            </tr>
+            <tr>
+              <td>Agregar Chile requiere cambiar código del cliente.</td>
+              <td>Agregar Chile = nueva clase <code>LogiSmartFactoryChile</code>. El cliente no cambia.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ Uso correcto de factory · ✅ Manejo de región inválida · ✅ Objetos coherentes entre sí</div>
+      </section>
+
+      <!-- ── Actividad 3 ── -->
+      <section class="section" id="s3">
+        <div class="section-act">Actividad 3 · 15 min</div>
+        <h2>Builder — Diseño</h2>
+        <p>Se diseñó el <code>EnvioBuilder</code> anidado dentro de <code>Envio</code> para gestionar 12 atributos, 9 de ellos opcionales.</p>
+
+        <div class="pattern-badge">GoF · Builder</div>
+
+        <h3>3.1 Problema: constructor telescópico</h3>
+        <pre>// Sin Builder: ¿cuál valor es cuál? Imposible de leer.
+new Envio("ENV001", "BA", "CBA", "Medicinas", 2.5, true, true, false, true, "...", "...", LocalTime.of(14,0));</pre>
+
+        <h3>3.2 Clase <code>Envio</code> con Builder anidado</h3>
+        <div class="grid-2">
+          <div>
+            <h3>Atributos requeridos (en constructor del Builder)</h3>
+            <ul>
+              <li><code>id</code> — identificador único</li>
+              <li><code>origen</code> — ciudad de origen</li>
+              <li><code>destino</code> — ciudad de destino</li>
+            </ul>
+            <h3 style="margin-top:0.8rem;">Atributos opcionales (métodos fluidos)</h3>
+            <ul>
+              <li><code>descripcion</code> — default <code>""</code></li>
+              <li><code>peso</code> — default <code>0.0</code></li>
+              <li><code>fragil</code> — default <code>false</code></li>
+              <li><code>requiereSignatura</code> — default <code>false</code></li>
+              <li><code>requiereRefrigeracion</code> — default <code>false</code></li>
+              <li><code>requiereAseguranza</code> — default <code>false</code></li>
+              <li><code>instruccionesEspeciales</code> — default <code>""</code></li>
+              <li><code>contactoEmergencia</code> — default <code>""</code></li>
+              <li><code>horaEntregaPreferida</code> — default <code>null</code></li>
+            </ul>
+          </div>
+          <div>
+            <pre>public class Envio implements Cloneable {
+  // ... campos existentes + nuevos campos Hito 7 ...
+
+  // Constructor privado — solo EnvioBuilder lo llama
+  private Envio(EnvioBuilder builder) {
+    this.id = builder.id;
+    this.origen = builder.origen;
+    this.destino = builder.destino;
+    this.descripcion = builder.descripcion;
+    this.peso = builder.peso;
+    this.fragil = builder.fragil;
+    // ... resto de opcionales
+  }
+
+  public static class EnvioBuilder {
+    private final String id, origen, destino;
+    private String descripcion = "";
+    private double peso = 0.0;
+    private boolean fragil = false;
+    // ... otros opcionales con defaults
+
+    public EnvioBuilder(String id, String origen, String destino) {
+      this.id = id; this.origen = origen; this.destino = destino;
+    }
+
+    public EnvioBuilder descripcion(String d) {
+      this.descripcion = d; return this; // fluido
+    }
+    public EnvioBuilder peso(double p) {
+      this.peso = p; return this;
+    }
+    // ... resto de métodos fluidos
+
+    public Envio build() { return new Envio(this); }
+  }
+}</pre>
+          </div>
+        </div>
+
+        <h3>3.3 Diagrama Builder</h3>
+        <div class="diagram">
+          <pre class="mermaid">classDiagram
+direction TB
+
+class Envio {
+  &lt;&lt;Cloneable&gt;&gt;
+  -id: String
+  -origen: String
+  -destino: String
+  -descripcion: String
+  -peso: double
+  -fragil: boolean
+  -requiereSignatura: boolean
+  -requiereRefrigeracion: boolean
+  -requiereAseguranza: boolean
+  -instruccionesEspeciales: String
+  -contactoEmergencia: String
+  -horaEntregaPreferida: LocalTime
+  -Envio(EnvioBuilder)
+  +clone() Envio
+  +setId(String)
+}
+
+class EnvioBuilder {
+  +id: String
+  +origen: String
+  +destino: String
+  +descripcion: String
+  +peso: double
+  +fragil: boolean
+  +EnvioBuilder(String, String, String)
+  +descripcion(String) EnvioBuilder
+  +peso(double) EnvioBuilder
+  +fragil(boolean) EnvioBuilder
+  +requiereSignatura(boolean) EnvioBuilder
+  +requiereRefrigeracion(boolean) EnvioBuilder
+  +requiereAseguranza(boolean) EnvioBuilder
+  +instruccionesEspeciales(String) EnvioBuilder
+  +contactoEmergencia(String) EnvioBuilder
+  +horaEntregaPreferida(LocalTime) EnvioBuilder
+  +build() Envio
+}
+
+Envio -- EnvioBuilder : clase interna estatica
+EnvioBuilder ..&gt; Envio : build crea</pre>
+        </div>
+        <div class="pill">✅ Constructor privado · ✅ 9 métodos fluidos · ✅ Método build() · ✅ Código compilable</div>
+      </section>
+
+      <!-- ── Actividad 4 ── -->
+      <section class="section" id="s4">
+        <div class="section-act">Actividad 4 · 15 min</div>
+        <h2>Builder — Implementación</h2>
+        <p>Se demostraron los casos de uso del Builder: envío simple (solo requeridos) y complejo (todos los opcionales).</p>
+
+        <div class="pattern-badge">GoF · Builder</div>
+
+        <h3>4.1 Envío simple</h3>
+        <pre>// Solo atributos requeridos — el resto toma valores por defecto
+Envio envioSimple = new Envio.EnvioBuilder("ENV001", "Buenos Aires", "Córdoba")
+        .build();</pre>
+
+        <h3>4.2 Envío complejo</h3>
+        <pre>// Todos los atributos opcionales encadenados (API fluida)
+Envio envioComplejo = new Envio.EnvioBuilder("ENV002", "Buenos Aires", "Mendoza")
+        .descripcion("Medicinas urgentes")
+        .peso(2.5)
+        .fragil(true)
+        .requiereSignatura(true)
+        .requiereRefrigeracion(true)
+        .requiereAseguranza(true)
+        .instruccionesEspeciales("Mantener en frío entre 2-8°C")
+        .contactoEmergencia("Dr. García: 555-1234")
+        .horaEntregaPreferida(LocalTime.of(14, 0))
+        .build();</pre>
+
+        <h3>4.3 Ventaja del Builder</h3>
+        <table>
+          <thead><tr><th>Métrica</th><th>Sin Builder</th><th>Con Builder</th></tr></thead>
+          <tbody>
+            <tr><td>Constructores necesarios</td><td>Hasta 2⁹ = 512 combinaciones</td><td>1 constructor privado + 9 métodos fluidos</td></tr>
+            <tr><td>Legibilidad</td><td>Parámetros posicionales anónimos</td><td>Métodos con nombre explícito</td></tr>
+            <tr><td>Extensibilidad</td><td>Requiere nuevo constructor por variante</td><td>Agregar campo = agregar 1 método fluido</td></tr>
+            <tr><td>Objeto inválido</td><td>Posible (null en posición equivocada)</td><td>Imposible (requeridos en constructor del Builder)</td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ Uso de métodos fluidos · ✅ Caso simple + complejo · ✅ Ventaja documentada</div>
+      </section>
+
+      <!-- ── Actividad 5 ── -->
+      <section class="section" id="s5">
+        <div class="section-act">Actividad 5 · 15 min</div>
+        <h2>Prototype — Clonación eficiente</h2>
+        <p><code>Envio</code> implementa <code>Cloneable</code>. El método <code>clone()</code> permite crear 100 copias sin invocar el Builder cada vez.</p>
+
+        <div class="pattern-badge">GoF · Prototype</div>
+
+        <h3>5.1 Implementación de <code>clone()</code></h3>
+        <pre>public class Envio implements Cloneable {
+
+    @Override
+    public Envio clone() {
+        try {
+            Envio clonado = (Envio) super.clone(); // copia superficial
+            // ordenes es una List mutable → se copia la referencia de la lista
+            clonado.ordenes = new ArrayList&lt;&gt;(this.ordenes);
+            return clonado;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Error al clonar Envio", e);
+        }
+    }
+
+    // Setter necesario para modificar el id del clon (Prototype requiere identidad propia)
+    public void setId(String id) { this.id = id; }
+}</pre>
+
+        <div style="background:#eef3fa;border-radius:8px;padding:0.7rem;margin-top:0.6rem;font-size:0.86rem;color:var(--muted);">
+          <strong>¿Por qué <code>super.clone()</code> es suficiente?</strong>
+          Todos los atributos de <code>Envio</code> son primitivos (<code>double</code>, <code>boolean</code>) o inmutables (<code>String</code>, <code>LocalTime</code>), excepto <code>ordenes</code>.
+          Esta lista se copia explícitamente para que el clon tenga su propio historial de órdenes.
+        </div>
+
+        <h3>5.2 Clonación masiva (100 envíos)</h3>
+        <pre>// 1. Construir el prototipo UNA SOLA VEZ con el Builder
+Envio prototipo = new Envio.EnvioBuilder("ENV-PROTO", "Buenos Aires", "Córdoba")
+        .descripcion("Medicinas")
+        .peso(2.5)
+        .fragil(true)
+        .build();
+
+// 2. Clonar 100 veces → O(1) por clon, no se invoca el Builder
+List&lt;Envio&gt; envios = new ArrayList&lt;&gt;();
+for (int i = 0; i &lt; 100; i++) {
+    Envio clon = prototipo.clone();
+    clon.setId("ENV-" + (1000 + i)); // única diferencia entre clones
+    envios.add(clon);
+}
+// prototipo.getId() sigue siendo "ENV-PROTO" — no se modificó</pre>
+
+        <h3>5.3 Diagrama de secuencia — Prototype</h3>
+        <div class="diagram">
+          <pre class="mermaid">sequenceDiagram
+participant Main
+participant Builder as Envio.EnvioBuilder
+participant Proto as Envio (Prototipo)
+participant Clon as Envio (Clon i)
+
+Main->>Builder: new EnvioBuilder("ENV-PROTO","Bs As","CBA")
+Main->>Builder: .descripcion("Medicinas").peso(2.5).fragil(true)
+Main->>Builder: .build()
+Builder-->>Proto: new Envio(builder)
+
+loop 100 iteraciones (i = 0..99)
+    Main->>Proto: clone()
+    Proto-->>Clon: super.clone() → copia superficial
+    Main->>Clon: setId("ENV-" + (1000 + i))
+    Main->>Main: envios.add(clon)
+end
+
+Note over Proto: El prototipo no se modifica.<br/>Cada clon tiene su propio id<br/>pero comparte los demás atributos.</pre>
+        </div>
+
+        <h3>5.4 Builder + Prototype combinados</h3>
+        <table>
+          <thead><tr><th>Patrón</th><th>Rol en la solución</th></tr></thead>
+          <tbody>
+            <tr><td>Builder</td><td>Construye el prototipo una única vez con configuración completa y declarativa.</td></tr>
+            <tr><td>Prototype</td><td>Replica ese prototipo en O(1) para generar lotes sin repetir la configuración.</td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ Cloneable implementado · ✅ Deep copy de ordenes · ✅ Prototipo sin modificar</div>
+      </section>
+
+      <!-- ── Actividad 6 ── -->
+      <section class="section" id="s6">
+        <div class="section-act">Actividad 6 · 15 min</div>
+        <h2>Integración completa</h2>
+        <p><code>LogiSmartApp</code> integra los cinco patrones creacionales en una única clase regional.</p>
+
+        <h3>6.1 Resumen de patrones integrados</h3>
+        <table>
+          <thead><tr><th>Patrón</th><th>Clase(s)</th><th>Método de demostración</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Singleton</strong></td><td><code>Logger</code>, <code>ConfiguracionSistema</code></td><td>Constructor de <code>LogiSmartApp</code></td></tr>
+            <tr><td><strong>Abstract Factory</strong></td><td><code>LogiSmartFactory</code> AR / BR</td><td><code>procesarEnvio()</code></td></tr>
+            <tr><td><strong>Factory Method</strong></td><td><code>UsuarioFactory</code> — <code>ClienteFinal</code>, <code>OperadorLogistico</code>, <code>AdminEmpresa</code></td><td><code>crearUsuario()</code></td></tr>
+            <tr><td><strong>Builder</strong></td><td><code>Envio.EnvioBuilder</code></td><td><code>crearEnvio()</code></td></tr>
+            <tr><td><strong>Prototype</strong></td><td><code>Envio.clone()</code></td><td><code>crearEnviosMultiples()</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3>6.2 <code>LogiSmartApp</code></h3>
+        <pre>public class LogiSmartApp {
+    private final LogiSmartFactory factory;   // Abstract Factory
+    private final Logger logger;              // Singleton
+    private final ConfiguracionSistema config; // Singleton
+    private final List&lt;Envio&gt; envios;
+    private final List&lt;Usuario&gt; usuarios;
+
+    public LogiSmartApp(String region) {
+        this.logger  = Logger.getInstance();           // Singleton
+        this.config  = ConfiguracionSistema.getInstance(); // Singleton
+        this.factory = crearFactory(region);            // Abstract Factory
+        this.envios  = new ArrayList&lt;&gt;();
+        this.usuarios = new ArrayList&lt;&gt;();
+    }
+
+    // Builder — crea un Envio con atributos declarativos
+    public void crearEnvio(String origen, String destino) {
+        Envio e = new Envio.EnvioBuilder("ENV-" + envios.size(), origen, destino)
+                .descripcion("Envío estándar").build();
+        envios.add(e);
+    }
+
+    // Prototype — clona un prototipo N veces
+    public void crearEnviosMultiples(int cantidad) {
+        Envio proto = new Envio.EnvioBuilder("PROTO", "Buenos Aires", "Córdoba")
+                .peso(1.0).build();
+        for (int i = 0; i &lt; cantidad; i++) {
+            Envio clon = proto.clone();
+            clon.setId("ENV-" + (1000 + i));
+            envios.add(clon);
+        }
+    }
+
+    // Factory Method — crea usuario usando clase existente del dominio
+    public void crearUsuario(String tipo, String nombre) {
+        Usuario u = UsuarioFactory.crearUsuario(tipo, nombre); // ClienteFinal, OperadorLogistico, AdminEmpresa
+        usuarios.add(u);
+        u.saludar(); // polimorfismo: cada subclase sabe cómo saludarse
+    }
+
+    // Abstract Factory — procesa con objetos coherentes para la región
+    public void procesarEnvio(String origen, String destino, double peso) {
+        Vehiculo v      = factory.crearVehiculo();
+        CalculadorCostos c = factory.crearCalculadorCostos();
+        ProveedorMapas m   = factory.crearProveedorMapas();
+        v.conducir();
+        double costo = c.calcularCosto(peso);
+        m.obtenerRuta(origen, destino);
+    }
+}</pre>
+
+        <h3>6.3 <code>Main.java</code> — Demostración completa</h3>
+        <pre>public class Main {
+    public static void main(String[] args) {
+        // 1. SINGLETON
+        Logger logger = Logger.getInstance();
+        ConfiguracionSistema config = ConfiguracionSistema.getInstance();
+
+        // 2. ABSTRACT FACTORY (región Argentina)
+        LogiSmartApp app = new LogiSmartApp("Argentina");
+
+        // 3. FACTORY METHOD — ClienteFinal, OperadorLogistico, AdminEmpresa
+        app.crearUsuario("cliente",  "Juan Pérez");
+        app.crearUsuario("operador", "María García");
+        app.crearUsuario("admin",    "Carlos López");
+
+        // 4. BUILDER — envío simple y complejo
+        app.crearEnvio("Buenos Aires", "Córdoba");
+
+        // 5. PROTOTYPE — 100 clones
+        app.crearEnviosMultiples(100);
+
+        // 6. ABSTRACT FACTORY — procesamiento por región
+        app.procesarEnvio("Buenos Aires", "Mendoza", 5.0);
+
+        logger.info("Demostración completada");
+    }
+}</pre>
+
+        <h3>6.4 Diagrama de clases final — Hito 7</h3>
+        <div class="diagram">
+          <pre class="mermaid">classDiagram
+direction LR
+
+class LogiSmartApp {
+  -factory: LogiSmartFactory
+  -logger: Logger
+  -config: ConfiguracionSistema
+  -envios: List~Envio~
+  -usuarios: List~Usuario~
+  +LogiSmartApp(String)
+  +crearEnvio(String, String)
+  +crearEnviosMultiples(int)
+  +crearUsuario(String, String)
+  +procesarEnvio(String, String, double)
+}
+
+class Logger {
+  &lt;&lt;Singleton&gt;&gt;
+  -instancia: Logger
+  +getInstance() Logger
+  +obtenerInstancia() Logger
+  +info(String)
+  +log(String)
+  +logError(String, Exception)
+}
+
+class ConfiguracionSistema {
+  &lt;&lt;Singleton&gt;&gt;
+  -instance: ConfiguracionSistema
+  -empresa: String
+  -version: String
+  -region: String
+  +getInstance() ConfiguracionSistema
+  +getEmpresa() String
+  +getVersion() String
+  +getRegion() String
+  +setRegion(String)
+}
+
+class LogiSmartFactory {
+  &lt;&lt;interface&gt;&gt;
+  +crearVehiculo() Vehiculo
+  +crearCalculadorCostos() CalculadorCostos
+  +crearProveedorMapas() ProveedorMapas
+}
+
+class LogiSmartFactoryArgentina {
+  +crearVehiculo() Vehiculo
+  +crearCalculadorCostos() CalculadorCostos
+  +crearProveedorMapas() ProveedorMapas
+}
+
+class LogiSmartFactoryBrasil {
+  +crearVehiculo() Vehiculo
+  +crearCalculadorCostos() CalculadorCostos
+  +crearProveedorMapas() ProveedorMapas
+}
+
+class CalculadorCostos {
+  &lt;&lt;interface&gt;&gt;
+  +calcularCosto(double) double
+}
+
+class CalculadorCostosArgentina {
+  +calcularCosto(double) double
+}
+
+class CalculadorCostosBrasil {
+  +calcularCosto(double) double
+}
+
+class ProveedorMapas {
+  &lt;&lt;interface&gt;&gt;
+  +obtenerRuta(String, String) String
+}
+
+class GoogleMapsArgentina {
+  +obtenerRuta(String, String) String
+}
+
+class HereMaps {
+  +obtenerRuta(String, String) String
+}
+
+class UsuarioFactory {
+  &lt;&lt;Factory&gt;&gt;
+  +crearUsuario(String, String) Usuario
+}
+
+class FabricaDeVehiculos {
+  &lt;&lt;Factory&gt;&gt;
+  +crearVehiculo(TipoVehiculo) Vehiculo
+  +crearVehiculo(TipoVehiculo, String) Vehiculo
+}
+
+class Usuario {
+  -id: String
+  -username: String
+  -email: String
+  -passwordHash: String
+  -rol: String
+  -estado: String
+  +saludar()
+}
+
+class ClienteFinal {
+  -nombre: String
+  -telefono: String
+  -direccionEntrega: String
+  +consultarTracking()
+  +verETA()
+  +confirmarRecepcion()
+  +saludar()
+}
+
+class OperadorLogistico {
+  -empresa: Empresa
+  -zonaOperacion: String
+  -turno: String
+  +gestionarFlota()
+  +planificarRuta()
+  +crearEnvio(String, LocalDateTime) Envio
+  +saludar()
+}
+
+class AdminEmpresa {
+  -empresa: Empresa
+  -permisosAdmin: String
+  -notificaciones: String
+  +configurarEmpresa()
+  +consultarReportes()
+  +gestionarSuscripcion()
+  +saludar()
+}
+
+class Vehiculo {
+  -id: String
+  -patente: String
+  -capacidadKg: double
+  -tipo: String
+  -disponibilidad: boolean
+  +puedeCargar(double) boolean
+  +estaOperativo() boolean
+  +conducir()
+}
+
+class Auto {
+  +Auto()
+  +conducir()
+}
+
+class Moto {
+  +Moto()
+  +conducir()
+}
+
+class Envio {
+  &lt;&lt;Cloneable&gt;&gt;
+  -id: String
+  -origen: String
+  -destino: String
+  -descripcion: String
+  -peso: double
+  -fragil: boolean
+  -requiereSignatura: boolean
+  -requiereRefrigeracion: boolean
+  -requiereAseguranza: boolean
+  -instruccionesEspeciales: String
+  -contactoEmergencia: String
+  -horaEntregaPreferida: LocalTime
+  -Envio(EnvioBuilder)
+  +clone() Envio
+  +setId(String)
+}
+
+class EnvioBuilder {
+  -id: String
+  -origen: String
+  -destino: String
+  -descripcion: String
+  -peso: double
+  -fragil: boolean
+  +EnvioBuilder(String, String, String)
+  +descripcion(String) EnvioBuilder
+  +peso(double) EnvioBuilder
+  +fragil(boolean) EnvioBuilder
+  +requiereSignatura(boolean) EnvioBuilder
+  +requiereRefrigeracion(boolean) EnvioBuilder
+  +requiereAseguranza(boolean) EnvioBuilder
+  +instruccionesEspeciales(String) EnvioBuilder
+  +contactoEmergencia(String) EnvioBuilder
+  +horaEntregaPreferida(LocalTime) EnvioBuilder
+  +build() Envio
+}
+
+LogiSmartFactory &lt;|.. LogiSmartFactoryArgentina
+LogiSmartFactory &lt;|.. LogiSmartFactoryBrasil
+CalculadorCostos &lt;|.. CalculadorCostosArgentina
+CalculadorCostos &lt;|.. CalculadorCostosBrasil
+ProveedorMapas &lt;|.. GoogleMapsArgentina
+ProveedorMapas &lt;|.. HereMaps
+Usuario &lt;|-- ClienteFinal
+Usuario &lt;|-- OperadorLogistico
+Usuario &lt;|-- AdminEmpresa
+Vehiculo &lt;|-- Auto
+Vehiculo &lt;|-- Moto
+Envio -- EnvioBuilder
+
+LogiSmartApp ..&gt; Logger
+LogiSmartApp ..&gt; ConfiguracionSistema
+LogiSmartApp ..&gt; LogiSmartFactory
+LogiSmartApp ..&gt; UsuarioFactory
+LogiSmartApp ..&gt; Envio
+UsuarioFactory ..&gt; ClienteFinal
+UsuarioFactory ..&gt; OperadorLogistico
+UsuarioFactory ..&gt; AdminEmpresa
+LogiSmartFactoryArgentina ..&gt; Auto
+LogiSmartFactoryArgentina ..&gt; CalculadorCostosArgentina
+LogiSmartFactoryArgentina ..&gt; GoogleMapsArgentina
+LogiSmartFactoryBrasil ..&gt; Moto
+LogiSmartFactoryBrasil ..&gt; CalculadorCostosBrasil
+LogiSmartFactoryBrasil ..&gt; HereMaps</pre>
+        </div>
+
+        <div class="pill">✅ Singleton · ✅ Abstract Factory · ✅ Factory Method · ✅ Builder · ✅ Prototype · ✅ Compilable</div>
+      </section>
+
+    </main>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          primaryColor: "#dce9ff",
+          primaryTextColor: "#0d1b2a",
+          primaryBorderColor: "#17324d",
+          lineColor: "#17324d",
+          tertiaryColor: "#f0f4fa",
+          edgeLabelBackground: "#ffffff",
+          actorBkg: "#dce9ff",
+          actorBorder: "#17324d",
+          actorTextColor: "#0d1b2a",
+          actorLineColor: "#17324d",
+          signalColor: "#0d1b2a",
+          signalTextColor: "#0d1b2a",
+          labelBoxBkgColor: "#eef4ff",
+          labelBoxBorderColor: "#17324d",
+          labelTextColor: "#0d1b2a",
+          loopTextColor: "#0d1b2a",
+          noteBorderColor: "#dc6b1f",
+          noteBkgColor: "#fff3e8",
+          noteTextColor: "#0d1b2a"
+        }
+      });
+
+      const nav = document.querySelector(".side-nav");
+      const sections = document.querySelectorAll("section[id]");
+      if (nav && sections.length) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              const link = nav.querySelector(`a[href="#${e.target.id}"]`);
+              if (link) link.classList.toggle("active", e.isIntersecting);
+            });
+          },
+          { rootMargin: "-30% 0px -60% 0px" }
+        );
+        sections.forEach((s) => observer.observe(s));
+      }
+    </script>
+  </body>
+</html>

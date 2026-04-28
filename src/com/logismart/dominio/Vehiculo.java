@@ -74,4 +74,8 @@ public class Vehiculo {
 	public void actualizarCapacidad(double nuevaCapacidadKg) {
 		this.capacidadKg = nuevaCapacidadKg;
 	}
+
+	public void conducir() {
+		System.out.println("[" + tipo + "] Vehículo en movimiento.");
+	}
 }

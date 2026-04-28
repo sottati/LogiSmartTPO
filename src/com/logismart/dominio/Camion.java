@@ -1,0 +1,16 @@
+package com.logismart.dominio;
+
+import java.util.UUID;
+
+/** Vehículo de carga pesada (5000 kg). Creado por VehiculoFactory y LogiSmartFactoryBrasil. */
+public class Camion extends Vehiculo {
+
+    public Camion() {
+        super(UUID.randomUUID().toString(), "N/A", 5000.0, "CAMION", true);
+    }
+
+    @Override
+    public void conducir() {
+        System.out.println("[Camion] Conduciendo camión por la ruta.");
+    }
+}

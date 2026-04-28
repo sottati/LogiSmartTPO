@@ -72,7 +72,10 @@ public class Usuario {
 	}
 
 	public void cerrarSesion() {
-		
+
 	}
-	
+
+	public void saludar() {
+		System.out.println("[" + rol + "] Hola, soy " + username + ".");
+	}
 }

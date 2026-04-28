@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LogiSmart - TPO | Proceso de Desarrollo de Software</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+      :root {
+        --primary:       #17324d;
+        --primary-2:     #1f4d78;
+        --accent:        #dc6b1f;
+        --accent-light:  #fbd38d;
+        --bg:            #f4f7fb;
+        --surface:       #ffffff;
+        --text:          #14202c;
+        --muted:         #4f6172;
+        --border:        #d9e2ec;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      /* ──────────────────────────── COVER ──────────────────────────── */
+      .cover {
+        min-height: 80vh;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 3rem 2rem 4rem;
+        background:
+          radial-gradient(circle at 15% 25%, rgba(31,77,120,0.12), transparent 45%),
+          radial-gradient(circle at 85% 10%,  rgba(220,107,31,0.10), transparent 35%),
+          var(--surface);
+        border-bottom: 8px solid var(--primary);
+      }
+      .cover-content { max-width: 720px; width: 100%; }
+      .university {
+        font-size: 0.8rem; font-weight: 700;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--muted); margin-bottom: 0.4rem;
+      }
+      .subject { font-size: 0.95rem; font-weight: 500; color: var(--primary-2); margin-bottom: 2.5rem; }
+      .cover h1 {
+        font-size: clamp(3rem, 10vw, 5.5rem); font-weight: 800;
+        color: var(--primary); letter-spacing: -0.04em; line-height: 1; margin-bottom: 0.6rem;
+      }
+      .cover .tagline {
+        font-size: 1.15rem; color: var(--muted);
+        border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+        padding: 0.9rem 0; margin-bottom: 2.5rem;
+      }
+      .team {
+        display: grid; grid-template-columns: repeat(2,1fr);
+        gap: 1.5rem; max-width: 420px;
+        margin: 0 auto 2.5rem;
+        border-top: 2px solid var(--bg); padding-top: 2rem;
+      }
+      .team-member strong { display: block; font-size: 1rem; color: var(--text); margin-bottom: 0.2rem; }
+      .team-member span   { font-size: 0.82rem; color: var(--muted); font-family: monospace; }
+      .cover-date { font-size: 0.85rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; }
+      .cover-links { margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+      .cover-link {
+        font-size: 0.82rem; font-weight: 600; padding: 0.55rem 1.2rem;
+        border-radius: 8px; border: 1.5px solid var(--border);
+        color: var(--primary-2); text-decoration: none; background: var(--surface);
+        transition: border-color 0.15s, background 0.15s;
+      }
+      .cover-link:hover { border-color: var(--primary-2); background: var(--bg); }
+      .cover-link.accent-link { background: var(--accent); color: #fff; border-color: var(--accent); }
+      .cover-link.accent-link:hover { background: #c05c18; border-color: #c05c18; }
+
+      /* ──────────────────────────── SPLIT ──────────────────────────── */
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+
+      /* Left column — dark */
+      .split-dark {
+        background: var(--primary);
+        display: flex;
+        justify-content: flex-end;
+      }
+      .split-dark-inner {
+        max-width: 580px; width: 100%;
+        padding: 4.5rem 3rem 5rem 2rem;
+        color: #d8eaf8;
+      }
+
+      /* Right column — light */
+      .split-light {
+        background: var(--bg);
+        display: flex;
+        justify-content: flex-start;
+      }
+      .split-light-inner {
+        max-width: 580px; width: 100%;
+        padding: 4.5rem 2rem 5rem 3rem;
+      }
+
+      /* Shared column typography */
+      .col-eyebrow {
+        font-size: 0.7rem; font-weight: 700;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--accent-light); margin-bottom: 0.4rem;
+      }
+      .col-eyebrow-dark { color: var(--muted); }
+      .col-h2 {
+        font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800;
+        color: #fff; letter-spacing: -0.025em; margin-bottom: 0.6rem;
+      }
+      .col-h2-dark { color: var(--primary); }
+      .col-lead {
+        font-size: 0.9rem; color: #93b5cc; line-height: 1.75; margin-bottom: 2.5rem;
+      }
+      .col-lead-dark { color: var(--muted); margin-bottom: 2rem; }
+      .col-sub {
+        font-size: 0.68rem; font-weight: 700;
+        letter-spacing: 0.16em; text-transform: uppercase;
+        color: rgba(255,255,255,0.3); margin-top: 2rem; margin-bottom: 0.9rem;
+      }
+
+      /* Business model cards */
+      .biz-grid {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 0.75rem; margin-bottom: 0.5rem;
+      }
+      .biz-card {
+        background: rgba(255,255,255,0.065);
+        border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 9px; padding: 1rem 1.1rem;
+      }
+      .biz-card-label {
+        font-size: 0.62rem; font-weight: 700;
+        letter-spacing: 0.14em; text-transform: uppercase;
+        color: var(--accent-light); margin-bottom: 0.35rem;
+      }
+      .biz-card h3 { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.45rem; }
+      .biz-card ul { list-style: none; padding: 0; }
+      .biz-card ul li {
+        font-size: 0.77rem; color: #88aec6;
+        padding: 0.18rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex; align-items: flex-start; gap: 0.4rem; line-height: 1.4;
+      }
+      .biz-card ul li:last-child { border-bottom: none; }
+      .biz-card ul li::before { content: "›"; color: var(--accent-light); flex-shrink: 0; }
+
+      /* Flow */
+      .flow-row {
+        display: flex; align-items: center; gap: 0.35rem;
+        flex-wrap: wrap; margin-bottom: 0.5rem;
+      }
+      .flow-step {
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 6px; padding: 0.3rem 0.7rem;
+        font-size: 0.72rem; color: #c0d8ed; font-weight: 500;
+      }
+      .flow-arr { color: rgba(255,255,255,0.22); font-size: 0.9rem; }
+
+      /* KPIs */
+      .kpi-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.65rem; }
+      .kpi-card {
+        background: rgba(220,107,31,0.10);
+        border: 1px solid rgba(220,107,31,0.20);
+        border-radius: 8px; padding: 0.8rem 0.9rem;
+      }
+      .kpi-cat {
+        font-size: 0.6rem; font-weight: 700;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: var(--accent-light); margin-bottom: 0.35rem;
+      }
+      .kpi-card ul { list-style: none; padding: 0; }
+      .kpi-card ul li { font-size: 0.72rem; color: #88aec6; padding: 0.12rem 0; line-height: 1.35; }
+
+      /* Pilares */
+      .pillar-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-top: 0.9rem; }
+      .pillar { border-top: 2px solid rgba(220,107,31,0.4); padding-top: 0.7rem; }
+      .pillar-num { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-light); margin-bottom: 0.25rem; }
+      .pillar h4 { font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
+      .pillar p  { font-size: 0.73rem; color: #7a9eb5; line-height: 1.45; }
+
+      /* Hito cards (right column) */
+      .section-label {
+        font-size: 0.7rem; font-weight: 700;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        color: var(--muted); margin-bottom: 1rem;
+      }
+      .section-label + .section-label { margin-top: 1.75rem; }
+      .hitos-grid { display: grid; gap: 0.75rem; }
+      .hito-card {
+        display: flex; align-items: center; gap: 1rem;
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 12px; padding: 1.1rem 1.3rem;
+        text-decoration: none; color: inherit;
+        box-shadow: 0 2px 5px rgba(20,32,44,0.05);
+        transition: box-shadow 0.18s, border-color 0.18s, transform 0.15s;
+      }
+      .hito-card:hover {
+        box-shadow: 0 5px 18px rgba(20,32,44,0.10);
+        border-color: var(--primary-2); transform: translateY(-2px);
+      }
+      .hito-number {
+        flex-shrink: 0; width: 46px; height: 46px; border-radius: 9px;
+        background: var(--primary); color: #fff;
+        display: grid; place-items: center;
+        font-size: 1.15rem; font-weight: 800;
+      }
+      .hito-body { flex: 1; min-width: 0; }
+      .hito-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.15rem; }
+      .hito-title { font-size: 0.97rem; font-weight: 600; color: var(--primary); line-height: 1.25; }
+      .hito-desc  { font-size: 0.81rem; color: var(--muted); margin-top: 0.2rem; }
+      .hito-arrow { flex-shrink: 0; color: var(--border); font-size: 1.2rem; transition: color 0.18s, transform 0.15s; }
+      .hito-card:hover .hito-arrow { color: var(--accent); transform: translateX(3px); }
+
+      /* ──────────────────────────── DOCS ──────────────────────────── */
+      .docs {
+        background: var(--surface);
+        padding: 5rem 2rem 6rem;
+        border-top: 1px solid var(--border);
+      }
+      .docs-inner { max-width: 1060px; margin: 0 auto; }
+      .docs-eyebrow {
+        font-size: 0.72rem; font-weight: 700;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--accent); margin-bottom: 0.4rem;
+      }
+      .docs-title {
+        font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800;
+        color: var(--primary); letter-spacing: -0.025em; margin-bottom: 0.6rem;
+      }
+      .docs-subtitle { font-size: 1rem; color: var(--muted); max-width: 660px; margin-bottom: 2.5rem; line-height: 1.7; }
+
+      /* Nav pills */
+      .docs-nav {
+        display: flex; gap: 0.5rem; flex-wrap: wrap;
+        padding-bottom: 2rem; margin-bottom: 3rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .docs-nav a {
+        font-size: 0.78rem; font-weight: 600;
+        padding: 0.45rem 1.1rem; border-radius: 999px;
+        border: 1.5px solid var(--border);
+        color: var(--primary-2); text-decoration: none;
+        background: var(--bg); transition: all 0.15s;
+      }
+      .docs-nav a:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+      /* Doc blocks */
+      .docs-block { margin-bottom: 4rem; scroll-margin-top: 1.5rem; }
+      .docs-block-eyebrow {
+        font-size: 0.68rem; font-weight: 700;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        color: var(--muted); margin-bottom: 0.35rem;
+      }
+      .docs-block h3 {
+        font-size: 1.35rem; font-weight: 800;
+        color: var(--primary); margin-bottom: 0.9rem;
+        letter-spacing: -0.02em;
+      }
+      .docs-block p {
+        font-size: 0.9rem; color: var(--muted);
+        line-height: 1.75; margin-bottom: 1rem; max-width: 780px;
+      }
+      .docs-block p strong { color: var(--text); font-weight: 600; }
+
+      /* Domain table */
+      .domain-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; margin-top: 0.5rem; }
+      .domain-table th {
+        text-align: left; padding: 0.6rem 1rem;
+        font-size: 0.68rem; font-weight: 700;
+        letter-spacing: 0.1em; text-transform: uppercase;
+        color: var(--muted); border-bottom: 2px solid var(--border);
+      }
+      .domain-table td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+      .domain-table td:first-child { font-weight: 700; color: var(--primary-2); white-space: nowrap; }
+      .domain-table td code { background: #eef2f8; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.78rem; }
+      .domain-table tr:last-child td { border-bottom: none; }
+
+      /* Pkg list */
+      .pkg-list { list-style: none; padding: 0; margin-top: 0.5rem; }
+      .pkg-list li { padding: 0.55rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 1rem; align-items: baseline; }
+      .pkg-list li:last-child { border-bottom: none; }
+      .pkg-name { font-family: monospace; font-size: 0.8rem; color: var(--primary-2); font-weight: 600; min-width: 340px; flex-shrink: 0; }
+      .pkg-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.5; }
+
+      /* Pattern grid */
+      .pattern-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem; margin-top: 0.5rem;
+      }
+      .p-card {
+        background: var(--bg); border: 1px solid var(--border);
+        border-radius: 10px; padding: 1.1rem 1.2rem;
+      }
+      .p-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+      .p-tag {
+        font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 0.08em; text-transform: uppercase;
+        padding: 0.2rem 0.5rem; border-radius: 4px;
+      }
+      .tag-grasp { background: #dce9ff; color: #12324b; }
+      .tag-gof   { background: #fff0e3; color: #7a3200; }
+      .p-hito { font-size: 0.65rem; color: var(--muted); font-weight: 500; }
+      .p-name { font-size: 0.95rem; font-weight: 800; color: var(--primary); margin-bottom: 0.45rem; }
+      .p-intent { font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-bottom: 0.6rem; }
+      .p-applied-label { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.3rem; }
+      .p-applied { font-size: 0.77rem; color: var(--text); line-height: 1.5; }
+      .p-applied code { background: #eef2f8; padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.73rem; }
+
+      /* ──────────────────────────── RESPONSIVE ──────────────────────────── */
+      @media (max-width: 1000px) {
+        .pattern-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+      @media (max-width: 900px) {
+        .split { grid-template-columns: 1fr; }
+        .split-dark { justify-content: center; }
+        .split-light { justify-content: center; }
+        .split-dark-inner { padding: 3.5rem 1.5rem; max-width: 100%; }
+        .split-light-inner { padding: 3rem 1.5rem 3.5rem; max-width: 100%; }
+        .biz-grid { grid-template-columns: 1fr; }
+        .kpi-row  { grid-template-columns: 1fr; }
+        .pillar-row { grid-template-columns: 1fr; }
+        .pkg-name { min-width: 200px; }
+      }
+      @media (max-width: 600px) {
+        .team { grid-template-columns: 1fr; max-width: 220px; }
+        .hito-card { flex-wrap: wrap; }
+        .hito-arrow { display: none; }
+        .pattern-grid { grid-template-columns: 1fr; }
+        .flow-step { white-space: normal; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- ══════════════════════════ COVER ══════════════════════════ -->
+    <header class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+        <h1>LogiSmart</h1>
+        <div class="tagline">Plataforma SaaS de optimización logística para PyMEs</div>
+        <div class="team">
+          <div class="team-member"><strong>Rosario Presedo</strong><span>LU: 1146894</span></div>
+          <div class="team-member"><strong>Simon Ottati</strong><span>LU: 1155931</span></div>
+        </div>
+        <div class="cover-date">2026</div>
+        <div class="cover-links">
+          <a class="cover-link accent-link" href="#documentacion">Leer documentación</a>
+          <a class="cover-link" href="class-diagram.html">Diagrama de clases</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ══════════════════════════ SPLIT ══════════════════════════ -->
+    <section class="split">
+
+      <!-- ── Columna izquierda: Modelo de Negocio ── -->
+      <div class="split-dark">
+        <div class="split-dark-inner">
+
+          <div class="col-eyebrow">Contexto del proyecto</div>
+          <div class="col-h2">Modelo de Negocio</div>
+          <p class="col-lead">
+            LogiSmart resuelve la operación logística fragmentada de las PyMEs —
+            envíos gestionados con Excel, WhatsApp y email — convirtiéndola en un flujo
+            planificado, trazable y escalable con ingreso recurrente mensual (SaaS).
+          </p>
+
+          <div class="biz-grid">
+            <div class="biz-card">
+              <div class="biz-card-label">Propuesta de valor</div>
+              <h3>Para la PyME</h3>
+              <ul>
+                <li>Menor costo logístico por mejor asignación de rutas</li>
+                <li>Mayor productividad del equipo operativo</li>
+                <li>Trazabilidad completa de cada envío</li>
+                <li>Reportes y métricas para decisiones</li>
+                <li>Menos errores manuales y retrabajo</li>
+              </ul>
+            </div>
+            <div class="biz-card">
+              <div class="biz-card-label">Actores del sistema</div>
+              <h3>Roles</h3>
+              <ul>
+                <li>Admin plataforma — empresas y billing</li>
+                <li>Admin empresa — config, reportes, suscripción</li>
+                <li>Operador logístico — envíos, rutas, flota</li>
+                <li>Cliente final — tracking y ETA</li>
+                <li>Transportista — ejecución de rutas</li>
+              </ul>
+            </div>
+            <div class="biz-card">
+              <div class="biz-card-label">Capacidades</div>
+              <h3>Lo que vende</h3>
+              <ul>
+                <li>Orquestación de envíos</li>
+                <li>Planificación y asignación de rutas</li>
+                <li>Gestión de flota y vehículos</li>
+                <li>Tracking y visibilidad en tiempo real</li>
+                <li>Comunicación automatizada</li>
+                <li>Analítica y reportes operativos</li>
+                <li>Gobierno comercial (suscripciones)</li>
+              </ul>
+            </div>
+            <div class="biz-card">
+              <div class="biz-card-label">Calidad crítica</div>
+              <h3>No funcionales</h3>
+              <ul>
+                <li>Disponibilidad alta — si cae, la operación para</li>
+                <li>Seguridad — datos de empresas y pedidos</li>
+                <li>Escalabilidad — envíos y tracking concurrente</li>
+                <li>Confiabilidad de ETA — es la promesa central</li>
+                <li>Integrabilidad — conecta con e-commerce</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-sub">Flujo de valor</div>
+          <div class="flow-row">
+            <div class="flow-step">Ingreso de demanda</div>
+            <div class="flow-arr">›</div>
+            <div class="flow-step">Consolidación</div>
+            <div class="flow-arr">›</div>
+            <div class="flow-step">Planificación</div>
+            <div class="flow-arr">›</div>
+            <div class="flow-step">Ejecución</div>
+            <div class="flow-arr">›</div>
+            <div class="flow-step">Entrega</div>
+            <div class="flow-arr">›</div>
+            <div class="flow-step">Cierre y reportes</div>
+          </div>
+
+          <div class="col-sub">KPIs clave</div>
+          <div class="kpi-row">
+            <div class="kpi-card">
+              <div class="kpi-cat">Eficiencia</div>
+              <ul>
+                <li>Costo por envío</li>
+                <li>Km por entrega</li>
+                <li>Utilización flota</li>
+                <li>Tasa reprogramaciones</li>
+              </ul>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-cat">Servicio</div>
+              <ul>
+                <li>Entregas on-time</li>
+                <li>Desvío de ETA</li>
+                <li>Primer intento (%)</li>
+                <li>Resolución incidencias</li>
+              </ul>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-cat">SaaS</div>
+              <ul>
+                <li>MRR</li>
+                <li>Churn</li>
+                <li>ARPU</li>
+                <li>NPS</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-sub">Pilares del modelo</div>
+          <div class="pillar-row">
+            <div class="pillar">
+              <div class="pillar-num">Pilar 1</div>
+              <h4>Valor para la PyME</h4>
+              <p>Ahorro en costo logístico, control operativo y mejor servicio al cliente final.</p>
+            </div>
+            <div class="pillar">
+              <div class="pillar-num">Pilar 2</div>
+              <h4>Confiabilidad técnica</h4>
+              <p>Disponibilidad, seguridad y consistencia de tracking — la promesa de valor depende de esto.</p>
+            </div>
+            <div class="pillar">
+              <div class="pillar-num">Pilar 3</div>
+              <h4>Escalabilidad SaaS</h4>
+              <p>Suscripciones recurrentes con costo marginal decreciente por empresa.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── Columna derecha: Entregas del TPO ── -->
+      <div class="split-light">
+        <div class="split-light-inner">
+
+          <div class="col-eyebrow col-eyebrow-dark">Recursos y entregas</div>
+          <div class="col-h2 col-h2-dark" style="margin-bottom: 1.75rem;">Proyecto LogiSmart</div>
+
+          <div class="section-label">Recurso transversal</div>
+          <div class="hitos-grid" style="margin-bottom: 1.75rem;">
+            <a class="hito-card" href="class-diagram.html"
+               style="border-color: var(--accent); background: linear-gradient(135deg, #fff8f3 0%, var(--surface) 60%);">
+              <div class="hito-number" style="background: var(--accent); font-size: 0.9rem; letter-spacing: -0.02em;">DC</div>
+              <div class="hito-body">
+                <div class="hito-label">Diagrama acumulativo</div>
+                <div class="hito-title">Diagrama de Clases del Sistema</div>
+                <div class="hito-desc">Todos los patrones GRASP y GoF aplicados a lo largo del TPO</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
+          </div>
+
+          <div class="section-label">Entregas del TPO</div>
+          <div class="hitos-grid">
+            <a class="hito-card" href="HITO_1.html">
+              <div class="hito-number">1</div>
+              <div class="hito-body">
+                <div class="hito-label">Hito 1</div>
+                <div class="hito-title">Análisis de Dominio y Casos de Uso</div>
+                <div class="hito-desc">Visión, alcance y actores del producto</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
+            <a class="hito-card" href="HITO_2.html">
+              <div class="hito-number">2</div>
+              <div class="hito-body">
+                <div class="hito-label">Hito 2</div>
+                <div class="hito-title">Modelo de Dominio y UML</div>
+                <div class="hito-desc">Entidades, relaciones y diagrama de clases base</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
+            <a class="hito-card" href="HITO_4.html">
+              <div class="hito-number">4</div>
+              <div class="hito-body">
+                <div class="hito-label">Hito 4</div>
+                <div class="hito-title">Patrones GRASP — Parte I</div>
+                <div class="hito-desc">Creator · Information Expert · High Cohesion · Low Coupling</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
+            <a class="hito-card" href="HITO_5.html">
+              <div class="hito-number">5</div>
+              <div class="hito-body">
+                <div class="hito-label">Hito 5</div>
+                <div class="hito-title">Patrones GRASP — Parte II</div>
+                <div class="hito-desc">Controller · Polymorphism · Pure Fabrication · Indirection · Protected Variations</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
+            <a class="hito-card" href="HITO_6.html">
+              <div class="hito-number">6</div>
+              <div class="hito-body">
+                <div class="hito-label">Hito 6</div>
+                <div class="hito-title">Patrones Creacionales I</div>
+                <div class="hito-desc">Singleton · Factory Method</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
+            <a class="hito-card" href="hitos/HITO_7.html">
+              <div class="hito-number">7</div>
+              <div class="hito-body">
+                <div class="hito-label">Hito 7</div>
+                <div class="hito-title">Patrones Creacionales II</div>
+                <div class="hito-desc">Abstract Factory · Builder · Prototype</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </section><!-- /split -->
+
+    <!-- ══════════════════════════ DOCUMENTACIÓN ══════════════════════════ -->
+    <section class="docs" id="documentacion">
+      <div class="docs-inner">
+
+        <div class="docs-eyebrow">Guía del proyecto</div>
+        <h2 class="docs-title">Documentación completa</h2>
+        <p class="docs-subtitle">
+          Todo lo que necesitás saber sobre LogiSmart: qué es, cómo está modelado, qué decisiones
+          de diseño se tomaron y cómo cada patrón aplicado se relaciona con los conceptos de la
+          materia — sin tener que entrar a cada hito.
+        </p>
+
+        <nav class="docs-nav">
+          <a href="#proyecto">El Proyecto</a>
+          <a href="#dominio">Dominio</a>
+          <a href="#arquitectura">Arquitectura</a>
+          <a href="#grasp">Patrones GRASP</a>
+          <a href="#gof">Patrones GoF</a>
+        </nav>
+
+        <!-- ── El Proyecto ── -->
+        <div class="docs-block" id="proyecto">
+          <div class="docs-block-eyebrow">Contexto académico</div>
+          <h3>El Proyecto</h3>
+          <p>
+            Este TPO (Trabajo Práctico Obligatorio) pertenece a la materia
+            <strong>Proceso de Desarrollo de Software</strong> de la carrera en UADE.
+            El objetivo es aplicar, de forma iterativa a lo largo de varios hitos, los principales
+            principios y patrones del paradigma orientado a objetos sobre un sistema real y
+            no trivial.
+          </p>
+          <p>
+            El sistema elegido es <strong>LogiSmart</strong>: una plataforma SaaS de optimización
+            logística para PyMEs. No es un sistema de juguete — tiene dominio complejo
+            (envíos, rutas, flota, tracking, facturación), múltiples actores con distintos
+            permisos, variabilidad regional (Argentina/Brasil) y requisitos de calidad reales
+            (disponibilidad, seguridad, escalabilidad).
+          </p>
+          <p>
+            Cada hito agrega una capa de diseño sobre la anterior.
+            Los Hitos 1 y 2 definen el dominio y los casos de uso.
+            Los Hitos 4 y 5 aplican los <strong>9 patrones GRASP</strong> para asignar
+            responsabilidades correctamente.
+            Los Hitos 6 y 7 aplican <strong>5 patrones GoF creacionales</strong> para mejorar
+            la creación y gestión de objetos.
+            El resultado es un sistema coherente, extensible y bien documentado donde cada
+            decisión de diseño tiene justificación en un principio OO.
+          </p>
+        </div>
+
+        <!-- ── Dominio ── -->
+        <div class="docs-block" id="dominio">
+          <div class="docs-block-eyebrow">Modelo de dominio</div>
+          <h3>Entidades del sistema</h3>
+          <p>
+            El dominio está implementado en el paquete <code>com.logismart.dominio</code>.
+            Cada entidad tiene responsabilidades propias (Information Expert) y no depende
+            de infraestructura (Low Coupling).
+          </p>
+          <table class="domain-table">
+            <thead>
+              <tr><th>Entidad</th><th>Descripción</th><th>Relaciones clave</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Envio</td>
+                <td>Unidad operativa central. Agrupa órdenes, gestiona su propio estado (PENDIENTE → EN_CURSO → CERRADO) y tiene seguimiento, entrega y ruta. Implementa <code>Cloneable</code> y soporta construcción via <code>EnvioBuilder</code>.</td>
+                <td>Empresa, Orden, Ruta, SeguimientoEnvio, Entrega</td>
+              </tr>
+              <tr>
+                <td>Empresa</td>
+                <td>Cliente B2B de la plataforma. Posee una flota de vehículos, genera envíos y tiene una suscripción activa con sus cobros asociados.</td>
+                <td>Flota, Envio, Suscripcion, Reporte</td>
+              </tr>
+              <tr>
+                <td>Orden</td>
+                <td>Pedido individual asociado a un envío. Tiene canal de origen (e-commerce, manual) y se entrega en un PuntoEntrega específico.</td>
+                <td>Envio, PuntoEntrega</td>
+              </tr>
+              <tr>
+                <td>Ruta</td>
+                <td>Plan de traslado para un envío. Tiene paradas ordenadas, un vehículo asignado y un transportista. Calcula su propia distancia y costo estimado (Information Expert).</td>
+                <td>PuntoEntrega, Vehiculo, Transportista</td>
+              </tr>
+              <tr>
+                <td>Vehiculo</td>
+                <td>Medio de transporte con capacidad en kg, tipo (AUTO/CAMION/MOTO), patente y disponibilidad. Puede verificar si puede cargar un peso dado.</td>
+                <td>Flota, Ruta</td>
+              </tr>
+              <tr>
+                <td>Flota</td>
+                <td>Colección de vehículos de una empresa. Gestiona altas, bajas y consulta de disponibles.</td>
+                <td>Empresa, Vehiculo</td>
+              </tr>
+              <tr>
+                <td>SeguimientoEnvio</td>
+                <td>Trazabilidad en tiempo real. Registra posiciones GPS, actualiza el estado actual y calcula el ETA con nivel de confianza.</td>
+                <td>Envio, PosicionGPS, ETA</td>
+              </tr>
+              <tr>
+                <td>ETA</td>
+                <td>Tiempo estimado de llegada expresado en minutos, con timestamp de última actualización y nivel de confianza (0-1). Sabe cuándo venció.</td>
+                <td>SeguimientoEnvio</td>
+              </tr>
+              <tr>
+                <td>Entrega</td>
+                <td>Resultado final del envío: exitosa o fallida, con fecha, observaciones y prueba adjunta (foto, firma).</td>
+                <td>Envio</td>
+              </tr>
+              <tr>
+                <td>PuntoEntrega</td>
+                <td>Dirección con coordenadas GPS y ventana horaria para una parada de ruta. Puede validar si la ventana es aceptable.</td>
+                <td>Ruta, Orden</td>
+              </tr>
+              <tr>
+                <td>Usuario</td>
+                <td>Clase base de todos los actores del sistema. Tiene id, username, email, passwordHash, rol y estado. Define el comportamiento polimórfico <code>saludar()</code>.</td>
+                <td>AdminEmpresa, AdminPlataforma, OperadorLogistico, ClienteFinal, Transportista</td>
+              </tr>
+              <tr>
+                <td>IPermisos</td>
+                <td>Interfaz que define las capacidades de cada rol: crear envíos, asignar rutas, ver reportes, gestionar flota, administrar empresas. Elimina condicionales basadas en rol.</td>
+                <td>Todos los subtipos de Usuario</td>
+              </tr>
+              <tr>
+                <td>Suscripcion</td>
+                <td>Contrato de acceso a la plataforma. Define plan, estado, monto mensual y próximo vencimiento. Puede activarse, pausarse y renovarse.</td>
+                <td>Empresa, Cobro</td>
+              </tr>
+              <tr>
+                <td>Cobro</td>
+                <td>Transacción de pago asociada a una suscripción. Puede estar en estado autorizado, pagado o fallido.</td>
+                <td>Suscripcion</td>
+              </tr>
+              <tr>
+                <td>Reporte</td>
+                <td>Documento periódico de métricas operativas de una empresa. Se compone de múltiples Metricas.</td>
+                <td>Empresa, Metrica</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ── Arquitectura ── -->
+        <div class="docs-block" id="arquitectura">
+          <div class="docs-block-eyebrow">Estructura del código</div>
+          <h3>Arquitectura y paquetes</h3>
+          <p>
+            El proyecto está organizado en capas: dominio puro, aplicación (coordinación) e
+            infraestructura (patrones e integraciones). La regla de dependencia va siempre
+            hacia el dominio, nunca al revés.
+          </p>
+          <ul class="pkg-list">
+            <li>
+              <span class="pkg-name">com.logismart.dominio</span>
+              <span class="pkg-desc">Entidades del negocio (Envio, Empresa, Ruta, Vehiculo, Usuario, etc.). No dependen de ningún otro paquete.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.aplicacion</span>
+              <span class="pkg-desc">GRASP Controller (<code>LogiSmartController</code>) y Pure Fabrications: <code>RepositorioDeEnvios</code>, <code>ServicioDeNotificaciones</code>, <code>ValidadorDeEnvios</code>, <code>CalculadorDeRutas</code>.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.singleton</span>
+              <span class="pkg-desc">Singletons thread-safe: <code>Logger</code>, <code>ConexionBD</code>, <code>ConfiguracionSistema</code>. Todos usan double-checked locking con <code>volatile</code>.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.fabrica</span>
+              <span class="pkg-desc">Factory Method: <code>FabricaDeEnvios</code>, <code>FabricaDeNotificadores</code>, <code>FabricaDeVehiculos</code>, <code>UsuarioFactory</code>, <code>VehiculoFactory</code>.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.abstractfactory</span>
+              <span class="pkg-desc">Abstract Factory regional: interfaz <code>LogiSmartFactory</code> + implementaciones Argentina y Brasil. Produce familias de <code>Vehiculo</code>, <code>CalculadorCostos</code> y <code>ProveedorMapas</code>.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.{costo,tiempo,ruta,vehiculo}</span>
+              <span class="pkg-desc">Protected Variations: interfaces + implementaciones intercambiables. <code>CalculadorDeCosto</code> (3), <code>CalculadorDeTiempo</code> (2), <code>CalculadorDeRuta</code> (3), <code>AsignadorDeVehiculos</code> (2).</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.notificacion</span>
+              <span class="pkg-desc">Polimorfismo de notificaciones: interfaz <code>Notificador</code> + implementaciones Email, SMS, Push.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.reporte</span>
+              <span class="pkg-desc">Protected Variations para exportación: interfaz <code>GeneradorDeReportes</code> + PDF y JSON.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.app</span>
+              <span class="pkg-desc">Punto de entrada e integración de patrones creacionales: <code>LogiSmartApp</code> (integra los 5 patrones), <code>Main</code> (demo completa).</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.util</span>
+              <span class="pkg-desc">Utilidades transversales: <code>BCrypt</code> para hashing de contraseñas, delegado por <code>AutenticacionService</code>.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- ── Patrones GRASP ── -->
+        <div class="docs-block" id="grasp">
+          <div class="docs-block-eyebrow">Hitos 4 y 5 · Craig Larman</div>
+          <h3>Patrones GRASP</h3>
+          <p>
+            GRASP (<em>General Responsibility Assignment Software Patterns</em>) son principios
+            para decidir <strong>qué objeto es responsable de qué</strong>. No son recetas de
+            implementación — son criterios de diseño. Se aplicaron los 9 patrones canónicos.
+          </p>
+          <div class="pattern-grid">
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-grasp">GRASP</span><span class="p-hito">Hito 4</span></div>
+              <div class="p-name">Creator</div>
+              <div class="p-intent">Asignar a B la responsabilidad de crear instancias de A cuando B contiene, registra, agrega A o tiene sus datos de inicialización.</div>
+              <div class="p-applied-label">Aplicado en LogiSmart</div>
+              <div class="p-applied"><code>Envio</code> agrega sus propias <code>Orden</code>es. <code>FabricaDeEnvios</code> crea subclases concretas de <code>Envio</code> (Express, Standard, Económico) porque tiene toda la información para ello.</div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-grasp">GRASP</span><span class="p-hito">Hito 4</span></div>
+              <div class="p-name">Information Expert</div>
+              <div class="p-intent">Asignar responsabilidad a la clase que tiene la información necesaria para cumplirla.</div>
+              <div class="p-applied-label">Aplicado en LogiSmart</div>
+              <div class="p-applied"><code>Ruta</code> calcula <code>calcularDistanciaTotal()</code> y <code>calcularCostoEstimado()</code> porque tiene sus paradas. <code>Envio</code> gestiona su propio estado (iniciar, cancelar, cerrar). <code>SeguimientoEnvio</code> actualiza el ETA.</div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-grasp">GRASP</span><span class="p-hito">Hito 4</span></div>
+              <div class="p-name">High Cohesion</div>
+              <div class="p-intent">Mantener las responsabilidades de una clase enfocadas, relacionadas y manejables.</div>
+              <div class="p-applied-label">Aplicado en LogiSmart</div>
+              <div class="p-applied"><code>Ruta</code> solo gestiona el plan de traslado, no notifica. <code>Flota</code> solo administra vehículos. <code>ServicioDeNotificaciones</code> solo notifica. Cada clase tiene una razón para cambiar.</div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-grasp">GRASP</span><span class="p-hito">Hito 4</span></div>
+              <div class="p-name">Low Coupling</div>
+              <div class="p-intent">Reducir dependencias innecesarias entre clases para minimizar el impacto de los cambios.</div>
+              <div class="p-applied-label">Aplicado en LogiSmart</div>
+              <div class="p-applied">Las entidades de dominio (<code>Envio</code>, <code>Ruta</code>, <code>Vehiculo</code>) no referencian infraestructura ni entre sí más allá de lo necesario. El <code>Controller</code> depende de interfaces, no de implementaciones concretas.</div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-grasp">GRASP</span><span class="p-hito">Hito 5</span></div>
+              <div class="p-name">Controller</div>
+              <div class="p-intent">Asignar a un objeto no-UI la responsabilidad de recibir y coordinar operaciones del sistema.</div>
+              <div class="p-applied-label">Aplicado en LogiSmart</div>
+              <div class="p-applied"><code>LogiSmartController</code> (paquete <code>aplicacion</code>) es el único punto de entrada desde la UI. Recibe solicitudes, verifica permisos, delega en el dominio y en los servicios. No contiene lógica de negocio propia.</div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-grasp">GRASP</span><span class="p-hito">Hito 5</span></div>
+              <div class="p-name">Polymorphism</div>
+              <div class="p-intent">Asignar responsabilidades a tipos usando operaciones polimórficas en lugar de lógica condicional (if/switch por tipo).</div>
+              <div class="p-applied-label">Aplicado en LogiSmart</div>
+              <div class="p-applied"><code>IPermisos</code> (5 implementaciones). <code>Notificador</code> Email/SMS/Push. <code>CalculadorDeRuta</code> (3). <code>saludar()</code> en jerarquía de <code>Usuario</code>. Nunca hay <code>instanceof</code> para decidir comportamiento.</div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-grasp">GRASP</span><span class="p-hito">Hito 5</span></div>
+              <div class="p-name">Pure Fabrication</div>
+              <div class="p-intent">Crear una clase artificial sin correlato en el dominio para mantener alta cohesión y bajo acoplamiento.</div>
+              <div class="p-applied-label">Aplicado en LogiSmart</div>
+              <div class="p-applied"><code>ServicioDeNotificaciones</code>, <code>RepositorioDeEnvios</code>, <code>ValidadorDeEnvios</code>, <code>CalculadorDeRutas</code>. Ninguno existe en el mundo real — nacen de necesidades técnicas de diseño.</div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-grasp">GRASP</span><span class="p-hito">Hito 5</span></div>
+              <div class="p-name">Indirection</div>
+              <div class="p-intent">Crear un objeto intermediario para desacoplar dos clases que de otro modo dependerían directamente una de la otra.</div>
+              <div class="p-applied-label">Aplicado en LogiSmart</div>
+              <div class="p-applied"><code>ServicioDeNotificaciones</code> intermedia entre <code>LogiSmartController</code> y <code>Notificador</code>. <code>CalculadorDeRutas</code> intermedia entre el Controller y la estrategia de cálculo (<code>CalculadorDeRuta</code>).</div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-grasp">GRASP</span><span class="p-hito">Hito 5</span></div>
+              <div class="p-name">Protected Variations</div>
+              <div class="p-intent">Identificar puntos de variación previsibles y crear interfaces estables alrededor de ellos para que los cambios no se propaguen.</div>
+              <div class="p-applied-label">Aplicado en LogiSmart</div>
+              <div class="p-applied"><code>CalculadorDeCosto</code> (3 impl.), <code>AsignadorDeVehiculos</code> (2), <code>CalculadorDeTiempo</code> (2), <code>GeneradorDeReportes</code> (2). Cambiar la estrategia de cálculo de costo no toca al Controller ni al dominio.</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Patrones GoF ── -->
+        <div class="docs-block" id="gof">
+          <div class="docs-block-eyebrow">Hitos 6 y 7 · Gang of Four</div>
+          <h3>Patrones GoF Creacionales</h3>
+          <p>
+            Los patrones GoF (<em>Design Patterns: Elements of Reusable Object-Oriented Software</em>,
+            Gamma et al.) abordan problemas recurrentes de diseño con soluciones probadas.
+            Se implementaron los cinco patrones creacionales del catálogo.
+          </p>
+          <div class="pattern-grid">
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 6</span></div>
+              <div class="p-name">Singleton</div>
+              <div class="p-intent">Garantizar que una clase tenga una única instancia en toda la aplicación y proveer un punto de acceso global a ella.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>Logger.obtenerInstancia()</code> — trazas unificadas y ordenadas.<br>
+                <code>ConexionBD.obtenerInstancia()</code> — acceso único a persistencia.<br>
+                <code>ConfiguracionSistema.getInstance()</code> — configuración regional mutable.<br>
+                Todos usan <strong>double-checked locking</strong> con campo <code>volatile</code>.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 6</span></div>
+              <div class="p-name">Factory Method</div>
+              <div class="p-intent">Definir una interfaz para crear objetos, pero dejar que las subclases (o variantes) decidan qué clase concreta instanciar.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>FabricaDeEnvios</code> (Express / Standard / Económico).<br>
+                <code>FabricaDeNotificadores</code> (Email / SMS / Push).<br>
+                <code>FabricaDeVehiculos</code> (Auto / Camión / Moto, por enum).<br>
+                <code>UsuarioFactory</code> y <code>VehiculoFactory</code> (por String).<br>
+                El controller no conoce ninguna subclase concreta.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 7</span></div>
+              <div class="p-name">Abstract Factory</div>
+              <div class="p-intent">Proveer una interfaz para crear familias de objetos relacionados sin especificar sus clases concretas — garantizando que los objetos de una familia sean compatibles entre sí.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>LogiSmartFactory</code> produce tres productos: <code>Vehiculo</code>, <code>CalculadorCostos</code>, <code>ProveedorMapas</code>.<br>
+                <strong>Argentina:</strong> Auto + IVA 21% + Google Maps.<br>
+                <strong>Brasil:</strong> Moto + ICMS 12% + Here Maps.<br>
+                <code>LogiSmartApp</code> trabaja solo con la interfaz; no sabe qué región corre.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 7</span></div>
+              <div class="p-name">Builder</div>
+              <div class="p-intent">Separar la construcción de un objeto complejo de su representación, permitiendo que el mismo proceso de construcción genere distintas representaciones.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>Envio.EnvioBuilder</code>: clase interna estática con constructor privado en <code>Envio</code>. 9 campos opcionales con valores por defecto. API fluida (<em>fluent</em>): <code>new Envio.EnvioBuilder(id, origen, destino).peso(2.5).fragil(true).build()</code>. Elimina constructores telescópicos.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 7</span></div>
+              <div class="p-name">Prototype</div>
+              <div class="p-intent">Especificar los tipos de objetos a crear usando una instancia prototípica y crear nuevos objetos copiándola, evitando el costo de la construcción completa.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>Envio implements Cloneable</code>. El método <code>clone()</code> realiza una copia profunda de la lista <code>ordenes</code> para evitar estado compartido entre clones. <code>setId()</code> permite diferenciar identidad post-clonación. Usado para crear cientos de envíos similares sin repetir toda la construcción.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section><!-- /docs -->
+
+  </body>
+</html>
+</html>

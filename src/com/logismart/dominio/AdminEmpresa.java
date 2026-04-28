@@ -54,6 +54,13 @@ public class AdminEmpresa extends Usuario implements IPermisos {
 	public void gestionarSuscripcion() {
 	}
 
+	public String getNombre() { return getUsername(); }
+
+	@Override
+	public void saludar() {
+		System.out.println("[AdminEmpresa] Hola, soy el administrador de empresa " + getUsername() + ".");
+	}
+
 	// IPermisos: AdminEmpresa gestiona su empresa, consulta reportes, pero no asigna rutas
 	@Override
 	public boolean puedeCrearEnvio() {

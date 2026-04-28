@@ -23,6 +23,11 @@ public final class Logger {
         this.lock = new Object();
     }
 
+    /** Alias: algunos módulos usan la convención de nombres en inglés. */
+    public static Logger getInstance() {
+        return obtenerInstancia();
+    }
+
     public static Logger obtenerInstancia() {
         if (instancia == null) {
             synchronized (Logger.class) {
@@ -32,6 +37,11 @@ public final class Logger {
             }
         }
         return instancia;
+    }
+
+    /** Alias: algunos módulos usan la convención de nombres en inglés. */
+    public void info(String mensaje) {
+        log(mensaje);
     }
 
     public void log(String mensaje) {
