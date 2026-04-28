@@ -17,3 +17,6 @@ sources.txt
 *.iml
 .vscode/
 *.swp
+
+# Playwright MCP artifacts
+.playwright-mcp/

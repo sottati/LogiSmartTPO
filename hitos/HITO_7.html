@@ -314,31 +314,58 @@ public class LogiSmartFactoryBrasil
         <div class="diagram">
           <pre class="mermaid">classDiagram
 direction TB
+
 class LogiSmartFactory {
   &lt;&lt;interface&gt;&gt;
   +crearVehiculo() Vehiculo
   +crearCalculadorCostos() CalculadorCostos
   +crearProveedorMapas() ProveedorMapas
 }
+
 class LogiSmartFactoryArgentina {
   +crearVehiculo() Auto
   +crearCalculadorCostos() CalculadorCostosArgentina
   +crearProveedorMapas() GoogleMapsArgentina
 }
+
 class LogiSmartFactoryBrasil {
   +crearVehiculo() Moto
   +crearCalculadorCostos() CalculadorCostosBrasil
   +crearProveedorMapas() HereMaps
 }
-class Vehiculo { +conducir(); +getTipo() String }
-class Auto { +conducir() }
-class Moto { +conducir() }
-class CalculadorCostos { &lt;&lt;interface&gt;&gt; +calcularCosto(peso) double }
-class CalculadorCostosArgentina { (100+peso×15)×1.21 }
-class CalculadorCostosBrasil    { (80+peso×12)×1.12 }
-class ProveedorMapas { &lt;&lt;interface&gt;&gt; +obtenerRuta(origen, destino) String }
-class GoogleMapsArgentina { "Ruta AR: ..." }
-class HereMaps            { "Ruta BR: ..." }
+
+class Vehiculo {
+  +conducir()
+  +getTipo() String
+}
+class Auto {
+  +conducir()
+}
+class Moto {
+  +conducir()
+}
+
+class CalculadorCostos {
+  &lt;&lt;interface&gt;&gt;
+  +calcularCosto(peso) double
+}
+class CalculadorCostosArgentina {
+  +calcularCosto(peso) double
+}
+class CalculadorCostosBrasil {
+  +calcularCosto(peso) double
+}
+
+class ProveedorMapas {
+  &lt;&lt;interface&gt;&gt;
+  +obtenerRuta(origen, destino) String
+}
+class GoogleMapsArgentina {
+  +obtenerRuta(origen, destino) String
+}
+class HereMaps {
+  +obtenerRuta(origen, destino) String
+}
 
 LogiSmartFactory &lt;|.. LogiSmartFactoryArgentina
 LogiSmartFactory &lt;|.. LogiSmartFactoryBrasil
@@ -496,6 +523,7 @@ new Envio("ENV001", "BA", "CBA", "Medicinas", 2.5, true, true, false, true, "...
         <div class="diagram">
           <pre class="mermaid">classDiagram
 direction TB
+
 class Envio {
   &lt;&lt;Cloneable&gt;&gt;
   -id: String
@@ -514,6 +542,7 @@ class Envio {
   +clone() Envio
   +setId(String)
 }
+
 class EnvioBuilder {
   +id: String
   +origen: String
@@ -521,20 +550,21 @@ class EnvioBuilder {
   +descripcion: String
   +peso: double
   +fragil: boolean
-  +EnvioBuilder(id, origen, destino)
-  +descripcion(d) EnvioBuilder
-  +peso(p) EnvioBuilder
-  +fragil(f) EnvioBuilder
-  +requiereSignatura(r) EnvioBuilder
-  +requiereRefrigeracion(r) EnvioBuilder
-  +requiereAseguranza(r) EnvioBuilder
-  +instruccionesEspeciales(i) EnvioBuilder
-  +contactoEmergencia(c) EnvioBuilder
-  +horaEntregaPreferida(h) EnvioBuilder
+  +EnvioBuilder(String, String, String)
+  +descripcion(String) EnvioBuilder
+  +peso(double) EnvioBuilder
+  +fragil(boolean) EnvioBuilder
+  +requiereSignatura(boolean) EnvioBuilder
+  +requiereRefrigeracion(boolean) EnvioBuilder
+  +requiereAseguranza(boolean) EnvioBuilder
+  +instruccionesEspeciales(String) EnvioBuilder
+  +contactoEmergencia(String) EnvioBuilder
+  +horaEntregaPreferida(LocalTime) EnvioBuilder
   +build() Envio
 }
-Envio +-- EnvioBuilder : clase interna estática
-EnvioBuilder ..&gt; Envio : build() crea</pre>
+
+Envio -- EnvioBuilder : clase interna estatica
+EnvioBuilder ..&gt; Envio : build crea</pre>
         </div>
         <div class="pill">✅ Constructor privado · ✅ 9 métodos fluidos · ✅ Método build() · ✅ Código compilable</div>
       </section>
@@ -765,69 +795,226 @@ Note over Proto: El prototipo no se modifica.<br/>Cada clon tiene su propio id<b
         <div class="diagram">
           <pre class="mermaid">classDiagram
 direction LR
+
 class LogiSmartApp {
   -factory: LogiSmartFactory
   -logger: Logger
   -config: ConfiguracionSistema
   -envios: List~Envio~
   -usuarios: List~Usuario~
-  +crearEnvio(origen, destino)
-  +crearEnviosMultiples(cantidad)
-  +crearUsuario(tipo, nombre)
-  +procesarEnvio(origen, destino, peso)
+  +LogiSmartApp(String)
+  +crearEnvio(String, String)
+  +crearEnviosMultiples(int)
+  +crearUsuario(String, String)
+  +procesarEnvio(String, String, double)
 }
 
-class Logger { &lt;&lt;Singleton&gt;&gt; +getInstance() Logger; +info(msg) }
-class ConfiguracionSistema { &lt;&lt;Singleton&gt;&gt; +getInstance() ConfiguracionSistema }
+class Logger {
+  &lt;&lt;Singleton&gt;&gt;
+  -instancia: Logger
+  +getInstance() Logger
+  +obtenerInstancia() Logger
+  +info(String)
+  +log(String)
+  +logError(String, Exception)
+}
 
-class LogiSmartFactory { &lt;&lt;interface&gt;&gt; +crearVehiculo(); +crearCalculadorCostos(); +crearProveedorMapas() }
-class LogiSmartFactoryArgentina
-class LogiSmartFactoryBrasil
-LogiSmartFactory &lt;|.. LogiSmartFactoryArgentina
-LogiSmartFactory &lt;|.. LogiSmartFactoryBrasil
+class ConfiguracionSistema {
+  &lt;&lt;Singleton&gt;&gt;
+  -instance: ConfiguracionSistema
+  -empresa: String
+  -version: String
+  -region: String
+  +getInstance() ConfiguracionSistema
+  +getEmpresa() String
+  +getVersion() String
+  +getRegion() String
+  +setRegion(String)
+}
 
-class UsuarioFactory { &lt;&lt;Factory&gt;&gt; +crearUsuario(tipo, nombre) Usuario }
-class VehiculoFactory { &lt;&lt;Factory&gt;&gt; +crearVehiculo(tipo) Vehiculo }
+class LogiSmartFactory {
+  &lt;&lt;interface&gt;&gt;
+  +crearVehiculo() Vehiculo
+  +crearCalculadorCostos() CalculadorCostos
+  +crearProveedorMapas() ProveedorMapas
+}
 
-class Usuario { +saludar() }
-class ClienteFinal { +saludar() }
-class OperadorLogistico { +saludar() }
-class AdminEmpresa { +saludar() }
-Usuario &lt;|-- ClienteFinal
-Usuario &lt;|-- OperadorLogistico
-Usuario &lt;|-- AdminEmpresa
+class LogiSmartFactoryArgentina {
+  +crearVehiculo() Vehiculo
+  +crearCalculadorCostos() CalculadorCostos
+  +crearProveedorMapas() ProveedorMapas
+}
 
-class Vehiculo { +conducir() }
-class Auto { +conducir() }
-class Moto { +conducir() }
-Vehiculo &lt;|-- Auto
-Vehiculo &lt;|-- Moto
+class LogiSmartFactoryBrasil {
+  +crearVehiculo() Vehiculo
+  +crearCalculadorCostos() CalculadorCostos
+  +crearProveedorMapas() ProveedorMapas
+}
+
+class CalculadorCostos {
+  &lt;&lt;interface&gt;&gt;
+  +calcularCosto(double) double
+}
+
+class CalculadorCostosArgentina {
+  +calcularCosto(double) double
+}
+
+class CalculadorCostosBrasil {
+  +calcularCosto(double) double
+}
+
+class ProveedorMapas {
+  &lt;&lt;interface&gt;&gt;
+  +obtenerRuta(String, String) String
+}
+
+class GoogleMapsArgentina {
+  +obtenerRuta(String, String) String
+}
+
+class HereMaps {
+  +obtenerRuta(String, String) String
+}
+
+class UsuarioFactory {
+  &lt;&lt;Factory&gt;&gt;
+  +crearUsuario(String, String) Usuario
+}
+
+class FabricaDeVehiculos {
+  &lt;&lt;Factory&gt;&gt;
+  +crearVehiculo(TipoVehiculo) Vehiculo
+  +crearVehiculo(TipoVehiculo, String) Vehiculo
+}
+
+class Usuario {
+  -id: String
+  -username: String
+  -email: String
+  -passwordHash: String
+  -rol: String
+  -estado: String
+  +saludar()
+}
+
+class ClienteFinal {
+  -nombre: String
+  -telefono: String
+  -direccionEntrega: String
+  +consultarTracking()
+  +verETA()
+  +confirmarRecepcion()
+  +saludar()
+}
+
+class OperadorLogistico {
+  -empresa: Empresa
+  -zonaOperacion: String
+  -turno: String
+  +gestionarFlota()
+  +planificarRuta()
+  +crearEnvio(String, LocalDateTime) Envio
+  +saludar()
+}
+
+class AdminEmpresa {
+  -empresa: Empresa
+  -permisosAdmin: String
+  -notificaciones: String
+  +configurarEmpresa()
+  +consultarReportes()
+  +gestionarSuscripcion()
+  +saludar()
+}
+
+class Vehiculo {
+  -id: String
+  -patente: String
+  -capacidadKg: double
+  -tipo: String
+  -disponibilidad: boolean
+  +puedeCargar(double) boolean
+  +estaOperativo() boolean
+  +conducir()
+}
+
+class Auto {
+  +Auto()
+  +conducir()
+}
+
+class Moto {
+  +Moto()
+  +conducir()
+}
 
 class Envio {
   &lt;&lt;Cloneable&gt;&gt;
-  -id, origen, destino, peso, fragil...
+  -id: String
+  -origen: String
+  -destino: String
+  -descripcion: String
+  -peso: double
+  -fragil: boolean
+  -requiereSignatura: boolean
+  -requiereRefrigeracion: boolean
+  -requiereAseguranza: boolean
+  -instruccionesEspeciales: String
+  -contactoEmergencia: String
+  -horaEntregaPreferida: LocalTime
   -Envio(EnvioBuilder)
   +clone() Envio
   +setId(String)
 }
+
 class EnvioBuilder {
-  +EnvioBuilder(id,origen,destino)
-  +peso(p) EnvioBuilder
-  +fragil(f) EnvioBuilder
+  -id: String
+  -origen: String
+  -destino: String
+  -descripcion: String
+  -peso: double
+  -fragil: boolean
+  +EnvioBuilder(String, String, String)
+  +descripcion(String) EnvioBuilder
+  +peso(double) EnvioBuilder
+  +fragil(boolean) EnvioBuilder
+  +requiereSignatura(boolean) EnvioBuilder
+  +requiereRefrigeracion(boolean) EnvioBuilder
+  +requiereAseguranza(boolean) EnvioBuilder
+  +instruccionesEspeciales(String) EnvioBuilder
+  +contactoEmergencia(String) EnvioBuilder
+  +horaEntregaPreferida(LocalTime) EnvioBuilder
   +build() Envio
 }
-Envio +-- EnvioBuilder
 
-LogiSmartApp --> Logger
-LogiSmartApp --> ConfiguracionSistema
-LogiSmartApp --> LogiSmartFactory
-LogiSmartApp --> UsuarioFactory
-LogiSmartApp --> Envio
-UsuarioFactory ..> ClienteFinal
-UsuarioFactory ..> OperadorLogistico
-UsuarioFactory ..> AdminEmpresa
-LogiSmartFactoryArgentina ..> Auto
-LogiSmartFactoryBrasil ..> Moto</pre>
+LogiSmartFactory &lt;|.. LogiSmartFactoryArgentina
+LogiSmartFactory &lt;|.. LogiSmartFactoryBrasil
+CalculadorCostos &lt;|.. CalculadorCostosArgentina
+CalculadorCostos &lt;|.. CalculadorCostosBrasil
+ProveedorMapas &lt;|.. GoogleMapsArgentina
+ProveedorMapas &lt;|.. HereMaps
+Usuario &lt;|-- ClienteFinal
+Usuario &lt;|-- OperadorLogistico
+Usuario &lt;|-- AdminEmpresa
+Vehiculo &lt;|-- Auto
+Vehiculo &lt;|-- Moto
+Envio -- EnvioBuilder
+
+LogiSmartApp ..&gt; Logger
+LogiSmartApp ..&gt; ConfiguracionSistema
+LogiSmartApp ..&gt; LogiSmartFactory
+LogiSmartApp ..&gt; UsuarioFactory
+LogiSmartApp ..&gt; Envio
+UsuarioFactory ..&gt; ClienteFinal
+UsuarioFactory ..&gt; OperadorLogistico
+UsuarioFactory ..&gt; AdminEmpresa
+LogiSmartFactoryArgentina ..&gt; Auto
+LogiSmartFactoryArgentina ..&gt; CalculadorCostosArgentina
+LogiSmartFactoryArgentina ..&gt; GoogleMapsArgentina
+LogiSmartFactoryBrasil ..&gt; Moto
+LogiSmartFactoryBrasil ..&gt; CalculadorCostosBrasil
+LogiSmartFactoryBrasil ..&gt; HereMaps</pre>
         </div>
 
         <div class="pill">✅ Singleton · ✅ Abstract Factory · ✅ Factory Method · ✅ Builder · ✅ Prototype · ✅ Compilable</div>
