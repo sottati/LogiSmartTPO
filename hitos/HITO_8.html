@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITO 8 - LogiSmart | Patrones Estructurales I</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+      :root { --primary:#17324d; --primary-2:#1f4d78; --accent:#dc6b1f; --bg:#f4f7fb; --surface:#fff; --text:#14202c; --muted:#4f6172; --border:#d9e2ec; --ok:#165b3b; --ok-bg:#ecfdf3; }
+      * { box-sizing:border-box; margin:0; padding:0; }
+      html { scroll-behavior:smooth; }
+      body { font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif; background:linear-gradient(180deg,#f7f9fc 0%,#f2f6fa 100%); color:var(--text); line-height:1.6; }
+      .cover { min-height:70vh; display:grid; place-items:center; text-align:center; padding:2rem; background:radial-gradient(circle at 20% 20%,rgba(31,77,120,.12),transparent 45%),radial-gradient(circle at 80% 10%,rgba(220,107,31,.10),transparent 35%),var(--surface); border-bottom:8px solid var(--primary); }
+      .cover-content { max-width:760px; width:100%; }
+      .university { font-size:.8rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:.4rem; }
+      .subject { font-size:.95rem; font-weight:500; color:var(--primary-2); margin-bottom:2rem; }
+      .cover h1 { font-size:clamp(2.4rem,8vw,4.8rem); color:var(--primary); letter-spacing:-.03em; }
+      .subtitle { margin-top:.75rem; font-size:1.1rem; color:var(--muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:.85rem 0; margin-bottom:2rem; }
+      .team { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; max-width:420px; margin:0 auto 2rem; border-top:2px solid var(--bg); padding-top:1.75rem; }
+      .team-member strong { display:block; font-size:1rem; color:var(--text); margin-bottom:.2rem; }
+      .team-member span { font-size:.82rem; color:var(--muted); font-family:monospace; }
+      .cover-date { font-size:.85rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.12em; }
+      .container { max-width:1080px; margin:0 auto; padding:2.5rem 1.25rem 4rem; }
+      .section { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.75rem; margin-bottom:1.3rem; box-shadow:0 2px 5px rgba(20,32,44,.05); }
+      .section-act { display:inline-flex; align-items:center; gap:.5rem; font-size:.72rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:.4rem; }
+      h2 { color:var(--primary); font-size:1.45rem; margin-bottom:.25rem; }
+      .section > p { color:var(--muted); margin-bottom:.8rem; }
+      h3 { margin:1rem 0 .4rem; color:var(--primary-2); font-size:1.03rem; }
+      ul { margin-left:1.2rem; }
+      li { margin-bottom:.35rem; }
+      table { width:100%; border-collapse:collapse; margin-top:.6rem; font-size:.92rem; }
+      th,td { border:1px solid var(--border); padding:.55rem .7rem; text-align:left; vertical-align:top; }
+      thead th { background:var(--primary); color:#fff; font-size:.8rem; letter-spacing:.04em; text-transform:uppercase; }
+      pre { background:#0f1722; color:#dce9ff; border-radius:10px; padding:1rem; overflow-x:auto; font-size:.8rem; line-height:1.45; }
+      pre.mermaid { background:none; }
+      code { background:#eef3fa; border-radius:4px; padding:.05rem .3rem; }
+      .pill { display:inline-block; margin-top:.6rem; background:var(--ok-bg); color:var(--ok); border:1px solid #b9e7cb; border-radius:999px; padding:.2rem .6rem; font-size:.78rem; font-weight:600; }
+      .grid-2 { display:grid; gap:1rem; grid-template-columns:1fr 1fr; }
+      .grid-3 { display:grid; gap:1rem; grid-template-columns:1fr 1fr 1fr; }
+      .diagram { border:1px solid var(--border); border-radius:10px; padding:.6rem; overflow-x:auto; margin-top:.8rem; }
+      .pattern-badge { display:inline-flex; align-items:center; gap:.4rem; background:#fff0e3; color:#7a3200; border:1px solid #fbd38d; border-radius:6px; padding:.3rem .7rem; font-size:.8rem; font-weight:700; margin-bottom:.6rem; }
+      .side-nav { position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:.15rem; padding:.6rem .5rem; background:rgba(255,255,255,.92); border-right:1px solid var(--border); border-radius:0 10px 10px 0; box-shadow:2px 0 8px rgba(20,32,44,.06); }
+      .side-nav a { display:block; padding:.35rem .75rem; font-size:.7rem; font-weight:500; color:var(--muted); text-decoration:none; border-left:3px solid transparent; transition:all .2s ease; white-space:nowrap; border-radius:0 4px 4px 0; }
+      .side-nav a:hover { color:var(--primary); border-left-color:var(--border); }
+      .side-nav a.active { color:var(--primary); font-weight:700; border-left-color:var(--accent); }
+      @media (max-width:1200px) { .side-nav { display:none; } }
+      @media (max-width:800px) { .grid-2,.grid-3 { grid-template-columns:1fr; } .team { grid-template-columns:1fr; max-width:220px; } }
+    </style>
+  </head>
+  <body>
+    <header class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+        <h1>HITO 8</h1>
+        <div class="subtitle">Patrones Estructurales I - Adapter · Bridge · Composite</div>
+        <div class="team">
+          <div class="team-member"><strong>Rosario Presedo</strong><span>LU: 1146894</span></div>
+          <div class="team-member"><strong>Simon Ottati</strong><span>LU: 1155931</span></div>
+        </div>
+        <div class="cover-date">Abril 2026</div>
+      </div>
+    </header>
+
+    <nav class="side-nav">
+      <a href="#intro">Introducción</a>
+      <a href="#adapter-diseno">Adapter · Diseño</a>
+      <a href="#adapter-impl">Adapter · Impl.</a>
+      <a href="#bridge-diseno">Bridge · Diseño</a>
+      <a href="#bridge-impl">Bridge · Impl.</a>
+      <a href="#composite-diseno">Composite · Diseño</a>
+      <a href="#composite-impl">Composite · Impl.</a>
+      <a href="#integracion">Integración</a>
+      <a href="#conclusion">Conclusión</a>
+    </nav>
+
+    <main class="container">
+      <section class="section" id="intro">
+        <h2>Contexto e integración</h2>
+        <p>El Hito 8 continúa los patrones creacionales de los Hitos 6 y 7 y agrega patrones estructurales para organizar relaciones entre objetos ya existentes.</p>
+        <table>
+          <thead><tr><th>Hito</th><th>Patrones</th><th>Aporte al sistema</th></tr></thead>
+          <tbody>
+            <tr><td>Hito 6</td><td>Singleton + Factory Method</td><td>Creación controlada de servicios y entidades.</td></tr>
+            <tr><td>Hito 7</td><td>Abstract Factory + Builder + Prototype</td><td>Familias regionales, envíos complejos y clonación eficiente.</td></tr>
+            <tr><td>Hito 8</td><td>Adapter + Bridge + Composite</td><td>Integración externa, reportes desacoplados y jerarquía logística.</td></tr>
+          </tbody>
+        </table>
+        <div class="grid-3" style="margin-top:1rem;">
+          <div style="background:#fff8f3;border:1px solid #fbd38d;border-radius:8px;padding:.8rem;"><strong>Adapter</strong><p style="font-size:.86rem;color:var(--muted);">DHL, FedEx, UPS, PayPal y Stripe se usan bajo interfaces internas uniformes.</p></div>
+          <div style="background:#f0f8ff;border:1px solid #bfdbfe;border-radius:8px;padding:.8rem;"><strong>Bridge</strong><p style="font-size:.86rem;color:var(--muted);">Los tipos de reporte evolucionan separados de los formatos PDF, Excel, JSON y CSV.</p></div>
+          <div style="background:#f0fdf4;border:1px solid #b9e7cb;border-radius:8px;padding:.8rem;"><strong>Composite</strong><p style="font-size:.86rem;color:var(--muted);">Centros nacionales, regionales, locales y puntos de entrega se tratan uniformemente.</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="adapter-diseno">
+        <div class="section-act">Actividad 1 · Adapter</div>
+        <h2>Identificación de candidatos</h2>
+        <p>Se identificaron integraciones externas con APIs incompatibles que LogiSmart no puede modificar.</p>
+        <div class="pattern-badge">GoF · Adapter</div>
+        <table>
+          <thead><tr><th>Candidato</th><th>Interfaces incompatibles</th><th>Justificación</th></tr></thead>
+          <tbody>
+            <tr><td>Proveedores de envío</td><td>DHL: <code>registrarPaquete</code>, FedEx: <code>crearShipment</code>, UPS: <code>sendPackage</code></td><td>Todos crean envíos, consultan estado y calculan costo, pero con nombres, tipos y formatos distintos.</td></tr>
+            <tr><td>Proveedores de pago</td><td>PayPal trabaja con transacciones; Stripe cobra en centavos.</td><td>El dominio necesita <code>procesarPago</code>, <code>obtenerEstado</code> y <code>reembolsar</code> sin conocer cada API.</td></tr>
+            <tr><td>Proveedores de mapas</td><td>Google Maps, HERE y OpenStreetMap devuelven rutas con contratos distintos.</td><td>Puede integrarse luego con la misma estrategia sin cambiar el cliente.</td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 3 candidatos identificados · ✅ APIs externas no modificables · ✅ Tratamiento uniforme</div>
+      </section>
+
+      <section class="section" id="adapter-impl">
+        <div class="section-act">Actividad 2 · Adapter</div>
+        <h2>Implementación de Adapters</h2>
+        <p>Se implementaron adapters para envíos y pagos. El cliente depende de interfaces internas, no de APIs externas.</p>
+        <h3>Interfaz esperada por LogiSmart</h3>
+        <pre>public interface ProveedorEnvio {
+    boolean crearEnvio(Envio envio);
+    String obtenerEstado(String numeroSeguimiento);
+    double calcularCosto(Envio envio);
+    String obtenerNombre();
+}</pre>
+        <h3>Adapters implementados</h3>
+        <div class="grid-2">
+          <pre>public class AdapterDHL implements ProveedorEnvio {
+    private final DHLAPI dhlAPI = new DHLAPI();
+
+    public boolean crearEnvio(Envio envio) {
+        String codigo = dhlAPI.registrarPaquete(
+            envio.getOrigen(), envio.getDestino(), envio.getPeso());
+        envio.getSeguimiento().actualizarEstado("DHL:" + codigo);
+        return true;
+    }
+
+    public double calcularCosto(Envio envio) {
+        return dhlAPI.calcularTarifa(
+            envio.getOrigen(), envio.getDestino(), envio.getPeso());
+    }
+}</pre>
+          <pre>public class AdapterStripe implements ProveedorPago {
+    private final StripeAPI stripeAPI = new StripeAPI();
+
+    public boolean procesarPago(double monto, String referencia) {
+        return stripeAPI.charge(monto * 100, referencia);
+    }
+
+    public String obtenerEstado(String idTransaccion) {
+        String estado = stripeAPI.getChargeStatus(idTransaccion);
+        return estado.equals("succeeded") ? "COMPLETADA" : "PENDIENTE";
+    }
+}</pre>
+        </div>
+        <h3>Diagrama de clases - Adapter</h3>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction LR
+class ProveedorEnvio { &lt;&lt;interface&gt;&gt; +crearEnvio(Envio) boolean +obtenerEstado(String) String +calcularCosto(Envio) double +obtenerNombre() String }
+class AdapterDHL
+class AdapterFedEx
+class AdapterUPS
+class DHLAPI { +registrarPaquete(String,String,double) String +consultarEstadoPaquete(String) String +calcularTarifa(String,String,double) double }
+class FedExAPI { +crearShipment(String,String,double) int +getShipmentStatus(int) String +getShippingRate(String,String,double) float }
+class UPSConnector { +sendPackage(String,String,double) boolean +trackPackage(String) String +estimateCost(String,String,double) double }
+ProveedorEnvio &lt;|.. AdapterDHL
+ProveedorEnvio &lt;|.. AdapterFedEx
+ProveedorEnvio &lt;|.. AdapterUPS
+AdapterDHL --> DHLAPI
+AdapterFedEx --> FedExAPI
+AdapterUPS --> UPSConnector</pre></div>
+        <table>
+          <thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>
+          <tbody>
+            <tr><td>¿Por qué traduce?</td><td>Porque cada proveedor usa nombres, tipos y unidades propias. El adapter normaliza eso al contrato interno.</td></tr>
+            <tr><td>¿Qué pasa si agrego otro proveedor?</td><td>Se crea otro adapter que implemente <code>ProveedorEnvio</code>. El servicio no cambia.</td></tr>
+            <tr><td>¿Cómo se testea?</td><td>Con tests de contrato sobre la interfaz y dobles de las APIs externas.</td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 5 adapters · ✅ Traducción de nombres/tipos/unidades · ✅ OCP</div>
+      </section>
+
+      <section class="section" id="bridge-diseno">
+        <div class="section-act">Actividad 3 · Bridge</div>
+        <h2>Identificación de candidatos</h2>
+        <p>Se buscaron dos dimensiones de variación que, con herencia pura, generarían combinaciones innecesarias.</p>
+        <div class="pattern-badge">GoF · Bridge</div>
+        <table>
+          <thead><tr><th>Candidato</th><th>Dimensiones</th><th>Justificación</th></tr></thead>
+          <tbody>
+            <tr><td>Reportes</td><td>Tipo de reporte x formato</td><td>Envios, ingresos y desempeño pueden generarse en PDF, Excel, JSON o CSV. Sin Bridge: 3 x 4 = 12 clases.</td></tr>
+            <tr><td>Notificaciones</td><td>Tipo de notificación x canal</td><td>Urgente, marketing o tracking pueden enviarse por email, SMS o push.</td></tr>
+            <tr><td>Vehículos</td><td>Tipo de vehículo x motor</td><td>Auto, moto y camión podrían combinarse con combustión, eléctrico o híbrido.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="bridge-impl">
+        <div class="section-act">Actividad 4 · Bridge</div>
+        <h2>Implementación de Bridge para reportes</h2>
+        <p>La abstracción <code>Reporte</code> define el contenido. La implementación <code>GeneradorReporte</code> define el formato.</p>
+        <div class="grid-2">
+          <pre>public interface GeneradorReporte {
+    String formatear(String contenido);
+    String obtenerExtension();
+}
+
+public class GeneradorJSON implements GeneradorReporte {
+    public String formatear(String contenido) {
+        return "{\"reporte\": \"" + contenido + "\"}";
+    }
+    public String obtenerExtension() { return "json"; }
+}</pre>
+          <pre>public abstract class Reporte {
+    protected GeneradorReporte generador;
+
+    public String generar() {
+        return generador.formatear(generarContenido());
+    }
+
+    public void setGenerador(GeneradorReporte generador) {
+        this.generador = generador;
+    }
+
+    public abstract String generarContenido();
+}</pre>
+        </div>
+        <h3>Diagrama de clases - Bridge</h3>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction LR
+class Reporte { &lt;&lt;abstract&gt;&gt; #generador: GeneradorReporte +generar() String +setGenerador(GeneradorReporte) +generarContenido()* String }
+class ReporteEnvios
+class ReporteIngresos
+class ReporteDesempenoProveedores
+class GeneradorReporte { &lt;&lt;interface&gt;&gt; +formatear(String) String +obtenerExtension() String }
+class GeneradorPDF
+class GeneradorExcel
+class GeneradorJSON
+class GeneradorCSV
+Reporte <|-- ReporteEnvios
+Reporte <|-- ReporteIngresos
+Reporte <|-- ReporteDesempenoProveedores
+Reporte o-- GeneradorReporte
+GeneradorReporte <|.. GeneradorPDF
+GeneradorReporte <|.. GeneradorExcel
+GeneradorReporte <|.. GeneradorJSON
+GeneradorReporte <|.. GeneradorCSV</pre></div>
+        <table>
+          <thead><tr><th>Escenario</th><th>Impacto</th></tr></thead>
+          <tbody>
+            <tr><td>Nuevo formato</td><td>Agregar una clase <code>GeneradorXML</code>. No se tocan reportes.</td></tr>
+            <tr><td>Nuevo reporte</td><td>Agregar una subclase de <code>Reporte</code>. No se tocan formatos.</td></tr>
+            <tr><td>Cambio en runtime</td><td><code>setGenerador()</code> permite pasar de PDF a CSV sin recrear la abstracción.</td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 4 formatos · ✅ 3 tipos de reporte · ✅ evita 12 clases combinadas</div>
+      </section>
+
+      <section class="section" id="composite-diseno">
+        <div class="section-act">Actividad 5 · Composite</div>
+        <h2>Identificación de candidatos</h2>
+        <p>Se identificaron estructuras jerárquicas donde hojas y contenedores deben tratarse uniformemente.</p>
+        <div class="pattern-badge">GoF · Composite</div>
+        <table>
+          <thead><tr><th>Candidato</th><th>Jerarquía</th><th>Justificación</th></tr></thead>
+          <tbody>
+            <tr><td>Centros de distribución</td><td>Nacional → Regional → Local → Punto de entrega</td><td>La capacidad y ocupación total se calculan recursivamente.</td></tr>
+            <tr><td>Rutas</td><td>Ruta principal → subrutas → paradas</td><td>Permite sumar distancia, tiempo y costo de toda la ruta.</td></tr>
+            <tr><td>Permisos</td><td>Grupo → subgrupo → permiso individual</td><td>Un rol puede heredar permisos de grupos anidados.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="composite-impl">
+        <div class="section-act">Actividad 6 · Composite</div>
+        <h2>Implementación de Composite para centros</h2>
+        <p><code>CentroDistribucion</code> define la interfaz común. <code>CentroRegional</code> contiene hijos y <code>PuntoEntrega</code> actúa como hoja.</p>
+        <div class="grid-2">
+          <pre>public abstract class CentroDistribucion {
+    protected String nombre;
+    protected String ubicacion;
+    protected String codigo;
+
+    public abstract int obtenerCapacidad();
+    public abstract int obtenerOcupacion();
+    public abstract void mostrar(int profundidad);
+
+    public double obtenerPorcentajeOcupacion() {
+        return (double) obtenerOcupacion() / obtenerCapacidad() * 100;
+    }
+}</pre>
+          <pre>public class CentroRegional extends CentroDistribucion {
+    private final List&lt;CentroDistribucion&gt; subcentros = new ArrayList&lt;&gt;();
+
+    public int obtenerCapacidad() {
+        int total = 0;
+        for (CentroDistribucion centro : subcentros) {
+            total += centro.obtenerCapacidad();
+        }
+        return total;
+    }
+}</pre>
+        </div>
+        <h3>Diagrama de clases - Composite</h3>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction TB
+class CentroDistribucion { &lt;&lt;abstract&gt;&gt; #nombre: String #ubicacion: String #codigo: String +obtenerCapacidad()* int +obtenerOcupacion()* int +mostrar(int)* void }
+class CentroRegional { -subcentros: List~CentroDistribucion~ +agregar(CentroDistribucion) +remover(CentroDistribucion) +obtenerCapacidad() int +obtenerOcupacion() int }
+class PuntoEntrega { -capacidad: int -enviosAlmacenados: List~Envio~ +agregarEnvio(Envio) +obtenerCapacidad() int +obtenerOcupacion() int }
+CentroDistribucion <|-- CentroRegional
+CentroDistribucion <|-- PuntoEntrega
+CentroRegional o-- CentroDistribucion</pre></div>
+        <table>
+          <thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>
+          <tbody>
+            <tr><td>¿Por qué los cálculos son recursivos?</td><td>Porque un centro puede contener otros centros y cada hijo resuelve su propia capacidad u ocupación.</td></tr>
+            <tr><td>¿Qué pasa si agrego un nuevo nivel?</td><td>No cambia el cliente. Se agrega otro <code>CentroRegional</code> dentro del árbol.</td></tr>
+            <tr><td>¿Cómo se testea?</td><td>Armando árboles con diferentes niveles y verificando capacidad, ocupación y porcentaje total.</td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 4 niveles posibles · ✅ cálculos recursivos · ✅ hojas y composites uniformes</div>
+      </section>
+
+      <section class="section" id="integracion">
+        <div class="section-act">Actividad 7 · Integración</div>
+        <h2>ServicioLogisticaUnificado</h2>
+        <p>El servicio integra Adapter, Bridge y Composite en un flujo único.</p>
+        <pre>public class ServicioLogisticaUnificado {
+    private final Map&lt;String, ProveedorEnvio&gt; proveedoresEnvio = new HashMap&lt;&gt;();
+    private final Map&lt;String, ProveedorPago&gt; proveedoresPago = new HashMap&lt;&gt;();
+    private final CentroDistribucion centroDistribucion;
+    private final List&lt;Envio&gt; enviosRegistrados = new ArrayList&lt;&gt;();
+
+    public boolean crearEnvio(String nombreProveedor, Envio envio) {
+        ProveedorEnvio proveedor = proveedoresEnvio.get(nombreProveedor); // Adapter
+        if (proveedor.crearEnvio(envio)) {
+            enviosRegistrados.add(envio);
+            return true;
+        }
+        return false;
+    }
+
+    public Reporte generarReporte(String tipoReporte, String formato) {
+        GeneradorReporte generador = obtenerGenerador(formato); // Bridge
+        return new ReporteEnvios(generador, enviosRegistrados);
+    }
+
+    public CentroDistribucion obtenerCentroDistribucion() { // Composite
+        return centroDistribucion;
+    }
+}</pre>
+        <h3>Diagrama de secuencia - Caso completo</h3>
+        <div class="diagram"><pre class="mermaid">sequenceDiagram
+participant Cliente
+participant Servicio as ServicioLogisticaUnificado
+participant Adapter as AdapterDHL
+participant API as DHLAPI
+participant Centro as CentroDistribucion
+participant Reporte as ReporteEnvios
+participant Gen as GeneradorPDF
+
+Cliente->>Servicio: crearEnvio("DHL", envio)
+Servicio->>Adapter: crearEnvio(envio)
+Adapter->>API: registrarPaquete(origen, destino, peso)
+API-->>Adapter: codigo seguimiento
+Adapter-->>Servicio: true
+Servicio->>Servicio: enviosRegistrados.add(envio)
+Cliente->>Servicio: obtenerCentroDistribucion()
+Servicio-->>Cliente: centro raiz
+Cliente->>Centro: obtenerCapacidad()
+Centro->>Centro: suma recursiva de hijos
+Centro-->>Cliente: capacidad total
+Cliente->>Servicio: generarReporte("envios", "pdf")
+Servicio->>Reporte: new ReporteEnvios(GeneradorPDF, envios)
+Cliente->>Reporte: generar()
+Reporte->>Gen: formatear(contenido)
+Gen-->>Reporte: PDF
+Reporte-->>Cliente: reporte generado</pre></div>
+        <div class="pill">✅ 3 patrones integrados · ✅ flujo completo · ✅ servicio extensible</div>
+      </section>
+
+      <section class="section" id="conclusion">
+        <h2>Conclusiones</h2>
+        <table>
+          <thead><tr><th>Patrón</th><th>Cambio de diseño</th><th>Beneficio</th></tr></thead>
+          <tbody>
+            <tr><td>Adapter</td><td>El servicio dejó de depender de APIs externas concretas.</td><td>Agregar proveedores requiere un nuevo adapter, no cambiar el núcleo.</td></tr>
+            <tr><td>Bridge</td><td>Reportes y formatos quedaron desacoplados.</td><td>Se evita la explosión de clases y se permite cambiar formato en runtime.</td></tr>
+            <tr><td>Composite</td><td>La red logística se modela como árbol uniforme.</td><td>Capacidad y ocupación se calculan recursivamente sin lógica especial por nivel.</td></tr>
+          </tbody>
+        </table>
+        <h3>Próximos pasos</h3>
+        <ul>
+          <li>Agregar tests unitarios para adapters, generadores de reportes y árboles de distribución.</li>
+          <li>Conectar proveedores reales reemplazando las APIs simuladas.</li>
+          <li>Extender reportes a XML y HTML sin modificar tipos de reporte existentes.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad:true, theme:"base", themeVariables:{ primaryColor:"#dce9ff", primaryTextColor:"#0d1b2a", primaryBorderColor:"#17324d", lineColor:"#17324d", tertiaryColor:"#f0f4fa", edgeLabelBackground:"#ffffff", actorBkg:"#dce9ff", actorBorder:"#17324d", actorTextColor:"#0d1b2a", signalColor:"#0d1b2a", signalTextColor:"#0d1b2a", noteBorderColor:"#dc6b1f", noteBkgColor:"#fff3e8", noteTextColor:"#0d1b2a" } });
+      const nav = document.querySelector(".side-nav");
+      const sections = document.querySelectorAll("section[id]");
+      if (nav && sections.length) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            const link = nav.querySelector(`a[href="#${e.target.id}"]`);
+            if (link) link.classList.toggle("active", e.isIntersecting);
+          });
+        }, { rootMargin:"-30% 0px -60% 0px" });
+        sections.forEach((s) => observer.observe(s));
+      }
+    </script>
+  </body>
+</html>

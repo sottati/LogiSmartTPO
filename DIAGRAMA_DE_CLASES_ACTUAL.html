@@ -1,0 +1,1154 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diagrama de Clases - LogiSmart</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --primary: #12324b;
+        --primary-2: #1f4f74;
+        --accent: #dc6b1f;
+        --bg: #f5f8fc;
+        --surface: #ffffff;
+        --text: #112030;
+        --muted: #4c5f72;
+        --border: #d8e2ec;
+        --panel-w: 300px;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      /* ── Page layout ── */
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr var(--panel-w);
+        min-height: 100vh;
+      }
+
+      /* ── Main (diagram) column ── */
+      .main-col {
+        padding: 1.25rem;
+        overflow: hidden;
+      }
+
+      .diagram-header {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.1rem 1.4rem;
+        margin-bottom: 1rem;
+      }
+
+      .diagram-header h1 {
+        color: var(--primary);
+        font-size: clamp(1.1rem, 2vw, 1.55rem);
+      }
+
+      .diagram-header p {
+        margin-top: 0.3rem;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .diagram-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.8rem;
+        overflow-x: auto;
+      }
+
+      pre.mermaid {
+        min-width: 1400px;
+        background: none;
+      }
+
+      /* ── Side panel column ── */
+      .side-col {
+        border-left: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .side-inner {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 1.4rem 1.1rem 2rem;
+      }
+
+      .side-inner::-webkit-scrollbar { width: 4px; }
+      .side-inner::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+      .panel-title {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 1.1rem;
+      }
+
+      /* ── Hito blocks ── */
+      .hito-block { margin-bottom: 1.25rem; }
+
+      .hito-block-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .hito-badge {
+        flex-shrink: 0;
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--primary);
+      }
+
+      .hito-block-header h2 {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--primary);
+        line-height: 1.2;
+      }
+
+      .hito-block-header span {
+        font-size: 0.72rem;
+        color: var(--muted);
+        font-weight: 400;
+      }
+
+      /* ── Pattern entries ── */
+      .pattern {
+        padding: 0.5rem 0.7rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        margin-bottom: 0.45rem;
+        background: var(--bg);
+      }
+
+      .pattern-name {
+        font-size: 0.77rem;
+        font-weight: 700;
+        color: var(--primary-2);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-bottom: 0.2rem;
+      }
+
+      .pattern-tag {
+        display: inline-block;
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 0.05rem 0.35rem;
+        border-radius: 3px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .tag-grasp { background: #dce9ff; color: #12324b; }
+      .tag-gof   { background: #fff0e3; color: #7a3200; }
+      .tag-base  { background: #e6f4ea; color: #1f5d3a; }
+
+      .pattern-desc {
+        font-size: 0.74rem;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      .pattern-desc code {
+        background: #e8eff7;
+        border-radius: 3px;
+        padding: 0 0.25rem;
+        font-size: 0.71rem;
+      }
+
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 1rem 0;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 900px) {
+        .layout { grid-template-columns: 1fr; }
+        .side-col { border-left: none; border-top: 1px solid var(--border); }
+        .side-inner { position: static; height: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+
+      <!-- ── Diagram column ── -->
+      <main class="main-col">
+        <div class="diagram-header">
+          <h1>Diagrama de Clases - LogiSmart</h1>
+          <p>Modelo acumulativo del sistema. Refleja todos los patrones aplicados a lo largo del TPO.</p>
+        </div>
+
+        <div class="diagram-wrap">
+          <pre class="mermaid">classDiagram
+direction LR
+
+%% ---- CONTROLLER ----
+class LogiSmartController {
+  -ConexionBD bd
+  -Logger logger
+  +crearEnvio(solicitante, empresa, cliente, prioridad, fecha) Envio
+  +crearEnvio(solicitante, empresa, tipoEnvio, fecha) Envio
+  +asignarRuta(solicitante, idEnvio, rutas, flota, cliente) Ruta
+  +calcularCosto(idEnvio) double
+  +obtenerEstado(idEnvio) String
+  +cancelarEnvio(solicitante, idEnvio, cliente)
+  +registrarVehiculoEnFlota(solicitante, tipoVehiculo, patente) Vehiculo
+}
+
+%% ---- DOMAIN: USUARIOS ----
+class Usuario {
+  -id: String
+  -username: String
+  -email: String
+  -passwordHash: String
+  -rol: String
+  -estado: String
+  +iniciarSesion(username, password)
+  +cambiarPassword(newPasswordHash)
+  +cerrarSesion()
+}
+
+class OperadorLogistico
+class AdminEmpresa
+class Transportista
+class ClienteFinal
+class AdminPlataforma
+
+class IPermisos {
+  &lt;&lt;interface&gt;&gt;
+  +puedeCrearEnvio() boolean
+  +puedeAsignarRuta() boolean
+  +puedeVerReportes() boolean
+  +puedeGestionarFlota() boolean
+  +puedeAdministrarEmpresas() boolean
+}
+
+OperadorLogistico ..|&gt; IPermisos
+AdminEmpresa ..|&gt; IPermisos
+Transportista ..|&gt; IPermisos
+ClienteFinal ..|&gt; IPermisos
+AdminPlataforma ..|&gt; IPermisos
+
+AdminEmpresa --|&gt; Usuario
+OperadorLogistico --|&gt; Usuario
+Transportista --|&gt; Usuario
+ClienteFinal --|&gt; Usuario
+AdminPlataforma --|&gt; Usuario
+
+%% ---- DOMAIN: CORE ----
+class Empresa {
+  -id: String
+  -razonSocial: String
+  -cuit: String
+  -estado: String
+  -fechaAlta: LocalDate
+  +activar()
+  +suspender()
+  +actualizarDatos(nuevaRazonSocial, nuevoCuit)
+}
+
+class Flota {
+  -id: String
+  -empresa: Empresa
+  -vehiculos: Set~Vehiculo~
+  -estado: String
+  +obtenerDisponibles() Set~Vehiculo~
+  +agregarVehiculo(vehiculo)
+  +quitarVehiculo(vehiculo)
+}
+
+class Vehiculo {
+  -id: String
+  -patente: String
+  -capacidadKg: double
+  -tipo: String
+  -disponibilidad: boolean
+  +puedeCargar(pesoTotalKg) boolean
+  +asignarRuta()
+  +estaOperativo() boolean
+  +liberar()
+  +actualizarCapacidad(nuevaCapacidadKg)
+}
+
+class Envio {
+  -id: String
+  -empresa: Empresa
+  -estado: String
+  -prioridad: String
+  -fechaProgramada: LocalDateTime
+  -ordenes: List~Orden~
+  -seguimiento: SeguimientoEnvio
+  -entrega: Entrega
+  +agregarOrden(orden)
+  +reprogramar(nuevaFechaProgramada)
+  +iniciar()
+  +cancelar()
+  +cerrar()
+  +clone() Envio
+  +setId(id)
+}
+
+class Orden {
+  -id: String
+  -canalOrigen: String
+  -estado: String
+  -fechaCreacion: LocalDateTime
+  -totalBultos: int
+  -envio: Envio
+  +marcarPendienteEnvio()
+  +asociarEnvio(envio)
+  +actualizarEstado(nuevoEstado)
+}
+
+class Ruta {
+  -id: String
+  -distanciaKm: double
+  -duracionEstimadaMin: int
+  -estado: String
+  -transportistaAsignado: Transportista
+  -vehiculoAsignado: Vehiculo
+  -paradas: List~PuntoEntrega~
+  +optimizar()
+  +recalcular()
+  +asignarTransportista(transportista)
+  +calcularDistanciaTotal() double
+  +calcularCostoEstimado() double
+  +asignarVehiculo(vehiculo)
+  +agregarParada(punto)
+}
+
+class PuntoEntrega {
+  -direccion: String
+  -lat: double
+  -lng: double
+  -ventanaHorario: String
+  -ordenParada: int
+  +validarVentana() boolean
+  +actualizarCoordenadas(nuevaLat, nuevaLng)
+}
+
+class SeguimientoEnvio {
+  -id: String
+  -estadoActual: String
+  -ultimoEvento: String
+  -ultimaActualizacion: LocalDateTime
+  -eta: ETA
+  -historialPosiciones: List~PosicionGPS~
+  +actualizarEstado(nuevoEstado)
+  +actualizarEstado(nuevoEstado, nuevoEvento)
+  +registrarPosicion(posicionGPS)
+  +registrarPosicion(lat, lng, precision)
+  +actualizarETA(minutos, nivelConfianza)
+}
+
+class PosicionGPS {
+  -lat: double
+  -lng: double
+  -timestamp: LocalDateTime
+  -precision: double
+  +esValida() boolean
+  +distanciaA(otra) double
+}
+
+class ETA {
+  -valorMinutos: int
+  -actualizadoEn: LocalDateTime
+  -nivelConfianza: double
+  +recalcular(nuevoValorMinutos, nuevoNivelConfianza)
+  +vencio() boolean
+}
+
+class Entrega {
+  -id: String
+  -resultado: String
+  -fechaHora: LocalDateTime
+  -observaciones: String
+  -pruebaAdjunta: String
+  +confirmarExitosa()
+  +confirmarExitosa(nuevasObservaciones, nuevaPruebaAdjunta)
+  +registrarFallida(nuevasObservaciones)
+  +adjuntarPrueba(pruebaAdjunta)
+}
+
+class Suscripcion {
+  -id: String
+  -plan: String
+  -estado: String
+  -montoMensual: double
+  -proximoVencimiento: LocalDate
+  +activar()
+  +pausar()
+  +renovar()
+  +cambiarPlan(nuevoPlan, nuevoMontoMensual)
+}
+
+class Cobro {
+  -id: String
+  -monto: double
+  -estado: String
+  -fecha: LocalDateTime
+  -medioPago: String
+  +autorizar()
+  +registrarPago()
+  +marcarFallido()
+  +emitirComprobante() String
+}
+
+class Reporte {
+  -id: String
+  -periodo: String
+  -tipo: String
+  -generadoEn: LocalDateTime
+  +generar()
+}
+
+class Metrica {
+  -nombre: String
+  -valor: double
+  -unidad: String
+  -timestamp: LocalDateTime
+  +actualizarValor(nuevoValor)
+  +normalizar(divisor)
+  +comparar(otra) int
+}
+
+%% ---- APPLICATION SERVICES ----
+class ReporteService {
+  +exportar(reporte) String
+  +compartir(reporte, destino)
+}
+
+class TrackingService {
+  +publicarTracking(seguimiento)
+}
+
+class AutenticacionService {
+  +hashearPassword(passwordPlano) String
+  +validarPassword(usuario, passwordPlano) boolean
+  +cambiarPassword(usuario, nuevaPasswordPlano)
+}
+
+class BCrypt {
+  +hash(password) String
+}
+
+%% ---- GRASP: PURE FABRICATION ----
+class RepositorioDeEnvios {
+  +guardar(envio)
+  +buscarPorId(id) Optional~Envio~
+  +listarPorEstado(estado) List~Envio~
+}
+
+class ValidadorDeEnvios {
+  +validarCreacion(idCliente, prioridad, fecha) ResultadoValidacion
+  +validarAsignacionRuta(envio, ruta, vehiculo) ResultadoValidacion
+}
+
+class ServicioDeNotificaciones {
+  +notificarCreacionDeEnvio(envio, cliente)
+  +notificarAsignacionDeRuta(envio, ruta, cliente)
+  +notificarCancelacion(envio, cliente)
+}
+
+class CalculadorDeRutas {
+  +seleccionarRuta(envio, rutas) Ruta
+  +cambiarEstrategia(nueva)
+}
+
+%% ---- POLYMORPHISM ----
+class Notificador {
+  &lt;&lt;interface&gt;&gt;
+  +notificar(destinatario, asunto, mensaje)
+  +getCanal() String
+}
+class NotificadorEmail
+class NotificadorSMS
+class NotificadorPush
+NotificadorEmail ..|&gt; Notificador
+NotificadorSMS ..|&gt; Notificador
+NotificadorPush ..|&gt; Notificador
+
+class CalculadorDeRuta {
+  &lt;&lt;interface&gt;&gt;
+  +calcular(envio, rutas) Ruta
+}
+class RutaMasCercana
+class RutaMenosCongestionada
+class RutaMasBarata
+RutaMasCercana ..|&gt; CalculadorDeRuta
+RutaMenosCongestionada ..|&gt; CalculadorDeRuta
+RutaMasBarata ..|&gt; CalculadorDeRuta
+
+%% ---- PROTECTED VARIATIONS ----
+class CalculadorDeCosto {
+  &lt;&lt;interface&gt;&gt;
+  +calcular(envio) double
+}
+class CalculadorDeCostoFijo
+class CalculadorDeCostoPorPeso
+class CalculadorDeCostoPorDistancia
+CalculadorDeCostoFijo ..|&gt; CalculadorDeCosto
+CalculadorDeCostoPorPeso ..|&gt; CalculadorDeCosto
+CalculadorDeCostoPorDistancia ..|&gt; CalculadorDeCosto
+
+class AsignadorDeVehiculos {
+  &lt;&lt;interface&gt;&gt;
+  +asignar(flota, envio) Optional~Vehiculo~
+}
+class AsignadorPorDisponibilidad
+class AsignadorPorCapacidad
+AsignadorPorDisponibilidad ..|&gt; AsignadorDeVehiculos
+AsignadorPorCapacidad ..|&gt; AsignadorDeVehiculos
+
+class CalculadorDeTiempo {
+  &lt;&lt;interface&gt;&gt;
+  +estimarMinutos(ruta) int
+}
+class CalculadorDeTiempoSimple
+class CalculadorDeTiempoConTrafico
+CalculadorDeTiempoSimple ..|&gt; CalculadorDeTiempo
+CalculadorDeTiempoConTrafico ..|&gt; CalculadorDeTiempo
+
+class GeneradorDeReportes {
+  &lt;&lt;interface&gt;&gt;
+  +exportar(reporte) String
+  +getFormato() String
+}
+class GeneradorDeReportesPDF
+class GeneradorDeReportesJSON
+GeneradorDeReportesPDF ..|&gt; GeneradorDeReportes
+GeneradorDeReportesJSON ..|&gt; GeneradorDeReportes
+
+%% ---- GOF: SINGLETONS ----
+class ConexionBD {
+  &lt;&lt;Singleton&gt;&gt;
+  -instancia ConexionBD
+  +obtenerInstancia() ConexionBD
+  +ejecutarQuery(sql)
+}
+
+class Logger {
+  &lt;&lt;Singleton&gt;&gt;
+  -instancia Logger
+  +obtenerInstancia() Logger
+  +log(mensaje)
+  +logError(contexto, error)
+}
+
+%% ---- GOF: FACTORIES ----
+class FabricaDeEnvios {
+  &lt;&lt;Factory&gt;&gt;
+  +crearEnvio(tipo, empresa, fecha) Envio
+}
+class FabricaDeNotificadores {
+  &lt;&lt;Factory&gt;&gt;
+  +crearNotificador(tipo) Notificador
+}
+class FabricaDeVehiculos {
+  &lt;&lt;Factory&gt;&gt;
+  +crearVehiculo(tipo, patente) Vehiculo
+}
+
+class TipoEnvio {
+  &lt;&lt;enum&gt;&gt;
+  EXPRESS
+  STANDARD
+  ECONOMICO
+}
+class TipoNotificador {
+  &lt;&lt;enum&gt;&gt;
+  EMAIL
+  SMS
+  PUSH
+}
+class TipoVehiculo {
+  &lt;&lt;enum&gt;&gt;
+  AUTO
+  CAMION
+  MOTO
+}
+
+%% ---- GOF: ABSTRACT FACTORY (Hito 7) ----
+class ConfiguracionSistema {
+  &lt;&lt;Singleton&gt;&gt;
+  -instancia ConfiguracionSistema
+  -empresa String
+  -version String
+  -region String
+  +getInstance() ConfiguracionSistema
+  +getRegion() String
+  +setRegion(region)
+}
+
+class LogiSmartFactory {
+  &lt;&lt;interface&gt;&gt;
+  +crearVehiculo() Vehiculo
+  +crearCalculadorCostos() CalculadorCostos
+  +crearProveedorMapas() ProveedorMapas
+}
+class LogiSmartFactoryArgentina
+class LogiSmartFactoryBrasil
+LogiSmartFactoryArgentina ..|&gt; LogiSmartFactory
+LogiSmartFactoryBrasil ..|&gt; LogiSmartFactory
+
+class CalculadorCostos {
+  &lt;&lt;interface&gt;&gt;
+  +calcularCosto(peso) double
+}
+class CalculadorCostosArgentina
+class CalculadorCostosBrasil
+CalculadorCostosArgentina ..|&gt; CalculadorCostos
+CalculadorCostosBrasil ..|&gt; CalculadorCostos
+
+class ProveedorMapas {
+  &lt;&lt;interface&gt;&gt;
+  +obtenerRuta(origen, destino) String
+}
+class GoogleMapsArgentina
+class HereMaps
+GoogleMapsArgentina ..|&gt; ProveedorMapas
+HereMaps ..|&gt; ProveedorMapas
+
+%% ---- GOF: BUILDER + PROTOTYPE (Hito 7) ----
+class EnvioBuilder {
+  &lt;&lt;Builder&gt;&gt;
+  -id String
+  -origen String
+  -destino String
+  -descripcion String
+  -peso double
+  -fragil boolean
+  +descripcion(d) EnvioBuilder
+  +peso(p) EnvioBuilder
+  +fragil(f) EnvioBuilder
+  +build() Envio
+}
+
+%% ---- VEHICULOS CONCRETOS (Hito 7) ----
+class Auto
+class Moto
+class Camion
+Auto --|&gt; Vehiculo
+Moto --|&gt; Vehiculo
+Camion --|&gt; Vehiculo
+
+%% ---- GOF: ESTRUCTURALES (Hito 8) ----
+class ProveedorEnvio {
+  &lt;&lt;interface&gt;&gt;
+  +crearEnvio(envio) boolean
+  +obtenerEstado(numeroSeguimiento) String
+  +calcularCosto(envio) double
+  +obtenerNombre() String
+}
+class AdapterDHL
+class AdapterFedEx
+class AdapterUPS
+class DHLAPI
+class FedExAPI
+class UPSConnector
+AdapterDHL ..|&gt; ProveedorEnvio
+AdapterFedEx ..|&gt; ProveedorEnvio
+AdapterUPS ..|&gt; ProveedorEnvio
+AdapterDHL --&gt; DHLAPI
+AdapterFedEx --&gt; FedExAPI
+AdapterUPS --&gt; UPSConnector
+
+class ProveedorPago {
+  &lt;&lt;interface&gt;&gt;
+  +procesarPago(monto, referencia) boolean
+  +obtenerEstado(idTransaccion) String
+  +reembolsar(idTransaccion, monto)
+}
+class AdapterPayPal
+class AdapterStripe
+class PayPalAPI
+class StripeAPI
+AdapterPayPal ..|&gt; ProveedorPago
+AdapterStripe ..|&gt; ProveedorPago
+AdapterPayPal --&gt; PayPalAPI
+AdapterStripe --&gt; StripeAPI
+
+class GeneradorReporte {
+  &lt;&lt;interface&gt;&gt;
+  +formatear(contenido) String
+  +obtenerExtension() String
+}
+class GeneradorPDF
+class GeneradorExcel
+class GeneradorJSON
+class GeneradorCSV
+GeneradorPDF ..|&gt; GeneradorReporte
+GeneradorExcel ..|&gt; GeneradorReporte
+GeneradorJSON ..|&gt; GeneradorReporte
+GeneradorCSV ..|&gt; GeneradorReporte
+
+class ReporteBridge {
+  &lt;&lt;abstract&gt;&gt;
+  #generador GeneradorReporte
+  +generarContenido() String
+  +generar() String
+  +setGenerador(generador)
+}
+class ReporteEnviosBridge
+class ReporteIngresosBridge
+class ReporteDesempenoProveedores
+ReporteEnviosBridge --|&gt; ReporteBridge
+ReporteIngresosBridge --|&gt; ReporteBridge
+ReporteDesempenoProveedores --|&gt; ReporteBridge
+ReporteBridge o-- GeneradorReporte
+
+class CentroDistribucion {
+  &lt;&lt;abstract&gt;&gt;
+  #nombre String
+  #ubicacion String
+  #codigo String
+  +obtenerCapacidad() int
+  +obtenerOcupacion() int
+  +mostrar(profundidad)
+}
+class CentroRegional
+class PuntoEntregaCentro
+CentroRegional --|&gt; CentroDistribucion
+PuntoEntregaCentro --|&gt; CentroDistribucion
+CentroRegional o-- CentroDistribucion
+
+class ServicioLogisticaUnificado {
+  -proveedoresEnvio Map~String, ProveedorEnvio~
+  -proveedoresPago Map~String, ProveedorPago~
+  -centroDistribucion CentroDistribucion
+  -enviosRegistrados List~Envio~
+  +crearEnvio(nombreProveedor, envio) boolean
+  +procesarPago(nombreProveedor, monto, referencia) boolean
+  +generarReporte(tipoReporte, formato) ReporteBridge
+  +obtenerCentroDistribucion() CentroDistribucion
+}
+
+%% ---- RELACIONES ----
+LogiSmartController --&gt; RepositorioDeEnvios
+LogiSmartController --&gt; ServicioDeNotificaciones
+LogiSmartController --&gt; ValidadorDeEnvios
+LogiSmartController --&gt; CalculadorDeRutas
+LogiSmartController --&gt; AsignadorDeVehiculos
+LogiSmartController --&gt; CalculadorDeCosto
+LogiSmartController --&gt; CalculadorDeTiempo
+LogiSmartController --&gt; IPermisos
+LogiSmartController --&gt; ConexionBD
+LogiSmartController --&gt; Logger
+LogiSmartController --&gt; FabricaDeEnvios
+LogiSmartController --&gt; FabricaDeVehiculos
+LogiSmartController --&gt; FabricaDeNotificadores
+
+ServicioDeNotificaciones --&gt; Notificador
+CalculadorDeRutas --&gt; CalculadorDeRuta
+
+FabricaDeNotificadores --&gt; Notificador
+FabricaDeEnvios --&gt; TipoEnvio
+FabricaDeEnvios --&gt; Envio
+FabricaDeVehiculos --&gt; TipoVehiculo
+FabricaDeVehiculos --&gt; Vehiculo
+
+Empresa "1" o-- "1" Flota : tiene
+Flota "1" *-- "1..*" Vehiculo : compone
+Empresa "1" o-- "0..*" Envio : opera
+Empresa "1" o-- "0..*" Reporte : genera
+Reporte "1" *-- "1..*" Metrica : incluye
+
+Envio "1" *-- "1..*" Orden : agrupa
+Envio "1" --&gt; "1" Ruta : utiliza
+Ruta "1" *-- "1..*" PuntoEntrega : define
+Orden "0..*" --&gt; "1" PuntoEntrega : entregaEn
+Ruta "1" --&gt; "1" Vehiculo : asigna
+Ruta "1" --&gt; "1" Transportista : ejecutadaPor
+
+Envio "1" *-- "1" SeguimientoEnvio : traza
+SeguimientoEnvio "1" *-- "1..*" PosicionGPS : registra
+SeguimientoEnvio "1" --&gt; "1" ETA : estima
+Envio "1" *-- "1" Entrega : finalizaEn
+ClienteFinal "1" --&gt; "0..*" Envio : consulta
+
+Empresa "1" --&gt; "1" Suscripcion : posee
+Suscripcion "1" *-- "0..*" Cobro : genera
+AdminPlataforma "1" --&gt; "0..*" Suscripcion : administra
+
+ReporteService ..&gt; Reporte : usa
+TrackingService ..&gt; SeguimientoEnvio : usa
+AutenticacionService ..&gt; Usuario : usa
+AutenticacionService ..&gt; BCrypt : delega hashing
+
+%% ---- RELACIONES HITO 7 ----
+LogiSmartFactoryArgentina --&gt; Auto
+LogiSmartFactoryArgentina --&gt; CalculadorCostosArgentina
+LogiSmartFactoryArgentina --&gt; GoogleMapsArgentina
+LogiSmartFactoryBrasil --&gt; Moto
+LogiSmartFactoryBrasil --&gt; CalculadorCostosBrasil
+LogiSmartFactoryBrasil --&gt; HereMaps
+EnvioBuilder ..&gt; Envio : construye
+
+%% ---- RELACIONES HITO 8 ----
+ServicioLogisticaUnificado --&gt; ProveedorEnvio
+ServicioLogisticaUnificado --&gt; ProveedorPago
+ServicioLogisticaUnificado --&gt; CentroDistribucion
+ServicioLogisticaUnificado --&gt; ReporteBridge
+ServicioLogisticaUnificado ..&gt; GeneradorReporte
+          </pre>
+        </div>
+      </main>
+
+      <!-- ── Patterns side panel ── -->
+      <aside class="side-col">
+        <div class="side-inner">
+          <p class="panel-title">Patrones aplicados por hito</p>
+
+          <!-- Hito 1 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge">1</div>
+              <div>
+                <h2>Hito 1</h2>
+                <span>Modelo de negocio</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-base">BASE</span>
+                Contexto y alcance
+              </div>
+              <div class="pattern-desc">
+                Se definieron actores, objetivos y restricciones del sistema LogiSmart.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 2 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge">2</div>
+              <div>
+                <h2>Hito 2</h2>
+                <span>Modelo de dominio</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-base">BASE</span>
+                Clases y relaciones
+              </div>
+              <div class="pattern-desc">
+                Se establecieron las entidades del dominio, sus responsabilidades y asociaciones base.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 4 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge">4</div>
+              <div>
+                <h2>Hito 4</h2>
+                <span>GRASP - Parte I</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Creator
+              </div>
+              <div class="pattern-desc">
+                <code>Envio</code> es responsable de agregar y gestionar sus <code>Orden</code>es, ya que contiene los datos necesarios para crearlas.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Information Expert
+              </div>
+              <div class="pattern-desc">
+                <code>Ruta</code> calcula su propia distancia y costo estimado. <code>Envio</code> gestiona su propio estado (iniciar, cancelar).
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                High Cohesion
+              </div>
+              <div class="pattern-desc">
+                Cada clase tiene una responsabilidad específica y acotada: <code>Ruta</code> no gestiona notificaciones; <code>Flota</code> solo administra vehículos.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Low Coupling
+              </div>
+              <div class="pattern-desc">
+                Las entidades de dominio (<code>Envio</code>, <code>Ruta</code>, <code>Vehiculo</code>) no referencian directamente la infraestructura ni entre sí más de lo necesario.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 5 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge">5</div>
+              <div>
+                <h2>Hito 5</h2>
+                <span>GRASP - Parte II</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Controller
+              </div>
+              <div class="pattern-desc">
+                <code>LogiSmartController</code> es el único punto de entrada desde la UI. Orquesta sin contener lógica de negocio.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Polymorphism
+              </div>
+              <div class="pattern-desc">
+                <code>IPermisos</code> (5 impl.), <code>Notificador</code> (3 impl.), <code>CalculadorDeRuta</code> (3 impl.). Elimina <code>instanceof</code> y <code>switch</code>.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Pure Fabrication
+              </div>
+              <div class="pattern-desc">
+                Clases artificiales sin correlato en el dominio: <code>ServicioDeNotificaciones</code>, <code>RepositorioDeEnvios</code>, <code>ValidadorDeEnvios</code>, <code>CalculadorDeRutas</code>.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Indirection
+              </div>
+              <div class="pattern-desc">
+                <code>ServicioDeNotificaciones</code> intermedia entre el Controller y <code>Notificador</code>. <code>CalculadorDeRutas</code> intermedia hacia <code>CalculadorDeRuta</code>.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Protected Variations
+              </div>
+              <div class="pattern-desc">
+                Puntos de variación protegidos por interfaces: <code>CalculadorDeCosto</code> (3 impl.), <code>AsignadorDeVehiculos</code> (2 impl.), <code>CalculadorDeTiempo</code> (2 impl.), <code>GeneradorDeReportes</code> (2 impl.).
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 6 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge" style="background: var(--accent);">6</div>
+              <div>
+                <h2>Hito 6</h2>
+                <span>GoF - Creacionales I</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Singleton
+              </div>
+              <div class="pattern-desc">
+                <code>ConexionBD</code>: acceso único a persistencia, evita estados divergentes.<br>
+                <code>Logger</code>: trazas unificadas y ordenadas del sistema.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Factory Method
+              </div>
+              <div class="pattern-desc">
+                <code>FabricaDeEnvios</code> (Express / Standard / Económico),
+                <code>FabricaDeNotificadores</code> (Email / SMS / Push),
+                <code>FabricaDeVehiculos</code> (Auto / Camión / Moto).
+                El controller queda desacoplado de las subclases concretas.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 7 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge" style="background: var(--accent);">7</div>
+              <div>
+                <h2>Hito 7</h2>
+                <span>GoF - Creacionales II</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Abstract Factory
+              </div>
+              <div class="pattern-desc">
+                <code>LogiSmartFactory</code>: interfaz regional. <code>LogiSmartFactoryArgentina</code> y <code>LogiSmartFactoryBrasil</code> producen familias compatibles: <code>Vehiculo</code>, <code>CalculadorCostos</code>, <code>ProveedorMapas</code>.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Builder
+              </div>
+              <div class="pattern-desc">
+                <code>Envio.EnvioBuilder</code>: clase interna estática con API fluida. 9 campos opcionales con valores por defecto. Elimina constructores telescópicos.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Prototype
+              </div>
+              <div class="pattern-desc">
+                <code>Envio implements Cloneable</code>: <code>clone()</code> con copia profunda de <code>ordenes</code>. Permite crear cientos de envíos similares sin repetir la construcción completa.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Singleton (ampliado)
+              </div>
+              <div class="pattern-desc">
+                <code>ConfiguracionSistema</code>: nuevo Singleton con <code>getInstance()</code>, propiedad <code>region</code> mutable para soporte multi-región en tiempo de ejecución.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 8 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge" style="background: var(--accent);">8</div>
+              <div>
+                <h2>Hito 8</h2>
+                <span>GoF - Estructurales I</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Adapter
+              </div>
+              <div class="pattern-desc">
+                <code>ProveedorEnvio</code> + <code>AdapterDHL</code>/<code>AdapterFedEx</code>/<code>AdapterUPS</code> y <code>ProveedorPago</code> + <code>AdapterPayPal</code>/<code>AdapterStripe</code> unifican APIs externas.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Bridge
+              </div>
+              <div class="pattern-desc">
+                <code>Reporte</code> (abstracción) se desacopla de <code>GeneradorReporte</code> (implementación) con formatos PDF/Excel/JSON/CSV.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Composite
+              </div>
+              <div class="pattern-desc">
+                <code>CentroDistribucion</code> como componente base, <code>CentroRegional</code> como composite y <code>PuntoEntrega</code> como hoja recursiva.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Integración
+              </div>
+              <div class="pattern-desc">
+                <code>ServicioLogisticaUnificado</code> orquesta Adapter + Bridge + Composite en un flujo único.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+    </div>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          primaryColor: "#f4f8ff",
+          primaryTextColor: "#0f172a",
+          primaryBorderColor: "#12324b",
+          lineColor: "#1f4f74",
+          tertiaryColor: "#f8fbff",
+          edgeLabelBackground: "#ffffff"
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 9: Patrones Estructurales I - Adapter, Bridge, Composite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: #667eea;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #667eea;
+            border-left: 3px solid #fff;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background: white;
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+            font-size: 15px;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .example-box {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2196F3;
+        }
+
+        .highlight {
+            background: #e8eaf6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #764ba2;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .comparison-item.bad {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+
+        .comparison-item.good {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #667eea;
+            color: white;
+        }
+
+        table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .diagram {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            white-space: pre;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+        }
+
+        .icon {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #667eea;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; }
+            .main-content { padding: 20px; }
+            .comparison { grid-template-columns: 1fr; }
+            h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar" id="sidebar">
+            <h2>📚 Navegación</h2>
+            <div class="nav-item active" onclick="showSection('intro')">🚀 Introducción</div>
+            <div class="nav-item" onclick="showSection('adapter')">🔌 Adapter Pattern</div>
+            <div class="nav-item" onclick="showSection('bridge')">🌉 Bridge Pattern</div>
+            <div class="nav-item" onclick="showSection('composite')">🎨 Composite Pattern</div>
+            <div class="nav-item" onclick="showSection('comparacion')">⚖️ Comparación</div>
+            <div class="nav-item" onclick="showSection('casos')">🏢 Casos Reales</div>
+            <div class="nav-item" onclick="showSection('hito6')">🎯 Hito 6: Actividad Práctica</div>
+        </nav>
+
+        <main class="main-content">
+            <!-- INTRODUCCIÓN -->
+            <section id="intro" class="section active">
+                <h1>Clase 9: Patrones Estructurales I</h1>
+                <p style="font-size: 16px; color: #666;">Adapter, Bridge, Composite - Organizando la Complejidad Estructural</p>
+
+                <h2>Introducción: De la Creación a la Estructura</h2>
+                <p>En las clases anteriores, aprendimos a <strong>crear</strong> objetos de forma elegante usando patrones creacionales (Singleton, Factory Method, Abstract Factory, Builder, Prototype). Ahora enfrentamos un nuevo desafío: ¿cómo organizamos esos objetos una vez creados?</p>
+
+                <p>Los patrones estructurales responden a esta pregunta. Se enfocen en cómo componer objetos y clases en estructuras más grandes, manteniendo flexibilidad y eficiencia. Son sobre <strong>relaciones</strong> entre objetos, no sobre cómo crearlos.</p>
+
+                <div class="highlight">
+                    <h3>Los 7 Patrones Estructurales GoF</h3>
+                    <p>El Gang of Four identificó 7 patrones estructurales. En esta clase cubriremos los primeros 3:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Adapter:</strong> Permite que interfaces incompatibles trabajen juntas</li>
+                        <li><strong>Bridge:</strong> Desacopla una abstracción de su implementación</li>
+                        <li><strong>Composite:</strong> Compone objetos en estructuras de árbol</li>
+                        <li style="color: #999;">Decorator: Agrega responsabilidades dinámicamente</li>
+                        <li style="color: #999;">Facade: Proporciona interfaz simplificada</li>
+                        <li style="color: #999;">Flyweight: Comparte objetos para economizar memoria</li>
+                        <li style="color: #999;">Proxy: Proporciona sustituto o marcador de posición</li>
+                    </ul>
+                </div>
+
+                <h2>¿Por Qué Estos Patrones Importan?</h2>
+                <p>Imagina que estás integrando múltiples sistemas heredados en tu aplicación. Cada uno tiene su propia interfaz. Imagina que necesitas representar una jerarquía de componentes (como un árbol de carpetas). Imagina que necesitas permitir que diferentes implementaciones de un concepto coexistan sin acoplamiento.</p>
+
+                <p>Estos son los problemas que los patrones estructurales resuelven. Son <strong>pegamento</strong> que mantiene los sistemas complejos unidos sin crear dependencias rígidas.</p>
+
+                <div class="example-box">
+                    <h3>Analogía: Construcción de un Edificio</h3>
+                    <p>Los patrones creacionales son como <strong>máquinas que fabrican ladrillos</strong>. Los patrones estructurales son como <strong>planos que dicen cómo apilar esos ladrillos</strong> para construir paredes, pisos y estructuras complejas.</p>
+                </div>
+
+
+            </section>
+
+            <!-- ADAPTER PATTERN -->
+            <section id="adapter" class="section">
+                <h1>🔌 Adapter Pattern</h1>
+
+                <h2>El Problema: Interfaces Incompatibles</h2>
+                <p>Tienes un sistema que funciona perfectamente. Pero ahora necesitas integrar un componente externo (una librería, un servicio, un sistema heredado) que tiene una interfaz completamente diferente. No puedes cambiar el componente externo, y cambiar tu sistema es costoso.</p>
+
+                <div class="example-box">
+                    <h3>Ejemplo Real: Adaptador de Corriente</h3>
+                    <p>Tu laptop necesita 110V. Viajas a Europa donde el estándar es 220V. ¿Qué haces? Usas un adaptador. El adaptador no cambia ni tu laptop ni el enchufe europeo. Simplemente traduce entre los dos estándares.</p>
+                </div>
+
+                <h2>La Solución: El Patrón Adapter</h2>
+                <p>El patrón Adapter actúa como un <strong>traductor</strong> entre dos interfaces incompatibles. Crea una clase intermedia que implementa la interfaz que tu sistema espera, pero internamente delega al componente externo, traduciendo las llamadas según sea necesario.</p>
+
+                <h3>Estructura del Patrón Adapter</h3>
+                <div class="diagram">
+                    <img 
+                    src="https://danielggarcia.wordpress.com/wp-content/uploads/2014/02/021914_0036_patronesest1.png" 
+                    alt="Diagrama UML del patrón Adapter mostrando Client, Target, Adapter y Adaptee"
+                    title="Patrón Adapter - Estructura GoF"
+                  >
+                </div>
+
+                <h2>Dos Variantes: Class Adapter vs Object Adapter</h2>
+
+                <h3>1. Class Adapter (Herencia)</h3>
+                <p>El Adapter hereda tanto de la interfaz Target como del Adaptee. Menos común en lenguajes modernos.</p>
+
+                <div class="code-block">// Class Adapter - Herencia múltiple
+public class Adapter extends Adaptee implements Target {
+    @Override
+    public void operacionEsperada() {
+        // Traduce a la operación del Adaptee
+        this.operacionDelAdaptee();
+    }
+}</div>
+
+                <h3>2. Object Adapter (Composición)</h3>
+                <p>El Adapter contiene una instancia del Adaptee y delega a través de composición. Es más flexible y es la variante preferida.</p>
+
+                <div class="code-block">// Object Adapter - Composición
+public class Adapter implements Target {
+    private Adaptee adaptee;
+    
+    public Adapter(Adaptee adaptee) {
+        this.adaptee = adaptee;
+    }
+    
+    @Override
+    public void operacionEsperada() {
+        // Traduce la llamada
+        adaptee.operacionDelAdaptee();
+    }
+}</div>
+
+                <h2>Ejemplo Completo: Integrando un Sistema de Pagos Heredado</h2>
+
+                <p><strong>Situación:</strong> Tu sistema de e-commerce usa una interfaz de pagos moderna. Pero necesitas soportar un sistema de pagos heredado que tiene una interfaz completamente diferente.</p>
+
+                <div class="code-block">// Interfaz que tu sistema espera (Target)
+public interface ProcesadorPagos {
+    boolean procesarPago(double monto, String tarjeta);
+    String obtenerEstado();
+}
+
+// Sistema heredado (Adaptee) - No puedes cambiar esto
+public class SistemaPagosLegacy {
+    public int procesarTransaccion(float cantidad, String numeroTarjeta) {
+        // Lógica heredada
+        return 1; // 1 = éxito, 0 = fallo
+    }
+    
+    public String consultarEstado() {
+        return "COMPLETADO";
+    }
+}
+
+// El Adapter - Traduce entre los dos
+public class AdapterPagosLegacy implements ProcesadorPagos {
+    private SistemaPagosLegacy sistemaPagosLegacy;
+    
+    public AdapterPagosLegacy(SistemaPagosLegacy sistemaPagosLegacy) {
+        this.sistemaPagosLegacy = sistemaPagosLegacy;
+    }
+    
+    @Override
+    public boolean procesarPago(double monto, String tarjeta) {
+        // Traduce: double -> float, boolean -> int
+        int resultado = sistemaPagosLegacy.procesarTransaccion((float)monto, tarjeta);
+        return resultado == 1;
+    }
+    
+    @Override
+    public String obtenerEstado() {
+        return sistemaPagosLegacy.consultarEstado();
+    }
+}
+
+// Uso
+SistemaPagosLegacy sistemaPagosLegacy = new SistemaPagosLegacy();
+ProcesadorPagos procesador = new AdapterPagosLegacy(sistemaPagosLegacy);
+
+// Ahora tu sistema puede usar el procesador como si fuera moderno
+boolean exito = procesador.procesarPago(99.99, "4111-1111-1111-1111");
+String estado = procesador.obtenerEstado();</div>
+
+                <h2>Ventajas y Desventajas</h2>
+
+                <table>
+                    <tr>
+                        <th>Ventajas</th>
+                        <th>Desventajas</th>
+                    </tr>
+                    <tr>
+                        <td>✅ Permite integrar componentes incompatibles</td>
+                        <td>❌ Agrega una capa de indirección</td>
+                    </tr>
+                    <tr>
+                        <td>✅ No requiere cambiar el código existente</td>
+                        <td>❌ Puede ser excesivo si solo adaptas un método</td>
+                    </tr>
+                    <tr>
+                        <td>✅ Sigue el Principio de Abierto/Cerrado</td>
+                        <td>❌ A veces es difícil adaptar interfaces muy diferentes</td>
+                    </tr>
+                    <tr>
+                        <td>✅ Facilita testing (puedes mockear el adaptee)</td>
+                        <td></td>
+                    </tr>
+                </table>
+
+                <h2>¿Cuándo Usar Adapter?</h2>
+                <ul style="margin-left: 20px;">
+                    <li>Necesitas integrar una librería externa con interfaz incompatible</li>
+                    <li>Trabajas con código heredado que no puedes cambiar</li>
+                    <li>Quieres permitir múltiples implementaciones de una interfaz</li>
+                    <li>Necesitas traducir entre diferentes convenciones (ej: métodos, tipos de datos)</li>
+                </ul>
+
+                <div class="footer">Duración de esta sección: ~20 minutos</div>
+            </section>
+
+            <!-- BRIDGE PATTERN -->
+            <section id="bridge" class="section">
+                <h1>🌉 Bridge Pattern</h1>
+
+                <h2>El Problema: Explosión de Subclases</h2>
+                <p>Tienes una clase base `Vehículo`. Necesitas soportar múltiples tipos: `Auto`, `Moto`, `Camión`. Pero también necesitas múltiples implementaciones de cada tipo según el motor: `Gasolina`, `Diésel`, `Eléctrico`.</p>
+
+                <p>Si usas herencia pura, terminas con una explosión combinatoria: `AutoGasolina`, `AutoDiésel`, `AutoEléctrico`, `MotoGasolina`, `MotoDiésel`, `MotoEléctrico`, etc. ¡9 clases para 3 tipos × 3 motores!</p>
+
+                <div class="example-box">
+                    <h3>El Problema Visualizado</h3>
+                    <div class="diagram">
+Herencia Pura (Problema):
+                    
+        Vehículo
+       /    |    \
+     Auto  Moto  Camión
+    / | \  / | \ / | \
+   G D E  G D E G D E
+   
+   (G=Gasolina, D=Diésel, E=Eléctrico)
+   
+   Total: 9 clases, difícil de mantener
+                    </div>
+                </div>
+
+                <h2>La Solución: Separar Abstracción de Implementación</h2>
+                <p>El patrón Bridge resuelve esto separando dos dimensiones de variación en dos jerarquías independientes:</p>
+
+                <ul style="margin-left: 20px;">
+                    <li><strong>Abstracción:</strong> La interfaz de alto nivel (Vehículo)</li>
+                    <li><strong>Implementación:</strong> Los detalles específicos (Motor)</li>
+                </ul>
+
+                <h3>Estructura del Patrón Bridge</h3>
+                <div class="diagram">
+┌──────────────────────────────────────────────┐
+│         Abstracción (Vehículo)               │
+│  - Tipo: Auto, Moto, Camión                  │
+└──────────────┬───────────────────────────────┘
+               │
+               │ usa (Bridge)
+               ↓
+┌──────────────────────────────────────────────┐
+│    Implementación (Motor)                    │
+│  - Gasolina, Diésel, Eléctrico               │
+└──────────────────────────────────────────────┘
+
+Resultado: 3 + 3 = 6 clases (no 9)
+                </div>
+
+                <h2>Ejemplo Completo: Sistema de Vehículos</h2>
+
+                <div class="code-block">// Implementación (Motor) - Primera jerarquía
+public interface Motor {
+    void arrancar();
+    void acelerar();
+    void detener();
+}
+
+public class MotorGasolina implements Motor {
+    @Override
+    public void arrancar() { System.out.println("Motor de gasolina arrancando..."); }
+    
+    @Override
+    public void acelerar() { System.out.println("Acelerando con gasolina"); }
+    
+    @Override
+    public void detener() { System.out.println("Motor de gasolina detenido"); }
+}
+
+public class MotorDiesel implements Motor {
+    @Override
+    public void arrancar() { System.out.println("Motor diésel arrancando..."); }
+    
+    @Override
+    public void acelerar() { System.out.println("Acelerando con diésel"); }
+    
+    @Override
+    public void detener() { System.out.println("Motor diésel detenido"); }
+}
+
+// Abstracción (Vehículo) - Segunda jerarquía
+public abstract class Vehiculo {
+    protected Motor motor; // El Bridge
+    
+    public Vehiculo(Motor motor) {
+        this.motor = motor;
+    }
+    
+    public abstract void conducir();
+}
+
+public class Auto extends Vehiculo {
+    public Auto(Motor motor) {
+        super(motor);
+    }
+    
+    @Override
+    public void conducir() {
+        motor.arrancar();
+        motor.acelerar();
+        System.out.println("Auto conduciendo suavemente");
+        motor.detener();
+    }
+}
+
+public class Moto extends Vehiculo {
+    public Moto(Motor motor) {
+        super(motor);
+    }
+    
+    @Override
+    public void conducir() {
+        motor.arrancar();
+        motor.acelerar();
+        System.out.println("Moto acelerando rápidamente");
+        motor.detener();
+    }
+}
+
+// Uso
+Motor motorGasolina = new MotorGasolina();
+Motor motorDiesel = new MotorDiesel();
+
+Vehiculo auto = new Auto(motorGasolina);
+Vehiculo moto = new Moto(motorDiesel);
+
+auto.conducir();  // Auto con gasolina
+moto.conducir();  // Moto con diésel
+
+// Puedo cambiar el motor sin cambiar la clase del vehículo
+Vehiculo autoConDiesel = new Auto(motorDiesel);
+autoConDiesel.conducir();</div>
+
+                <h2>Bridge vs Adapter: ¿Cuál es la Diferencia?</h2>
+
+                <table>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Adapter</th>
+                        <th>Bridge</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Propósito</strong></td>
+                        <td>Hacer que interfaces incompatibles funcionen juntas</td>
+                        <td>Separar abstracción de implementación</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cuándo se aplica</strong></td>
+                        <td>Después (integración de componentes existentes)</td>
+                        <td>Antes (diseño de nuevos sistemas)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Estructura</strong></td>
+                        <td>Traductor entre dos interfaces</td>
+                        <td>Separación de dos dimensiones de variación</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flexibilidad</strong></td>
+                        <td>Permite trabajar con lo que ya existe</td>
+                        <td>Permite evolucionar independientemente</td>
+                    </tr>
+                </table>
+
+                <h2>Ventajas y Desventajas</h2>
+
+                <table>
+                    <tr>
+                        <th>Ventajas</th>
+                        <th>Desventajas</th>
+                    </tr>
+                    <tr>
+                        <td>✅ Evita explosión de subclases</td>
+                        <td>❌ Más complejo que herencia simple</td>
+                    </tr>
+                    <tr>
+                        <td>✅ Permite variar abstracción e implementación independientemente</td>
+                        <td>❌ Requiere identificar las dimensiones de variación</td>
+                    </tr>
+                    <tr>
+                        <td>✅ Facilita agregar nuevas abstracciones o implementaciones</td>
+                        <td>❌ Puede ser excesivo para sistemas simples</td>
+                    </tr>
+                    <tr>
+                        <td>✅ Sigue el Principio de Responsabilidad Única</td>
+                        <td></td>
+                    </tr>
+                </table>
+
+                <h2>¿Cuándo Usar Bridge?</h2>
+                <ul style="margin-left: 20px;">
+                    <li>Tienes dos dimensiones de variación independientes</li>
+                    <li>Quieres evitar explosión de subclases</li>
+                    <li>Necesitas que abstracción e implementación evolucionen independientemente</li>
+                    <li>Quieres compartir implementaciones entre múltiples abstracciones</li>
+                </ul>
+
+                <div class="footer">Duración de esta sección: ~25 minutos</div>
+            </section>
+
+            <!-- COMPOSITE PATTERN -->
+            <section id="composite" class="section">
+                <h1>🎨 Composite Pattern</h1>
+
+                <h2>El Problema: Jerarquías de Componentes</h2>
+                <p>Necesitas representar una estructura jerárquica: un árbol de carpetas con archivos, un menú con submenús, un organigrama de empleados. El desafío es que necesitas tratar tanto los componentes individuales como los contenedores de forma uniforme.</p>
+
+                <div class="example-box">
+                    <h3>Ejemplo: Sistema de Archivos</h3>
+                    <p>Una carpeta puede contener archivos y otras carpetas. Un archivo no puede contener nada. Pero cuando calculas el tamaño total de una carpeta, necesitas sumar recursivamente todos los archivos dentro, incluyendo los en subcarpetas.</p>
+                </div>
+
+                <h2>La Solución: Estructura Recursiva Uniforme</h2>
+                <p>El patrón Composite permite componer objetos en estructuras de árbol para representar jerarquías parte-todo. Los clientes pueden tratar objetos individuales y composiciones de objetos de forma uniforme.</p>
+
+                <h3>Estructura del Patrón Composite</h3>
+                <div class="diagram">
+          Component (Interfaz)
+         /                    \
+        /                      \
+    Leaf                    Composite
+  (Archivo)                (Carpeta)
+                           /        \
+                          /          \
+                    children[]    operaciones
+                                  (add, remove)
+                </div>
+
+                <h2>Ejemplo Completo: Sistema de Archivos</h2>
+
+                <div class="code-block">// Componente base
+public abstract class ComponenteArchivo {
+    protected String nombre;
+    
+    public ComponenteArchivo(String nombre) {
+        this.nombre = nombre;
+    }
+    
+    public abstract int obtenerTamano();
+    public abstract void mostrar(int profundidad);
+}
+
+// Hoja: Archivo
+public class Archivo extends ComponenteArchivo {
+    private int tamano;
+    
+    public Archivo(String nombre, int tamano) {
+        super(nombre);
+        this.tamano = tamano;
+    }
+    
+    @Override
+    public int obtenerTamano() {
+        return tamano;
+    }
+    
+    @Override
+    public void mostrar(int profundidad) {
+        System.out.println("  ".repeat(profundidad) + "📄 " + nombre + " (" + tamano + " KB)");
+    }
+}
+
+// Composite: Carpeta
+public class Carpeta extends ComponenteArchivo {
+    private List<ComponenteArchivo> componentes = new ArrayList<>();
+    
+    public Carpeta(String nombre) {
+        super(nombre);
+    }
+    
+    public void agregar(ComponenteArchivo componente) {
+        componentes.add(componente);
+    }
+    
+    public void remover(ComponenteArchivo componente) {
+        componentes.remove(componente);
+    }
+    
+    @Override
+    public int obtenerTamano() {
+        int totalTamano = 0;
+        for (ComponenteArchivo componente : componentes) {
+            totalTamano += componente.obtenerTamano();
+        }
+        return totalTamano;
+    }
+    
+    @Override
+    public void mostrar(int profundidad) {
+        System.out.println("  ".repeat(profundidad) + "📁 " + nombre);
+        for (ComponenteArchivo componente : componentes) {
+            componente.mostrar(profundidad + 1);
+        }
+    }
+}
+
+// Uso
+Carpeta raiz = new Carpeta("Documentos");
+
+Carpeta proyectos = new Carpeta("Proyectos");
+Carpeta trabajo = new Carpeta("Trabajo");
+
+Archivo archivo1 = new Archivo("Reporte.pdf", 500);
+Archivo archivo2 = new Archivo("Presupuesto.xlsx", 300);
+Archivo archivo3 = new Archivo("Contrato.docx", 200);
+
+proyectos.agregar(archivo1);
+proyectos.agregar(archivo2);
+trabajo.agregar(archivo3);
+
+raiz.agregar(proyectos);
+raiz.agregar(trabajo);
+
+raiz.mostrar(0);
+System.out.println("Tamaño total: " + raiz.obtenerTamano() + " KB");
+
+// Salida:
+// 📁 Documentos
+//   📁 Proyectos
+//     📄 Reporte.pdf (500 KB)
+//     📄 Presupuesto.xlsx (300 KB)
+//   📁 Trabajo
+//     📄 Contrato.docx (200 KB)
+// Tamaño total: 1000 KB</div>
+
+                <h2>Variantes: Seguridad vs Transparencia</h2>
+
+                <h3>Enfoque Transparente (Mostrado Arriba)</h3>
+                <p>Tanto Leaf como Composite implementan todas las operaciones. Los Leaf simplemente no hacen nada (o lanzan excepciones) para operaciones de contenedor.</p>
+
+                <h3>Enfoque Seguro</h3>
+                <p>Solo Composite implementa operaciones de contenedor. Los clientes deben verificar el tipo antes de usar operaciones específicas.</p>
+
+                <div class="code-block">// Enfoque Seguro
+public abstract class ComponenteArchivo {
+    public abstract int obtenerTamano();
+    public abstract void mostrar(int profundidad);
+    
+    // Solo en Composite
+    public void agregar(ComponenteArchivo c) {
+        throw new UnsupportedOperationException();
+    }
+}
+
+// Uso con verificación de tipo
+if (componente instanceof Carpeta) {
+    ((Carpeta) componente).agregar(nuevoComponente);
+}</div>
+
+                <h2>Ventajas y Desventajas</h2>
+
+                <table>
+                    <tr>
+                        <th>Ventajas</th>
+                        <th>Desventajas</th>
+                    </tr>
+                    <tr>
+                        <td>✅ Simplifica código cliente (trata hojas y composites igual)</td>
+                        <td>❌ Puede hacer el diseño demasiado general</td>
+                    </tr>
+                    <tr>
+                        <td>✅ Fácil agregar nuevos tipos de componentes</td>
+                        <td>❌ Difícil restringir tipos de componentes en un contenedor</td>
+                    </tr>
+                    <tr>
+                        <td>✅ Representa jerarquías naturalmente</td>
+                        <td>❌ Puede llevar a un árbol profundo y complejo</td>
+                    </tr>
+                    <tr>
+                        <td>✅ Sigue el Principio de Abierto/Cerrado</td>
+                        <td></td>
+                    </tr>
+                </table>
+
+                <h2>¿Cuándo Usar Composite?</h2>
+                <ul style="margin-left: 20px;">
+                    <li>Necesitas representar jerarquías parte-todo</li>
+                    <li>Quieres que los clientes ignoren la diferencia entre objetos y composiciones</li>
+                    <li>La estructura es recursiva por naturaleza</li>
+                    <li>Necesitas operaciones que funcionen en toda la jerarquía</li>
+                </ul>
+
+                <div class="footer">Duración de esta sección: ~20 minutos</div>
+            </section>
+
+            <!-- COMPARACIÓN -->
+            <section id="comparacion" class="section">
+                <h1>⚖️ Comparación de los Tres Patrones</h1>
+
+                <h2>Matriz Comparativa</h2>
+
+                <table>
+                    <tr>
+                        <th>Criterio</th>
+                        <th>Adapter</th>
+                        <th>Bridge</th>
+                        <th>Composite</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Propósito</strong></td>
+                        <td>Hacer compatibles interfaces incompatibles</td>
+                        <td>Separar abstracción de implementación</td>
+                        <td>Componer objetos en estructuras jerárquicas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Estructura</strong></td>
+                        <td>Traductor</td>
+                        <td>Dos jerarquías independientes</td>
+                        <td>Árbol recursivo</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Complejidad</strong></td>
+                        <td>Baja</td>
+                        <td>Media</td>
+                        <td>Media-Alta</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flexibilidad</strong></td>
+                        <td>Integra lo existente</td>
+                        <td>Permite evolución independiente</td>
+                        <td>Permite agregar nuevos tipos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cuándo se aplica</strong></td>
+                        <td>Integración tardía</td>
+                        <td>Diseño temprano</td>
+                        <td>Diseño temprano</td>
+                    </tr>
+                </table>
+
+                <h2>Decisión: ¿Cuál Usar?</h2>
+
+                <div class="example-box">
+                    <h3>Pregúntate:</h3>
+                    <ul style="margin-left: 20px;">
+                        <li><strong>¿Necesito integrar código externo incompatible?</strong> → Usa <strong>Adapter</strong></li>
+                        <li><strong>¿Tengo dos dimensiones de variación que necesito separar?</strong> → Usa <strong>Bridge</strong></li>
+                        <li><strong>¿Necesito representar una jerarquía parte-todo?</strong> → Usa <strong>Composite</strong></li>
+                    </ul>
+                </div>
+
+                <h1>📊 Tabla Comparativa: Adapter vs Bridge vs Composite</h1>
+
+                <!-- Enlaces rápidos -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                  <a href="https://refactoring.guru/es/design-patterns/adapter" class="enlace-boton" target="_blank">🔗 Adapter en Refactoring.Guru</a>
+                  <a href="https://refactoring.guru/es/design-patterns/bridge" class="enlace-boton" target="_blank">🔗 Bridge en Refactoring.Guru</a>
+                  <a href="https://refactoring.guru/es/design-patterns/composite" class="enlace-boton" target="_blank">🔗 Composite en Refactoring.Guru</a>
+                  <a href="https://refactoring.guru/es/design-patterns/structural-patterns" class="enlace-boton" target="_blank">🔗 Patrones Estructurales GoF</a>
+                </div>
+              
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Aspecto</th>
+                      <th>Adapter</th>
+                      <th>Bridge</th>
+                      <th>Composite</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="aspecto">Propósito principal</td>
+                      <td>Convierte la interfaz de una clase en otra que el cliente espera</td>
+                      <td>Desacopla una abstracción de su implementación para que cambien independientemente</td>
+                      <td>Combina objetos en estructura de árbol para jerarquía parte-todo</td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Palabra clave</td>
+                      <td><strong>Interfaz incompatible</strong></td>
+                      <td><strong>Desacople</strong></td>
+                      <td><strong>Árbol jerárquico</strong></td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Cuándo usar</td>
+                      <td>Integrar código existente con interfaz diferente</td>
+                      <td>Abstracción e implementación cambian en frecuencias distintas</td>
+                      <td>Modelo natural de árbol (carpetas, org chart)</td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Enfoque temporal</td>
+                      <td><strong>Reactivo</strong>: corregir problemas existentes ("cerrar heridas")</td>
+                      <td><strong>Proactivo</strong>: prevenir explosión de subclases desde el diseño</td>
+                      <td><strong>Estructural</strong>: jerarquía parte-todo natural</td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Estrategia</td>
+                      <td>Herencia o composición</td>
+                      <td>Composición (agregación de Implementor)</td>
+                      <td>Composición recursiva</td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Estructura</td>
+                      <td>Lineal: Cliente → Target → Adapter → Adaptee</td>
+                      <td>Dos jerarquías paralelas: Abstracción + Implementación</td>
+                      <td>Árbol: Component → Leaf + Composite</td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Participantes clave</td>
+                      <td>Target, Adapter, Adaptee</td>
+                      <td>Abstraction, RefinedAbstraction, Implementor, ConcreteImplementor</td>
+                      <td>Component, Leaf, Composite</td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Ejemplo clásico</td>
+                      <td>Convertir XML ↔ JSON</td>
+                      <td>Vehículos (Auto/Moto/Camión) + Motores (Gasolina/Diésel/Eléctrico)</td>
+                      <td>Sistema de archivos: Carpetas → Archivos/Subcarpetas</td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Ventaja principal</td>
+                      <td>Reutiliza clases incompatibles sin modificarlas</td>
+                      <td>Evita explosión combinatoria de subclases (n × m → n + m)</td>
+                      <td>Cliente trata uniformemente objetos simples y compuestos</td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Desventaja principal</td>
+                      <td>Aumenta complejidad con muchos adaptadores</td>
+                      <td>Mayor complejidad inicial del código</td>
+                      <td>Difícil restringir tipos de componentes</td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Cuando NO usar</td>
+                      <td>Cuando podés modificar el código fuente original</td>
+                      <td>Cuando no hay dos dimensiones de variación</td>
+                      <td>Cuando tu modelo NO es un árbol jerárquico</td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Relación SOLID</td>
+                      <td>LSP (Liskov)</td>
+                      <td>DIP (Inversión de Dependencias)</td>
+                      <td>ISP (Interfaz Segregación)</td>
+                    </tr>
+                    <tr>
+                      <td class="aspecto">Similitud con</td>
+                      <td>N/A</td>
+                      <td>Se relaciona con Adapter, Composite, Decorator</td>
+                      <td>Similar a Decorator (composición recursiva), pero Decorator agrega responsabilidades</td>
+                    </tr>
+                  </tbody>
+                </table>
+              
+                <!-- Diferencia clave rápida -->
+                <h2 style="color: #2c3e50; text-align: center; margin-top: 40px;">🎯 Diferencia clave rápida</h2>
+                <table style="margin-top: 20px;">
+                  <thead>
+                    <tr>
+                      <th>Patrón</th>
+                      <th>¿Qué resuelve?</th>
+                      <th>Cuándo elegir</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="font-weight: bold; background-color: #e3f2fd;">Adapter</td>
+                      <td>Interfaces incompatibles</td>
+                      <td>"Necesito usar esta librería pero su API no coincide"</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight: bold; background-color: #fff3e0;">Bridge</td>
+                      <td>Dos dimensiones de variación</td>
+                      <td>"Voy a tener muchos tipos de X combinados con muchos tipos de Y"</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight: bold; background-color: #f3e5f5;">Composite</td>
+                      <td>Objetos individuales vs grupos</td>
+                      <td>"Tengo carpetas que contienen archivos y más carpetas"</td>
+                    </tr>
+                  </tbody>
+                </table>
+              
+                <h3 style="color: #2c3e50; margin-top: 40px;">🔗 Relaciones entre patrones</h3>
+                <ul style="font-family: Arial, sans-serif; line-height: 1.6;">
+                  <li><strong>Bridge</strong> ↔ <strong>Adapter</strong>: ambos usan composición, pero Bridge previene problemas mientras Adapter corrige</li>
+                  <li><strong>Bridge</strong> ↔ <strong>Composite</strong>: Bridge se relaciona con Composite por uso de composición</li>
+                  <li><strong>Composite</strong> ↔ <strong>Decorator</strong>: ambos recursivos, pero:
+                    <ul>
+                      <li><strong>Composite</strong>: construye jerarquías de árbol</li>
+                      <li><strong>Decorator</strong>: agrega responsabilidades dinámicamente</li>
+                    </ul>
+                  </li>
+                </ul>
+              
+            </section>
+
+            <!-- CASOS REALES -->
+            <section id="casos" class="section">
+                <h1>🏢 Casos de Aplicación en Sistemas Reales</h1>
+
+                <h2>1. Adapter en el Mundo Real</h2>
+
+                <h3>Caso: Integración de Múltiples Proveedores de Email</h3>
+                <p>Tu aplicación necesita enviar emails. Inicialmente usas Gmail. Luego necesitas soportar Outlook, SendGrid y un servidor SMTP personalizado. Cada uno tiene su propia API.</p>
+
+                <div class="code-block">// Interfaz que tu aplicación espera
+public interface ServicioEmail {
+    void enviar(String destinatario, String asunto, String cuerpo);
+}
+
+// Adaptadores para cada proveedor
+public class AdapterGmail implements ServicioEmail {
+    private GmailAPI gmailAPI;
+    
+    @Override
+    public void enviar(String destinatario, String asunto, String cuerpo) {
+        gmailAPI.sendMessage(destinatario, asunto, cuerpo);
+    }
+}
+
+public class AdapterSendGrid implements ServicioEmail {
+    private SendGridClient sendGrid;
+    
+    @Override
+    public void enviar(String destinatario, String asunto, String cuerpo) {
+        sendGrid.send(new Email(destinatario, asunto, cuerpo));
+    }
+}
+
+// Tu aplicación usa cualquiera sin cambios
+ServicioEmail email = new AdapterGmail(); // o AdapterSendGrid
+email.enviar("usuario@example.com", "Bienvenido", "Hola!");
+</div>
+
+                <h2>2. Bridge en el Mundo Real</h2>
+
+                <h3>Caso: Sistema de Notificaciones Multi-Canal</h3>
+                <p>Necesitas enviar notificaciones por email, SMS, push y Slack. Cada canal tiene múltiples proveedores (Gmail, SendGrid para email; Twilio, AWS SNS para SMS, etc.).</p>
+
+                <div class="code-block">// Abstracción: Tipo de notificación
+public abstract class Notificacion {
+    protected ProveedorNotificacion proveedor;
+    
+    public Notificacion(ProveedorNotificacion proveedor) {
+        this.proveedor = proveedor;
+    }
+    
+    public abstract void enviar(String usuario, String mensaje);
+}
+
+// Implementación: Proveedor específico
+public interface ProveedorNotificacion {
+    void enviarMensaje(String destino, String contenido);
+}
+
+// Concretos
+public class NotificacionUrgente extends Notificacion {
+    @Override
+    public void enviar(String usuario, String mensaje) {
+        proveedor.enviarMensaje(usuario, "[URGENTE] " + mensaje);
+    }
+}
+
+public class NotificacionMarketing extends Notificacion {
+    @Override
+    public void enviar(String usuario, String mensaje) {
+        proveedor.enviarMensaje(usuario, "[MARKETING] " + mensaje);
+    }
+}
+
+// Proveedores
+public class ProveedorEmail implements ProveedorNotificacion {
+    @Override
+    public void enviarMensaje(String destino, String contenido) {
+        // Envía por email
+    }
+}
+
+public class ProveedorSMS implements ProveedorNotificacion {
+    @Override
+    public void enviarMensaje(String destino, String contenido) {
+        // Envía por SMS
+    }
+}
+
+// Uso
+ProveedorNotificacion email = new ProveedorEmail();
+ProveedorNotificacion sms = new ProveedorSMS();
+
+Notificacion urgente = new NotificacionUrgente(email);
+Notificacion marketing = new NotificacionMarketing(sms);
+
+urgente.enviar("juan@example.com", "Tu pago fue procesado");
+marketing.enviar("+5491234567890", "¡Descuento especial!");
+</div>
+
+                <h2>3. Composite en el Mundo Real</h2>
+
+                <h3>Caso: Sistema de Permisos Jerárquico</h3>
+                <p>Un sistema de gestión de permisos donde los permisos pueden ser individuales o grupos de permisos. Un usuario tiene ciertos permisos directos, pero también hereda permisos de sus grupos.</p>
+
+                <div class="code-block">// Componente base
+public abstract class Permiso {
+    public abstract boolean tienePermiso(String accion);
+}
+
+// Hoja: Permiso individual
+public class PermisoIndividual extends Permiso {
+    private String accion;
+    
+    public PermisoIndividual(String accion) {
+        this.accion = accion;
+    }
+    
+    @Override
+    public boolean tienePermiso(String accion) {
+        return this.accion.equals(accion);
+    }
+}
+
+// Composite: Grupo de permisos
+public class GrupoPermisos extends Permiso {
+    private List<Permiso> permisos = new ArrayList<>();
+    
+    public void agregar(Permiso permiso) {
+        permisos.add(permiso);
+    }
+    
+    @Override
+    public boolean tienePermiso(String accion) {
+        for (Permiso p : permisos) {
+            if (p.tienePermiso(accion)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+// Uso
+GrupoPermisos grupoAdmin = new GrupoPermisos();
+grupoAdmin.agregar(new PermisoIndividual("crear_usuario"));
+grupoAdmin.agregar(new PermisoIndividual("eliminar_usuario"));
+grupoAdmin.agregar(new PermisoIndividual("editar_configuracion"));
+
+GrupoPermisos grupoModerador = new GrupoPermisos();
+grupoModerador.agregar(new PermisoIndividual("moderar_comentarios"));
+grupoModerador.agregar(new PermisoIndividual("bloquear_usuario"));
+
+// Usuario hereda permisos de ambos grupos
+GrupoPermisos permisoUsuario = new GrupoPermisos();
+permisoUsuario.agregar(grupoAdmin);
+permisoUsuario.agregar(grupoModerador);
+permisoUsuario.agregar(new PermisoIndividual("cambiar_contraseña"));
+
+// Verificar permisos
+System.out.println(permisoUsuario.tienePermiso("crear_usuario")); // true
+System.out.println(permisoUsuario.tienePermiso("moderar_comentarios")); // true
+System.out.println(permisoUsuario.tienePermiso("cambiar_contraseña")); // true
+System.out.println(permisoUsuario.tienePermiso("acceso_root")); // false
+</div>
+
+                <div class="footer">Duración de esta sección: ~10 minutos</div>
+            </section>
+
+            <!-- HITO 8 -->
+            <section id="hito6" class="section">
+                <h1>🎯 Hito 8: Actividad Práctica - Data Flow con Patrones Estructurales</h1>
+
+                <h2>Contexto: Continuando LogiSmart</h2>
+                <p>En los hitos anteriores, construiste el modelo de dominio de LogiSmart, lo implementaste en Java, y aplicaste patrones GRASP y GoF creacionales. Ahora, en el Hito 6, vamos a integrar nuevas fuentes de datos y componentes externos usando patrones estructurales.</p>
+
+                <h2>Situación de Negocio</h2>
+                <p>LogiSmart ha crecido. Ahora necesita:</p>
+                <ul style="margin-left: 20px;">
+                    <li>Integrar datos de múltiples proveedores de logística (DHL, FedEx, UPS) que tienen APIs diferentes</li>
+                    <li>Soportar múltiples tipos de reportes (PDF, Excel, JSON) con diferentes motores de generación</li>
+                    <li>Representar una estructura jerárquica de centros de distribución con almacenes y puntos de entrega</li>
+                </ul>
+
+                <h2>Objetivos del Hito 8</h2>
+
+                <div class="highlight">
+                    <h3>Debes aplicar los tres patrones estructurales:</h3>
+                    <ul style="margin-left: 20px;">
+                        <li><strong>Adapter:</strong> Integrar APIs de proveedores externos (DHL, FedEx, UPS)</li>
+                        <li><strong>Bridge:</strong> Separar tipos de reportes de motores de generación</li>
+                        <li><strong>Composite:</strong> Modelar la jerarquía de centros de distribución</li>
+                    </ul>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active to clicked nav item
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

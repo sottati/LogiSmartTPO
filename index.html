@@ -359,7 +359,7 @@
         <div class="cover-date">2026</div>
         <div class="cover-links">
           <a class="cover-link accent-link" href="#documentacion">Leer documentación</a>
-          <a class="cover-link" href="class-diagram.html">Diagrama de clases</a>
+          <a class="cover-link" href="DIAGRAMA_DE_CLASES_ACTUAL.html">Diagrama de clases</a>
         </div>
       </div>
     </header>
@@ -505,7 +505,7 @@
 
           <div class="section-label">Recurso transversal</div>
           <div class="hitos-grid" style="margin-bottom: 1.75rem;">
-            <a class="hito-card" href="class-diagram.html"
+            <a class="hito-card" href="DIAGRAMA_DE_CLASES_ACTUAL.html"
                style="border-color: var(--accent); background: linear-gradient(135deg, #fff8f3 0%, var(--surface) 60%);">
               <div class="hito-number" style="background: var(--accent); font-size: 0.9rem; letter-spacing: -0.02em;">DC</div>
               <div class="hito-body">
@@ -519,7 +519,7 @@
 
           <div class="section-label">Entregas del TPO</div>
           <div class="hitos-grid">
-            <a class="hito-card" href="HITO_1.html">
+            <a class="hito-card" href="hitos/HITO_1.html">
               <div class="hito-number">1</div>
               <div class="hito-body">
                 <div class="hito-label">Hito 1</div>
@@ -528,7 +528,7 @@
               </div>
               <div class="hito-arrow">›</div>
             </a>
-            <a class="hito-card" href="HITO_2.html">
+            <a class="hito-card" href="hitos/HITO_2.html">
               <div class="hito-number">2</div>
               <div class="hito-body">
                 <div class="hito-label">Hito 2</div>
@@ -537,7 +537,7 @@
               </div>
               <div class="hito-arrow">›</div>
             </a>
-            <a class="hito-card" href="HITO_4.html">
+            <a class="hito-card" href="hitos/HITO_4.html">
               <div class="hito-number">4</div>
               <div class="hito-body">
                 <div class="hito-label">Hito 4</div>
@@ -546,7 +546,7 @@
               </div>
               <div class="hito-arrow">›</div>
             </a>
-            <a class="hito-card" href="HITO_5.html">
+            <a class="hito-card" href="hitos/HITO_5.html">
               <div class="hito-number">5</div>
               <div class="hito-body">
                 <div class="hito-label">Hito 5</div>
@@ -555,7 +555,7 @@
               </div>
               <div class="hito-arrow">›</div>
             </a>
-            <a class="hito-card" href="HITO_6.html">
+            <a class="hito-card" href="hitos/HITO_6.html">
               <div class="hito-number">6</div>
               <div class="hito-body">
                 <div class="hito-label">Hito 6</div>
@@ -570,6 +570,15 @@
                 <div class="hito-label">Hito 7</div>
                 <div class="hito-title">Patrones Creacionales II</div>
                 <div class="hito-desc">Abstract Factory · Builder · Prototype</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
+            <a class="hito-card" href="hitos/HITO_8.html">
+              <div class="hito-number">8</div>
+              <div class="hito-body">
+                <div class="hito-label">Hito 8</div>
+                <div class="hito-title">Patrones Estructurales I</div>
+                <div class="hito-desc">Adapter · Bridge · Composite</div>
               </div>
               <div class="hito-arrow">›</div>
             </a>
@@ -930,6 +939,37 @@
               <div class="p-applied-label">Implementado en</div>
               <div class="p-applied">
                 <code>Envio implements Cloneable</code>. El método <code>clone()</code> realiza una copia profunda de la lista <code>ordenes</code> para evitar estado compartido entre clones. <code>setId()</code> permite diferenciar identidad post-clonación. Usado para crear cientos de envíos similares sin repetir toda la construcción.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 8</span></div>
+              <div class="p-name">Adapter</div>
+              <div class="p-intent">Convertir interfaces externas incompatibles en interfaces internas que LogiSmart puede usar de forma uniforme.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>ProveedorEnvio</code> con <code>AdapterDHL</code>, <code>AdapterFedEx</code> y <code>AdapterUPS</code>.<br>
+                <code>ProveedorPago</code> con <code>AdapterPayPal</code> y <code>AdapterStripe</code>.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 8</span></div>
+              <div class="p-name">Bridge</div>
+              <div class="p-intent">Separar tipos de reportes de motores de generación para evitar explosión combinatoria de clases.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>Reporte</code>, <code>ReporteEnvios</code>, <code>ReporteIngresos</code> y <code>ReporteDesempenoProveedores</code> usan <code>GeneradorReporte</code> con PDF, Excel, JSON y CSV.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 8</span></div>
+              <div class="p-name">Composite</div>
+              <div class="p-intent">Representar la red de centros como árbol parte-todo y calcular capacidad/ocupación recursivamente.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>CentroDistribucion</code> como componente base, <code>CentroRegional</code> como composite y <code>PuntoEntrega</code> como hoja.
               </div>
             </div>
 
