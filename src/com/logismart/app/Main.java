@@ -1,5 +1,6 @@
 package com.logismart.app;
 
+import com.logismart.aplicacion.hito8.CasosDePruebaHito8;
 import com.logismart.aplicacion.hito9.CasosDePruebaHito9;
 import com.logismart.dominio.Envio;
 import com.logismart.infraestructura.singleton.ConfiguracionSistema;
@@ -102,6 +103,7 @@ public class Main {
 
         // ─────────────────────────────────────────────────────────────────────
 
+        CasosDePruebaHito8.ejecutar();
         CasosDePruebaHito9.ejecutar();
 
         sep("RESUMEN");

@@ -35,6 +35,7 @@
       pre.mermaid { background:none; }
       code { background:#eef3fa; border-radius:4px; padding:.05rem .3rem; }
       .pill { display:inline-block; margin-top:.6rem; background:var(--ok-bg); color:var(--ok); border:1px solid #b9e7cb; border-radius:999px; padding:.2rem .6rem; font-size:.78rem; font-weight:600; }
+      .tech-note { border-left:4px solid var(--accent); background:#fff8f3; padding:.8rem 1rem; border-radius:8px; margin:.9rem 0; color:var(--text); }
       .grid-2 { display:grid; gap:1rem; grid-template-columns:1fr 1fr; }
       .grid-3 { display:grid; gap:1rem; grid-template-columns:1fr 1fr 1fr; }
       .diagram { border:1px solid var(--border); border-radius:10px; padding:.6rem; overflow-x:auto; margin-top:.8rem; }
@@ -71,6 +72,7 @@
       <a href="#composite-diseno">Composite · Diseño</a>
       <a href="#composite-impl">Composite · Impl.</a>
       <a href="#integracion">Integración</a>
+      <a href="#evidencia">Evidencia</a>
       <a href="#conclusion">Conclusión</a>
     </nav>
 
@@ -91,6 +93,17 @@
           <div style="background:#f0f8ff;border:1px solid #bfdbfe;border-radius:8px;padding:.8rem;"><strong>Bridge</strong><p style="font-size:.86rem;color:var(--muted);">Los tipos de reporte evolucionan separados de los formatos PDF, Excel, JSON y CSV.</p></div>
           <div style="background:#f0fdf4;border:1px solid #b9e7cb;border-radius:8px;padding:.8rem;"><strong>Composite</strong><p style="font-size:.86rem;color:var(--muted);">Centros nacionales, regionales, locales y puntos de entrega se tratan uniformemente.</p></div>
         </div>
+        <h3>Mapa de trazabilidad del hito</h3>
+        <p>Esta tabla conecta cada actividad de la consigna con las clases implementadas y el punto donde se verifica su uso.</p>
+        <table>
+          <thead><tr><th>Actividad</th><th>Patrón</th><th>Archivos principales</th><th>Evidencia</th></tr></thead>
+          <tbody>
+            <tr><td>1-2</td><td>Adapter</td><td><code>adapter/envio/*</code>, <code>adapter/pago/*</code></td><td><code>ServicioLogisticaUnificado.crearEnvio</code>, <code>procesarPago</code> y <code>CasosDePruebaHito8</code>.</td></tr>
+            <tr><td>3-4</td><td>Bridge</td><td><code>bridge/reporte/Reporte</code>, <code>GeneradorReporte</code> y concretos</td><td><code>generarReporte</code> crea reportes variando tipo y formato de forma independiente.</td></tr>
+            <tr><td>5-6</td><td>Composite</td><td><code>CentroDistribucion</code>, <code>CentroRegional</code>, <code>PuntoEntrega</code></td><td>La capacidad y ocupación se calculan recursivamente en un árbol de centros.</td></tr>
+            <tr><td>7</td><td>Integración</td><td><code>ServicioLogisticaUnificado</code></td><td>Un flujo usa proveedor externo, registra envío, consulta centro y genera reporte.</td></tr>
+          </tbody>
+        </table>
       </section>
 
       <section class="section" id="adapter-diseno">
@@ -121,6 +134,7 @@
     String obtenerNombre();
 }</pre>
         <h3>Adapters implementados</h3>
+        <div class="tech-note"><strong>Rol dentro del patrón:</strong> <code>ProveedorEnvio</code> y <code>ProveedorPago</code> son las interfaces objetivo que entiende LogiSmart; <code>DHLAPI</code>, <code>FedExAPI</code>, <code>UPSConnector</code>, <code>PayPalAPI</code> y <code>StripeAPI</code> representan APIs externas incompatibles; cada <code>Adapter*</code> traduce nombres, tipos y unidades hacia el contrato interno.</div>
         <div class="grid-2">
           <pre>public class AdapterDHL implements ProveedorEnvio {
     private final DHLAPI dhlAPI = new DHLAPI();
@@ -196,6 +210,7 @@ AdapterUPS --> UPSConnector</pre></div>
         <div class="section-act">Actividad 4 · Bridge</div>
         <h2>Implementación de Bridge para reportes</h2>
         <p>La abstracción <code>Reporte</code> define el contenido. La implementación <code>GeneradorReporte</code> define el formato.</p>
+        <div class="tech-note"><strong>Rol dentro del patrón:</strong> <code>Reporte</code> es la abstracción; <code>ReporteEnvios</code>, <code>ReporteIngresos</code> y <code>ReporteDesempenoProveedores</code> son abstracciones refinadas; <code>GeneradorReporte</code> es el implementador; <code>GeneradorPDF</code>, <code>GeneradorExcel</code>, <code>GeneradorJSON</code> y <code>GeneradorCSV</code> son implementadores concretos. Así se evita crear una clase por cada combinación tipo/formato.</div>
         <div class="grid-2">
           <pre>public interface GeneradorReporte {
     String formatear(String contenido);
@@ -272,6 +287,7 @@ GeneradorReporte <|.. GeneradorCSV</pre></div>
         <div class="section-act">Actividad 6 · Composite</div>
         <h2>Implementación de Composite para centros</h2>
         <p><code>CentroDistribucion</code> define la interfaz común. <code>CentroRegional</code> contiene hijos y <code>PuntoEntrega</code> actúa como hoja.</p>
+        <div class="tech-note"><strong>Rol dentro del patrón:</strong> <code>CentroDistribucion</code> es el componente común; <code>CentroRegional</code> es el composite porque contiene otros <code>CentroDistribucion</code>; <code>PuntoEntrega</code> es la hoja. Los niveles Nacional, Regional y Local se representan con instancias anidadas de <code>CentroRegional</code>, por eso no hace falta crear una clase por nivel.</div>
         <div class="grid-2">
           <pre>public abstract class CentroDistribucion {
     protected String nombre;
@@ -322,6 +338,7 @@ CentroRegional o-- CentroDistribucion</pre></div>
         <div class="section-act">Actividad 7 · Integración</div>
         <h2>ServicioLogisticaUnificado</h2>
         <p>El servicio integra Adapter, Bridge y Composite en un flujo único.</p>
+        <div class="tech-note"><strong>Integración específica:</strong> el cliente no instancia APIs externas ni reportes concretos. Llama a <code>ServicioLogisticaUnificado</code>; el servicio resuelve el adapter por nombre de proveedor, mantiene los envíos registrados, expone el centro raíz composite y arma el bridge reporte/formato cuando se solicita un reporte.</div>
         <pre>public class ServicioLogisticaUnificado {
     private final Map&lt;String, ProveedorEnvio&gt; proveedoresEnvio = new HashMap&lt;&gt;();
     private final Map&lt;String, ProveedorPago&gt; proveedoresPago = new HashMap&lt;&gt;();
@@ -374,6 +391,30 @@ Reporte->>Gen: formatear(contenido)
 Gen-->>Reporte: PDF
 Reporte-->>Cliente: reporte generado</pre></div>
         <div class="pill">✅ 3 patrones integrados · ✅ flujo completo · ✅ servicio extensible</div>
+      </section>
+
+      <section class="section" id="evidencia">
+        <div class="section-act">Evidencia ejecutable</div>
+        <h2>Casos de prueba del Hito 8</h2>
+        <p>Además del diseño, se agregó una verificación ejecutable dedicada al hito para mostrar que los tres patrones funcionan aislados e integrados.</p>
+        <table>
+          <thead><tr><th>Grupo</th><th>Verificaciones</th><th>Qué demuestra</th></tr></thead>
+          <tbody>
+            <tr><td>Adapter</td><td>DHL, FedEx, UPS, PayPal y Stripe</td><td>Las APIs externas se usan mediante contratos internos uniformes.</td></tr>
+            <tr><td>Bridge</td><td>PDF, JSON, CSV y cambio de generador en runtime</td><td>Tipo de reporte y formato varían independientemente.</td></tr>
+            <tr><td>Composite</td><td>Árbol de 4 niveles con capacidad, ocupación y porcentaje</td><td>Los cálculos se resuelven recursivamente sin diferenciar hojas y contenedores en el cliente.</td></tr>
+            <tr><td>Integración</td><td><code>ServicioLogisticaUnificado</code></td><td>Adapter, Bridge y Composite se usan juntos en un flujo de logística.</td></tr>
+          </tbody>
+        </table>
+        <pre>CasosDePruebaHito8.ejecutar();
+
+// Resultado esperado:
+// HITO 8 - Adapter, Bridge y Composite
+// [OK] Adapter DHL crea envio
+// [OK] Bridge cambia generador en runtime
+// [OK] Composite calcula capacidad recursiva
+// [OK] Integracion usa los tres patrones</pre>
+        <div class="pill">✅ 18 verificaciones · ✅ hito ejecutable desde Main · ✅ evidencia alineada a la consigna</div>
       </section>
 
       <section class="section" id="conclusion">
