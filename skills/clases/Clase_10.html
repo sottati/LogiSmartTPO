@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 10: Patrones Estructurales II - Decorator, Facade, Flyweight, Proxy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: #667eea;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #667eea;
+            border-left: 3px solid #fff;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background: white;
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .example-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .comparison-table {
+            margin: 20px 0;
+        }
+
+        .diagram {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .pros, .cons {
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .pros {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .cons {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .pros h4, .cons h4 {
+            margin-bottom: 10px;
+        }
+
+        .pros ul, .cons ul {
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>📚 Clase 10</h2>
+            <div class="nav-item active" onclick="showSection('intro')">🎯 Introducción</div>
+            <div class="nav-item" onclick="showSection('decorator')">🎨 Decorator</div>
+            <div class="nav-item" onclick="showSection('facade')">🏛️ Facade</div>
+            <div class="nav-item" onclick="showSection('flyweight')">💾 Flyweight</div>
+            <div class="nav-item" onclick="showSection('proxy')">🔐 Proxy</div>
+            <div class="nav-item" onclick="showSection('comparacion')">📊 Comparación</div>
+            <div class="nav-item" onclick="showSection('combinacion')">🔗 Combinación</div>
+            <div class="nav-item" onclick="showSection('casos')">💼 Casos Reales</div>
+            <div class="nav-item" onclick="showSection('resumen')">✅ Resumen</div>
+        </aside>
+
+        <main class="main-content">
+            <!-- INTRODUCCIÓN -->
+            <section id="intro" class="section active">
+                <h1>🎯 Clase 10: Patrones Estructurales II</h1>
+                <h2>Decorator, Facade, Flyweight, Proxy</h2>
+
+                <h2>Objetivo de la Clase</h2>
+                <p>Completar el estudio de patrones estructurales con cuatro patrones avanzados que resuelven problemas específicos:</p>
+                <ul>
+                    <li>Agregar responsabilidades dinámicamente a objetos</li>
+                    <li>Simplificar interfaces complejas</li>
+                    <li>Optimizar memoria compartiendo objetos</li>
+                    <li>Controlar acceso a objetos costosos</li>
+                </ul>
+
+                <h2>Repaso: Patrones Estructurales</h2>
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Clase</th>
+                        <th>Propósito</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Adapter</strong></td>
+                        <td>Clase 9</td>
+                        <td>Hacer compatibles interfaces incompatibles</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bridge</strong></td>
+                        <td>Clase 9</td>
+                        <td>Separar abstracción de implementación</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Composite</strong></td>
+                        <td>Clase 9</td>
+                        <td>Componer objetos en estructuras jerárquicas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Decorator</strong></td>
+                        <td>Clase 10</td>
+                        <td>Agregar responsabilidades dinámicamente</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Facade</strong></td>
+                        <td>Clase 10</td>
+                        <td>Simplificar interfaces complejas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flyweight</strong></td>
+                        <td>Clase 10</td>
+                        <td>Compartir objetos para optimizar memoria</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proxy</strong></td>
+                        <td>Clase 10</td>
+                        <td>Controlar acceso a objetos costosos</td>
+                    </tr>
+                </table>
+
+
+                <div class="highlight">
+                    <h3>Pregunta Central</h3>
+                    <p>¿Cómo puedo agregar funcionalidad sin modificar clases? ¿Cómo simplifico interfaces complejas? ¿Cómo optimizo memoria? ¿Cómo controlo acceso a recursos costosos?</p>
+                </div>
+            </section>
+
+            <!-- DECORATOR -->
+            <section id="decorator" class="section">
+                <h1>🎨 Decorator Pattern</h1>
+
+                <h2>Problema: Explosión de Subclases</h2>
+                <p>Tienes una clase `Envio` y necesitas agregar funcionalidades opcionales:</p>
+                <ul>
+                    <li>Envío con seguro</li>
+                    <li>Envío con rastreo GPS</li>
+                    <li>Envío con seguro Y rastreo</li>
+                    <li>Envío con seguro Y rastreo Y notificaciones</li>
+                </ul>
+
+                <p><strong>Solución ingenua con herencia:</strong></p>
+                <div class="diagram">
+Envio
+├── EnvioConSeguro
+├── EnvioConRastreo
+├── EnvioConSeguroYRastreo
+├── EnvioConNotificaciones
+├── EnvioConSeguroYNotificaciones
+├── EnvioConRastreoYNotificaciones
+└── EnvioConSeguroYRastreoYNotificaciones
+
+Total: 8 clases (2^3 combinaciones)
+Si agregas otra funcionalidad: 16 clases
+Si agregas otra: 32 clases
+                </div>
+
+                <p><strong>Problema:</strong> Explosión combinatoria. Es imposible mantener.</p>
+
+                <h2>Solución: Decorator</h2>
+                <p>Envuelve objetos con decoradores que agregan funcionalidad sin modificar el objeto original.</p>
+
+                <div class="diagram">
+┌─────────────────────────────────┐
+│         Envio Original          │
+│  - obtenerCosto()               │
+│  - obtenerTiempo()              │
+└─────────────────────────────────┘
+         ▲
+         │ Envuelto por
+         ▼
+┌─────────────────────────────────┐
+│    DecoradorSeguro              │
+│  - obtenerCosto() + seguro      │
+│  - obtenerTiempo()              │
+└─────────────────────────────────┘
+         ▲
+         │ Envuelto por
+         ▼
+┌─────────────────────────────────┐
+│    DecoradorRastreo             │
+│  - obtenerCosto() + rastreo     │
+│  - obtenerTiempo() + GPS        │
+└─────────────────────────────────┘
+
+Resultado: 1 clase + 3 decoradores = 4 clases
+Mucho mejor que 8 clases
+                </div>
+
+                <h2>Implementación</h2>
+
+                <h3>Paso 1: Interfaz Base</h3>
+                <div class="code-block"><pre>public interface Envio {
+    double obtenerCosto();
+    int obtenerTiempoEntrega(); // en horas
+    String obtenerDescripcion();
+}
+
+public class EnvioBasico implements Envio {
+    private String origen;
+    private String destino;
+    private double peso;
+    
+    public EnvioBasico(String origen, String destino, double peso) {
+        this.origen = origen;
+        this.destino = destino;
+        this.peso = peso;
+    }
+    
+    @Override
+    public double obtenerCosto() {
+        return peso * 10.0; // $10 por kg
+    }
+    
+    @Override
+    public int obtenerTiempoEntrega() {
+        return 3; // 3 días
+    }
+    
+    @Override
+    public String obtenerDescripcion() {
+        return "Envío básico: " + origen + " -> " + destino;
+    }
+}</pre></div>
+
+                <h3>Paso 2: Decorador Base Abstracto</h3>
+                <div class="code-block"><pre>public abstract class DecoradorEnvio implements Envio {
+    protected Envio envioDecorado;
+    
+    public DecoradorEnvio(Envio envio) {
+        this.envioDecorado = envio;
+    }
+    
+    @Override
+    public double obtenerCosto() {
+        return envioDecorado.obtenerCosto();
+    }
+    
+    @Override
+    public int obtenerTiempoEntrega() {
+        return envioDecorado.obtenerTiempoEntrega();
+    }
+    
+    @Override
+    public String obtenerDescripcion() {
+        return envioDecorado.obtenerDescripcion();
+    }
+}</pre></div>
+
+                <h3>Paso 3: Decoradores Concretos</h3>
+                <div class="code-block"><pre>// Decorador: Agregar Seguro
+public class DecoradorSeguro extends DecoradorEnvio {
+    public DecoradorSeguro(Envio envio) {
+        super(envio);
+    }
+    
+    @Override
+    public double obtenerCosto() {
+        return envioDecorado.obtenerCosto() * 1.15; // +15%
+    }
+    
+    @Override
+    public String obtenerDescripcion() {
+        return envioDecorado.obtenerDescripcion() + " + Seguro";
+    }
+}
+
+// Decorador: Agregar Rastreo GPS
+public class DecoradorRastreoGPS extends DecoradorEnvio {
+    public DecoradorRastreoGPS(Envio envio) {
+        super(envio);
+    }
+    
+    @Override
+    public double obtenerCosto() {
+        return envioDecorado.obtenerCosto() + 50.0; // +$50
+    }
+    
+    @Override
+    public int obtenerTiempoEntrega() {
+        return envioDecorado.obtenerTiempoEntrega() - 1; // 1 día menos
+    }
+    
+    @Override
+    public String obtenerDescripcion() {
+        return envioDecorado.obtenerDescripcion() + " + Rastreo GPS";
+    }
+}
+
+// Decorador: Agregar Notificaciones
+public class DecoradorNotificaciones extends DecoradorEnvio {
+    public DecoradorNotificaciones(Envio envio) {
+        super(envio);
+    }
+    
+    @Override
+    public double obtenerCosto() {
+        return envioDecorado.obtenerCosto() + 25.0; // +$25
+    }
+    
+    @Override
+    public String obtenerDescripcion() {
+        return envioDecorado.obtenerDescripcion() + " + Notificaciones";
+    }
+}</pre></div>
+
+                <h3>Paso 4: Uso del Decorator</h3>
+                <div class="code-block"><pre>// Crear envío básico
+Envio envio = new EnvioBasico("Buenos Aires", "Córdoba", 5.0);
+System.out.println(envio.obtenerDescripcion()); // Envío básico...
+System.out.println("Costo: $" + envio.obtenerCosto()); // $50
+
+// Agregar seguro
+envio = new DecoradorSeguro(envio);
+System.out.println(envio.obtenerDescripcion()); // ...+ Seguro
+System.out.println("Costo: $" + envio.obtenerCosto()); // $57.50
+
+// Agregar rastreo
+envio = new DecoradorRastreoGPS(envio);
+System.out.println(envio.obtenerDescripcion()); // ...+ Rastreo GPS
+System.out.println("Costo: $" + envio.obtenerCosto()); // $107.50
+
+// Agregar notificaciones
+envio = new DecoradorNotificaciones(envio);
+System.out.println(envio.obtenerDescripcion()); // ...+ Notificaciones
+System.out.println("Costo: $" + envio.obtenerCosto()); // $132.50</pre></div>
+
+                <h2>Ventajas del Decorator</h2>
+                <ul>
+                    <li><strong>Flexibilidad:</strong> Combina decoradores en cualquier orden</li>
+                    <li><strong>Evita Explosión de Clases:</strong> 4 clases en lugar de 8</li>
+                    <li><strong>Responsabilidad Única:</strong> Cada decorador hace una cosa</li>
+                    <li><strong>Composición sobre Herencia:</strong> Más flexible que subclases</li>
+                </ul>
+
+                <h2>Desventajas</h2>
+                <ul>
+                    <li><strong>Complejidad:</strong> Muchas clases pequeñas</li>
+                    <li><strong>Orden Importante:</strong> El orden de decoradores puede importar</li>
+                    <li><strong>Debugging Difícil:</strong> Stack de decoradores es complejo</li>
+                </ul>
+
+                <h2>Cuándo Usar Decorator</h2>
+                <ul>
+                    <li>Necesitas agregar responsabilidades dinámicamente</li>
+                    <li>Quieres evitar explosión de subclases</li>
+                    <li>Las responsabilidades son opcionales e independientes</li>
+                    <li>El orden de aplicación importa</li>
+                </ul>
+
+            </section>
+
+            <!-- FACADE -->
+            <section id="facade" class="section">
+                <h1>🏛️ Facade Pattern</h1>
+
+                <h2>Problema: Complejidad Oculta</h2>
+                <p>Tu sistema de logística tiene muchos subsistemas complejos:</p>
+                <ul>
+                    <li>Sistema de Inventario</li>
+                    <li>Sistema de Pagos</li>
+                    <li>Sistema de Notificaciones</li>
+                    <li>Sistema de Reportes</li>
+                    <li>Sistema de Rastreo</li>
+                </ul>
+
+                <p>Para crear un envío, el cliente debe:</p>
+                <div class="code-block"><pre>// Código sin Facade (complejo)
+Inventario inventario = new Inventario();
+inventario.verificarStock("PROD-001");
+inventario.restarStock("PROD-001", 1);
+
+Pago pago = new Pago();
+pago.procesarPago("VISA", 150.0);
+
+Notificacion notif = new Notificacion();
+notif.enviarEmail("cliente@email.com", "Pedido confirmado");
+
+Rastreo rastreo = new Rastreo();
+rastreo.crearNumeroSeguimiento();
+
+Reporte reporte = new Reporte();
+reporte.generarReporte("ENVIO", "PDF");</pre></div>
+
+                <p><strong>Problema:</strong> El cliente necesita conocer todos los subsistemas y su orden.</p>
+
+                <h2>Solución: Facade</h2>
+                <p>Crea una interfaz unificada que encapsula la complejidad.</p>
+
+                <div class="diagram">
+┌─────────────────────────────────┐
+│         Cliente                 │
+└─────────────────────────────────┘
+         │
+         │ Usa
+         ▼
+┌─────────────────────────────────┐
+│    ServicioEnviosFacade         │
+│  - crearEnvio(datos)            │
+│  - cancelarEnvio(id)            │
+│  - obtenerEstado(id)            │
+└─────────────────────────────────┘
+         │
+         │ Coordina
+         ├─────────────────────────────────┐
+         ▼                                 ▼
+    ┌─────────────┐              ┌──────────────────┐
+    │ Inventario  │              │ Sistema de Pagos │
+    └─────────────┘              └──────────────────┘
+         │                                 │
+         ├─────────────────────────────────┤
+         ▼                                 ▼
+    ┌──────────────┐            ┌──────────────────┐
+    │Notificaciones│            │ Sistema de Rastreo
+    └──────────────┘            └──────────────────┘
+                </div>
+
+                <h2>Implementación</h2>
+
+                <h3>Paso 1: Subsistemas Complejos</h3>
+                <div class="code-block"><pre>public class SistemaInventario {
+    public boolean verificarStock(String productoId) {
+        System.out.println("[Inventario] Verificando stock de " + productoId);
+        return true;
+    }
+    
+    public void restarStock(String productoId, int cantidad) {
+        System.out.println("[Inventario] Restando " + cantidad + " de " + productoId);
+    }
+}
+
+public class SistemaPagos {
+    public boolean procesarPago(String metodo, double monto) {
+        System.out.println("[Pagos] Procesando $" + monto + " con " + metodo);
+        return true;
+    }
+}
+
+public class SistemaNotificaciones {
+    public void enviarEmail(String email, String mensaje) {
+        System.out.println("[Notificaciones] Email a " + email + ": " + mensaje);
+    }
+    
+    public void enviarSMS(String telefono, String mensaje) {
+        System.out.println("[Notificaciones] SMS a " + telefono + ": " + mensaje);
+    }
+}
+
+public class SistemaRastreo {
+    public String crearNumeroSeguimiento() {
+        String numero = "TRK-" + System.currentTimeMillis();
+        System.out.println("[Rastreo] Número de seguimiento: " + numero);
+        return numero;
+    }
+}</pre></div>
+
+                <h3>Paso 2: Facade que Encapsula</h3>
+                <div class="code-block"><pre>public class ServicioEnviosFacade {
+    private SistemaInventario inventario = new SistemaInventario();
+    private SistemaPagos pagos = new SistemaPagos();
+    private SistemaNotificaciones notificaciones = new SistemaNotificaciones();
+    private SistemaRastreo rastreo = new SistemaRastreo();
+    
+    /**
+     * Crea un envío coordinando todos los subsistemas
+     */
+    public String crearEnvio(String productoId, double monto, String email) {
+        System.out.println("\n=== Creando Envío ===");
+        
+        // 1. Verificar inventario
+        if (!inventario.verificarStock(productoId)) {
+            System.err.println("Stock insuficiente");
+            return null;
+        }
+        
+        // 2. Procesar pago
+        if (!pagos.procesarPago("TARJETA", monto)) {
+            System.err.println("Pago rechazado");
+            return null;
+        }
+        
+        // 3. Restar stock
+        inventario.restarStock(productoId, 1);
+        
+        // 4. Crear número de seguimiento
+        String numeroSeguimiento = rastreo.crearNumeroSeguimiento();
+        
+        // 5. Notificar al cliente
+        notificaciones.enviarEmail(email, 
+            "Tu envío ha sido confirmado. Número: " + numeroSeguimiento);
+        
+        System.out.println("✓ Envío creado exitosamente\n");
+        return numeroSeguimiento;
+    }
+    
+    /**
+     * Cancela un envío
+     */
+    public void cancelarEnvio(String numeroSeguimiento) {
+        System.out.println("\n=== Cancelando Envío ===");
+        System.out.println("[Rastreo] Cancelando " + numeroSeguimiento);
+        System.out.println("[Pagos] Reembolsando pago");
+        System.out.println("[Notificaciones] Notificando cancelación");
+        System.out.println("✓ Envío cancelado\n");
+    }
+}</pre></div>
+
+                <h3>Paso 3: Uso del Facade</h3>
+                <div class="code-block"><pre>// Código con Facade (simple)
+ServicioEnviosFacade servicio = new ServicioEnviosFacade();
+
+String numeroSeguimiento = servicio.crearEnvio(
+    "PROD-001",
+    150.0,
+    "cliente@email.com"
+);
+
+servicio.cancelarEnvio(numeroSeguimiento);</pre></div>
+
+                <h2>Ventajas del Facade</h2>
+                <ul>
+                    <li><strong>Simplificación:</strong> Interfaz simple para complejidad</li>
+                    <li><strong>Desacoplamiento:</strong> Cliente no conoce subsistemas</li>
+                    <li><strong>Mantenibilidad:</strong> Cambios internos no afectan cliente</li>
+                    <li><strong>Reutilización:</strong> Múltiples clientes usan la misma fachada</li>
+                </ul>
+
+                <h2>Desventajas</h2>
+                <ul>
+                    <li><strong>Dios Object:</strong> Facade puede volverse muy grande</li>
+                    <li><strong>Oculta Complejidad:</strong> A veces necesitas acceso directo</li>
+                    <li><strong>Menos Flexible:</strong> Limitado a operaciones predefinidas</li>
+                </ul>
+
+                <h2>Cuándo Usar Facade</h2>
+                <ul>
+                    <li>Tienes subsistemas complejos que interactúan</li>
+                    <li>Quieres simplificar la interfaz para clientes</li>
+                    <li>Necesitas desacoplar cliente de subsistemas</li>
+                    <li>Hay operaciones comunes que coordinan varios subsistemas</li>
+                </ul>
+
+            </section>
+
+            <!-- FLYWEIGHT -->
+            <section id="flyweight" class="section">
+                <h1>💾 Flyweight Pattern</h1>
+
+                <h2>Problema: Consumo Excesivo de Memoria</h2>
+                <p>Tu sistema de logística crea millones de objetos `Ubicacion`:</p>
+                <div class="code-block"><pre>// Sin Flyweight (ineficiente)
+List<Ubicacion> ubicaciones = new ArrayList<>();
+for (int i = 0; i < 1_000_000; i++) {
+    ubicaciones.add(new Ubicacion("Buenos Aires", "Buenos Aires", "1425"));
+    ubicaciones.add(new Ubicacion("Córdoba", "Córdoba", "5000"));
+    ubicaciones.add(new Ubicacion("Rosario", "Santa Fe", "2000"));
+}
+// Resultado: 3 millones de objetos idénticos en memoria
+// Cada uno ocupa ~100 bytes = 300 MB de memoria desperdiciada</pre></div>
+
+                <p><strong>Problema:</strong> Muchos objetos idénticos consumiendo memoria innecesariamente.</p>
+
+                <h2>Solución: Flyweight</h2>
+                <p>Comparte objetos inmutables para reducir consumo de memoria.</p>
+
+                <div class="diagram">
+Sin Flyweight:
+Ubicacion("Buenos Aires") → Objeto 1 (100 bytes)
+Ubicacion("Buenos Aires") → Objeto 2 (100 bytes)
+Ubicacion("Buenos Aires") → Objeto 3 (100 bytes)
+...
+Total: 1,000,000 objetos × 100 bytes = 100 MB
+
+Con Flyweight:
+Ubicacion("Buenos Aires") → Objeto Compartido (100 bytes)
+Ubicacion("Buenos Aires") → Referencia al Objeto Compartido
+Ubicacion("Buenos Aires") → Referencia al Objeto Compartido
+...
+Total: 1 objeto × 100 bytes = 100 bytes
+                </div>
+
+                <h2>Implementación</h2>
+
+                <h3>Paso 1: Objeto Flyweight (Inmutable)</h3>
+                <div class="code-block"><pre>public class Ubicacion {
+    private final String ciudad;
+    private final String provincia;
+    private final String codigoPostal;
+    
+    public Ubicacion(String ciudad, String provincia, String codigoPostal) {
+        this.ciudad = ciudad;
+        this.provincia = provincia;
+        this.codigoPostal = codigoPostal;
+    }
+    
+    public String getCiudad() { return ciudad; }
+    public String getProvincia() { return provincia; }
+    public String getCodigoPostal() { return codigoPostal; }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ubicacion ubicacion = (Ubicacion) o;
+        return ciudad.equals(ubicacion.ciudad) &&
+               provincia.equals(ubicacion.provincia) &&
+               codigoPostal.equals(ubicacion.codigoPostal);
+    }
+    
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(ciudad, provincia, codigoPostal);
+    }
+}</pre></div>
+
+                <h3>Paso 2: Factory de Flyweights</h3>
+                <div class="code-block"><pre>public class FabricaUbicaciones {
+    private static final Map<String, Ubicacion> ubicaciones = new HashMap<>();
+    
+    /**
+     * Obtiene o crea una ubicación (compartida)
+     */
+    public static Ubicacion obtener(String ciudad, String provincia, String codigoPostal) {
+        String clave = ciudad + "|" + provincia + "|" + codigoPostal;
+        
+        if (!ubicaciones.containsKey(clave)) {
+            Ubicacion nueva = new Ubicacion(ciudad, provincia, codigoPostal);
+            ubicaciones.put(clave, nueva);
+            System.out.println("[Flyweight] Nueva ubicación creada: " + clave);
+        } else {
+            System.out.println("[Flyweight] Reutilizando ubicación: " + clave);
+        }
+        
+        return ubicaciones.get(clave);
+    }
+    
+    /**
+     * Obtiene estadísticas
+     */
+    public static void mostrarEstadisticas() {
+        System.out.println("Ubicaciones únicas en memoria: " + ubicaciones.size());
+    }
+}</pre></div>
+
+                <h3>Paso 3: Uso del Flyweight</h3>
+                <div class="code-block"><pre>// Sin Flyweight
+List<Ubicacion> ubicacionesSin = new ArrayList<>();
+for (int i = 0; i < 1_000_000; i++) {
+    ubicacionesSin.add(new Ubicacion("Buenos Aires", "Buenos Aires", "1425"));
+}
+// 1 millón de objetos en memoria
+
+// Con Flyweight
+List<Ubicacion> ubicacionesCon = new ArrayList<>();
+for (int i = 0; i < 1_000_000; i++) {
+    ubicacionesCon.add(FabricaUbicaciones.obtener("Buenos Aires", "Buenos Aires", "1425"));
+}
+// Solo 1 objeto en memoria, 1 millón de referencias
+
+FabricaUbicaciones.mostrarEstadisticas();
+// Output: Ubicaciones únicas en memoria: 1</pre></div>
+
+                <h2>Ventajas del Flyweight</h2>
+                <ul>
+                    <li><strong>Optimización de Memoria:</strong> Reduce consumo dramáticamente</li>
+                    <li><strong>Rendimiento:</strong> Menos objetos = menos garbage collection</li>
+                    <li><strong>Escalabilidad:</strong> Soporta millones de objetos</li>
+                </ul>
+
+                <h2>Desventajas</h2>
+                <ul>
+                    <li><strong>Complejidad:</strong> Requiere factory y gestión de pool</li>
+                    <li><strong>Thread-Safety:</strong> Factory debe ser thread-safe</li>
+                    <li><strong>Inmutabilidad Requerida:</strong> Los objetos no pueden cambiar</li>
+                </ul>
+
+                <h2>Cuándo Usar Flyweight</h2>
+                <ul>
+                    <li>Creas muchos objetos similares</li>
+                    <li>El consumo de memoria es crítico</li>
+                    <li>Los objetos son inmutables</li>
+                    <li>Hay mucha reutilización potencial</li>
+                </ul>
+
+                <h2>Ejemplos en Java Estándar</h2>
+                <ul>
+                    <li><code>String.intern()</code> - Comparte strings idénticos</li>
+                    <li><code>Integer.valueOf()</code> - Cache de enteros pequeños (-128 a 127)</li>
+                    <li><code>Boolean.TRUE / Boolean.FALSE</code> - Objetos únicos compartidos</li>
+                </ul>
+
+            </section>
+
+            <!-- PROXY -->
+            <section id="proxy" class="section">
+                <h1>🔐 Proxy Pattern</h1>
+
+                <h2>Problema: Acceso Costoso</h2>
+                <p>Tu sistema necesita acceder a recursos costosos:</p>
+                <ul>
+                    <li>Conexión a base de datos remota</li>
+                    <li>Descarga de archivo grande</li>
+                    <li>Cálculos complejos</li>
+                    <li>Acceso a servicios externos</li>
+                </ul>
+
+                <p><strong>Problema:</strong> Cargar todos los recursos al inicio es ineficiente.</p>
+
+                <h2>Solución: Proxy</h2>
+                <p>Crea un proxy que controla el acceso al recurso real (lazy loading, caché, validación).</p>
+
+                <div class="diagram">
+┌─────────────────────────────────┐
+│         Cliente                 │
+└─────────────────────────────────┘
+         │
+         │ Usa
+         ▼
+┌─────────────────────────────────┐
+│    ProxyBaseDatos               │
+│  - Lazy loading                 │
+│  - Caché                        │
+│  - Validación                   │
+└─────────────────────────────────┘
+         │
+         │ Accede cuando es necesario
+         ▼
+┌─────────────────────────────────┐
+│    BaseDatosReal                │
+│  - Conexión costosa             │
+│  - Consultas complejas          │
+└─────────────────────────────────┘
+                </div>
+
+                <h2>Tipos de Proxy</h2>
+                <ul>
+                    <li><strong>Proxy Virtual:</strong> Lazy loading (carga bajo demanda)</li>
+                    <li><strong>Proxy de Protección:</strong> Control de acceso (validación)</li>
+                    <li><strong>Proxy Remoto:</strong> Acceso a objetos remotos</li>
+                    <li><strong>Proxy de Caché:</strong> Almacena resultados</li>
+                </ul>
+
+                <h2>Implementación: Proxy Virtual</h2>
+
+                <h3>Paso 1: Interfaz Común</h3>
+                <div class="code-block"><pre>public interface BaseDatos {
+    List<Envio> obtenerEnvios();
+    Envio obtenerEnvio(String id);
+    void guardarEnvio(Envio envio);
+}
+
+public class BaseDatosReal implements BaseDatos {
+    public BaseDatosReal() {
+        System.out.println("[BD Real] Conectando a servidor remoto...");
+        // Simular conexión costosa
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        System.out.println("[BD Real] Conexión establecida");
+    }
+    
+    @Override
+    public List<Envio> obtenerEnvios() {
+        System.out.println("[BD Real] Consultando envíos...");
+        return new ArrayList<>();
+    }
+    
+    @Override
+    public Envio obtenerEnvio(String id) {
+        System.out.println("[BD Real] Consultando envío: " + id);
+        return new Envio(...);
+    }
+    
+    @Override
+    public void guardarEnvio(Envio envio) {
+        System.out.println("[BD Real] Guardando envío");
+    }
+}</pre></div>
+
+                <h3>Paso 2: Proxy Virtual (Lazy Loading)</h3>
+                <div class="code-block"><pre>public class ProxyBaseDatos implements BaseDatos {
+    private BaseDatosReal bdReal;
+    private Map<String, Envio> cache = new HashMap<>();
+    
+    /**
+     * Carga la BD solo cuando es necesario
+     */
+    private BaseDatosReal obtenerBD() {
+        if (bdReal == null) {
+            System.out.println("[Proxy] Inicializando BD...");
+            bdReal = new BaseDatosReal();
+        }
+        return bdReal;
+    }
+    
+    @Override
+    public List<Envio> obtenerEnvios() {
+        System.out.println("[Proxy] Obteniendo envíos");
+        return obtenerBD().obtenerEnvios();
+    }
+    
+    @Override
+    public Envio obtenerEnvio(String id) {
+        System.out.println("[Proxy] Buscando en caché: " + id);
+        
+        if (cache.containsKey(id)) {
+            System.out.println("[Proxy] ✓ Encontrado en caché");
+            return cache.get(id);
+        }
+        
+        System.out.println("[Proxy] ✗ No en caché, consultando BD");
+        Envio envio = obtenerBD().obtenerEnvio(id);
+        cache.put(id, envio);
+        return envio;
+    }
+    
+    @Override
+    public void guardarEnvio(Envio envio) {
+        System.out.println("[Proxy] Guardando y actualizando caché");
+        obtenerBD().guardarEnvio(envio);
+        cache.put(envio.getId(), envio);
+    }
+}</pre></div>
+
+                <h3>Paso 3: Uso del Proxy</h3>
+                <div class="code-block"><pre>// Crear proxy (BD real NO se conecta aún)
+BaseDatos bd = new ProxyBaseDatos();
+System.out.println("Proxy creado, BD no conectada");
+
+// Primera consulta (conecta la BD)
+Envio envio1 = bd.obtenerEnvio("ENV-001");
+
+// Segunda consulta (usa caché, no consulta BD)
+Envio envio2 = bd.obtenerEnvio("ENV-001");</pre></div>
+
+                <h2>Ventajas del Proxy</h2>
+                <ul>
+                    <li><strong>Lazy Loading:</strong> Carga recursos solo cuando se necesitan</li>
+                    <li><strong>Caché:</strong> Mejora rendimiento reutilizando resultados</li>
+                    <li><strong>Control de Acceso:</strong> Valida permisos antes de acceder</li>
+                    <li><strong>Transparencia:</strong> Cliente usa proxy como si fuera el objeto real</li>
+                </ul>
+
+                <h2>Desventajas</h2>
+                <ul>
+                    <li><strong>Complejidad:</strong> Capa adicional de indirección</li>
+                    <li><strong>Rendimiento:</strong> Pequeña sobrecarga en cada acceso</li>
+                    <li><strong>Sincronización:</strong> Caché puede quedar desactualizado</li>
+                </ul>
+
+                <h2>Cuándo Usar Proxy</h2>
+                <ul>
+                    <li>Acceso a recursos costosos (BD, red, cálculos)</li>
+                    <li>Necesitas lazy loading</li>
+                    <li>Quieres implementar caché</li>
+                    <li>Necesitas control de acceso</li>
+                </ul>
+
+            </section>
+
+            <!-- COMPARACIÓN -->
+            <section id="comparacion" class="section">
+                <h1>📊 Comparación de Patrones</h1>
+
+                <h2>Tabla Comparativa</h2>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Propósito</th>
+                        <th>Complejidad</th>
+                        <th>Cuándo Usar</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Decorator</strong></td>
+                        <td>Agregar responsabilidades dinámicamente</td>
+                        <td>Media</td>
+                        <td>Funcionalidades opcionales e independientes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Facade</strong></td>
+                        <td>Simplificar interfaces complejas</td>
+                        <td>Baja</td>
+                        <td>Subsistemas complejos con operaciones comunes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flyweight</strong></td>
+                        <td>Optimizar memoria compartiendo objetos</td>
+                        <td>Media</td>
+                        <td>Muchos objetos similares, memoria crítica</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proxy</strong></td>
+                        <td>Controlar acceso a recursos costosos</td>
+                        <td>Media</td>
+                        <td>Lazy loading, caché, validación</td>
+                    </tr>
+                </table>
+
+                <h2>Matriz de Decisión</h2>
+                <ul>
+                    <li><strong>¿Agregar funcionalidad dinámicamente?</strong> → Decorator</li>
+                    <li><strong>¿Simplificar subsistemas complejos?</strong> → Facade</li>
+                    <li><strong>¿Optimizar memoria?</strong> → Flyweight</li>
+                    <li><strong>¿Controlar acceso a recursos?</strong> → Proxy</li>
+                </ul>
+
+                <h2>Comparación con Patrones de Clase 9</h2>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Clase</th>
+                        <th>Propósito</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Adapter</strong></td>
+                        <td>9</td>
+                        <td>Compatibilidad de interfaces</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bridge</strong></td>
+                        <td>9</td>
+                        <td>Separar abstracción/implementación</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Composite</strong></td>
+                        <td>9</td>
+                        <td>Estructuras jerárquicas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Decorator</strong></td>
+                        <td>10</td>
+                        <td>Agregar responsabilidades</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Facade</strong></td>
+                        <td>10</td>
+                        <td>Simplificar complejidad</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flyweight</strong></td>
+                        <td>10</td>
+                        <td>Optimizar memoria</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proxy</strong></td>
+                        <td>10</td>
+                        <td>Controlar acceso</td>
+                    </tr>
+                </table>
+                
+                <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif;">
+                <thead>
+                    <tr style="background-color: #f2f2f2;">
+                    <th style="text-align: left;">Patrón</th>
+                    <th style="text-align: left;">Categoría</th>
+                    <th style="text-align: left;">Propósito principal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <td><strong>Adapter</strong></td>
+                    <td>Estructural</td>
+                    <td>Compatibilidad de interfaces: permite que clases con interfaces incompatibles trabajen juntas convirtiendo una interfaz en otra <a href="https://refactoring.guru/es/design-patterns/adapter" target="_blank">[1]</a> <a href="https://softwarecrafters.io/typescript/patrones-diseno-creacionales-estructurales" target="_blank">[2]</a></td>
+                    </tr>
+                    <tr style="background-color: #fafafa;">
+                    <td><strong>Bridge</strong></td>
+                    <td>Estructural</td>
+                    <td>Separar abstracción e implementación: divide una clase en dos jerarquías independientes (abstracción y implementación) para poder cambiarlas por separado <a href="https://refactoring.guru/es/design-patterns/bridge" target="_blank">[6]</a> <a href="https://www.youtube.com/watch?v=ct34_d8uKCk" target="_blank">[9]</a></td>
+                    </tr>
+                    <tr>
+                    <td><strong>Composite</strong></td>
+                    <td>Estructural</td>
+                    <td>Estructuras jerárquicas: compone objetos en estructuras de árbol para representar relaciones parte-todo, permitiendo tratar objetos individuales y compuestos uniformemente <a href="https://daniel-m-spiridione.gitbook.io/designpatternsingo/parte2/patrones/estructurales/composite" target="_blank">[7]</a> <a href="https://www.mentorestech.com/resource-design-pattern-composite.php" target="_blank">[10]</a></td>
+                    </tr>
+                    <tr style="background-color: #fafafa;">
+                    <td><strong>Decorator</strong></td>
+                    <td>Estructural</td>
+                    <td>Agregar responsabilidades: añade funcionalidad dinámicamente a un objeto sin modificar su código, mediante composición recursiva <a href="https://refactoring.guru/es/design-patterns/adapter" target="_blank">[1]</a></td>
+                    </tr>
+                    <tr>
+                    <td><strong>Facade</strong></td>
+                    <td>Estructural</td>
+                    <td>Simplificar complejidad: crea una interfaz simplificada para acceder a un subsistema complejo <a href="https://softwarecrafters.io/typescript/patrones-diseno-creacionales-estructurales" target="_blank">[2]</a> <a href="https://www.mentorestech.com/resource-design-pattern-adapter.php" target="_blank">[4]</a></td>
+                    </tr>
+                    <tr style="background-color: #fafafa;">
+                    <td><strong>Flyweight</strong></td>
+                    <td>Estructural</td>
+                    <td>Optimizar memoria: comparte información común entre múltiples objetos para reducir el uso de memoria <a href="https://www.mentorestech.com/resource-design-pattern-composite.php" target="_blank">[10]</a></td>
+                    </tr>
+                    <tr>
+                    <td><strong>Proxy</strong></td>
+                    <td>Estructural</td>
+                    <td>Controlar acceso: actúa como representante o intermediario de un objeto para controlar su acceso <a href="https://www.mentorestech.com/resource-design-pattern-adapter.php" target="_blank">[4]</a></td>
+                    </tr>
+                </tbody>
+                </table>
+
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                <strong>Nota importante:</strong> Todos estos patrones son <strong>estructurales</strong>, no creacionales. Los patrones creacionales (como Singleton, Factory, Abstract Factory, Builder, Prototype) se enfocan en cómo se crean los objetos, mientras que estos patrones estructurales se enfocan en cómo se componen las clases y objetos para formar estructuras más grandes <a href="https://refactoring.guru/es/design-patterns/adapter" target="_blank">[1]</a> <a href="https://softwarecrafters.io/typescript/patrones-diseno-creacionales-estructurales" target="_blank">[2]</a>.
+                </p>
+
+                <style>
+                table a {
+                    color: #0066cc;
+                    text-decoration: none;
+                }
+                table a:hover {
+                    text-decoration: underline;
+                }
+                </style>
+            </section>
+
+            <!-- COMBINACIÓN -->
+            <section id="combinacion" class="section">
+                <h1>🔗 Combinación de Patrones</h1>
+
+                <h2>Decorator + Proxy</h2>
+                <p>Combina lazy loading con funcionalidades opcionales:</p>
+                <div class="code-block"><pre>// Proxy carga la BD bajo demanda
+BaseDatos bd = new ProxyBaseDatos();
+
+// Decorator agrega caché adicional
+BaseDatos bdConCache = new DecoradorCacheAvanzado(bd);
+
+// Decorator agrega logging
+BaseDatos bdConLogging = new DecoradorLogging(bdConCache);
+
+// El cliente usa la interfaz simple
+Envio envio = bdConLogging.obtenerEnvio("ENV-001");</pre></div>
+
+                <h2>Facade + Decorator</h2>
+                <p>Simplifica subsistemas pero permite agregar funcionalidad:</p>
+                <div class="code-block"><pre>// Facade simplifica
+ServicioEnviosFacade servicio = new ServicioEnviosFacade();
+
+// Decorator agrega auditoría
+ServicioEnviosFacade servicioAuditado = 
+    new DecoradorAuditoria(servicio);
+
+// Decorator agrega notificaciones
+ServicioEnviosFacade servicioNotificado = 
+    new DecoradorNotificaciones(servicioAuditado);
+
+// Usar
+servicioNotificado.crearEnvio(...);</pre></div>
+
+                <h2>Composite + Flyweight</h2>
+                <p>Estructura jerárquica con objetos compartidos:</p>
+                <div class="code-block"><pre>// Flyweight: ubicaciones compartidas
+Ubicacion buenosAires = FabricaUbicaciones.obtener(
+    "Buenos Aires", "Buenos Aires", "1425"
+);
+
+// Composite: jerarquía de centros
+CentroRegional argentina = new CentroRegional(...);
+PuntoEntrega punto1 = new PuntoEntrega(..., buenosAires);
+PuntoEntrega punto2 = new PuntoEntrega(..., buenosAires);
+
+// Ambos puntos comparten la misma ubicación
+argentina.agregar(punto1);
+argentina.agregar(punto2);</pre></div>
+
+                <h2>Adapter + Facade</h2>
+                <p>Integra componentes externos y simplifica acceso:</p>
+                <div class="code-block"><pre>// Adapter: integra proveedores
+ProveedorEnvio dhl = new AdapterDHL();
+ProveedorEnvio fedex = new AdapterFedEx();
+
+// Facade: simplifica selección de proveedor
+ServicioProveedoresFacade servicio = 
+    new ServicioProveedoresFacade(dhl, fedex);
+
+// Cliente usa interfaz simple
+servicio.crearEnvio("DHL", envio);</pre></div>
+
+                <h2>Principios de Combinación</h2>
+                <ul>
+                    <li><strong>Composición sobre Herencia:</strong> Combina patrones en lugar de crear subclases</li>
+                    <li><strong>Responsabilidad Única:</strong> Cada patrón resuelve un problema específico</li>
+                    <li><strong>Interfaz Consistente:</strong> Los patrones combinados mantienen interfaz clara</li>
+                    <li><strong>Evitar Complejidad Excesiva:</strong> No combines más de 3-4 patrones</li>
+                </ul>
+
+            
+            </section>
+
+            <!-- CASOS REALES -->
+            <section id="casos" class="section">
+                <h1>💼 Casos de Aplicación en Sistemas Reales</h1>
+
+                <h2>Decorator en Sistemas Reales</h2>
+
+                <h3>Caso 1: Streams de Java</h3>
+                <p><code>BufferedInputStream</code>, <code>DataInputStream</code> son decoradores de <code>InputStream</code>:</p>
+                <div class="code-block"><pre>InputStream stream = new FileInputStream("archivo.txt");
+InputStream buffered = new BufferedInputStream(stream);
+InputStream data = new DataInputStream(buffered);
+// Cada uno agrega funcionalidad sin modificar el anterior</pre></div>
+
+                <h3>Caso 2: Componentes GUI</h3>
+                <p>Agregar bordes, scrollbars, efectos a componentes sin modificar el componente base.</p>
+
+                <h3>Caso 3: Middleware Web</h3>
+                <p>Express.js usa decoradores para agregar funcionalidad a rutas (autenticación, logging, validación).</p>
+
+                <h2>Facade en Sistemas Reales</h2>
+
+                <h3>Caso 1: Bibliotecas Gráficas</h3>
+                <p>OpenGL es complejo, pero librerías como Lwjgl proporcionan facades simplificadas.</p>
+
+                <h3>Caso 2: Frameworks Web</h3>
+                <p>Spring Framework proporciona facades para JDBC, JPA, transacciones.</p>
+
+                <h3>Caso 3: APIs Públicas</h3>
+                <p>Google Maps API simplifica acceso a servicios complejos de mapas.</p>
+
+                <h2>Flyweight en Sistemas Reales</h2>
+
+                <h3>Caso 1: Editores de Texto</h3>
+                <p>Cada carácter comparte objetos de fuente, color, estilo para ahorrar memoria.</p>
+
+                <h3>Caso 2: Videojuegos</h3>
+                <p>Texturas, modelos 3D se comparten entre múltiples objetos del juego.</p>
+
+                <h3>Caso 3: Bases de Datos</h3>
+                <p>Connection pooling reutiliza conexiones en lugar de crear nuevas.</p>
+
+                <h2>Proxy en Sistemas Reales</h2>
+
+                <h3>Caso 1: ORM (Hibernate, JPA)</h3>
+                <p>Lazy loading: las relaciones se cargan solo cuando se acceden.</p>
+
+                <h3>Caso 2: Caché Distribuido (Redis)</h3>
+                <p>Proxy intercepta consultas y retorna resultados en caché si están disponibles.</p>
+
+                <h3>Caso 3: Servicios Web</h3>
+                <p>Proxy remoto permite acceder a objetos en servidores remotos como si estuvieran locales.</p>
+
+            </section>
+
+            <!-- RESUMEN -->
+            <section id="resumen" class="section">
+                <h1>✅ Resumen de la Clase</h1>
+
+                <h2>Conceptos Clave</h2>
+
+                <h3>Decorator</h3>
+                <ul>
+                    <li>Envuelve objetos para agregar funcionalidad</li>
+                    <li>Evita explosión de subclases</li>
+                    <li>Permite combinar decoradores en cualquier orden</li>
+                </ul>
+
+                <h3>Facade</h3>
+                <ul>
+                    <li>Simplifica interfaces complejas</li>
+                    <li>Encapsula subsistemas</li>
+                    <li>Desacopla cliente de implementación</li>
+                </ul>
+
+                <h3>Flyweight</h3>
+                <ul>
+                    <li>Comparte objetos inmutables para optimizar memoria</li>
+                    <li>Reduce consumo dramáticamente</li>
+                    <li>Requiere factory para gestionar pool</li>
+                </ul>
+
+                <h3>Proxy</h3>
+                <ul>
+                    <li>Controla acceso a recursos costosos</li>
+                    <li>Implementa lazy loading y caché</li>
+                    <li>Proporciona transparencia al cliente</li>
+                </ul>
+
+                <h2>Patrones Estructurales Completos</h2>
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Problema</th>
+                        <th>Solución</th>
+                    </tr>
+                    <tr>
+                        <td>Adapter</td>
+                        <td>Interfaces incompatibles</td>
+                        <td>Traductor entre interfaces</td>
+                    </tr>
+                    <tr>
+                        <td>Bridge</td>
+                        <td>Explosión de combinaciones</td>
+                        <td>Separar abstracción/implementación</td>
+                    </tr>
+                    <tr>
+                        <td>Composite</td>
+                        <td>Jerarquías complejas</td>
+                        <td>Estructura recursiva uniforme</td>
+                    </tr>
+                    <tr>
+                        <td>Decorator</td>
+                        <td>Funcionalidades opcionales</td>
+                        <td>Envolver objetos</td>
+                    </tr>
+                    <tr>
+                        <td>Facade</td>
+                        <td>Subsistemas complejos</td>
+                        <td>Interfaz unificada</td>
+                    </tr>
+                    <tr>
+                        <td>Flyweight</td>
+                        <td>Consumo excesivo de memoria</td>
+                        <td>Compartir objetos inmutables</td>
+                    </tr>
+                    <tr>
+                        <td>Proxy</td>
+                        <td>Acceso a recursos costosos</td>
+                        <td>Controlador de acceso</td>
+                    </tr>
+                </table>
+
+                <h2>Preguntas de Reflexión</h2>
+                <ul>
+                    <li>¿Cuándo usarías Decorator vs Facade?</li>
+                    <li>¿Cómo optimizarías memoria con Flyweight?</li>
+                    <li>¿Qué ventajas tiene Proxy sobre acceso directo?</li>
+                    <li>¿Cómo combinarías estos patrones en un sistema real?</li>
+                </ul>
+
+                <h2>Próximos Pasos</h2>
+                <ul>
+                    <li><strong>Hito 9 (Práctica):</strong> Aplicar patrones estructurales II</li>
+                    <li><strong>Clase 11:</strong> Patrones de Comportamiento I</li>
+                </ul>
+
+                <h2>Recursos</h2>
+                <ul>
+                    <li><strong>Refactoring Guru:</strong> https://refactoring.guru/design-patterns/structural-patterns</li>
+                    <li><strong>Design Patterns: Elements of Reusable Object-Oriented Software</strong> - Gang of Four</li>
+                    <li><strong>Head First Design Patterns</strong> - Freeman & Freeman</li>
+                </ul>
+
+                <div class="footer">Fin de la Clase 10</div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active to clicked nav item
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

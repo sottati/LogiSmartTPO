@@ -1,29 +1,30 @@
-# LogiSmart - Hito 7
+# LogiSmart - Hito 9
 
-Implementacion de patrones creacionales avanzados sobre el proyecto LogiSmart.
+Implementacion acumulada del TPO LogiSmart hasta Hito 9.
 
-## Alcance del hito
+## Alcance actual
 
-- Abstract Factory
-- Builder
-- Prototype
-- Integracion con Singleton y Factory Method (hitos previos)
+- Hito 6: Singleton y Factory Method
+- Hito 7: Abstract Factory, Builder y Prototype
+- Hito 8: Adapter, Bridge y Composite
+- Hito 9: Decorator, Facade, Flyweight y Proxy
 
 ## Requisitos
 
-- Java 17+ recomendado
+- Java 17+
 - Terminal con `javac` y `java`
 
 ## Estructura relevante
 
 - `src/com/logismart/app/Main.java`
-- `src/com/logismart/app/LogiSmartApp.java`
-- `src/com/logismart/dominio/Envio.java`
-- `src/com/logismart/infraestructura/abstractfactory/`
-- `src/com/logismart/infraestructura/fabrica/`
-- `src/com/logismart/infraestructura/singleton/`
-- `diagramas/`
-- `hitos/HITO_7.html`
+- `src/com/logismart/aplicacion/hito9/`
+- `src/com/logismart/infraestructura/decorator/envio/`
+- `src/com/logismart/infraestructura/flyweight/ubicacion/`
+- `src/com/logismart/infraestructura/proxy/envio/`
+- `skills/pds-clase-10/`
+- `hitos/HITO_8.html`
+- `hitos/HITO_9.html`
+- `DIAGRAMA_DE_CLASES_ACTUAL.html`
 
 ## Compilar
 
@@ -31,24 +32,26 @@ Implementacion de patrones creacionales avanzados sobre el proyecto LogiSmart.
 rg --files src -g "*.java" -0 | xargs -0 javac -d bin
 ```
 
-## Ejecutar demo del hito
+## Ejecutar demo acumulada
 
 ```bash
 java -cp bin com.logismart.app.Main
 ```
 
-La demo ejecuta en orden:
+La demo ejecuta:
 
 1. Singleton
 2. Abstract Factory
 3. Factory Method
 4. Builder
 5. Prototype
-6. Integracion final
+6. Procesamiento regional
+7. Casos de Hito 9
 
 ## Entregables incluidos
 
 - Codigo Java compilable y funcional
-- Diagramas Mermaid (`diagramas/*.mmd`)
-- Documento visual del hito (`hitos/HITO_7.html`)
-- `DOCUMENTACION.md` con decisiones y detalles tecnicos
+- Skill local de Clase 10 en `skills/pds-clase-10/`
+- Documento visual `hitos/HITO_9.html`
+- Diagrama acumulativo actualizado
+- `DOCUMENTACION.md` con decisiones y cobertura de hitos 6 a 9
