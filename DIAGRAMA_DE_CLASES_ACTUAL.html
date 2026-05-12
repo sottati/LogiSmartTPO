@@ -817,6 +817,87 @@ ServicioLogisticaUnificado --&gt; ProveedorPago
 ServicioLogisticaUnificado --&gt; CentroDistribucion
 ServicioLogisticaUnificado --&gt; ReporteBridge
 ServicioLogisticaUnificado ..&gt; GeneradorReporte
+
+%% ---- GOF: ESTRUCTURALES (Hito 9) ----
+class EnvioDecoradorContrato {
+  &lt;&lt;interface&gt;&gt;
+  +obtenerCosto() double
+  +obtenerTiempoEntrega() int
+  +obtenerDescripcion() String
+  +obtenerServicios() String
+}
+class EnvioBasicoDecorado
+class DecoradorEnvio {
+  &lt;&lt;abstract&gt;&gt;
+  #envioDecorado EnvioDecoradorContrato
+}
+class DecoradorSeguro
+class DecoradorRastreoGPS
+class DecoradorNotificacionesSMS
+class DecoradorPrioritario
+EnvioBasicoDecorado ..|&gt; EnvioDecoradorContrato
+DecoradorEnvio ..|&gt; EnvioDecoradorContrato
+DecoradorSeguro --|&gt; DecoradorEnvio
+DecoradorRastreoGPS --|&gt; DecoradorEnvio
+DecoradorNotificacionesSMS --|&gt; DecoradorEnvio
+DecoradorPrioritario --|&gt; DecoradorEnvio
+DecoradorEnvio o-- EnvioDecoradorContrato
+
+class ServicioLogisticaFacade {
+  +crearEnvio(productoId, monto, email, telefono) String
+  +cancelarEnvio(numeroSeguimiento)
+  +obtenerEstadoEnvio(numeroSeguimiento) String
+}
+class SistemaInventario
+class SistemaPagos
+class SistemaNotificaciones
+class SistemaRastreo
+class SistemaReportes
+ServicioLogisticaFacade --&gt; SistemaInventario
+ServicioLogisticaFacade --&gt; SistemaPagos
+ServicioLogisticaFacade --&gt; SistemaNotificaciones
+ServicioLogisticaFacade --&gt; SistemaRastreo
+ServicioLogisticaFacade --&gt; SistemaReportes
+
+class UbicacionFlyweight {
+  -ciudad String
+  -provincia String
+  -codigoPostal String
+}
+class FabricaUbicaciones {
+  +obtener(ciudad, provincia, codigoPostal) UbicacionFlyweight
+  +mostrarEstadisticas()
+  +limpiar()
+}
+FabricaUbicaciones --&gt; UbicacionFlyweight
+
+class RepositorioEnviosProxy {
+  &lt;&lt;interface&gt;&gt;
+  +obtenerEnvio(id) Envio
+  +obtenerEnvios() List~Envio~
+  +guardarEnvio(envio)
+  +eliminarEnvio(id)
+}
+class RepositorioEnviosReal
+class ProxyRepositorioEnvios {
+  -repositorioReal RepositorioEnviosReal
+  -cache Map~String,Envio~
+}
+RepositorioEnviosReal ..|&gt; RepositorioEnviosProxy
+ProxyRepositorioEnvios ..|&gt; RepositorioEnviosProxy
+ProxyRepositorioEnvios --&gt; RepositorioEnviosReal
+
+class ServicioLogisticaCompleto {
+  -facade ServicioLogisticaFacade
+  -repositorio ProxyRepositorioEnvios
+  +crearEnvioConServicios(productoId, peso, email, conSeguro, conRastreo, conNotificaciones, prioritario) String
+}
+
+%% ---- RELACIONES HITO 9 ----
+ServicioLogisticaCompleto --&gt; ServicioLogisticaFacade
+ServicioLogisticaCompleto --&gt; ProxyRepositorioEnvios
+ServicioLogisticaCompleto --&gt; FabricaUbicaciones
+ServicioLogisticaCompleto ..&gt; EnvioDecoradorContrato
           </pre>
         </div>
       </main>
@@ -1125,6 +1206,69 @@ ServicioLogisticaUnificado ..&gt; GeneradorReporte
               </div>
               <div class="pattern-desc">
                 <code>ServicioLogisticaUnificado</code> orquesta Adapter + Bridge + Composite en un flujo único.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 9 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge" style="background: var(--accent);">9</div>
+              <div>
+                <h2>Hito 9</h2>
+                <span>GoF - Estructurales II</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Decorator
+              </div>
+              <div class="pattern-desc">
+                <code>infraestructura.decorator.envio.Envio</code>, <code>EnvioBasico</code> y decoradores concretos agregan seguro, GPS, SMS y prioridad sin tocar el objeto base.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Facade
+              </div>
+              <div class="pattern-desc">
+                <code>ServicioLogisticaFacade</code> encapsula inventario, pagos, notificaciones, rastreo y reportes detras de una interfaz unica.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Flyweight
+              </div>
+              <div class="pattern-desc">
+                <code>Ubicacion</code> y <code>FabricaUbicaciones</code> comparten origenes y destinos repetidos para reducir memoria.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Proxy
+              </div>
+              <div class="pattern-desc">
+                <code>ProxyRepositorioEnvios</code> envuelve a <code>RepositorioEnviosReal</code> con lazy loading, cache y validacion.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Integracion
+              </div>
+              <div class="pattern-desc">
+                <code>ServicioLogisticaCompleto</code> combina Decorator + Facade + Flyweight + Proxy en un flujo unico.
               </div>
             </div>
           </div>

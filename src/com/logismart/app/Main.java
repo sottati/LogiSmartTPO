@@ -1,5 +1,6 @@
 package com.logismart.app;
 
+import com.logismart.aplicacion.hito9.CasosDePruebaHito9;
 import com.logismart.dominio.Envio;
 import com.logismart.infraestructura.singleton.ConfiguracionSistema;
 import com.logismart.infraestructura.singleton.Logger;
@@ -9,14 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Demostración completa de los cinco patrones creacionales integrados.
- *
- * Patrones demostrados en orden:
- *   1. Singleton        (Logger, ConfiguracionSistema)
- *   2. Abstract Factory (LogiSmartApp → región Argentina/Brasil)
- *   3. Factory Method   (crearUsuario)
- *   4. Builder          (Envio.EnvioBuilder)
- *   5. Prototype        (Envio.clone)
+ * Demo acumulada hasta Hito 9.
+ * Mantiene la secuencia de hitos creacionales y luego ejecuta
+ * los casos estructurales nuevos de Decorator, Facade, Flyweight y Proxy.
  */
 public class Main {
 
@@ -105,6 +101,8 @@ public class Main {
         appBR.procesarEnvio("São Paulo", "Rio de Janeiro", 3.0);
 
         // ─────────────────────────────────────────────────────────────────────
+
+        CasosDePruebaHito9.ejecutar();
 
         sep("RESUMEN");
         logger.info("Demostración completada exitosamente");

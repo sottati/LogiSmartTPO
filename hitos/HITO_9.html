@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITO 9 - LogiSmart | Patrones Estructurales II</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+      :root { --primary:#17324d; --primary-2:#1f4d78; --accent:#dc6b1f; --bg:#f4f7fb; --surface:#fff; --text:#14202c; --muted:#4f6172; --border:#d9e2ec; --ok:#165b3b; --ok-bg:#ecfdf3; }
+      * { box-sizing:border-box; margin:0; padding:0; }
+      html { scroll-behavior:smooth; }
+      body { font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif; background:linear-gradient(180deg,#f7f9fc 0%,#f2f6fa 100%); color:var(--text); line-height:1.6; }
+      .cover { min-height:70vh; display:grid; place-items:center; text-align:center; padding:2rem; background:radial-gradient(circle at 20% 20%,rgba(31,77,120,.12),transparent 45%),radial-gradient(circle at 80% 10%,rgba(220,107,31,.10),transparent 35%),var(--surface); border-bottom:8px solid var(--primary); }
+      .cover-content { max-width:760px; width:100%; }
+      .university { font-size:.8rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:.4rem; }
+      .subject { font-size:.95rem; font-weight:500; color:var(--primary-2); margin-bottom:2rem; }
+      .cover h1 { font-size:clamp(2.4rem,8vw,4.8rem); color:var(--primary); letter-spacing:-.03em; }
+      .subtitle { margin-top:.75rem; font-size:1.1rem; color:var(--muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:.85rem 0; margin-bottom:2rem; }
+      .team { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; max-width:420px; margin:0 auto 2rem; border-top:2px solid var(--bg); padding-top:1.75rem; }
+      .team-member strong { display:block; font-size:1rem; color:var(--text); margin-bottom:.2rem; }
+      .team-member span { font-size:.82rem; color:var(--muted); font-family:monospace; }
+      .cover-date { font-size:.85rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.12em; }
+      .container { max-width:1080px; margin:0 auto; padding:2.5rem 1.25rem 4rem; }
+      .section { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.75rem; margin-bottom:1.3rem; box-shadow:0 2px 5px rgba(20,32,44,.05); }
+      .section-act { display:inline-flex; align-items:center; gap:.5rem; font-size:.72rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:.4rem; }
+      h2 { color:var(--primary); font-size:1.45rem; margin-bottom:.25rem; }
+      .section > p { color:var(--muted); margin-bottom:.8rem; }
+      h3 { margin:1rem 0 .4rem; color:var(--primary-2); font-size:1.03rem; }
+      ul { margin-left:1.2rem; }
+      li { margin-bottom:.35rem; }
+      table { width:100%; border-collapse:collapse; margin-top:.6rem; font-size:.92rem; }
+      th,td { border:1px solid var(--border); padding:.55rem .7rem; text-align:left; vertical-align:top; }
+      thead th { background:var(--primary); color:#fff; font-size:.8rem; letter-spacing:.04em; text-transform:uppercase; }
+      pre { background:#0f1722; color:#dce9ff; border-radius:10px; padding:1rem; overflow-x:auto; font-size:.8rem; line-height:1.45; }
+      pre.mermaid { background:none; }
+      code { background:#eef3fa; border-radius:4px; padding:.05rem .3rem; }
+      .pill { display:inline-block; margin-top:.6rem; background:var(--ok-bg); color:var(--ok); border:1px solid #b9e7cb; border-radius:999px; padding:.2rem .6rem; font-size:.78rem; font-weight:600; }
+      .grid-2 { display:grid; gap:1rem; grid-template-columns:1fr 1fr; }
+      .grid-4 { display:grid; gap:1rem; grid-template-columns:1fr 1fr 1fr 1fr; }
+      .diagram { border:1px solid var(--border); border-radius:10px; padding:.6rem; overflow-x:auto; margin-top:.8rem; }
+      .pattern-badge { display:inline-flex; align-items:center; gap:.4rem; background:#fff0e3; color:#7a3200; border:1px solid #fbd38d; border-radius:6px; padding:.3rem .7rem; font-size:.8rem; font-weight:700; margin-bottom:.6rem; }
+      .side-nav { position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:.15rem; padding:.6rem .5rem; background:rgba(255,255,255,.92); border-right:1px solid var(--border); border-radius:0 10px 10px 0; box-shadow:2px 0 8px rgba(20,32,44,.06); }
+      .side-nav a { display:block; padding:.35rem .75rem; font-size:.7rem; font-weight:500; color:var(--muted); text-decoration:none; border-left:3px solid transparent; transition:all .2s ease; white-space:nowrap; border-radius:0 4px 4px 0; }
+      .side-nav a:hover { color:var(--primary); border-left-color:var(--border); }
+      .side-nav a.active { color:var(--primary); font-weight:700; border-left-color:var(--accent); }
+      @media (max-width:1200px) { .side-nav { display:none; } }
+      @media (max-width:900px) { .grid-2,.grid-4 { grid-template-columns:1fr; } .team { grid-template-columns:1fr; max-width:220px; } }
+    </style>
+  </head>
+  <body>
+    <header class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+        <h1>HITO 9</h1>
+        <div class="subtitle">Patrones Estructurales II - Decorator · Facade · Flyweight · Proxy</div>
+        <div class="team">
+          <div class="team-member"><strong>Rosario Presedo</strong><span>LU: 1146894</span></div>
+          <div class="team-member"><strong>Simon Ottati</strong><span>LU: 1155931</span></div>
+        </div>
+        <div class="cover-date">Mayo 2026</div>
+      </div>
+    </header>
+
+    <nav class="side-nav">
+      <a href="#intro">Introduccion</a>
+      <a href="#decorator">Decorator</a>
+      <a href="#facade">Facade</a>
+      <a href="#flyweight">Flyweight</a>
+      <a href="#proxy">Proxy</a>
+      <a href="#integracion">Integracion</a>
+      <a href="#uml">UML</a>
+      <a href="#conclusion">Conclusion</a>
+    </nav>
+
+    <main class="container">
+      <section class="section" id="intro">
+        <h2>Contexto e integracion</h2>
+        <p>El Hito 9 extiende los patrones estructurales del Hito 8 y agrega mecanismos para enriquecer envios, simplificar subsistemas, compartir memoria y controlar acceso a recursos costosos.</p>
+        <table>
+          <thead><tr><th>Hito</th><th>Patrones</th><th>Aporte al sistema</th></tr></thead>
+          <tbody>
+            <tr><td>Hito 8</td><td>Adapter + Bridge + Composite</td><td>Integracion externa, reportes desacoplados y jerarquia logistica.</td></tr>
+            <tr><td>Hito 9</td><td>Decorator + Facade + Flyweight + Proxy</td><td>Servicios opcionales, interfaz unificada, ahorro de memoria y persistencia diferida con cache.</td></tr>
+          </tbody>
+        </table>
+        <div class="grid-4" style="margin-top:1rem;">
+          <div style="background:#fff8f3;border:1px solid #fbd38d;border-radius:8px;padding:.8rem;"><strong>Decorator</strong><p style="font-size:.86rem;color:var(--muted);">Compone servicios como seguro, GPS, SMS y prioridad sin tocar el envio base.</p></div>
+          <div style="background:#f0f8ff;border:1px solid #bfdbfe;border-radius:8px;padding:.8rem;"><strong>Facade</strong><p style="font-size:.86rem;color:var(--muted);">Coordina inventario, pagos, rastreo, reportes y notificaciones desde una sola API.</p></div>
+          <div style="background:#f0fdf4;border:1px solid #b9e7cb;border-radius:8px;padding:.8rem;"><strong>Flyweight</strong><p style="font-size:.86rem;color:var(--muted);">Comparte ubicaciones repetidas para no instanciar millones de objetos iguales.</p></div>
+          <div style="background:#faf5ff;border:1px solid #d8b4fe;border-radius:8px;padding:.8rem;"><strong>Proxy</strong><p style="font-size:.86rem;color:var(--muted);">Inicializa el repositorio real bajo demanda y cachea consultas frecuentes.</p></div>
+        </div>
+        <div class="pill">✅ 4 patrones nuevos · ✅ 27 verificaciones ejecutables · ✅ integracion completa</div>
+      </section>
+
+      <section class="section" id="decorator">
+        <div class="section-act">Actividad 1 · Decorator</div>
+        <h2>Servicios opcionales en envios</h2>
+        <p>Se modelo un contrato de envio desacoplado del dominio previo para evitar colision con `com.logismart.dominio.Envio` y para poder componer servicios sin alterar hitos anteriores.</p>
+        <div class="pattern-badge">GoF · Decorator</div>
+        <div class="grid-2">
+          <pre>public interface Envio {
+    double obtenerCosto();
+    int obtenerTiempoEntrega();
+    String obtenerDescripcion();
+    String obtenerServicios();
+}
+
+public class EnvioBasico implements Envio {
+    public double obtenerCosto() { return peso * 10.0; }
+    public int obtenerTiempoEntrega() { return 3; }
+}</pre>
+          <pre>public class DecoradorSeguro extends DecoradorEnvio {
+    public double obtenerCosto() {
+        return envioDecorado.obtenerCosto() * 1.15;
+    }
+}
+
+public class DecoradorPrioritario extends DecoradorEnvio {
+    public int obtenerTiempoEntrega() {
+        return Math.max(1, envioDecorado.obtenerTiempoEntrega() - 2);
+    }
+}</pre>
+        </div>
+        <table>
+          <thead><tr><th>Servicio</th><th>Efecto</th><th>Clase</th></tr></thead>
+          <tbody>
+            <tr><td>Seguro</td><td>+15% costo</td><td>`DecoradorSeguro`</td></tr>
+            <tr><td>Rastreo GPS</td><td>+50 y -1 dia</td><td>`DecoradorRastreoGPS`</td></tr>
+            <tr><td>SMS</td><td>+25</td><td>`DecoradorNotificacionesSMS`</td></tr>
+            <tr><td>Prioritario</td><td>+100 y -2 dias</td><td>`DecoradorPrioritario`</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="facade">
+        <div class="section-act">Actividad 2 · Facade</div>
+        <h2>Operacion compleja encapsulada</h2>
+        <p>`ServicioLogisticaFacade` centraliza la creacion, cancelacion y consulta de estado de un envio. Internamente coordina 5 subsistemas, pero el cliente usa solo 3 metodos de alto nivel.</p>
+        <div class="pattern-badge">GoF · Facade</div>
+        <pre>public class ServicioLogisticaFacade {
+    public String crearEnvio(String productoId, double monto, String email, String telefono) {
+        if (!inventario.verificarStock(productoId)) return null;
+        if (!pagos.procesarPago("TARJETA", monto)) return null;
+        inventario.restarStock(productoId, 1);
+        String numero = rastreo.crearNumeroSeguimiento();
+        notificaciones.enviarEmail(email, ...);
+        notificaciones.enviarSMS(telefono, ...);
+        reportes.generarReporte("ENVIO", numero, "PDF");
+        return numero;
+    }
+}</pre>
+        <table>
+          <thead><tr><th>Subsistema</th><th>Responsabilidad</th></tr></thead>
+          <tbody>
+            <tr><td>Inventario</td><td>Verifica y descuenta stock</td></tr>
+            <tr><td>Pagos</td><td>Procesa y reembolsa</td></tr>
+            <tr><td>Rastreo</td><td>Genera tracking y estados</td></tr>
+            <tr><td>Notificaciones</td><td>Envia email y SMS</td></tr>
+            <tr><td>Reportes</td><td>Genera evidencia del flujo</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="flyweight">
+        <div class="section-act">Actividad 3 · Flyweight</div>
+        <h2>Ubicaciones compartidas</h2>
+        <p>Se implemento `Ubicacion` como objeto inmutable y `FabricaUbicaciones` como pool de reutilizacion. Esto permite usar origenes y destinos recurrentes con solo una instancia por clave.</p>
+        <div class="pattern-badge">GoF · Flyweight</div>
+        <div class="grid-2">
+          <pre>public class Ubicacion {
+    private final String ciudad;
+    private final String provincia;
+    private final String codigoPostal;
+}
+
+public static Ubicacion obtener(String ciudad, String provincia, String cp) {
+    String clave = ciudad + "|" + provincia + "|" + cp;
+    ...
+}</pre>
+          <pre>for (int i = 0; i < 10000; i++) {
+    FabricaUbicaciones.obtener("Buenos Aires", "Buenos Aires", "1425");
+    FabricaUbicaciones.obtener("Cordoba", "Cordoba", "5000");
+    FabricaUbicaciones.obtener("Rosario", "Santa Fe", "2000");
+}
+
+// resultado: 3 objetos unicos</pre>
+        </div>
+      </section>
+
+      <section class="section" id="proxy">
+        <div class="section-act">Actividad 4 · Proxy</div>
+        <h2>Repositorio con lazy loading y cache</h2>
+        <p>`ProxyRepositorioEnvios` retrasa la conexion al repositorio real hasta la primera consulta y conserva resultados frecuentes en cache por id y cache de lista.</p>
+        <div class="pattern-badge">GoF · Proxy</div>
+        <pre>public class ProxyRepositorioEnvios implements RepositorioEnvios {
+    private RepositorioEnviosReal repositorioReal;
+    private final Map&lt;String, Envio&gt; cache = new HashMap&lt;&gt;();
+    private List&lt;Envio&gt; cacheEnvios;
+
+    private RepositorioEnviosReal obtenerRepositorio() {
+        if (repositorioReal == null) {
+            repositorioReal = new RepositorioEnviosReal();
+        }
+        return repositorioReal;
+    }
+}</pre>
+        <table>
+          <thead><tr><th>Aspecto</th><th>Implementacion</th></tr></thead>
+          <tbody>
+            <tr><td>Lazy loading</td><td>`repositorioReal` se crea al primer acceso</td></tr>
+            <tr><td>Cache puntual</td><td>mapa por id</td></tr>
+            <tr><td>Cache masiva</td><td>lista completa invalidable</td></tr>
+            <tr><td>Validacion</td><td>control de usuario e ids/envios invalidos</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="integracion">
+        <div class="section-act">Actividad 5 · Integracion</div>
+        <h2>Servicio unificado</h2>
+        <p>`ServicioLogisticaCompleto` combina los 4 patrones del hito. Usa Decorator para personalizar, Flyweight para compartir ubicaciones, Facade para orquestar la operacion y Proxy para persistir el envio resultante.</p>
+        <pre>public class ServicioLogisticaCompleto {
+    private final ServicioLogisticaFacade facade;
+    private final ProxyRepositorioEnvios repositorio;
+
+    public String crearEnvioConServicios(...) {
+        Ubicacion origen = FabricaUbicaciones.obtener(...);
+        Envio envio = new EnvioBasico(...);
+        envio = new DecoradorSeguro(envio);
+        ...
+        String tracking = facade.crearEnvio(...);
+        repositorio.guardarEnvio(envioGuardado);
+        return tracking;
+    }
+}</pre>
+        <h3>Casos de prueba</h3>
+        <p>La clase `CasosDePruebaHito9` ejecuta 29 verificaciones: 8 de Decorator, 5 de Facade, 5 de Flyweight, 6 de Proxy y 4 de integracion completa.</p>
+        <div class="pill">✅ supera el minimo de 15 casos pedidos por la consigna</div>
+      </section>
+
+      <section class="section" id="uml">
+        <div class="section-act">Diagrama UML</div>
+        <h2>Estructura del Hito 9</h2>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction LR
+
+class EnvioDecoradorContrato["Envio <<interface>>"] {
+  +obtenerCosto() double
+  +obtenerTiempoEntrega() int
+  +obtenerDescripcion() String
+  +obtenerServicios() String
+}
+class EnvioBasico
+class DecoradorEnvio {
+  <<abstract>>
+  #envioDecorado Envio
+}
+class DecoradorSeguro
+class DecoradorRastreoGPS
+class DecoradorNotificacionesSMS
+class DecoradorPrioritario
+EnvioDecoradorContrato <|.. EnvioBasico
+EnvioDecoradorContrato <|.. DecoradorEnvio
+DecoradorEnvio <|-- DecoradorSeguro
+DecoradorEnvio <|-- DecoradorRastreoGPS
+DecoradorEnvio <|-- DecoradorNotificacionesSMS
+DecoradorEnvio <|-- DecoradorPrioritario
+DecoradorEnvio o-- EnvioDecoradorContrato
+
+class ServicioLogisticaFacade
+class SistemaInventario
+class SistemaPagos
+class SistemaNotificaciones
+class SistemaRastreo
+class SistemaReportes
+ServicioLogisticaFacade --> SistemaInventario
+ServicioLogisticaFacade --> SistemaPagos
+ServicioLogisticaFacade --> SistemaNotificaciones
+ServicioLogisticaFacade --> SistemaRastreo
+ServicioLogisticaFacade --> SistemaReportes
+
+class Ubicacion
+class FabricaUbicaciones
+FabricaUbicaciones --> Ubicacion
+
+class RepositorioEnvios {
+  <<interface>>
+}
+class RepositorioEnviosReal
+class ProxyRepositorioEnvios
+RepositorioEnvios <|.. RepositorioEnviosReal
+RepositorioEnvios <|.. ProxyRepositorioEnvios
+ProxyRepositorioEnvios --> RepositorioEnviosReal
+
+class ServicioLogisticaCompleto
+ServicioLogisticaCompleto --> ServicioLogisticaFacade
+ServicioLogisticaCompleto --> ProxyRepositorioEnvios
+ServicioLogisticaCompleto --> FabricaUbicaciones
+ServicioLogisticaCompleto ..> EnvioDecoradorContrato</pre></div>
+      </section>
+
+      <section class="section" id="conclusion">
+        <h2>Conclusion</h2>
+        <p>Hito 9 deja a LogiSmart con una capa estructural mas madura: servicios opcionales componibles, flujos complejos encapsulados, ubicaciones compartidas y persistencia diferida con cache. El sistema queda mejor preparado para futuras clases de comportamiento sin perder trazabilidad con lo hecho en hitos previos.</p>
+      </section>
+    </main>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          primaryColor: "#f4f8ff",
+          primaryTextColor: "#0f172a",
+          primaryBorderColor: "#12324b",
+          lineColor: "#1f4f74",
+          tertiaryColor: "#f8fbff",
+          edgeLabelBackground: "#ffffff"
+        }
+      });
+
+      const nav = document.querySelectorAll('.side-nav a');
+      nav.forEach((link) => {
+        link.addEventListener('click', () => {
+          nav.forEach((item) => item.classList.remove('active'));
+          link.classList.add('active');
+        });
+      });
+      if (nav.length > 0) nav[0].classList.add('active');
+    </script>
+  </body>
+</html>

@@ -1,133 +1,156 @@
-# DOCUMENTACION - Hito 7
+# DOCUMENTACION - Hito 9
 
 ## 1) Objetivo
 
-Integrar patrones creacionales avanzados en LogiSmart para mejorar:
+Consolidar el proyecto LogiSmart hasta Hito 9, incorporando patrones GoF creacionales y estructurales sobre una base ya modelada con GRASP.
 
-- creacion de familias de objetos por region
-- construccion de objetos complejos
-- clonacion eficiente de objetos similares
+## 2) Hitos cubiertos
 
-## 2) Patrones implementados
+- Hito 6: Singleton y Factory Method
+- Hito 7: Abstract Factory, Builder y Prototype
+- Hito 8: Adapter, Bridge y Composite
+- Hito 9: Decorator, Facade, Flyweight y Proxy
 
-### 2.1 Singleton
+## 3) Hito 9 - Patrones implementados
 
-Clases:
-
-- `src/com/logismart/infraestructura/singleton/Logger.java`
-- `src/com/logismart/infraestructura/singleton/ConfiguracionSistema.java`
-
-Uso:
-
-- instancia unica de log
-- configuracion global compartida por region/version
-
-### 2.2 Factory Method
+### 3.1 Decorator
 
 Clases:
 
-- `src/com/logismart/infraestructura/fabrica/UsuarioFactory.java`
-- `src/com/logismart/infraestructura/fabrica/VehiculoFactory.java`
-- `src/com/logismart/infraestructura/fabrica/FabricaDeVehiculos.java`
+- `src/com/logismart/infraestructura/decorator/envio/Envio.java`
+- `src/com/logismart/infraestructura/decorator/envio/EnvioBasico.java`
+- `src/com/logismart/infraestructura/decorator/envio/DecoradorEnvio.java`
+- `src/com/logismart/infraestructura/decorator/envio/DecoradorSeguro.java`
+- `src/com/logismart/infraestructura/decorator/envio/DecoradorRastreoGPS.java`
+- `src/com/logismart/infraestructura/decorator/envio/DecoradorNotificacionesSMS.java`
+- `src/com/logismart/infraestructura/decorator/envio/DecoradorPrioritario.java`
 
 Uso:
 
-- creacion de usuarios por tipo (`cliente`, `operador`, `admin`)
-- creacion de vehiculos por tipo textual o enum
-
-### 2.3 Abstract Factory
-
-Contrato:
-
-- `src/com/logismart/infraestructura/abstractfactory/LogiSmartFactory.java`
-
-Fabricas concretas:
-
-- `LogiSmartFactoryArgentina`
-- `LogiSmartFactoryBrasil`
-
-Productos abstractos:
-
-- `Vehiculo`
-- `CalculadorCostos`
-- `ProveedorMapas`
-
-Productos concretos por region:
-
-- Argentina: `Auto`, `CalculadorCostosArgentina`, `GoogleMapsArgentina`
-- Brasil: `Moto`, `CalculadorCostosBrasil`, `HereMaps`
-
-Resultado:
-
-- `LogiSmartApp` queda desacoplada de clases concretas regionales
-- coherencia de familia de objetos por pais
-
-### 2.4 Builder
-
-Clase:
-
-- `src/com/logismart/dominio/Envio.java` (`Envio.EnvioBuilder` interno)
+- agrega servicios opcionales sobre un envio basico
+- evita explosion de subclases combinatorias
+- mantiene cada servicio encapsulado en su propio decorador
 
 Decisiones:
 
-- constructor privado de `Envio` para flujo controlado
-- campos requeridos en constructor del builder (`id`, `origen`, `destino`)
-- campos opcionales con metodos fluidos (`return this`)
+- se uso una interfaz separada del `Envio` de dominio para no romper hitos anteriores
+- el costo porcentual del seguro se aplica sobre el costo acumulado al momento de envolver
 
-Beneficio:
+### 3.2 Facade
 
-- evita explosion de constructores
-- mejora legibilidad de objetos complejos
+Clase principal:
 
-### 2.5 Prototype
+- `src/com/logismart/aplicacion/hito9/ServicioLogisticaFacade.java`
+
+Subsistemas de soporte en el mismo archivo:
+
+- `SistemaInventario`
+- `SistemaPagos`
+- `SistemaNotificaciones`
+- `SistemaRastreo`
+- `SistemaReportes`
+
+Uso:
+
+- expone `crearEnvio`, `cancelarEnvio` y `obtenerEstadoEnvio`
+- encapsula el orden correcto de inventario, pago, rastreo, notificacion y reporte
+
+Decisiones:
+
+- los subsistemas quedaron package-private en el mismo archivo para mantener el entregable centrado en una sola fachada publica
+- se priorizo una implementacion academica autocontenida y compilable
+
+### 3.3 Flyweight
+
+Clases:
+
+- `src/com/logismart/infraestructura/flyweight/ubicacion/Ubicacion.java`
+- `src/com/logismart/infraestructura/flyweight/ubicacion/FabricaUbicaciones.java`
+
+Uso:
+
+- comparte instancias inmutables de ubicaciones
+- reduce objetos repetidos en memoria para origenes y destinos recurrentes
+
+Decisiones:
+
+- `Ubicacion` es inmutable
+- la fabrica usa `LinkedHashMap` para que las estadisticas salgan en orden estable
+
+### 3.4 Proxy
+
+Clases:
+
+- `src/com/logismart/infraestructura/proxy/envio/RepositorioEnvios.java`
+- `src/com/logismart/infraestructura/proxy/envio/RepositorioEnviosReal.java`
+- `src/com/logismart/infraestructura/proxy/envio/ProxyRepositorioEnvios.java`
+
+Uso:
+
+- lazy loading del repositorio real
+- cache por id y cache de listado completo
+- validacion simple de acceso e inputs
+
+Decisiones:
+
+- se reutilizo `com.logismart.dominio.Envio` para no duplicar entidades
+- se agregaron helpers de inspeccion (`estaInicializado`, `obtenerTamanoCache`) para poder probar lazy loading y cache sin framework externo
+
+### 3.5 Integracion
 
 Clase:
 
-- `src/com/logismart/dominio/Envio.java`
+- `src/com/logismart/aplicacion/hito9/ServicioLogisticaCompleto.java`
 
-Implementacion:
+Uso:
 
-- `Envio` implementa `Cloneable`
-- `clone()` usa `super.clone()`
-- copia nueva de `ordenes` para no compartir referencia mutable
+- arma un envio decorado con servicios opcionales
+- reutiliza ubicaciones flyweight
+- delega la orquestacion operativa al facade
+- persiste el resultado via proxy
 
-Beneficio:
+## 4) Casos de prueba
 
-- creacion masiva de envios a bajo costo
+Clase ejecutable:
 
-## 3) Integracion de patrones
+- `src/com/logismart/aplicacion/hito9/CasosDePruebaHito9.java`
 
-Punto de orquestacion del hito:
+Cobertura:
 
-- `src/com/logismart/app/LogiSmartApp.java`
+- 7 verificaciones de Decorator
+- 5 verificaciones de Facade
+- 5 verificaciones de Flyweight
+- 6 verificaciones de Proxy
+- 4 verificaciones de integracion
 
-Demostracion completa:
+Total:
 
-- `src/com/logismart/app/Main.java`
+- 29 verificaciones automaticas por excepcion si algo falla
 
-Flujo principal:
+## 5) Skill de Clase 10
 
-1. obtener singletons (`Logger`, `ConfiguracionSistema`)
-2. crear app regional (seleccion de abstract factory)
-3. crear usuarios por factory method
-4. crear envio simple/complex por builder
-5. clonar 100 envios por prototype
-6. procesar envio con productos de abstract factory
+Ubicacion:
 
-## 4) Manejo de errores y validaciones
+- `skills/pds-clase-10/SKILL.md`
+- `skills/pds-clase-10/REFERENCE.md`
 
-- region desconocida -> `IllegalArgumentException`
-- tipo de usuario desconocido -> `IllegalArgumentException`
-- tipo de vehiculo desconocido -> `IllegalArgumentException`
+Fuente:
 
-## 5) Diagramas y soporte visual
+- `skills/clases/Clase_10.html`
 
-- `diagramas/diagrama_abstract_factory.mmd`
-- `diagramas/diagrama_builder.mmd`
-- `diagramas/diagrama_prototype.mmd`
-- `hitos/HITO_7.html` (entregable visual del hito)
+Criterio:
 
-## 6) Ejecucion
+- se parseo solo el contenido de `main-content`
+- se removio ruido visual de sidebar, CSS y JS
+- se preservaron secciones, tablas, listas y ejemplos tecnicos
+
+## 6) Entregables visuales
+
+- `hitos/HITO_9.html`
+- `DIAGRAMA_DE_CLASES_ACTUAL.html`
+- `index.html`
+
+## 7) Ejecucion
 
 Compilar:
 
@@ -140,3 +163,9 @@ Ejecutar demo:
 ```bash
 java -cp bin com.logismart.app.Main
 ```
+
+## 8) Riesgos y limites
+
+- la persistencia del proxy es en memoria y solo simula una BD remota
+- la fachada modela pagos, inventario y rastreo de forma academica, no transaccional
+- el diagrama acumulativo prioriza claridad conceptual sobre detalle exhaustivo de cada helper interno
