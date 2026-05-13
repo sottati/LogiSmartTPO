@@ -1,6 +1,6 @@
-# LogiSmart - Hito 9
+# LogiSmart - Hito 10
 
-Implementacion acumulada del TPO LogiSmart hasta Hito 9.
+Implementacion acumulada del TPO LogiSmart hasta Hito 10.
 
 ## Alcance actual
 
@@ -8,6 +8,7 @@ Implementacion acumulada del TPO LogiSmart hasta Hito 9.
 - Hito 7: Abstract Factory, Builder y Prototype
 - Hito 8: Adapter, Bridge y Composite
 - Hito 9: Decorator, Facade, Flyweight y Proxy
+- Hito 10: Chain of Responsibility, Command e Interpreter
 
 ## Requisitos
 
@@ -18,12 +19,15 @@ Implementacion acumulada del TPO LogiSmart hasta Hito 9.
 
 - `src/com/logismart/app/Main.java`
 - `src/com/logismart/aplicacion/hito9/`
+- `src/com/logismart/aplicacion/hito10/`
 - `src/com/logismart/infraestructura/decorator/envio/`
 - `src/com/logismart/infraestructura/flyweight/ubicacion/`
 - `src/com/logismart/infraestructura/proxy/envio/`
+- `src/com/logismart/infraestructura/comportamiento/`
 - `skills/pds-clase-10/`
 - `hitos/HITO_8.html`
 - `hitos/HITO_9.html`
+- `hitos/HITO_10.html`
 - `DIAGRAMA_DE_CLASES_ACTUAL.html`
 
 ## Compilar
@@ -46,12 +50,14 @@ La demo ejecuta:
 4. Builder
 5. Prototype
 6. Procesamiento regional
-7. Casos de Hito 9
+7. Casos de Hito 8
+8. Casos de Hito 9
+9. Casos de Hito 10
 
 ## Entregables incluidos
 
 - Codigo Java compilable y funcional
-- Skill local de Clase 10 en `skills/pds-clase-10/`
-- Documento visual `hitos/HITO_9.html`
+- Skills locales de Clase 9 y Clase 10 en `skills/`
+- Documentos visuales `hitos/HITO_8.html`, `hitos/HITO_9.html` y `hitos/HITO_10.html`
 - Diagrama acumulativo actualizado
-- `DOCUMENTACION.md` con decisiones y cobertura de hitos 6 a 9
+- `DOCUMENTACION.md` con decisiones y cobertura de hitos 6 a 10

@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Demo acumulada hasta Hito 9.
+ * Demo acumulada hasta Hito 10.
  * Mantiene la secuencia de hitos creacionales y luego ejecuta
- * los casos estructurales nuevos de Decorator, Facade, Flyweight y Proxy.
+ * los casos estructurales y de comportamiento de los ultimos hitos.
  */
 public class Main {
 

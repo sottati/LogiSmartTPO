@@ -593,6 +593,15 @@
               </div>
               <div class="hito-arrow">›</div>
             </a>
+            <a class="hito-card" href="hitos/HITO_10.html">
+              <div class="hito-number">10</div>
+              <div class="hito-body">
+                <div class="hito-label">Hito 10</div>
+                <div class="hito-title">Patrones de Comportamiento I</div>
+                <div class="hito-desc">Chain of Responsibility · Command · Interpreter</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
           </div>
 
         </div>
@@ -643,8 +652,9 @@
             Los Hitos 1 y 2 definen el dominio y los casos de uso.
             Los Hitos 4 y 5 aplican los <strong>9 patrones GRASP</strong> para asignar
             responsabilidades correctamente.
-            Los Hitos 6 a 9 aplican <strong>12 patrones GoF</strong> para mejorar
-            la creacion de objetos, la integracion externa, la estructura del sistema y el acceso a recursos.
+            Los Hitos 6 a 10 aplican <strong>15 patrones GoF</strong> para mejorar
+            la creacion de objetos, la integracion externa, la estructura del sistema, el acceso a recursos
+            y la coordinacion de comportamiento entre objetos.
             El resultado es un sistema coherente, extensible y bien documentado donde cada
             decisión de diseño tiene justificación en un principio OO.
           </p>
@@ -759,7 +769,7 @@
             </li>
             <li>
               <span class="pkg-name">com.logismart.aplicacion</span>
-              <span class="pkg-desc">GRASP Controller (<code>LogiSmartController</code>), Pure Fabrications y servicios de integración: <code>ServicioLogisticaUnificado</code> para Hito 8 y <code>aplicacion.hito8</code>/<code>aplicacion.hito9</code> para evidencia ejecutable.</span>
+              <span class="pkg-desc">GRASP Controller (<code>LogiSmartController</code>), Pure Fabrications y servicios de integración: <code>ServicioLogisticaUnificado</code> para Hito 8 y <code>aplicacion.hito8</code>/<code>aplicacion.hito9</code>/<code>aplicacion.hito10</code> para evidencia ejecutable.</span>
             </li>
             <li>
               <span class="pkg-name">com.logismart.infraestructura.singleton</span>
@@ -792,6 +802,10 @@
             <li>
               <span class="pkg-name">com.logismart.infraestructura.{flyweight,proxy}</span>
               <span class="pkg-desc">Flyweight y Proxy de Hito 9: ubicaciones compartidas, repositorio lazy y cache de consultas.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.comportamiento</span>
+              <span class="pkg-desc">Patrones de Hito 10: validacion por cadena, comandos reversibles con historial y reglas de negocio interpretables.</span>
             </li>
             <li>
               <span class="pkg-name">com.logismart.infraestructura.{costo,tiempo,ruta,vehiculo}</span>
@@ -904,7 +918,7 @@
 
         <!-- ── Patrones GoF ── -->
         <div class="docs-block" id="gof">
-          <div class="docs-block-eyebrow">Hitos 6 a 9 · Gang of Four</div>
+          <div class="docs-block-eyebrow">Hitos 6 a 10 · Gang of Four</div>
           <h3>Patrones GoF Aplicados</h3>
           <p>
             Los patrones GoF (<em>Design Patterns: Elements of Reusable Object-Oriented Software</em>,
@@ -1046,6 +1060,36 @@
               <div class="p-applied-label">Implementado en</div>
               <div class="p-applied">
                 <code>ProxyRepositorioEnvios</code> envuelve a <code>RepositorioEnviosReal</code> con lazy loading y cache.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 10</span></div>
+              <div class="p-name">Chain of Responsibility</div>
+              <div class="p-intent">Pasar una solicitud por una secuencia de validadores independientes hasta aprobarla o rechazarla.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>CadenaValidadores</code> conecta datos, inventario, pago, seguridad y capacidad para validar <code>Envio</code>.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 10</span></div>
+              <div class="p-name">Command</div>
+              <div class="p-intent">Encapsular acciones sobre envios como objetos ejecutables con soporte de deshacer y rehacer.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>ColaComandos</code> ejecuta comandos de crear, cancelar, actualizar estado, cambiar pago y agregar servicios.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 10</span></div>
+              <div class="p-name">Interpreter</div>
+              <div class="p-intent">Representar reglas de negocio como expresiones combinables y evaluables sobre envios.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>ExpresionOrigen</code>, <code>ExpresionDestino</code>, <code>ExpresionPeso</code>, <code>ExpresionCosto</code>, <code>AND</code>, <code>OR</code> y <code>NOT</code> forman reglas compuestas.
               </div>
             </div>
 

@@ -115,7 +115,7 @@
           </tbody>
         </table>
 
-        <div class="pill">✅ 3 patrones nuevos &nbsp;·&nbsp; ✅ 24 clases implementadas &nbsp;·&nbsp; ✅ 29 verificaciones ejecutables &nbsp;·&nbsp; ✅ integración completa</div>
+        <div class="pill">✅ 3 patrones nuevos &nbsp;·&nbsp; ✅ 28 clases implementadas &nbsp;·&nbsp; ✅ 29 verificaciones ejecutables &nbsp;·&nbsp; ✅ integración completa</div>
       </section>
 
       <!-- ══════════════════════════════════════════════ CHAIN DISEÑO -->
@@ -531,7 +531,7 @@ public class ExpresionRestringido implements Expresion {
 direction TB
 
 class ValidadorEnvio {
-  <<abstract>>
+  &lt;&lt;abstract&gt;&gt;
   #siguiente ValidadorEnvio
   +setSiguiente(ValidadorEnvio)
   +validar(Envio) bool
@@ -552,17 +552,17 @@ class SistemaInventario {
 class SistemaCapacidad {
   +hayEspacioDisponible(double) bool
 }
-ValidadorEnvio <|-- ValidadorDatos
-ValidadorEnvio <|-- ValidadorInventario
-ValidadorEnvio <|-- ValidadorPago
-ValidadorEnvio <|-- ValidadorSeguridad
-ValidadorEnvio <|-- ValidadorCapacidad
+ValidadorEnvio &lt;|-- ValidadorDatos
+ValidadorEnvio &lt;|-- ValidadorInventario
+ValidadorEnvio &lt;|-- ValidadorPago
+ValidadorEnvio &lt;|-- ValidadorSeguridad
+ValidadorEnvio &lt;|-- ValidadorCapacidad
 CadenaValidadores --> ValidadorEnvio
 ValidadorInventario --> SistemaInventario
 ValidadorCapacidad --> SistemaCapacidad
 
 class Comando {
-  <<interface>>
+  &lt;&lt;interface&gt;&gt;
   +ejecutar()
   +deshacer()
   +obtenerDescripcion() String
@@ -586,11 +586,11 @@ class ComandoCancelarEnvio
 class ComandoActualizarEstado
 class ComandoCambiarMetodoPago
 class ComandoAgregarServicio
-Comando <|.. ComandoCrearEnvio
-Comando <|.. ComandoCancelarEnvio
-Comando <|.. ComandoActualizarEstado
-Comando <|.. ComandoCambiarMetodoPago
-Comando <|.. ComandoAgregarServicio
+Comando &lt;|.. ComandoCrearEnvio
+Comando &lt;|.. ComandoCancelarEnvio
+Comando &lt;|.. ComandoActualizarEstado
+Comando &lt;|.. ComandoCambiarMetodoPago
+Comando &lt;|.. ComandoAgregarServicio
 ColaComandos --> Comando
 ComandoCrearEnvio --> ServicioEnvios
 ComandoCancelarEnvio --> ServicioEnvios
@@ -599,7 +599,7 @@ ComandoCambiarMetodoPago --> ServicioEnvios
 ComandoAgregarServicio --> ServicioEnvios
 
 class Expresion {
-  <<interface>>
+  &lt;&lt;interface&gt;&gt;
   +evaluar(Envio) bool
 }
 class ExpresionOrigen
@@ -610,14 +610,14 @@ class ExpresionRestringido
 class ExpresionAND
 class ExpresionOR
 class ExpresionNOT
-Expresion <|.. ExpresionOrigen
-Expresion <|.. ExpresionDestino
-Expresion <|.. ExpresionPeso
-Expresion <|.. ExpresionCosto
-Expresion <|.. ExpresionRestringido
-Expresion <|.. ExpresionAND
-Expresion <|.. ExpresionOR
-Expresion <|.. ExpresionNOT
+Expresion &lt;|.. ExpresionOrigen
+Expresion &lt;|.. ExpresionDestino
+Expresion &lt;|.. ExpresionPeso
+Expresion &lt;|.. ExpresionCosto
+Expresion &lt;|.. ExpresionRestringido
+Expresion &lt;|.. ExpresionAND
+Expresion &lt;|.. ExpresionOR
+Expresion &lt;|.. ExpresionNOT
 ExpresionAND --> Expresion
 ExpresionOR --> Expresion
 ExpresionNOT --> Expresion
@@ -644,7 +644,7 @@ SistemaLogisticaCompleto ..> Expresion</pre></div>
           <li><strong>Interpreter</strong> externaliza las reglas de negocio en un motor de expresiones componibles, permitiendo definir nuevas reglas combinando terminales existentes sin modificar código.</li>
         </ul>
         <p>Los tres patrones se integran en <code>SistemaLogisticaCompleto</code>, donde la cadena actúa como guardián de entrada, el comando registra la creación, y el intérprete clasifica el envío según políticas de negocio. El sistema queda preparado para incorporar los patrones de comportamiento del Hito 11 (Iterator, Observer, State, Strategy, Template Method) sin afectar lo implementado.</p>
-        <div class="pill">✅ 29/29 verificaciones &nbsp;·&nbsp; ✅ 24 clases &nbsp;·&nbsp; ✅ 3 patrones integrados</div>
+        <div class="pill">✅ 29/29 verificaciones &nbsp;·&nbsp; ✅ 28 clases &nbsp;·&nbsp; ✅ 3 patrones integrados</div>
       </section>
 
     </main>

@@ -898,6 +898,102 @@ ServicioLogisticaCompleto --&gt; ServicioLogisticaFacade
 ServicioLogisticaCompleto --&gt; ProxyRepositorioEnvios
 ServicioLogisticaCompleto --&gt; FabricaUbicaciones
 ServicioLogisticaCompleto ..&gt; EnvioDecoradorContrato
+
+%% ---- GOF: COMPORTAMIENTO (Hito 10) ----
+class ValidadorEnvio {
+  &lt;&lt;abstract&gt;&gt;
+  #siguiente ValidadorEnvio
+  +setSiguiente(sig)
+  +validar(envio) boolean
+}
+class ValidadorDatos
+class ValidadorInventario
+class ValidadorPago
+class ValidadorSeguridad
+class ValidadorCapacidad
+class CadenaValidadores {
+  -primerValidador ValidadorEnvio
+  +validarEnvio(envio) boolean
+}
+class SistemaInventarioChain
+class SistemaCapacidad
+ValidadorDatos --|&gt; ValidadorEnvio
+ValidadorInventario --|&gt; ValidadorEnvio
+ValidadorPago --|&gt; ValidadorEnvio
+ValidadorSeguridad --|&gt; ValidadorEnvio
+ValidadorCapacidad --|&gt; ValidadorEnvio
+ValidadorEnvio o-- ValidadorEnvio : siguiente
+CadenaValidadores --&gt; ValidadorEnvio
+CadenaValidadores --&gt; SistemaInventarioChain
+CadenaValidadores --&gt; SistemaCapacidad
+
+class Comando {
+  &lt;&lt;interface&gt;&gt;
+  +ejecutar()
+  +deshacer()
+  +obtenerNombre() String
+}
+class ColaComandos {
+  -historial List~Comando~
+  -posicionActual int
+  +ejecutar(comando)
+  +deshacer()
+  +rehacer()
+}
+class ServicioEnvios
+class ComandoCrearEnvio
+class ComandoCancelarEnvio
+class ComandoActualizarEstado
+class ComandoCambiarMetodoPago
+class ComandoAgregarServicio
+ComandoCrearEnvio ..|&gt; Comando
+ComandoCancelarEnvio ..|&gt; Comando
+ComandoActualizarEstado ..|&gt; Comando
+ComandoCambiarMetodoPago ..|&gt; Comando
+ComandoAgregarServicio ..|&gt; Comando
+ColaComandos o-- Comando
+ComandoCrearEnvio --&gt; ServicioEnvios
+ComandoCancelarEnvio --&gt; ServicioEnvios
+ComandoActualizarEstado --&gt; ServicioEnvios
+ComandoCambiarMetodoPago --&gt; ServicioEnvios
+ComandoAgregarServicio --&gt; ServicioEnvios
+
+class Expresion {
+  &lt;&lt;interface&gt;&gt;
+  +evaluar(envio) boolean
+}
+class ExpresionOrigen
+class ExpresionDestino
+class ExpresionPeso
+class ExpresionCosto
+class ExpresionRestringido
+class ExpresionAND
+class ExpresionOR
+class ExpresionNOT
+ExpresionOrigen ..|&gt; Expresion
+ExpresionDestino ..|&gt; Expresion
+ExpresionPeso ..|&gt; Expresion
+ExpresionCosto ..|&gt; Expresion
+ExpresionRestringido ..|&gt; Expresion
+ExpresionAND ..|&gt; Expresion
+ExpresionOR ..|&gt; Expresion
+ExpresionNOT ..|&gt; Expresion
+ExpresionAND o-- Expresion
+ExpresionOR o-- Expresion
+ExpresionNOT o-- Expresion
+
+class H10SistemaLogisticaCompleto {
+  -validadores CadenaValidadores
+  -cola ColaComandos
+  -servicio ServicioEnvios
+  -reglas Map~String,Expresion~
+  +procesarEnvio(envio) String
+}
+H10SistemaLogisticaCompleto --&gt; CadenaValidadores
+H10SistemaLogisticaCompleto --&gt; ColaComandos
+H10SistemaLogisticaCompleto --&gt; ServicioEnvios
+H10SistemaLogisticaCompleto --&gt; Expresion
+H10SistemaLogisticaCompleto ..&gt; Envio
           </pre>
         </div>
       </main>
@@ -1269,6 +1365,59 @@ ServicioLogisticaCompleto ..&gt; EnvioDecoradorContrato
               </div>
               <div class="pattern-desc">
                 <code>ServicioLogisticaCompleto</code> combina Decorator + Facade + Flyweight + Proxy en un flujo unico.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 10 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge" style="background: var(--primary);">10</div>
+              <div>
+                <h2>Hito 10</h2>
+                <span>GoF - Comportamiento I</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Chain of Responsibility
+              </div>
+              <div class="pattern-desc">
+                <code>CadenaValidadores</code> conecta validadores de datos, inventario, pago, seguridad y capacidad para aprobar o rechazar envios.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Command
+              </div>
+              <div class="pattern-desc">
+                <code>ColaComandos</code> mantiene historial reversible sobre <code>ServicioEnvios</code> con crear, cancelar, actualizar, cambiar pago y agregar servicios.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Interpreter
+              </div>
+              <div class="pattern-desc">
+                <code>Expresion</code> y sus implementaciones forman reglas compuestas con origen, destino, peso, costo, AND, OR y NOT.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Integracion
+              </div>
+              <div class="pattern-desc">
+                <code>aplicacion.hito10.SistemaLogisticaCompleto</code> combina Chain + Command + Interpreter en el procesamiento de un envio.
               </div>
             </div>
           </div>
