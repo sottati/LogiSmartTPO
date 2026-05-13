@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITO 10 - LogiSmart | Patrones de Comportamiento I</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+      :root { --primary:#17324d; --primary-2:#1f4d78; --accent:#dc6b1f; --bg:#f4f7fb; --surface:#fff; --text:#14202c; --muted:#4f6172; --border:#d9e2ec; --ok:#165b3b; --ok-bg:#ecfdf3; }
+      * { box-sizing:border-box; margin:0; padding:0; }
+      html { scroll-behavior:smooth; }
+      body { font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif; background:linear-gradient(180deg,#f7f9fc 0%,#f2f6fa 100%); color:var(--text); line-height:1.6; }
+      .cover { min-height:70vh; display:grid; place-items:center; text-align:center; padding:2rem; background:radial-gradient(circle at 20% 20%,rgba(31,77,120,.12),transparent 45%),radial-gradient(circle at 80% 10%,rgba(220,107,31,.10),transparent 35%),var(--surface); border-bottom:8px solid var(--primary); }
+      .cover-content { max-width:760px; width:100%; }
+      .university { font-size:.8rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:.4rem; }
+      .subject { font-size:.95rem; font-weight:500; color:var(--primary-2); margin-bottom:2rem; }
+      .cover h1 { font-size:clamp(2.4rem,8vw,4.8rem); color:var(--primary); letter-spacing:-.03em; }
+      .subtitle { margin-top:.75rem; font-size:1.1rem; color:var(--muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:.85rem 0; margin-bottom:2rem; }
+      .team { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; max-width:420px; margin:0 auto 2rem; border-top:2px solid var(--bg); padding-top:1.75rem; }
+      .team-member strong { display:block; font-size:1rem; color:var(--text); margin-bottom:.2rem; }
+      .team-member span { font-size:.82rem; color:var(--muted); font-family:monospace; }
+      .cover-date { font-size:.85rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.12em; }
+      .container { max-width:1080px; margin:0 auto; padding:2.5rem 1.25rem 4rem; }
+      .section { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.75rem; margin-bottom:1.3rem; box-shadow:0 2px 5px rgba(20,32,44,.05); }
+      .section-act { display:inline-flex; align-items:center; gap:.5rem; font-size:.72rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:.4rem; }
+      h2 { color:var(--primary); font-size:1.45rem; margin-bottom:.25rem; }
+      .section > p { color:var(--muted); margin-bottom:.8rem; }
+      h3 { margin:1rem 0 .4rem; color:var(--primary-2); font-size:1.03rem; }
+      ul { margin-left:1.2rem; }
+      li { margin-bottom:.35rem; }
+      table { width:100%; border-collapse:collapse; margin-top:.6rem; font-size:.92rem; }
+      th,td { border:1px solid var(--border); padding:.55rem .7rem; text-align:left; vertical-align:top; }
+      thead th { background:var(--primary); color:#fff; font-size:.8rem; letter-spacing:.04em; text-transform:uppercase; }
+      pre { background:#0f1722; color:#dce9ff; border-radius:10px; padding:1rem; overflow-x:auto; font-size:.8rem; line-height:1.45; }
+      pre.mermaid { background:none; }
+      code { background:#eef3fa; border-radius:4px; padding:.05rem .3rem; }
+      .pill { display:inline-block; margin-top:.6rem; background:var(--ok-bg); color:var(--ok); border:1px solid #b9e7cb; border-radius:999px; padding:.2rem .6rem; font-size:.78rem; font-weight:600; }
+      .tech-note { border-left:4px solid var(--accent); background:#fff8f3; padding:.8rem 1rem; border-radius:8px; margin:.9rem 0; color:var(--text); }
+      .grid-2 { display:grid; gap:1rem; grid-template-columns:1fr 1fr; }
+      .grid-3 { display:grid; gap:1rem; grid-template-columns:1fr 1fr 1fr; }
+      .grid-4 { display:grid; gap:1rem; grid-template-columns:1fr 1fr 1fr 1fr; }
+      .diagram { border:1px solid var(--border); border-radius:10px; padding:.6rem; overflow-x:auto; margin-top:.8rem; }
+      .pattern-badge { display:inline-flex; align-items:center; gap:.4rem; background:#fff0e3; color:#7a3200; border:1px solid #fbd38d; border-radius:6px; padding:.3rem .7rem; font-size:.8rem; font-weight:700; margin-bottom:.6rem; }
+      .side-nav { position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:.15rem; padding:.6rem .5rem; background:rgba(255,255,255,.92); border-right:1px solid var(--border); border-radius:0 10px 10px 0; box-shadow:2px 0 8px rgba(20,32,44,.06); }
+      .side-nav a { display:block; padding:.35rem .75rem; font-size:.7rem; font-weight:500; color:var(--muted); text-decoration:none; border-left:3px solid transparent; transition:all .2s ease; white-space:nowrap; border-radius:0 4px 4px 0; }
+      .side-nav a:hover { color:var(--primary); border-left-color:var(--border); }
+      .side-nav a.active { color:var(--primary); font-weight:700; border-left-color:var(--accent); }
+      @media (max-width:1200px) { .side-nav { display:none; } }
+      @media (max-width:900px) { .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; } .team { grid-template-columns:1fr; max-width:220px; } }
+    </style>
+  </head>
+  <body>
+
+    <header class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+        <h1>HITO 10</h1>
+        <div class="subtitle">Patrones de Comportamiento I &mdash; Chain of Responsibility &middot; Command &middot; Interpreter</div>
+        <div class="team">
+          <div class="team-member"><strong>Rosario Presedo</strong><span>LU: 1146894</span></div>
+          <div class="team-member"><strong>Simon Ottati</strong><span>LU: 1155931</span></div>
+        </div>
+        <div class="cover-date">Mayo 2026</div>
+      </div>
+    </header>
+
+    <nav class="side-nav">
+      <a href="#intro">Introducción</a>
+      <a href="#chain-diseno">Chain · Diseño</a>
+      <a href="#chain-impl">Chain · Impl.</a>
+      <a href="#command-diseno">Command · Diseño</a>
+      <a href="#command-impl">Command · Impl.</a>
+      <a href="#interpreter-diseno">Interpreter · Diseño</a>
+      <a href="#interpreter-impl">Interpreter · Impl.</a>
+      <a href="#integracion">Integración</a>
+      <a href="#uml">UML</a>
+      <a href="#conclusion">Conclusión</a>
+    </nav>
+
+    <main class="container">
+
+      <!-- ══════════════════════════════════════════════════════════ INTRO -->
+      <section class="section" id="intro">
+        <h2>Contexto e integración</h2>
+        <p>El Hito 10 introduce tres patrones de comportamiento del catálogo GOF. Los patrones de comportamiento modelan cómo los objetos interactúan y distribuyen responsabilidades, complementando los patrones creacionales (Hitos 6-7) y estructurales (Hitos 8-9) ya implementados.</p>
+
+        <table>
+          <thead><tr><th>Hito</th><th>Categoría</th><th>Patrones</th><th>Aporte al sistema</th></tr></thead>
+          <tbody>
+            <tr><td>6 – 7</td><td>Creacionales</td><td>Singleton, Factory Method, Abstract Factory, Builder, Prototype</td><td>Creación controlada de instancias.</td></tr>
+            <tr><td>8 – 9</td><td>Estructurales</td><td>Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy</td><td>Relaciones y composición entre objetos.</td></tr>
+            <tr><td>10</td><td>Comportamiento</td><td>Chain of Responsibility, Command, Interpreter</td><td>Procesamiento de solicitudes, historial reversible y motor de reglas.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="grid-3" style="margin-top:1rem;">
+          <div style="background:#fff8f3;border:1px solid #fbd38d;border-radius:8px;padding:.8rem;"><strong>Chain of Responsibility</strong><p style="font-size:.86rem;color:var(--muted);">Cadena de 5 validadores que aprueba o rechaza un envío sin que el cliente conozca cuál eslabón actúa.</p></div>
+          <div style="background:#f0f8ff;border:1px solid #bfdbfe;border-radius:8px;padding:.8rem;"><strong>Command</strong><p style="font-size:.86rem;color:var(--muted);">Encapsula operaciones como objetos con soporte de undo/redo mediante un historial con puntero.</p></div>
+          <div style="background:#f0fdf4;border:1px solid #b9e7cb;border-radius:8px;padding:.8rem;"><strong>Interpreter</strong><p style="font-size:.86rem;color:var(--muted);">Motor de reglas de negocio con expresiones booleanas terminales (Origen, Destino, Peso, Costo) y operadores AND, OR, NOT.</p></div>
+        </div>
+
+        <h3>Mapa de trazabilidad del hito</h3>
+        <p>Esta tabla conecta cada actividad de la consigna con las clases implementadas y el punto donde se verifica su uso.</p>
+        <table>
+          <thead><tr><th>Actividad</th><th>Patrón</th><th>Archivos principales</th><th>Evidencia</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Chain of Responsibility · Diseño</td><td><code>chain/ValidadorEnvio</code>, candidatos identificados</td><td>Tabla de candidatos; justificación de la cadena Datos→Inventario→Pago→Seguridad→Capacidad.</td></tr>
+            <tr><td>2</td><td>Chain of Responsibility · Implementación</td><td><code>ValidadorDatos</code>, <code>ValidadorInventario</code>, <code>ValidadorPago</code>, <code>ValidadorSeguridad</code>, <code>ValidadorCapacidad</code>, <code>CadenaValidadores</code></td><td><code>CasosDePruebaHito10.probarChain()</code> — 6 casos.</td></tr>
+            <tr><td>3</td><td>Command · Diseño</td><td><code>command/Comando</code>, identificación de operaciones reversibles</td><td>Tabla de comandos; justificación de undo/redo.</td></tr>
+            <tr><td>4</td><td>Command · Implementación</td><td><code>ComandoCrearEnvio</code>, <code>ComandoCancelarEnvio</code>, <code>ComandoActualizarEstado</code>, <code>ComandoCambiarMetodoPago</code>, <code>ComandoAgregarServicio</code>, <code>ColaComandos</code>, <code>ServicioEnvios</code></td><td><code>CasosDePruebaHito10.probarCommand()</code> — 9 casos.</td></tr>
+            <tr><td>5</td><td>Interpreter · Diseño</td><td><code>interpreter/Expresion</code>, gramática definida</td><td>Árbol de expresiones; tabla de reglas de negocio.</td></tr>
+            <tr><td>6</td><td>Interpreter · Implementación</td><td><code>ExpresionOrigen</code>, <code>ExpresionDestino</code>, <code>ExpresionPeso</code>, <code>ExpresionCosto</code>, <code>ExpresionRestringido</code>, <code>ExpresionAND</code>, <code>ExpresionOR</code>, <code>ExpresionNOT</code></td><td><code>CasosDePruebaHito10.probarInterpreter()</code> — 7 casos.</td></tr>
+            <tr><td>7</td><td>Integración</td><td><code>SistemaLogisticaCompleto</code></td><td><code>CasosDePruebaHito10.probarIntegracion()</code> — 3 casos.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="pill">✅ 3 patrones nuevos &nbsp;·&nbsp; ✅ 24 clases implementadas &nbsp;·&nbsp; ✅ 29 verificaciones ejecutables &nbsp;·&nbsp; ✅ integración completa</div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ CHAIN DISEÑO -->
+      <section class="section" id="chain-diseno">
+        <div class="section-act">Actividad 1 · Chain of Responsibility</div>
+        <h2>Identificación de candidatos</h2>
+        <p>Se analizaron los flujos de validación del sistema para identificar dónde múltiples reglas independientes deben aplicarse en secuencia sobre un mismo objeto.</p>
+        <div class="pattern-badge">GoF · Chain of Responsibility</div>
+
+        <h3>Candidatos identificados</h3>
+        <table>
+          <thead><tr><th>Candidato</th><th>Problema actual</th><th>Por qué Chain resuelve</th></tr></thead>
+          <tbody>
+            <tr><td>Validación de envíos</td><td>Las reglas de datos, inventario, pago, seguridad y capacidad estaban mezcladas en un solo método o clase.</td><td>Cada regla pasa a un eslabón independiente; agregar, quitar o reordenar reglas no requiere tocar las demás.</td></tr>
+            <tr><td>Aprobación de crédito</td><td>Requiere pasar por sucursal, regional y central en orden.</td><td>La solicitud sube la cadena hasta que algún nivel la aprueba o rechaza.</td></tr>
+            <tr><td>Filtros de log</td><td>Mensajes de distinta severidad deben procesarse por manejadores distintos.</td><td>Cada handler decide si procesa o delega según el nivel.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Diseño de la cadena de validación</h3>
+        <p>Se eligió el candidato "Validación de envíos" por ser el más representativo del dominio. La cadena se diseñó con 5 validadores en orden de costo creciente: los más baratos (datos, inventario) actúan primero para hacer fallo rápido.</p>
+
+        <table>
+          <thead><tr><th>Posición</th><th>Validador</th><th>Condición de rechazo</th><th>Justificación de orden</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><code>ValidadorDatos</code></td><td>Origen o destino vacío, o peso ≤ 0</td><td>Datos básicos: costo O(1), falla más frecuente.</td></tr>
+            <tr><td>2</td><td><code>ValidadorInventario</code></td><td>ProductoId sin stock en <code>SistemaInventario</code></td><td>Consulta de mapa en memoria: O(1).</td></tr>
+            <tr><td>3</td><td><code>ValidadorPago</code></td><td>Costo ≤ 0 o método de pago vacío</td><td>Regla de negocio pura, sin I/O.</td></tr>
+            <tr><td>4</td><td><code>ValidadorSeguridad</code></td><td>Destino contiene "Restringido"</td><td>Requiere política de zonas; va después de datos básicos.</td></tr>
+            <tr><td>5</td><td><code>ValidadorCapacidad</code></td><td>Peso supera <code>capacidadDisponible</code> en <code>SistemaCapacidad</code></td><td>Estado global del sistema; se evalúa al final.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="tech-note">
+          <strong>Decisión de diseño:</strong> La clase <code>CadenaValidadores</code> actúa como <em>Facade</em> de la cadena: recibe las dependencias externas (<code>SistemaInventario</code>, <code>SistemaCapacidad</code>) y construye el orden de los eslabones en su constructor. El cliente solo llama <code>validarEnvio(Envio)</code> y desconoce la estructura interna.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ CHAIN IMPL -->
+      <section class="section" id="chain-impl">
+        <div class="section-act">Actividad 2 · Chain of Responsibility</div>
+        <h2>Implementación</h2>
+        <p>Se implementaron la clase abstracta <code>ValidadorEnvio</code>, los cinco validadores concretos y la clase de ensamblado <code>CadenaValidadores</code>. Los sistemas de soporte (<code>SistemaInventario</code>, <code>SistemaCapacidad</code>) se ubicaron en el mismo paquete para evitar dependencias ascendentes.</p>
+        <div class="pattern-badge">GoF · Chain of Responsibility</div>
+
+        <div class="grid-2">
+<pre>// Handler abstracto
+public abstract class ValidadorEnvio {
+    protected ValidadorEnvio siguiente;
+
+    public void setSiguiente(ValidadorEnvio sig) {
+        this.siguiente = sig;
+    }
+
+    public abstract boolean validar(Envio envio);
+    public abstract String obtenerNombre();
+}</pre>
+<pre>// Concrete handler
+public class ValidadorDatos extends ValidadorEnvio {
+    public boolean validar(Envio envio) {
+        if (envio.getOrigen() == null
+                || envio.getOrigen().isEmpty()) return false;
+        if (envio.getDestino() == null
+                || envio.getDestino().isEmpty()) return false;
+        if (envio.getPeso() <= 0) return false;
+
+        System.out.println("  ✓ Datos válidos");
+        return siguiente == null || siguiente.validar(envio);
+    }
+    public String obtenerNombre() { return "ValidadorDatos"; }
+}</pre>
+        </div>
+
+<pre>// Ensamblado de la cadena
+public class CadenaValidadores {
+    private final ValidadorEnvio primerValidador;
+
+    public CadenaValidadores(SistemaInventario inv, SistemaCapacidad cap) {
+        ValidadorEnvio v1 = new ValidadorDatos();
+        ValidadorEnvio v2 = new ValidadorInventario(inv);
+        ValidadorEnvio v3 = new ValidadorPago();
+        ValidadorEnvio v4 = new ValidadorSeguridad();
+        ValidadorEnvio v5 = new ValidadorCapacidad(cap);
+
+        v1.setSiguiente(v2); v2.setSiguiente(v3);
+        v3.setSiguiente(v4); v4.setSiguiente(v5);
+        this.primerValidador = v1;
+    }
+
+    public boolean validarEnvio(Envio envio) {
+        return primerValidador.validar(envio);
+    }
+}</pre>
+
+        <h3>Patrón de delegación</h3>
+        <p>Cada validador aprueba su regla y delega con <code>return siguiente == null || siguiente.validar(envio)</code>. Si no hay siguiente, retorna <code>true</code> (fin de cadena = envío aprobado). Si rechaza, corta la cadena y retorna <code>false</code> inmediatamente sin evaluar los eslabones restantes.</p>
+
+        <h3>Casos de prueba</h3>
+        <table>
+          <thead><tr><th>#</th><th>Escenario</th><th>Eslabón que falla</th><th>Resultado esperado</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Envío con todos los datos válidos</td><td>Ninguno</td><td><code>true</code></td></tr>
+            <tr><td>2</td><td>Origen vacío</td><td><code>ValidadorDatos</code></td><td><code>false</code></td></tr>
+            <tr><td>3</td><td>Peso = 0</td><td><code>ValidadorDatos</code></td><td><code>false</code></td></tr>
+            <tr><td>4</td><td>Costo = 0</td><td><code>ValidadorPago</code></td><td><code>false</code></td></tr>
+            <tr><td>5</td><td>Destino = "Zona Restringido"</td><td><code>ValidadorSeguridad</code></td><td><code>false</code></td></tr>
+            <tr><td>6</td><td>ProductoId = "PROD-SIN-STOCK"</td><td><code>ValidadorInventario</code></td><td><code>false</code></td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 6/6 casos OK</div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ COMMAND DISEÑO -->
+      <section class="section" id="command-diseno">
+        <div class="section-act">Actividad 3 · Command</div>
+        <h2>Identificación de operaciones reversibles</h2>
+        <p>Se relevaron las operaciones sobre envíos que: (a) deben registrarse con trazabilidad, (b) pueden necesitar ser revertidas por el operador, o (c) pueden encolar para procesamiento diferido.</p>
+        <div class="pattern-badge">GoF · Command</div>
+
+        <h3>Candidatos identificados</h3>
+        <table>
+          <thead><tr><th>Operación</th><th>¿Reversible?</th><th>Estado previo a guardar</th><th>Comando</th></tr></thead>
+          <tbody>
+            <tr><td>Crear envío</td><td>Sí — cancelar</td><td>Número generado</td><td><code>ComandoCrearEnvio</code></td></tr>
+            <tr><td>Cancelar envío</td><td>Sí — reactivar</td><td>Estado "CONFIRMADO"</td><td><code>ComandoCancelarEnvio</code></td></tr>
+            <tr><td>Actualizar estado</td><td>Sí — estado anterior</td><td><code>estadoAnterior</code></td><td><code>ComandoActualizarEstado</code></td></tr>
+            <tr><td>Cambiar método de pago</td><td>Sí — método anterior</td><td><code>metodoAnterior</code></td><td><code>ComandoCambiarMetodoPago</code></td></tr>
+            <tr><td>Agregar servicio extra</td><td>Sí — remover</td><td>Nombre del servicio</td><td><code>ComandoAgregarServicio</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3>Diseño del historial undo/redo</h3>
+        <p>Se eligió un historial lineal con <strong>índice entero</strong> (<code>indiceActual</code>) en lugar de dos pilas separadas. Este enfoque permite:</p>
+        <ul style="margin:.5rem 0 .5rem 1.2rem;">
+          <li>Undo: decrementar el índice y llamar <code>deshacer()</code> en el comando señalado.</li>
+          <li>Redo: incrementar el índice y volver a llamar <code>ejecutar()</code>.</li>
+          <li>Nuevo comando: podar los comandos posteriores al índice actual antes de agregar, manteniendo un árbol lineal.</li>
+          <li>Auditoría: el historial completo es visible en todo momento con <code>mostrarHistorial()</code>.</li>
+        </ul>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ COMMAND IMPL -->
+      <section class="section" id="command-impl">
+        <div class="section-act">Actividad 4 · Command</div>
+        <h2>Implementación</h2>
+        <p>Se implementaron la interfaz <code>Comando</code>, el receiver <code>ServicioEnvios</code>, el invoker <code>ColaComandos</code> y cinco comandos concretos, cada uno capturando el estado previo necesario para revertir su efecto.</p>
+        <div class="pattern-badge">GoF · Command</div>
+
+        <div class="grid-2">
+<pre>// Interface
+public interface Comando {
+    void   ejecutar();
+    void   deshacer();
+    String obtenerDescripcion();
+}</pre>
+<pre>// Concrete Command — guarda estado previo
+public class ComandoCambiarMetodoPago implements Comando {
+    private final ServicioEnvios servicio;
+    private final String numero;
+    private final String nuevoMetodo;
+    private String metodoAnterior;
+
+    public void ejecutar() {
+        metodoAnterior = servicio.obtenerMetodoPago(numero);
+        servicio.cambiarMetodoPago(numero, nuevoMetodo);
+    }
+    public void deshacer() {
+        servicio.cambiarMetodoPago(numero, metodoAnterior);
+    }
+    public String obtenerDescripcion() {
+        return "Cambiar pago " + numero + " → " + nuevoMetodo;
+    }
+}</pre>
+        </div>
+
+<pre>// Invoker con undo/redo lineal
+public class ColaComandos {
+    private final List&lt;Comando&gt; historial = new ArrayList&lt;&gt;();
+    private int indiceActual = -1;
+
+    public void ejecutar(Comando c) {
+        while (indiceActual &lt; historial.size() - 1)   // podar futuro
+            historial.remove(historial.size() - 1);
+        c.ejecutar();
+        historial.add(c);
+        indiceActual++;
+    }
+
+    public void deshacer() {
+        if (indiceActual >= 0)
+            historial.get(indiceActual--).deshacer();
+    }
+
+    public void rehacer() {
+        if (indiceActual &lt; historial.size() - 1)
+            historial.get(++indiceActual).ejecutar();
+    }
+
+    public int obtenerTamano()   { return historial.size(); }
+    public int getIndiceActual() { return indiceActual; }
+}</pre>
+
+        <h3>Receiver — ServicioEnvios</h3>
+        <p><code>ServicioEnvios</code> gestiona tres mapas internos: <code>estados</code>, <code>metodosPago</code> y <code>servicios</code>. Asigna números de seguimiento secuenciales (<code>ENV-001</code>, <code>ENV-002</code>...) al crear un envío y expone métodos atómicos que cada comando invoca.</p>
+
+        <h3>Casos de prueba</h3>
+        <table>
+          <thead><tr><th>#</th><th>Escenario</th><th>Verificación</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Crear envío</td><td><code>getNumeroSeguimiento() != null</code></td></tr>
+            <tr><td>2</td><td>Actualizar estado a "EN TRÁNSITO"</td><td><code>obtenerEstado() == "EN TRÁNSITO"</code></td></tr>
+            <tr><td>3</td><td>Cambiar método de pago a "EFECTIVO"</td><td><code>obtenerMetodoPago() == "EFECTIVO"</code></td></tr>
+            <tr><td>4</td><td>Agregar servicio "Seguro"</td><td><code>obtenerServicios().contains("Seguro")</code></td></tr>
+            <tr><td>5</td><td>Historial</td><td><code>obtenerTamano() == 4</code></td></tr>
+            <tr><td>6</td><td>Deshacer — remueve "Seguro"</td><td><code>!obtenerServicios().contains("Seguro")</code></td></tr>
+            <tr><td>7</td><td>Deshacer — restaura método "TARJETA"</td><td><code>obtenerMetodoPago() == "TARJETA"</code></td></tr>
+            <tr><td>8</td><td>Rehacer — vuelve a "EFECTIVO"</td><td><code>obtenerMetodoPago() == "EFECTIVO"</code></td></tr>
+            <tr><td>9a</td><td>Cancelar envío</td><td><code>obtenerEstado() == "CANCELADO"</code></td></tr>
+            <tr><td>9b</td><td>Deshacer cancelación</td><td><code>obtenerEstado() == "CONFIRMADO"</code></td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 10/10 casos OK</div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ INTERPRETER DISEÑO -->
+      <section class="section" id="interpreter-diseno">
+        <div class="section-act">Actividad 5 · Interpreter</div>
+        <h2>Definición de la gramática</h2>
+        <p>Se diseñó un motor de reglas de negocio sobre envíos. Una "regla" es cualquier combinación booleana de condiciones atómicas sobre atributos del envío, representada como un árbol de expresiones.</p>
+        <div class="pattern-badge">GoF · Interpreter</div>
+
+        <h3>Gramática BNF</h3>
+<pre style="background:#f8f9fa;color:#2c3e50;border:1px solid #dee2e6;">Expresion   ::= Terminal | NoTerminal
+Terminal    ::= ExpresionOrigen  "(" &lt;string&gt; ")"
+              | ExpresionDestino "(" &lt;string&gt; ")"
+              | ExpresionPeso    "(" &lt;numero&gt; "," &lt;op&gt; ")"
+              | ExpresionCosto   "(" &lt;numero&gt; "," &lt;op&gt; ")"
+              | ExpresionRestringido
+NoTerminal  ::= ExpresionAND "(" Expresion "," Expresion ")"
+              | ExpresionOR  "(" Expresion "," Expresion ")"
+              | ExpresionNOT "(" Expresion ")"
+op          ::= "&lt;" | "&gt;" | "="</pre>
+
+        <h3>Árbol de una regla compleja</h3>
+        <p>La regla "ORIGEN = Buenos Aires AND COSTO &gt; 100 AND NOT RESTRINGIDO" se construye como:</p>
+<pre style="background:#f8f9fa;color:#2c3e50;border:1px solid #dee2e6;">                     AND
+                    /   \
+                  AND    NOT
+                 /   \     \
+          ORIGEN   COSTO    RESTRINGIDO
+         ="BA"     > 100</pre>
+
+        <h3>Reglas de negocio preconfiguradas en SistemaLogisticaCompleto</h3>
+        <table>
+          <thead><tr><th>Nombre</th><th>Expresión</th><th>Uso</th></tr></thead>
+          <tbody>
+            <tr><td><code>REGLA_CORDOBA_LIVIANO</code></td><td>Destino="Córdoba" AND Peso&lt;10</td><td>Tarifa preferencial envíos livianos a Córdoba.</td></tr>
+            <tr><td><code>REGLA_ENVIO_COSTOSO</code></td><td>Costo&gt;100</td><td>Marca envíos que requieren aprobación adicional.</td></tr>
+            <tr><td><code>REGLA_NO_RESTRINGIDO</code></td><td>NOT Restringido</td><td>Verifica que el destino no sea zona restringida.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ INTERPRETER IMPL -->
+      <section class="section" id="interpreter-impl">
+        <div class="section-act">Actividad 6 · Interpreter</div>
+        <h2>Implementación</h2>
+        <p>Se implementaron la interfaz <code>Expresion</code>, cinco expresiones terminales y tres operadores no-terminales. Las expresiones terminales con operador (<code>ExpresionPeso</code>, <code>ExpresionCosto</code>) aceptan los operadores <code>"&lt;"</code>, <code>"&gt;"</code> y <code>"="</code>.</p>
+        <div class="pattern-badge">GoF · Interpreter</div>
+
+        <div class="grid-2">
+<pre>// Interface — Context es el Envio
+public interface Expresion {
+    boolean evaluar(Envio envio);
+}
+
+// Terminal simple
+public class ExpresionOrigen implements Expresion {
+    private final String valor;
+    public boolean evaluar(Envio e) {
+        return valor.equals(e.getOrigen());
+    }
+}
+
+// Terminal con operador
+public class ExpresionPeso implements Expresion {
+    private final double valor;
+    private final String operador;
+    public boolean evaluar(Envio e) {
+        switch (operador) {
+            case "&lt;": return e.getPeso() &lt;  valor;
+            case "&gt;": return e.getPeso() &gt;  valor;
+            case "=": return e.getPeso() == valor;
+            default:  return false;
+        }
+    }
+}</pre>
+<pre>// No-terminales
+public class ExpresionAND implements Expresion {
+    private final Expresion izquierda, derecha;
+    public boolean evaluar(Envio e) {
+        return izquierda.evaluar(e) &amp;&amp; derecha.evaluar(e);
+    }
+}
+
+public class ExpresionOR implements Expresion {
+    private final Expresion izquierda, derecha;
+    public boolean evaluar(Envio e) {
+        return izquierda.evaluar(e) || derecha.evaluar(e);
+    }
+}
+
+public class ExpresionNOT implements Expresion {
+    private final Expresion expresion;
+    public boolean evaluar(Envio e) {
+        return !expresion.evaluar(e);
+    }
+}
+
+// Terminal especial
+public class ExpresionRestringido implements Expresion {
+    public boolean evaluar(Envio e) {
+        return e.getDestino().contains("Restringido");
+    }
+}</pre>
+        </div>
+
+        <h3>Casos de prueba</h3>
+        <table>
+          <thead><tr><th>#</th><th>Expresión</th><th>Envío de prueba</th><th>Resultado esperado</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><code>ExpresionOrigen("Buenos Aires")</code></td><td>envio1 (BA), envio2 (Rosario)</td><td><code>true</code> / <code>false</code></td></tr>
+            <tr><td>2</td><td><code>AND(Origen="BA", Peso&lt;10)</code></td><td>envio1 (BA, 5kg), envio2 (Rosario, 15kg)</td><td><code>true</code> / <code>false</code></td></tr>
+            <tr><td>3</td><td><code>OR(Destino="Córdoba", Destino="Mendoza")</code></td><td>envio1 (→ Córdoba)</td><td><code>true</code></td></tr>
+            <tr><td>4</td><td><code>NOT(Restringido)</code></td><td>envio1 (Córdoba), envio3 (Zona Restringido)</td><td><code>true</code> / <code>false</code></td></tr>
+            <tr><td>5</td><td>Regla compleja: <code>AND(AND(Origen="BA", Costo&gt;100), NOT(Restringido))</code></td><td>envio1 / envio3</td><td><code>true</code> / <code>false</code></td></tr>
+            <tr><td>6</td><td><code>ExpresionCosto(150.0, "=")</code></td><td>envio1 (costo=150)</td><td><code>true</code></td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 11/11 evaluaciones OK (incluyendo sub-casos 1b, 2b, 4b, 5b)</div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ INTEGRACIÓN -->
+      <section class="section" id="integracion">
+        <div class="section-act">Actividad 7 · Integración</div>
+        <h2>Sistema logístico completo</h2>
+        <p><code>SistemaLogisticaCompleto</code> integra los tres patrones en un único flujo de procesamiento: la <strong>cadena</strong> valida el envío, el <strong>comando</strong> lo crea con historial reversible y el <strong>intérprete</strong> evalúa las reglas de negocio configuradas.</p>
+
+        <div class="grid-3" style="margin-bottom:.9rem;">
+          <div style="background:#fff8f3;border:1px solid #fbd38d;border-radius:8px;padding:.8rem;text-align:center;"><strong>1. Chain</strong><p style="font-size:.83rem;color:var(--muted);margin-top:.3rem;">Valida el envío.<br>Si falla → retorna <code>null</code>.</p></div>
+          <div style="background:#f0f8ff;border:1px solid #bfdbfe;border-radius:8px;padding:.8rem;text-align:center;"><strong>2. Command</strong><p style="font-size:.83rem;color:var(--muted);margin-top:.3rem;">Crea el envío.<br>Guarda en historial.</p></div>
+          <div style="background:#f0fdf4;border:1px solid #b9e7cb;border-radius:8px;padding:.8rem;text-align:center;"><strong>3. Interpreter</strong><p style="font-size:.83rem;color:var(--muted);margin-top:.3rem;">Evalúa reglas.<br>Muestra resultado.</p></div>
+        </div>
+
+<pre>public class SistemaLogisticaCompleto {
+    private final CadenaValidadores validadores;
+    private final ColaComandos cola;
+    private final ServicioEnvios servicio;
+    private final Map&lt;String, Expresion&gt; reglas;
+
+    public SistemaLogisticaCompleto() {
+        SistemaInventario inventario = new SistemaInventario();
+        SistemaCapacidad  capacidad  = new SistemaCapacidad(1000.0);
+        this.validadores = new CadenaValidadores(inventario, capacidad);
+        this.servicio    = new ServicioEnvios();
+        this.cola        = new ColaComandos();
+        this.reglas      = new HashMap&lt;&gt;();
+        inicializarReglas();
+    }
+
+    public String procesarEnvio(Envio envio) {
+        // 1. Chain of Responsibility: validar
+        if (!validadores.validarEnvio(envio)) return null;
+
+        // 2. Command: crear con historial reversible
+        ComandoCrearEnvio cmd = new ComandoCrearEnvio(servicio, envio);
+        cola.ejecutar(cmd);
+        String numero = cmd.getNumeroSeguimiento();
+
+        // 3. Interpreter: evaluar reglas de negocio
+        reglas.forEach((k, v) ->
+            System.out.println((v.evaluar(envio) ? "✓ " : "  ") + k));
+
+        return numero;
+    }
+
+    public ServicioEnvios    getServicio()    { return servicio; }
+    public ColaComandos      getCola()        { return cola; }
+    public CadenaValidadores getValidadores() { return validadores; }
+}</pre>
+
+        <h3>Casos de prueba de integración</h3>
+        <table>
+          <thead><tr><th>#</th><th>Escenario</th><th>Verificación</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Envío válido procesado</td><td><code>procesarEnvio() != null</code> — genera número de seguimiento</td></tr>
+            <tr><td>2</td><td>Estado inicial del envío creado</td><td><code>getServicio().obtenerEstado(numero) == "CONFIRMADO"</code></td></tr>
+            <tr><td>3</td><td>Envío inválido (origen vacío) rechazado por cadena</td><td><code>procesarEnvio() == null</code></td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 3/3 casos de integración OK</div>
+
+        <h3>Resumen global de ejecución</h3>
+<pre>[Hito 10] Casos ejecutados: 29 | OK: 29</pre>
+        <div class="pill">✅ 29/29 verificaciones &nbsp;·&nbsp; supera el mínimo de 20 casos pedidos por la consigna</div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ UML -->
+      <section class="section" id="uml">
+        <div class="section-act">Diagrama UML</div>
+        <h2>Estructura del Hito 10</h2>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction TB
+
+class ValidadorEnvio {
+  <<abstract>>
+  #siguiente ValidadorEnvio
+  +setSiguiente(ValidadorEnvio)
+  +validar(Envio) bool
+  +obtenerNombre() String
+}
+class ValidadorDatos
+class ValidadorInventario
+class ValidadorPago
+class ValidadorSeguridad
+class ValidadorCapacidad
+class CadenaValidadores {
+  -primerValidador ValidadorEnvio
+  +validarEnvio(Envio) bool
+}
+class SistemaInventario {
+  +verificarStock(String) bool
+}
+class SistemaCapacidad {
+  +hayEspacioDisponible(double) bool
+}
+ValidadorEnvio <|-- ValidadorDatos
+ValidadorEnvio <|-- ValidadorInventario
+ValidadorEnvio <|-- ValidadorPago
+ValidadorEnvio <|-- ValidadorSeguridad
+ValidadorEnvio <|-- ValidadorCapacidad
+CadenaValidadores --> ValidadorEnvio
+ValidadorInventario --> SistemaInventario
+ValidadorCapacidad --> SistemaCapacidad
+
+class Comando {
+  <<interface>>
+  +ejecutar()
+  +deshacer()
+  +obtenerDescripcion() String
+}
+class ColaComandos {
+  -historial List
+  -indiceActual int
+  +ejecutar(Comando)
+  +deshacer()
+  +rehacer()
+}
+class ServicioEnvios {
+  +crearEnvio(Envio) String
+  +cancelarEnvio(String)
+  +actualizarEstado(String, String)
+  +cambiarMetodoPago(String, String)
+  +agregarServicio(String, String)
+}
+class ComandoCrearEnvio
+class ComandoCancelarEnvio
+class ComandoActualizarEstado
+class ComandoCambiarMetodoPago
+class ComandoAgregarServicio
+Comando <|.. ComandoCrearEnvio
+Comando <|.. ComandoCancelarEnvio
+Comando <|.. ComandoActualizarEstado
+Comando <|.. ComandoCambiarMetodoPago
+Comando <|.. ComandoAgregarServicio
+ColaComandos --> Comando
+ComandoCrearEnvio --> ServicioEnvios
+ComandoCancelarEnvio --> ServicioEnvios
+ComandoActualizarEstado --> ServicioEnvios
+ComandoCambiarMetodoPago --> ServicioEnvios
+ComandoAgregarServicio --> ServicioEnvios
+
+class Expresion {
+  <<interface>>
+  +evaluar(Envio) bool
+}
+class ExpresionOrigen
+class ExpresionDestino
+class ExpresionPeso
+class ExpresionCosto
+class ExpresionRestringido
+class ExpresionAND
+class ExpresionOR
+class ExpresionNOT
+Expresion <|.. ExpresionOrigen
+Expresion <|.. ExpresionDestino
+Expresion <|.. ExpresionPeso
+Expresion <|.. ExpresionCosto
+Expresion <|.. ExpresionRestringido
+Expresion <|.. ExpresionAND
+Expresion <|.. ExpresionOR
+Expresion <|.. ExpresionNOT
+ExpresionAND --> Expresion
+ExpresionOR --> Expresion
+ExpresionNOT --> Expresion
+
+class SistemaLogisticaCompleto {
+  +procesarEnvio(Envio) String
+  +getServicio() ServicioEnvios
+  +getCola() ColaComandos
+  +getValidadores() CadenaValidadores
+}
+SistemaLogisticaCompleto --> CadenaValidadores
+SistemaLogisticaCompleto --> ColaComandos
+SistemaLogisticaCompleto --> ServicioEnvios
+SistemaLogisticaCompleto ..> Expresion</pre></div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ CONCLUSIÓN -->
+      <section class="section" id="conclusion">
+        <h2>Conclusión</h2>
+        <p>El Hito 10 incorpora tres patrones de comportamiento que mejoran la flexibilidad del sistema en dimensiones complementarias:</p>
+        <ul style="margin:.6rem 0 .6rem 1.2rem;">
+          <li><strong>Chain of Responsibility</strong> desacopla el emisor de la validación de sus reglas concretas, permitiendo agregar o reordenar validadores sin modificar el cliente ni los eslabones existentes.</li>
+          <li><strong>Command</strong> convierte cada operación en un objeto con historial auditable y soporte de undo/redo, aportando trazabilidad y la posibilidad de revertir cualquier acción del operador.</li>
+          <li><strong>Interpreter</strong> externaliza las reglas de negocio en un motor de expresiones componibles, permitiendo definir nuevas reglas combinando terminales existentes sin modificar código.</li>
+        </ul>
+        <p>Los tres patrones se integran en <code>SistemaLogisticaCompleto</code>, donde la cadena actúa como guardián de entrada, el comando registra la creación, y el intérprete clasifica el envío según políticas de negocio. El sistema queda preparado para incorporar los patrones de comportamiento del Hito 11 (Iterator, Observer, State, Strategy, Template Method) sin afectar lo implementado.</p>
+        <div class="pill">✅ 29/29 verificaciones &nbsp;·&nbsp; ✅ 24 clases &nbsp;·&nbsp; ✅ 3 patrones integrados</div>
+      </section>
+
+    </main>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          primaryColor: "#f4f8ff",
+          primaryTextColor: "#0f172a",
+          primaryBorderColor: "#12324b",
+          lineColor: "#1f4f74",
+          tertiaryColor: "#f8fbff",
+          edgeLabelBackground: "#ffffff"
+        }
+      });
+
+      const nav = document.querySelectorAll('.side-nav a');
+      const sections = document.querySelectorAll('.section');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            nav.forEach(a => a.classList.remove('active'));
+            const active = document.querySelector(`.side-nav a[href="#${entry.target.id}"]`);
+            if (active) active.classList.add('active');
+          }
+        });
+      }, { threshold: 0.3 });
+
+      sections.forEach(s => observer.observe(s));
+      if (nav.length > 0) nav[0].classList.add('active');
+    </script>
+  </body>
+</html>

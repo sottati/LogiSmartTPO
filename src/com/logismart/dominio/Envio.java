@@ -36,6 +36,29 @@ public class Envio implements Cloneable {
 	private String contactoEmergencia;
 	private LocalTime horaEntregaPreferida;
 
+	// ─── Campos Hito 10 (Chain / Command / Interpreter) ──────────────────────
+	private double costo;
+	private String metodoPago;
+	private String productoId;
+
+	// Constructor Hito 10 — usado por Chain / Command / Interpreter
+	public Envio(String origen, String destino, double peso, double costo, String metodoPago, String productoId) {
+		this.id = "H10-" + java.util.UUID.randomUUID().toString().substring(0, 8);
+		this.empresa = null;
+		this.estado = "PENDIENTE";
+		this.prioridad = "MEDIA";
+		this.fechaProgramada = null;
+		this.ordenes = new ArrayList<>();
+		this.seguimiento = new SeguimientoEnvio(this.id + "-seg", "PENDIENTE");
+		this.entrega = new Entrega(this.id + "-ent");
+		this.origen = origen;
+		this.destino = destino;
+		this.peso = peso;
+		this.costo = costo;
+		this.metodoPago = metodoPago;
+		this.productoId = productoId;
+	}
+
 	// Constructor original — lo usan FabricaDeEnvios y sus subclases
 	public Envio(String id, Empresa empresa, String prioridad, LocalDateTime fechaProgramada) {
 		this.id = id;
@@ -191,6 +214,14 @@ public class Envio implements Cloneable {
 	public String   getInstruccionesEspeciales()  { return instruccionesEspeciales; }
 	public String   getContactoEmergencia()       { return contactoEmergencia; }
 	public LocalTime getHoraEntregaPreferida()    { return horaEntregaPreferida; }
+
+	// ─── Getters / Setters Hito 10 ───────────────────────────────────────────
+
+	public double  getCosto()                     { return costo; }
+	public void    setCosto(double costo)          { this.costo = costo; }
+	public String  getMetodoPago()                { return metodoPago; }
+	public void    setMetodoPago(String m)         { this.metodoPago = m; }
+	public String  getProductoId()                { return productoId; }
 
 	@Override
 	public String toString() {

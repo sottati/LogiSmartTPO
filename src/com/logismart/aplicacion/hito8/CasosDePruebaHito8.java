@@ -12,7 +12,6 @@ import com.logismart.infraestructura.bridge.reporte.GeneradorJSON;
 import com.logismart.infraestructura.bridge.reporte.GeneradorPDF;
 import com.logismart.infraestructura.bridge.reporte.Reporte;
 import com.logismart.infraestructura.bridge.reporte.ReporteEnvios;
-import com.logismart.infraestructura.composite.centro.CentroDistribucion;
 import com.logismart.infraestructura.composite.centro.CentroRegional;
 import com.logismart.infraestructura.composite.centro.PuntoEntrega;
 

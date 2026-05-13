@@ -1,5 +1,6 @@
 package com.logismart.app;
 
+import com.logismart.aplicacion.hito10.CasosDePruebaHito10;
 import com.logismart.aplicacion.hito8.CasosDePruebaHito8;
 import com.logismart.aplicacion.hito9.CasosDePruebaHito9;
 import com.logismart.dominio.Envio;
@@ -105,6 +106,7 @@ public class Main {
 
         CasosDePruebaHito8.ejecutar();
         CasosDePruebaHito9.ejecutar();
+        CasosDePruebaHito10.ejecutar();
 
         sep("RESUMEN");
         logger.info("Demostración completada exitosamente");
