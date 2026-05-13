@@ -318,6 +318,8 @@
       .p-applied-label { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.3rem; }
       .p-applied { font-size: 0.77rem; color: var(--text); line-height: 1.5; }
       .p-applied code { background: #eef2f8; padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.73rem; }
+      .p-tradeoff { margin-top: 0.55rem; padding-top: 0.55rem; border-top: 1px solid var(--border); font-size: 0.74rem; color: var(--muted); line-height: 1.5; }
+      .p-tradeoff strong { color: var(--primary-2); }
 
       /* ──────────────────────────── RESPONSIVE ──────────────────────────── */
       @media (max-width: 1000px) {
@@ -578,7 +580,7 @@
               <div class="hito-body">
                 <div class="hito-label">Hito 8</div>
                 <div class="hito-title">Patrones Estructurales I</div>
-                <div class="hito-desc">Adapter · Bridge · Composite</div>
+              <div class="hito-desc">Adapter · Bridge · Composite · 18 verificaciones ejecutables</div>
               </div>
               <div class="hito-arrow">›</div>
             </a>
@@ -757,7 +759,7 @@
             </li>
             <li>
               <span class="pkg-name">com.logismart.aplicacion</span>
-              <span class="pkg-desc">GRASP Controller (<code>LogiSmartController</code>) y Pure Fabrications: <code>RepositorioDeEnvios</code>, <code>ServicioDeNotificaciones</code>, <code>ValidadorDeEnvios</code>, <code>CalculadorDeRutas</code>.</span>
+              <span class="pkg-desc">GRASP Controller (<code>LogiSmartController</code>), Pure Fabrications y servicios de integración: <code>ServicioLogisticaUnificado</code> para Hito 8 y <code>aplicacion.hito8</code>/<code>aplicacion.hito9</code> para evidencia ejecutable.</span>
             </li>
             <li>
               <span class="pkg-name">com.logismart.infraestructura.singleton</span>
@@ -770,6 +772,26 @@
             <li>
               <span class="pkg-name">com.logismart.infraestructura.abstractfactory</span>
               <span class="pkg-desc">Abstract Factory regional: interfaz <code>LogiSmartFactory</code> + implementaciones Argentina y Brasil. Produce familias de <code>Vehiculo</code>, <code>CalculadorCostos</code> y <code>ProveedorMapas</code>.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.adapter</span>
+              <span class="pkg-desc">Adapter de Hito 8: proveedores externos de envío y pago quedan detrás de <code>ProveedorEnvio</code> y <code>ProveedorPago</code>.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.bridge</span>
+              <span class="pkg-desc">Bridge de Hito 8: <code>Reporte</code> separa tipo de reporte de <code>GeneradorReporte</code> para PDF, Excel, JSON y CSV.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.composite</span>
+              <span class="pkg-desc">Composite de Hito 8: centros de distribución y puntos de entrega forman un árbol con capacidad y ocupación recursivas.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.decorator</span>
+              <span class="pkg-desc">Decorator de Hito 9: servicios opcionales sobre envíos sin multiplicar subclases.</span>
+            </li>
+            <li>
+              <span class="pkg-name">com.logismart.infraestructura.{flyweight,proxy}</span>
+              <span class="pkg-desc">Flyweight y Proxy de Hito 9: ubicaciones compartidas, repositorio lazy y cache de consultas.</span>
             </li>
             <li>
               <span class="pkg-name">com.logismart.infraestructura.{costo,tiempo,ruta,vehiculo}</span>
@@ -929,6 +951,7 @@
                 <strong>Brasil:</strong> Moto + ICMS 12% + Here Maps.<br>
                 <code>LogiSmartApp</code> trabaja solo con la interfaz; no sabe qué región corre.
               </div>
+              <div class="p-tradeoff"><strong>Trade-off:</strong> mejora consistencia regional y evita combinaciones inválidas, pero agregar un nuevo producto abstracto obliga a modificar todas las fábricas concretas. Se eligió porque la variación por país es estable y atraviesa varias clases.</div>
             </div>
 
             <div class="p-card">
@@ -949,6 +972,7 @@
               <div class="p-applied">
                 <code>Envio implements Cloneable</code>. El método <code>clone()</code> realiza una copia profunda de la lista <code>ordenes</code> para evitar estado compartido entre clones. <code>setId()</code> permite diferenciar identidad post-clonación. Usado para crear cientos de envíos similares sin repetir toda la construcción.
               </div>
+              <div class="p-tradeoff"><strong>Trade-off:</strong> reduce costo de crear envíos similares, pero exige decidir qué se copia profundo y qué se comparte. Por eso solo se copia la lista mutable <code>ordenes</code>; el resto son primitivos, strings o referencias tratadas como no problemáticas para este hito.</div>
             </div>
 
             <div class="p-card">
@@ -960,6 +984,7 @@
                 <code>ProveedorEnvio</code> con <code>AdapterDHL</code>, <code>AdapterFedEx</code> y <code>AdapterUPS</code>.<br>
                 <code>ProveedorPago</code> con <code>AdapterPayPal</code> y <code>AdapterStripe</code>.
               </div>
+              <div class="p-tradeoff"><strong>Evidencia:</strong> <code>CasosDePruebaHito8</code> verifica creación, costos y pagos. <code>ServicioLogisticaUnificado</code> consume proveedores por interfaz, no por API externa.</div>
             </div>
 
             <div class="p-card">
@@ -970,6 +995,7 @@
               <div class="p-applied">
                 <code>Reporte</code>, <code>ReporteEnvios</code>, <code>ReporteIngresos</code> y <code>ReporteDesempenoProveedores</code> usan <code>GeneradorReporte</code> con PDF, Excel, JSON y CSV.
               </div>
+              <div class="p-tradeoff"><strong>Evidencia:</strong> Hito 8 prueba generación en distintos formatos y cambio de generador en runtime. La decisión evita 3 tipos x 4 formatos = 12 clases combinadas.</div>
             </div>
 
             <div class="p-card">
@@ -980,6 +1006,7 @@
               <div class="p-applied">
                 <code>CentroDistribucion</code> como componente base, <code>CentroRegional</code> como composite y <code>PuntoEntrega</code> como hoja.
               </div>
+              <div class="p-tradeoff"><strong>Evidencia:</strong> se instancia un árbol Nacional → Regional → Local → Punto y se validan capacidad, ocupación y porcentaje recursivo. Los niveles son instancias anidadas, no clases por nivel.</div>
             </div>
 
             <div class="p-card">
@@ -1029,5 +1056,4 @@
     </section><!-- /docs -->
 
   </body>
-</html>
 </html>
