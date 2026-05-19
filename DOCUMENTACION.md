@@ -137,6 +137,13 @@ Tambien quedan ejecutables:
 
 ## 6) Skills de clase
 
+- Clase 1: `skills/pds-clase-01/SKILL.md` y `skills/pds-clase-01/REFERENCE.md`
+- Clase 2: `skills/pds-clase-02/SKILL.md` y `skills/pds-clase-02/REFERENCE.md`
+- Clase 3: `skills/pds-clase-03/SKILL.md` y `skills/pds-clase-03/REFERENCE.md`
+- Clase 4: `skills/pds-clase-04/SKILL.md` y `skills/pds-clase-04/REFERENCE.md`
+- Clase 5: `skills/pds-clase-05/SKILL.md` y `skills/pds-clase-05/REFERENCE.md`
+- Clase 6: `skills/pds-clase-06/SKILL.md` y `skills/pds-clase-06/REFERENCE.md`
+- Clase 7: `skills/pds-clase-07/SKILL.md` y `skills/pds-clase-07/REFERENCE.md`
 - Clase 9: `skills/pds-clase-09/SKILL.md` y `skills/pds-clase-09/REFERENCE.md`
 - Clase 10: `skills/pds-clase-10/SKILL.md` y `skills/pds-clase-10/REFERENCE.md`
 

@@ -24,6 +24,14 @@ Implementacion acumulada del TPO LogiSmart hasta Hito 10.
 - `src/com/logismart/infraestructura/flyweight/ubicacion/`
 - `src/com/logismart/infraestructura/proxy/envio/`
 - `src/com/logismart/infraestructura/comportamiento/`
+- `skills/pds-clase-01/`
+- `skills/pds-clase-02/`
+- `skills/pds-clase-03/`
+- `skills/pds-clase-04/`
+- `skills/pds-clase-05/`
+- `skills/pds-clase-06/`
+- `skills/pds-clase-07/`
+- `skills/pds-clase-09/`
 - `skills/pds-clase-10/`
 - `hitos/HITO_8.html`
 - `hitos/HITO_9.html`
@@ -57,7 +65,7 @@ La demo ejecuta:
 ## Entregables incluidos
 
 - Codigo Java compilable y funcional
-- Skills locales de Clase 9 y Clase 10 en `skills/`
+- Skills locales de Clase 1 a 7, 9 y 10 en `skills/`
 - Documentos visuales `hitos/HITO_8.html`, `hitos/HITO_9.html` y `hitos/HITO_10.html`
 - Diagrama acumulativo actualizado
 - `DOCUMENTACION.md` con decisiones y cobertura de hitos 6 a 10

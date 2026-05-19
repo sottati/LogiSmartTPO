@@ -1,6 +1,6 @@
 # Clase 9: Patrones Estructurales I
 
-Fuente: `Clase_9.html` (contenido de `main-content`).
+Fuente: `clase_09.html` (contenido de `main-content`).
 
 ## Estructura de la clase
 

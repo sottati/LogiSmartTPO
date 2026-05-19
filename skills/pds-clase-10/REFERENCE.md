@@ -1,6 +1,6 @@
 # Clase 10: Patrones Estructurales II
 
-Fuente: `Clase_10.html` (contenido de `main-content`).
+Fuente: `clase_10.html` (contenido de `main-content`).
 
 ## Estructura de la clase
 

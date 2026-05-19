@@ -83,7 +83,7 @@ public final class CasosDePruebaHito10 {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // COMMAND (9 casos)
+    // COMMAND (10 casos)
     // ─────────────────────────────────────────────────────────────────────────
     private static void probarCommand() {
         System.out.println("\n--- Command ---");

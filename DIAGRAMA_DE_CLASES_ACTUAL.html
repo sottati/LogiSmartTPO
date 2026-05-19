@@ -931,11 +931,11 @@ class Comando {
   &lt;&lt;interface&gt;&gt;
   +ejecutar()
   +deshacer()
-  +obtenerNombre() String
+  +obtenerDescripcion() String
 }
 class ColaComandos {
   -historial List~Comando~
-  -posicionActual int
+  -indiceActual int
   +ejecutar(comando)
   +deshacer()
   +rehacer()

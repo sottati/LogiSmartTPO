@@ -17,65 +17,100 @@ import com.logismart.infraestructura.composite.centro.PuntoEntrega;
 
 import java.util.List;
 
-public class CasosDePruebaHito8 {
+public final class CasosDePruebaHito8 {
+
+    private static int total;
+    private static int ok;
+
+    private CasosDePruebaHito8() {}
 
     public static void ejecutar() {
+        total = 0;
+        ok = 0;
+
         System.out.println("\n══════════════════════════════════════════════");
-        System.out.println("  HITO 8 - ADAPTER, BRIDGE Y COMPOSITE");
+        System.out.println("  6. GOF - HITO 8");
         System.out.println("══════════════════════════════════════════════");
 
         probarAdapter();
         probarBridge();
         probarComposite();
         probarIntegracion();
+
+        System.out.println("\n[Hito 8] Casos ejecutados: " + total + " | OK: " + ok);
+        if (total != ok) {
+            throw new IllegalStateException("Hay casos fallidos en Hito 8");
+        }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // ADAPTER (5 casos)
+    // ─────────────────────────────────────────────────────────────────────────
     private static void probarAdapter() {
+        System.out.println("\n--- Adapter ---");
+
         Envio envio = envio("ENV-H8-A", 4.0);
 
         AdapterDHL dhl = new AdapterDHL();
-        verificar("Adapter DHL crea envio", dhl.crearEnvio(envio));
-        verificar("Adapter DHL traduce costo", dhl.calcularCosto(envio) == 60.0);
+        verificar(dhl.crearEnvio(envio), "Caso 1: Adapter DHL crea envio");
+        verificar(dhl.calcularCosto(envio) == 60.0, "Caso 2: Adapter DHL traduce costo");
 
         AdapterFedEx fedEx = new AdapterFedEx();
-        verificar("Adapter FedEx crea envio", fedEx.crearEnvio(envio));
-        verificar("Adapter FedEx normaliza estado", "DELIVERED".equals(fedEx.obtenerEstado("123")));
+        verificar(fedEx.crearEnvio(envio), "Caso 3: Adapter FedEx crea envio");
+        verificar("DELIVERED".equals(fedEx.obtenerEstado("123")), "Caso 4: Adapter FedEx normaliza estado");
 
         AdapterUPS ups = new AdapterUPS();
-        verificar("Adapter UPS crea envio", ups.crearEnvio(envio));
-        verificar("Adapter UPS estima costo", ups.calcularCosto(envio) == 40.0);
+        verificar(ups.crearEnvio(envio), "Caso 5: Adapter UPS crea envio");
+        verificar(ups.calcularCosto(envio) == 40.0, "Caso 6: Adapter UPS estima costo");
 
-        verificar("Adapter PayPal procesa pago", new AdapterPayPal().procesarPago(1500, "ENV-H8-A"));
-        verificar("Adapter Stripe procesa pago en centavos", new AdapterStripe().procesarPago(1500, "ENV-H8-A"));
+        verificar(new AdapterPayPal().procesarPago(1500, "ENV-H8-A"), "Caso 7: Adapter PayPal procesa pago");
+        verificar(new AdapterStripe().procesarPago(1500, "ENV-H8-A"), "Caso 8: Adapter Stripe procesa pago en centavos");
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // BRIDGE (3 casos)
+    // ─────────────────────────────────────────────────────────────────────────
     private static void probarBridge() {
+        System.out.println("\n--- Bridge ---");
+
         Reporte reporte = new ReporteEnvios(new GeneradorPDF(), List.of(envio("ENV-H8-B", 2.0)));
-        verificar("Bridge genera PDF", reporte.generar().startsWith("%PDF-1.4"));
-        verificar("Bridge nombre archivo PDF", "envios.pdf".equals(reporte.obtenerNombreArchivo("envios")));
+        verificar(reporte.generar().startsWith("%PDF-1.4"), "Caso 1: Bridge genera PDF");
+        verificar("envios.pdf".equals(reporte.obtenerNombreArchivo("envios")), "Caso 2: Bridge nombre archivo PDF");
 
         reporte.setGenerador(new GeneradorJSON());
-        verificar("Bridge cambia generador en runtime", reporte.generar().startsWith("{\"reporte\""));
+        verificar(reporte.generar().startsWith("{\"reporte\""), "Caso 3: Bridge cambia generador en runtime");
 
         reporte.setGenerador(new GeneradorCSV());
-        verificar("Bridge nombre archivo CSV", "envios.csv".equals(reporte.obtenerNombreArchivo("envios")));
+        verificar("envios.csv".equals(reporte.obtenerNombreArchivo("envios")), "Caso 4: Bridge nombre archivo CSV");
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // COMPOSITE (3 casos)
+    // ─────────────────────────────────────────────────────────────────────────
     private static void probarComposite() {
+        System.out.println("\n--- Composite ---");
+
         CentroRegional nacional = arbolCentros();
-        verificar("Composite calcula capacidad recursiva", nacional.obtenerCapacidad() == 180);
-        verificar("Composite calcula ocupacion recursiva", nacional.obtenerOcupacion() == 2);
-        verificar("Composite calcula porcentaje", nacional.obtenerPorcentajeOcupacion() > 1.0);
+        verificar(nacional.obtenerCapacidad() == 180, "Caso 1: Composite calcula capacidad recursiva");
+        verificar(nacional.obtenerOcupacion() == 2, "Caso 2: Composite calcula ocupacion recursiva");
+        verificar(nacional.obtenerPorcentajeOcupacion() > 1.0, "Caso 3: Composite calcula porcentaje");
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // INTEGRACIÓN (3 casos)
+    // ─────────────────────────────────────────────────────────────────────────
     private static void probarIntegracion() {
+        System.out.println("\n--- Integracion ---");
+
         ServicioLogisticaUnificado servicio = new ServicioLogisticaUnificado(arbolCentros());
         Envio envio = envio("ENV-H8-I", 3.0);
 
-        verificar("Integracion crea envio con Adapter", servicio.crearEnvio("DHL", envio));
-        verificar("Integracion expone Composite", servicio.obtenerCentroDistribucion().obtenerCapacidad() == 180);
-        verificar("Integracion genera reporte con Bridge", servicio.generarReporte("envios", "json").generar().contains("ENV-H8-I"));
+        verificar(servicio.crearEnvio("DHL", envio), "Caso 1: Integracion crea envio con Adapter");
+        verificar(servicio.obtenerCentroDistribucion().obtenerCapacidad() == 180, "Caso 2: Integracion expone Composite");
+        verificar(servicio.generarReporte("envios", "json").generar().contains("ENV-H8-I"), "Caso 3: Integracion genera reporte con Bridge");
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
 
     private static CentroRegional arbolCentros() {
         CentroRegional nacional = new CentroRegional("Centro Argentina", "Buenos Aires", "ARG-001");
@@ -100,10 +135,12 @@ public class CasosDePruebaHito8 {
                 .build();
     }
 
-    private static void verificar(String caso, boolean condicion) {
+    private static void verificar(boolean condicion, String descripcion) {
+        total++;
         if (!condicion) {
-            throw new IllegalStateException("Fallo: " + caso);
+            throw new IllegalStateException("Fallo: " + descripcion);
         }
-        System.out.println("[OK] " + caso);
+        ok++;
+        System.out.println("[OK] " + descripcion);
     }
 }
