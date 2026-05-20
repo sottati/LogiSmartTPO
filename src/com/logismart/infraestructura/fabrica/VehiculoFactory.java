@@ -6,7 +6,7 @@ import com.logismart.dominio.Moto;
 import com.logismart.dominio.Vehiculo;
 
 /**
- * Factory Method para vehículos — API basada en String.
+ * Factory Method para vehículos - API basada en String.
  * Complementa FabricaDeVehiculos (que recibe TipoVehiculo enum) para contextos
  * donde el tipo llega como texto (p.ej. desde configuración o desde una factory regional).
  */

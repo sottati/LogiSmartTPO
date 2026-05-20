@@ -61,23 +61,23 @@ public final class CasosDePruebaHito10 {
         Envio valido = new Envio("Buenos Aires", "Córdoba", 5.0, 150.0, "TARJETA", "PROD-001");
         verificar(cadena.validarEnvio(valido), "Caso 1: envío válido aprobado");
 
-        // Caso 2: origen vacío — falla en ValidadorDatos
+        // Caso 2: origen vacío - falla en ValidadorDatos
         Envio origenVacio = new Envio("", "Córdoba", 5.0, 150.0, "TARJETA", "PROD-001");
         verificar(!cadena.validarEnvio(origenVacio), "Caso 2: origen vacío rechazado");
 
-        // Caso 3: peso cero — falla en ValidadorDatos
+        // Caso 3: peso cero - falla en ValidadorDatos
         Envio pesoInvalido = new Envio("Buenos Aires", "Córdoba", 0.0, 150.0, "TARJETA", "PROD-001");
         verificar(!cadena.validarEnvio(pesoInvalido), "Caso 3: peso inválido rechazado");
 
-        // Caso 4: costo cero — falla en ValidadorPago
+        // Caso 4: costo cero - falla en ValidadorPago
         Envio costoInvalido = new Envio("Buenos Aires", "Córdoba", 5.0, 0.0, "TARJETA", "PROD-001");
         verificar(!cadena.validarEnvio(costoInvalido), "Caso 4: costo inválido rechazado");
 
-        // Caso 5: destino restringido — falla en ValidadorSeguridad
+        // Caso 5: destino restringido - falla en ValidadorSeguridad
         Envio restringido = new Envio("Buenos Aires", "Zona Restringido", 5.0, 150.0, "TARJETA", "PROD-001");
         verificar(!cadena.validarEnvio(restringido), "Caso 5: destino restringido rechazado");
 
-        // Caso 6: producto sin stock — falla en ValidadorInventario
+        // Caso 6: producto sin stock - falla en ValidadorInventario
         Envio sinStock = new Envio("Buenos Aires", "Córdoba", 5.0, 150.0, "TARJETA", "PROD-SIN-STOCK");
         verificar(!cadena.validarEnvio(sinStock), "Caso 6: sin stock rechazado");
     }
@@ -115,15 +115,15 @@ public final class CasosDePruebaHito10 {
         cola.mostrarHistorial();
         verificar(cola.obtenerTamano() == 4, "Caso 5: historial tiene 4 comandos");
 
-        // Caso 6: deshacer — remueve Seguro
+        // Caso 6: deshacer - remueve Seguro
         cola.deshacer();
         verificar(!servicio.obtenerServicios(numero).contains("Seguro"), "Caso 6: deshacer remueve Seguro");
 
-        // Caso 7: deshacer — vuelve a TARJETA
+        // Caso 7: deshacer - vuelve a TARJETA
         cola.deshacer();
         verificar("TARJETA".equals(servicio.obtenerMetodoPago(numero)), "Caso 7: deshacer restaura método TARJETA");
 
-        // Caso 8: rehacer — vuelve a EFECTIVO
+        // Caso 8: rehacer - vuelve a EFECTIVO
         cola.rehacer();
         verificar("EFECTIVO".equals(servicio.obtenerMetodoPago(numero)), "Caso 8: rehacer restaura método EFECTIVO");
 
@@ -149,19 +149,19 @@ public final class CasosDePruebaHito10 {
         Envio envio2 = new Envio("Rosario", "Córdoba", 15.0, 200.0, "EFECTIVO", "PROD-002");
         Envio envio3 = new Envio("Buenos Aires", "Zona Restringido", 5.0, 150.0, "TARJETA", "PROD-001");
 
-        // Caso 1: expresión simple — ORIGEN = "Buenos Aires"
+        // Caso 1: expresión simple - ORIGEN = "Buenos Aires"
         Expresion regla1 = new ExpresionOrigen("Buenos Aires");
         verificar(regla1.evaluar(envio1), "Caso 1: origen correcto → true");
         verificar(!regla1.evaluar(envio2), "Caso 1b: origen incorrecto → false");
 
-        // Caso 2: AND — ORIGEN = "Buenos Aires" AND PESO < 10
+        // Caso 2: AND - ORIGEN = "Buenos Aires" AND PESO < 10
         Expresion regla2 = new ExpresionAND(
                 new ExpresionOrigen("Buenos Aires"),
                 new ExpresionPeso(10, "<"));
         verificar(regla2.evaluar(envio1), "Caso 2: AND cumplido → true");
         verificar(!regla2.evaluar(envio2), "Caso 2b: AND fallido (origen y peso) → false");
 
-        // Caso 3: OR — DESTINO = "Córdoba" OR DESTINO = "Mendoza"
+        // Caso 3: OR - DESTINO = "Córdoba" OR DESTINO = "Mendoza"
         Expresion regla3 = new ExpresionOR(
                 new ExpresionDestino("Córdoba"),
                 new ExpresionDestino("Mendoza"));
@@ -172,7 +172,7 @@ public final class CasosDePruebaHito10 {
         verificar(regla4.evaluar(envio1), "Caso 4: NOT restringido → true");
         verificar(!regla4.evaluar(envio3), "Caso 4b: destino restringido → false");
 
-        // Caso 5: expresión compleja — ORIGEN AND COSTO > 100 AND NOT RESTRINGIDO
+        // Caso 5: expresión compleja - ORIGEN AND COSTO > 100 AND NOT RESTRINGIDO
         Expresion regla5 = new ExpresionAND(
                 new ExpresionAND(
                         new ExpresionOrigen("Buenos Aires"),
@@ -197,16 +197,16 @@ public final class CasosDePruebaHito10 {
         // Caso 1: envío válido se procesa y genera número de seguimiento
         Envio envioValido = new Envio("Buenos Aires", "Córdoba", 5.0, 150.0, "TARJETA", "PROD-001");
         String numero = sistema.procesarEnvio(envioValido);
-        verificar(numero != null, "Caso 1: integración — envío válido genera número");
+        verificar(numero != null, "Caso 1: integración - envío válido genera número");
 
         // Caso 2: el estado del envío creado es CONFIRMADO
         verificar("CONFIRMADO".equals(sistema.getServicio().obtenerEstado(numero)),
-                "Caso 2: integración — estado inicial CONFIRMADO");
+                "Caso 2: integración - estado inicial CONFIRMADO");
 
         // Caso 3: envío inválido (origen vacío) es rechazado por la cadena
         Envio invalido = new Envio("", "Córdoba", 5.0, 150.0, "TARJETA", "PROD-001");
         String numeroInvalido = sistema.procesarEnvio(invalido);
-        verificar(numeroInvalido == null, "Caso 3: integración — envío inválido rechazado");
+        verificar(numeroInvalido == null, "Caso 3: integración - envío inválido rechazado");
     }
 
     // ─────────────────────────────────────────────────────────────────────────

@@ -1,8 +1,8 @@
-# DOCUMENTACION - Hito 10
+# DOCUMENTACION - Hito 11
 
 ## 1) Objetivo
 
-Consolidar LogiSmart hasta Hito 10, incorporando patrones GoF de comportamiento sobre la base GRASP, creacional y estructural ya implementada.
+Consolidar LogiSmart hasta Hito 11, incorporando los cuatro patrones GoF de comportamiento II (Iterator, Mediator, Memento, Observer) sobre la base acumulada de hitos anteriores.
 
 ## 2) Hitos cubiertos
 
@@ -11,6 +11,7 @@ Consolidar LogiSmart hasta Hito 10, incorporando patrones GoF de comportamiento 
 - Hito 8: Adapter, Bridge y Composite
 - Hito 9: Decorator, Facade, Flyweight y Proxy
 - Hito 10: Chain of Responsibility, Command e Interpreter
+- Hito 11: Iterator, Mediator, Memento y Observer
 
 ## 3) Hito 10 - Patrones implementados
 
@@ -153,12 +154,111 @@ Criterio aplicado:
 - se removio ruido visual de sidebar, CSS y JS
 - se preservaron secciones, tablas, listas y ejemplos tecnicos
 
+## 3.5 Hito 11 - Patrones de Comportamiento II
+
+### Iterator
+
+Clases:
+
+- `src/com/logismart/infraestructura/comportamiento/iterator/IteradorEnvios.java`
+- `src/com/logismart/infraestructura/comportamiento/iterator/ColeccionEnvios.java`
+- `src/com/logismart/infraestructura/comportamiento/iterator/ColeccionArray.java`
+- `src/com/logismart/infraestructura/comportamiento/iterator/ColeccionLista.java`
+- `src/com/logismart/infraestructura/comportamiento/iterator/ColeccionHash.java`
+
+Uso:
+
+- interfaz uniforme sobre Array, Lista enlazada y HashMap
+- el cliente nunca accede a la estructura interna de la coleccion
+- reiniciar() permite reutilizar el mismo iterador sin recrearlo
+
+Decisiones:
+
+- iteradores como clases internas para acceso directo a campos privados
+- tres implementaciones muestran que el patron escala a cualquier estructura
+
+### Mediator
+
+Clases:
+
+- `src/com/logismart/infraestructura/comportamiento/mediator/MediadorEnvios.java`
+- `src/com/logismart/infraestructura/comportamiento/mediator/MediadorEnviosConcreto.java`
+- `src/com/logismart/infraestructura/comportamiento/mediator/CentroDistribucion.java`
+- `src/com/logismart/infraestructura/comportamiento/mediator/ValidadorEnvio.java`
+- `src/com/logismart/infraestructura/comportamiento/mediator/SistemaPago.java`
+- `src/com/logismart/infraestructura/comportamiento/mediator/SistemaNotificacion.java`
+- `src/com/logismart/infraestructura/comportamiento/mediator/SistemaAuditoria.java`
+
+Uso:
+
+- pipeline event-driven: ENVIO_CREADO -> VALIDACION_OK -> PAGO_CONFIRMADO -> NOTIFICACION_ENVIADA -> ENVIO_REGISTRADO
+- VALIDACION_FALLIDA corta el pipeline antes del pago
+- ningun componente referencia directamente a otro
+
+Decisiones:
+
+- eventos como String para maxima flexibilidad de extension
+- SistemaAuditoria expone contarEventos(String) para tests precisos
+
+### Memento
+
+Clases:
+
+- `src/com/logismart/dominio/MementoEnvio.java`
+- `src/com/logismart/infraestructura/comportamiento/memento/HistorialEnvios.java`
+- Metodos en `src/com/logismart/dominio/Envio.java`: crearMemento(), restaurarDesdeMemento(), cambiarEstado()
+
+Uso:
+
+- HistorialEnvios guarda snapshots del ciclo de vida de un Envio
+- navegacion bidireccional: irAlEstadoAnterior, irAlEstadoSiguiente, irAlEstado(int)
+- guardar desde posicion intermedia descarta estados futuros (comportamiento tipo editor)
+
+Decisiones:
+
+- MementoEnvio vive en dominio (no en infraestructura) para evitar dependencia dominio->infraestructura
+- trade-off documentado formalmente en HITO_11.html: DIP vs cohesion de patron GoF
+
+### Observer
+
+Clases:
+
+- `src/com/logismart/dominio/ObservadorEnvio.java`
+- `src/com/logismart/infraestructura/comportamiento/observer/CentroDistribucionObservador.java`
+- `src/com/logismart/infraestructura/comportamiento/observer/SistemaNotificacionObservador.java`
+- `src/com/logismart/infraestructura/comportamiento/observer/SistemaAuditoriaObservador.java`
+- `src/com/logismart/infraestructura/comportamiento/observer/DashboardObservador.java`
+
+Uso:
+
+- Envio actua como Subject; adjuntar/desadjuntar observadores en runtime
+- cambiarEstado(), iniciar() y cancelar() disparan notificaciones automaticas
+- ObservadorEnvio es interfaz funcional: acepta lambdas directamente
+
+Decisiones:
+
+- ObservadorEnvio en dominio por DIP (ver trade-off en HITO_11.html)
+- la lista de observadores arranca vacia: sin ruptura de pruebas de hitos anteriores
+
+### Integracion Hito 11
+
+Clases:
+
+- `src/com/logismart/aplicacion/hito11/SistemaLogisticaEventDriven.java`
+- `src/com/logismart/aplicacion/hito11/CasosDePruebaHito11.java`
+
+Uso:
+
+- SistemaLogisticaEventDriven activa los 4 patrones en cada ciclo de procesamiento
+- Main ejecuta CasosDePruebaHito11 dentro de la demo acumulada
+
 ## 7) Entregables visuales
 
 - `index.html`
 - `hitos/HITO_8.html`
 - `hitos/HITO_9.html`
 - `hitos/HITO_10.html`
+- `hitos/HITO_11.html`
 - `DIAGRAMA_DE_CLASES_ACTUAL.html`
 
 ## 8) Ejecucion

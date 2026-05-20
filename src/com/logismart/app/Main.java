@@ -1,6 +1,7 @@
 package com.logismart.app;
 
 import com.logismart.aplicacion.hito10.CasosDePruebaHito10;
+import com.logismart.aplicacion.hito11.CasosDePruebaHito11;
 import com.logismart.aplicacion.hito8.CasosDePruebaHito8;
 import com.logismart.aplicacion.hito9.CasosDePruebaHito9;
 import com.logismart.dominio.Envio;
@@ -30,13 +31,13 @@ public class Main {
 
         // ─────────────────────────────────────────────────────────────────────
 
-        sep("2. ABSTRACT FACTORY — LogiSmartApp Argentina");
+        sep("2. ABSTRACT FACTORY - LogiSmartApp Argentina");
 
         LogiSmartApp app = new LogiSmartApp("Argentina");
 
         // ─────────────────────────────────────────────────────────────────────
 
-        sep("3. FACTORY METHOD — Crear usuarios");
+        sep("3. FACTORY METHOD - Crear usuarios");
 
         app.crearUsuario("cliente",  "Juan Pérez");
         app.crearUsuario("operador", "María García");
@@ -44,7 +45,7 @@ public class Main {
 
         // ─────────────────────────────────────────────────────────────────────
 
-        sep("4. BUILDER — EnvioBuilder");
+        sep("4. BUILDER - EnvioBuilder");
 
         // Envío simple (solo campos requeridos)
         Envio simple = new Envio.EnvioBuilder("ENV001", "Buenos Aires", "Córdoba")
@@ -72,7 +73,7 @@ public class Main {
 
         // ─────────────────────────────────────────────────────────────────────
 
-        sep("5. PROTOTYPE — Clonación masiva");
+        sep("5. PROTOTYPE - Clonación masiva");
 
         Envio prototipo = new Envio.EnvioBuilder("ENV-PROTO", "Buenos Aires", "Córdoba")
                 .descripcion("Medicinas")
@@ -95,7 +96,7 @@ public class Main {
 
         // ─────────────────────────────────────────────────────────────────────
 
-        sep("6. ABSTRACT FACTORY — Procesar envíos");
+        sep("6. ABSTRACT FACTORY - Procesar envíos");
 
         app.procesarEnvio("Buenos Aires", "Mendoza", 5.0);
 
@@ -107,6 +108,7 @@ public class Main {
         CasosDePruebaHito8.ejecutar();
         CasosDePruebaHito9.ejecutar();
         CasosDePruebaHito10.ejecutar();
+        CasosDePruebaHito11.ejecutar();
 
         sep("RESUMEN");
         logger.info("Demostración completada exitosamente");

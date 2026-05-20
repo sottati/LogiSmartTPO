@@ -8,7 +8,7 @@ import com.logismart.dominio.Usuario;
 import java.util.UUID;
 
 /**
- * Factory Method para usuarios — crea ClienteFinal, OperadorLogistico o AdminEmpresa
+ * Factory Method para usuarios - crea ClienteFinal, OperadorLogistico o AdminEmpresa
  * a partir de un identificador de tipo en String.
  */
 public final class UsuarioFactory {

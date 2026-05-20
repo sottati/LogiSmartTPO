@@ -41,7 +41,38 @@ public class Envio implements Cloneable {
 	private String metodoPago;
 	private String productoId;
 
-	// Constructor Hito 10 — usado por Chain / Command / Interpreter
+	// ─── Campos Hito 11 (Observer) ───────────────────────────────────────────
+	private final java.util.List<ObservadorEnvio> observadores = new java.util.ArrayList<>();
+
+	// Constructor Hito 11 - Observer (id + estado inicial)
+	public Envio(String id, String estadoInicial) {
+		this.id            = id;
+		this.empresa       = null;
+		this.estado        = estadoInicial;
+		this.prioridad     = "MEDIA";
+		this.fechaProgramada = null;
+		this.ordenes       = new ArrayList<>();
+		this.seguimiento   = new SeguimientoEnvio(id + "-seg", estadoInicial);
+		this.entrega       = new Entrega(id + "-ent");
+	}
+
+	// Constructor Hito 11 - Memento (id + datos logísticos sin método de pago)
+	public Envio(String id, String origen, String destino, double peso, double costo) {
+		this.id            = id;
+		this.empresa       = null;
+		this.estado        = "CONFIRMADO";
+		this.prioridad     = "MEDIA";
+		this.fechaProgramada = null;
+		this.ordenes       = new ArrayList<>();
+		this.seguimiento   = new SeguimientoEnvio(id + "-seg", "CONFIRMADO");
+		this.entrega       = new Entrega(id + "-ent");
+		this.origen        = origen;
+		this.destino       = destino;
+		this.peso          = peso;
+		this.costo         = costo;
+	}
+
+	// Constructor Hito 10 - usado por Chain / Command / Interpreter
 	public Envio(String origen, String destino, double peso, double costo, String metodoPago, String productoId) {
 		this.id = "H10-" + java.util.UUID.randomUUID().toString().substring(0, 8);
 		this.empresa = null;
@@ -59,7 +90,7 @@ public class Envio implements Cloneable {
 		this.productoId = productoId;
 	}
 
-	// Constructor original — lo usan FabricaDeEnvios y sus subclases
+	// Constructor original - lo usan FabricaDeEnvios y sus subclases
 	public Envio(String id, Empresa empresa, String prioridad, LocalDateTime fechaProgramada) {
 		this.id = id;
 		this.empresa = empresa;
@@ -71,7 +102,7 @@ public class Envio implements Cloneable {
 		this.entrega = new Entrega(id + "-ent");
 	}
 
-	// Constructor privado — solo accesible desde EnvioBuilder.build()
+	// Constructor privado - solo accesible desde EnvioBuilder.build()
 	private Envio(EnvioBuilder builder) {
 		this.id = builder.id;
 		this.empresa = null;
@@ -191,14 +222,17 @@ public class Envio implements Cloneable {
 
 	public void iniciar() {
 		estado = "EN_CURSO";
+		notificarObservadores();
 	}
 
 	public void cancelar() {
 		estado = "CANCELADO";
+		notificarObservadores();
 	}
 
 	public void cerrar() {
 		estado = "CERRADO";
+		notificarObservadores();
 	}
 
 	// ─── Getters del Builder ─────────────────────────────────────────────────
@@ -222,6 +256,64 @@ public class Envio implements Cloneable {
 	public String  getMetodoPago()                { return metodoPago; }
 	public void    setMetodoPago(String m)         { this.metodoPago = m; }
 	public String  getProductoId()                { return productoId; }
+
+	// ─── Hito 11: Memento - Originador ───────────────────────────────────────
+
+	/**
+	 * Captura el estado actual del Envío en un MementoEnvio (snapshot inmutable).
+	 * No viola encapsulación: el Cuidador (HistorialEnvios) sólo accede al estado
+	 * a través de este método.
+	 */
+	public MementoEnvio crearMemento() {
+		return new MementoEnvio(estado, origen, destino, peso, costo);
+	}
+
+	/**
+	 * Restaura el estado del Envío desde un snapshot previo.
+	 * Equivalente al "undo" del patrón Memento.
+	 */
+	public void restaurarDesdeMemento(MementoEnvio memento) {
+		this.estado  = memento.obtenerEstado();
+		this.origen  = memento.obtenerOrigen();
+		this.destino = memento.obtenerDestino();
+		this.peso    = memento.obtenerPeso();
+		this.costo   = memento.obtenerCosto();
+	}
+
+	/** Alias solicitado por la consigna - equivalente a getEstado(). */
+	public String obtenerEstado() { return estado; }
+
+	/**
+	 * Cambia el estado del Envío y notifica a todos los observadores suscritos.
+	 * Unifica Memento y Observer: cualquier cambio de estado puede capturarse
+	 * (Memento) y propagarse automáticamente (Observer).
+	 */
+	public void cambiarEstado(String nuevoEstado) {
+		this.estado = nuevoEstado;
+		System.out.println("[Envio " + id + "] Estado → " + nuevoEstado);
+		notificarObservadores();
+	}
+
+	// ─── Hito 11: Observer - Sujeto ──────────────────────────────────────────
+
+	/** Suscribe un observador para recibir notificaciones de cambios de estado. */
+	public void adjuntarObservador(ObservadorEnvio observador) {
+		observadores.add(observador);
+		System.out.println("✓ Observador adjuntado: " + observador.getClass().getSimpleName());
+	}
+
+	/** Elimina la suscripción de un observador. */
+	public void desadjuntarObservador(ObservadorEnvio observador) {
+		observadores.remove(observador);
+		System.out.println("✓ Observador desadjuntado: " + observador.getClass().getSimpleName());
+	}
+
+	/** Propaga el cambio de estado a todos los observadores registrados. */
+	private void notificarObservadores() {
+		for (ObservadorEnvio obs : observadores) {
+			obs.actualizar(this);
+		}
+	}
 
 	@Override
 	public String toString() {

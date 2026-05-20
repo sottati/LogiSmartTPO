@@ -1,7 +1,7 @@
 package com.logismart.infraestructura.singleton;
 
 /**
- * Singleton ConfiguracionSistema — configuración global del sistema.
+ * Singleton ConfiguracionSistema - configuración global del sistema.
  * Patrón Singleton con double-checked locking (thread-safe).
  */
 public final class ConfiguracionSistema {

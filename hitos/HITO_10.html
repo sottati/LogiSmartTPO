@@ -106,12 +106,12 @@
           <thead><tr><th>Actividad</th><th>Patrón</th><th>Archivos principales</th><th>Evidencia</th></tr></thead>
           <tbody>
             <tr><td>1</td><td>Chain of Responsibility · Diseño</td><td><code>chain/ValidadorEnvio</code>, candidatos identificados</td><td>Tabla de candidatos; justificación de la cadena Datos→Inventario→Pago→Seguridad→Capacidad.</td></tr>
-            <tr><td>2</td><td>Chain of Responsibility · Implementación</td><td><code>ValidadorDatos</code>, <code>ValidadorInventario</code>, <code>ValidadorPago</code>, <code>ValidadorSeguridad</code>, <code>ValidadorCapacidad</code>, <code>CadenaValidadores</code></td><td><code>CasosDePruebaHito10.probarChain()</code> — 6 casos.</td></tr>
+            <tr><td>2</td><td>Chain of Responsibility · Implementación</td><td><code>ValidadorDatos</code>, <code>ValidadorInventario</code>, <code>ValidadorPago</code>, <code>ValidadorSeguridad</code>, <code>ValidadorCapacidad</code>, <code>CadenaValidadores</code></td><td><code>CasosDePruebaHito10.probarChain()</code> - 6 casos.</td></tr>
             <tr><td>3</td><td>Command · Diseño</td><td><code>command/Comando</code>, identificación de operaciones reversibles</td><td>Tabla de comandos; justificación de undo/redo.</td></tr>
-            <tr><td>4</td><td>Command · Implementación</td><td><code>ComandoCrearEnvio</code>, <code>ComandoCancelarEnvio</code>, <code>ComandoActualizarEstado</code>, <code>ComandoCambiarMetodoPago</code>, <code>ComandoAgregarServicio</code>, <code>ColaComandos</code>, <code>ServicioEnvios</code></td><td><code>CasosDePruebaHito10.probarCommand()</code> — 9 casos.</td></tr>
+            <tr><td>4</td><td>Command · Implementación</td><td><code>ComandoCrearEnvio</code>, <code>ComandoCancelarEnvio</code>, <code>ComandoActualizarEstado</code>, <code>ComandoCambiarMetodoPago</code>, <code>ComandoAgregarServicio</code>, <code>ColaComandos</code>, <code>ServicioEnvios</code></td><td><code>CasosDePruebaHito10.probarCommand()</code> - 9 casos.</td></tr>
             <tr><td>5</td><td>Interpreter · Diseño</td><td><code>interpreter/Expresion</code>, gramática definida</td><td>Árbol de expresiones; tabla de reglas de negocio.</td></tr>
-            <tr><td>6</td><td>Interpreter · Implementación</td><td><code>ExpresionOrigen</code>, <code>ExpresionDestino</code>, <code>ExpresionPeso</code>, <code>ExpresionCosto</code>, <code>ExpresionRestringido</code>, <code>ExpresionAND</code>, <code>ExpresionOR</code>, <code>ExpresionNOT</code></td><td><code>CasosDePruebaHito10.probarInterpreter()</code> — 7 casos.</td></tr>
-            <tr><td>7</td><td>Integración</td><td><code>SistemaLogisticaCompleto</code></td><td><code>CasosDePruebaHito10.probarIntegracion()</code> — 3 casos.</td></tr>
+            <tr><td>6</td><td>Interpreter · Implementación</td><td><code>ExpresionOrigen</code>, <code>ExpresionDestino</code>, <code>ExpresionPeso</code>, <code>ExpresionCosto</code>, <code>ExpresionRestringido</code>, <code>ExpresionAND</code>, <code>ExpresionOR</code>, <code>ExpresionNOT</code></td><td><code>CasosDePruebaHito10.probarInterpreter()</code> - 7 casos.</td></tr>
+            <tr><td>7</td><td>Integración</td><td><code>SistemaLogisticaCompleto</code></td><td><code>CasosDePruebaHito10.probarIntegracion()</code> - 3 casos.</td></tr>
           </tbody>
         </table>
 
@@ -239,11 +239,11 @@ public class CadenaValidadores {
         <table>
           <thead><tr><th>Operación</th><th>¿Reversible?</th><th>Estado previo a guardar</th><th>Comando</th></tr></thead>
           <tbody>
-            <tr><td>Crear envío</td><td>Sí — cancelar</td><td>Número generado</td><td><code>ComandoCrearEnvio</code></td></tr>
-            <tr><td>Cancelar envío</td><td>Sí — reactivar</td><td>Estado "CONFIRMADO"</td><td><code>ComandoCancelarEnvio</code></td></tr>
-            <tr><td>Actualizar estado</td><td>Sí — estado anterior</td><td><code>estadoAnterior</code></td><td><code>ComandoActualizarEstado</code></td></tr>
-            <tr><td>Cambiar método de pago</td><td>Sí — método anterior</td><td><code>metodoAnterior</code></td><td><code>ComandoCambiarMetodoPago</code></td></tr>
-            <tr><td>Agregar servicio extra</td><td>Sí — remover</td><td>Nombre del servicio</td><td><code>ComandoAgregarServicio</code></td></tr>
+            <tr><td>Crear envío</td><td>Sí - cancelar</td><td>Número generado</td><td><code>ComandoCrearEnvio</code></td></tr>
+            <tr><td>Cancelar envío</td><td>Sí - reactivar</td><td>Estado "CONFIRMADO"</td><td><code>ComandoCancelarEnvio</code></td></tr>
+            <tr><td>Actualizar estado</td><td>Sí - estado anterior</td><td><code>estadoAnterior</code></td><td><code>ComandoActualizarEstado</code></td></tr>
+            <tr><td>Cambiar método de pago</td><td>Sí - método anterior</td><td><code>metodoAnterior</code></td><td><code>ComandoCambiarMetodoPago</code></td></tr>
+            <tr><td>Agregar servicio extra</td><td>Sí - remover</td><td>Nombre del servicio</td><td><code>ComandoAgregarServicio</code></td></tr>
           </tbody>
         </table>
 
@@ -271,7 +271,7 @@ public interface Comando {
     void   deshacer();
     String obtenerDescripcion();
 }</pre>
-<pre>// Concrete Command — guarda estado previo
+<pre>// Concrete Command - guarda estado previo
 public class ComandoCambiarMetodoPago implements Comando {
     private final ServicioEnvios servicio;
     private final String numero;
@@ -318,7 +318,7 @@ public class ColaComandos {
     public int getIndiceActual() { return indiceActual; }
 }</pre>
 
-        <h3>Receiver — ServicioEnvios</h3>
+        <h3>Receiver - ServicioEnvios</h3>
         <p><code>ServicioEnvios</code> gestiona tres mapas internos: <code>estados</code>, <code>metodosPago</code> y <code>servicios</code>. Asigna números de seguimiento secuenciales (<code>ENV-001</code>, <code>ENV-002</code>...) al crear un envío y expone métodos atómicos que cada comando invoca.</p>
 
         <h3>Casos de prueba</h3>
@@ -330,9 +330,9 @@ public class ColaComandos {
             <tr><td>3</td><td>Cambiar método de pago a "EFECTIVO"</td><td><code>obtenerMetodoPago() == "EFECTIVO"</code></td></tr>
             <tr><td>4</td><td>Agregar servicio "Seguro"</td><td><code>obtenerServicios().contains("Seguro")</code></td></tr>
             <tr><td>5</td><td>Historial</td><td><code>obtenerTamano() == 4</code></td></tr>
-            <tr><td>6</td><td>Deshacer — remueve "Seguro"</td><td><code>!obtenerServicios().contains("Seguro")</code></td></tr>
-            <tr><td>7</td><td>Deshacer — restaura método "TARJETA"</td><td><code>obtenerMetodoPago() == "TARJETA"</code></td></tr>
-            <tr><td>8</td><td>Rehacer — vuelve a "EFECTIVO"</td><td><code>obtenerMetodoPago() == "EFECTIVO"</code></td></tr>
+            <tr><td>6</td><td>Deshacer - remueve "Seguro"</td><td><code>!obtenerServicios().contains("Seguro")</code></td></tr>
+            <tr><td>7</td><td>Deshacer - restaura método "TARJETA"</td><td><code>obtenerMetodoPago() == "TARJETA"</code></td></tr>
+            <tr><td>8</td><td>Rehacer - vuelve a "EFECTIVO"</td><td><code>obtenerMetodoPago() == "EFECTIVO"</code></td></tr>
             <tr><td>9a</td><td>Cancelar envío</td><td><code>obtenerEstado() == "CANCELADO"</code></td></tr>
             <tr><td>9b</td><td>Deshacer cancelación</td><td><code>obtenerEstado() == "CONFIRMADO"</code></td></tr>
           </tbody>
@@ -387,7 +387,7 @@ op          ::= "&lt;" | "&gt;" | "="</pre>
         <div class="pattern-badge">GoF · Interpreter</div>
 
         <div class="grid-2">
-<pre>// Interface — Context es el Envio
+<pre>// Interface - Context es el Envio
 public interface Expresion {
     boolean evaluar(Envio envio);
 }
@@ -511,7 +511,7 @@ public class ExpresionRestringido implements Expresion {
         <table>
           <thead><tr><th>#</th><th>Escenario</th><th>Verificación</th></tr></thead>
           <tbody>
-            <tr><td>1</td><td>Envío válido procesado</td><td><code>procesarEnvio() != null</code> — genera número de seguimiento</td></tr>
+            <tr><td>1</td><td>Envío válido procesado</td><td><code>procesarEnvio() != null</code> - genera número de seguimiento</td></tr>
             <tr><td>2</td><td>Estado inicial del envío creado</td><td><code>getServicio().obtenerEstado(numero) == "CONFIRMADO"</code></td></tr>
             <tr><td>3</td><td>Envío inválido (origen vacío) rechazado por cadena</td><td><code>procesarEnvio() == null</code></td></tr>
           </tbody>

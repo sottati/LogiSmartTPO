@@ -1,0 +1,1060 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITO 11 - LogiSmart | Patrones de Comportamiento II</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+      :root { --primary:#17324d; --primary-2:#1f4d78; --accent:#dc6b1f; --bg:#f4f7fb; --surface:#fff; --text:#14202c; --muted:#4f6172; --border:#d9e2ec; --ok:#165b3b; --ok-bg:#ecfdf3; }
+      * { box-sizing:border-box; margin:0; padding:0; }
+      html { scroll-behavior:smooth; }
+      body { font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif; background:linear-gradient(180deg,#f7f9fc 0%,#f2f6fa 100%); color:var(--text); line-height:1.6; }
+      .cover { min-height:70vh; display:grid; place-items:center; text-align:center; padding:2rem; background:radial-gradient(circle at 20% 20%,rgba(31,77,120,.12),transparent 45%),radial-gradient(circle at 80% 10%,rgba(220,107,31,.10),transparent 35%),var(--surface); border-bottom:8px solid var(--primary); }
+      .cover-content { max-width:760px; width:100%; }
+      .university { font-size:.8rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:.4rem; }
+      .subject { font-size:.95rem; font-weight:500; color:var(--primary-2); margin-bottom:2rem; }
+      .cover h1 { font-size:clamp(2.4rem,8vw,4.8rem); color:var(--primary); letter-spacing:-.03em; }
+      .subtitle { margin-top:.75rem; font-size:1.1rem; color:var(--muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:.85rem 0; margin-bottom:2rem; }
+      .team { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; max-width:420px; margin:0 auto 2rem; border-top:2px solid var(--bg); padding-top:1.75rem; }
+      .team-member strong { display:block; font-size:1rem; color:var(--text); margin-bottom:.2rem; }
+      .team-member span { font-size:.82rem; color:var(--muted); font-family:monospace; }
+      .cover-date { font-size:.85rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.12em; }
+      .container { max-width:1080px; margin:0 auto; padding:2.5rem 1.25rem 4rem; }
+      .section { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.75rem; margin-bottom:1.3rem; box-shadow:0 2px 5px rgba(20,32,44,.05); }
+      .section-act { display:inline-flex; align-items:center; gap:.5rem; font-size:.72rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:.4rem; }
+      h2 { color:var(--primary); font-size:1.45rem; margin-bottom:.25rem; }
+      .section > p { color:var(--muted); margin-bottom:.8rem; }
+      h3 { margin:1rem 0 .4rem; color:var(--primary-2); font-size:1.03rem; }
+      ul { margin-left:1.2rem; }
+      li { margin-bottom:.35rem; }
+      table { width:100%; border-collapse:collapse; margin-top:.6rem; font-size:.92rem; }
+      th,td { border:1px solid var(--border); padding:.55rem .7rem; text-align:left; vertical-align:top; }
+      thead th { background:var(--primary); color:#fff; font-size:.8rem; letter-spacing:.04em; text-transform:uppercase; }
+      pre { background:#0f1722; color:#dce9ff; border-radius:10px; padding:1rem; overflow-x:auto; font-size:.8rem; line-height:1.45; }
+      pre.mermaid { background:none; }
+      code { background:#eef3fa; border-radius:4px; padding:.05rem .3rem; }
+      .pill { display:inline-block; margin-top:.6rem; background:var(--ok-bg); color:var(--ok); border:1px solid #b9e7cb; border-radius:999px; padding:.2rem .6rem; font-size:.78rem; font-weight:600; }
+      .tech-note { border-left:4px solid var(--accent); background:#fff8f3; padding:.8rem 1rem; border-radius:8px; margin:.9rem 0; color:var(--text); }
+      .tradeoff-note { border-left:4px solid #6d28d9; background:#f5f3ff; padding:.8rem 1rem; border-radius:8px; margin:.9rem 0; color:var(--text); }
+      .grid-2 { display:grid; gap:1.75rem; grid-template-columns:1fr 1fr; margin-bottom:1.5rem; }
+      .grid-3 { display:grid; gap:1.25rem; grid-template-columns:1fr 1fr 1fr; }
+      .grid-4 { display:grid; gap:1.25rem; grid-template-columns:1fr 1fr 1fr 1fr; }
+      .diagram { border:1px solid var(--border); border-radius:10px; padding:.6rem; overflow-x:auto; margin-top:.8rem; }
+      .pattern-badge { display:inline-flex; align-items:center; gap:.4rem; background:#fff0e3; color:#7a3200; border:1px solid #fbd38d; border-radius:6px; padding:.3rem .7rem; font-size:.8rem; font-weight:700; margin-bottom:.6rem; }
+      .side-nav { position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:.15rem; padding:.6rem .5rem; background:rgba(255,255,255,.92); border-right:1px solid var(--border); border-radius:0 10px 10px 0; box-shadow:2px 0 8px rgba(20,32,44,.06); }
+      .side-nav a { display:block; padding:.35rem .75rem; font-size:.7rem; font-weight:500; color:var(--muted); text-decoration:none; border-left:3px solid transparent; transition:all .2s ease; white-space:nowrap; border-radius:0 4px 4px 0; }
+      .side-nav a:hover { color:var(--primary); border-left-color:var(--border); }
+      .side-nav a.active { color:var(--primary); font-weight:700; border-left-color:var(--accent); }
+      @media (max-width:1200px) { .side-nav { display:none; } }
+      @media (max-width:900px) { .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; } .team { grid-template-columns:1fr; max-width:220px; } }
+    </style>
+  </head>
+  <body>
+
+    <header class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+        <h1>HITO 11</h1>
+        <div class="subtitle">Patrones de Comportamiento II &mdash; Iterator &middot; Mediator &middot; Memento &middot; Observer</div>
+        <div class="team">
+          <div class="team-member"><strong>Rosario Presedo</strong><span>LU: 1146894</span></div>
+          <div class="team-member"><strong>Simon Ottati</strong><span>LU: 1155931</span></div>
+        </div>
+        <div class="cover-date">Mayo 2026</div>
+      </div>
+    </header>
+
+    <nav class="side-nav">
+      <a href="#intro">Introducción</a>
+      <a href="#iterator-diseno">Iterator · Diseño</a>
+      <a href="#iterator-impl">Iterator · Impl.</a>
+      <a href="#mediator-diseno">Mediator · Diseño</a>
+      <a href="#mediator-impl">Mediator · Impl.</a>
+      <a href="#memento-diseno">Memento · Diseño</a>
+      <a href="#memento-impl">Memento · Impl.</a>
+      <a href="#observer-diseno">Observer · Diseño</a>
+      <a href="#observer-impl">Observer · Impl.</a>
+      <a href="#tradeoff">Trade-off Arq.</a>
+      <a href="#integracion">Integración</a>
+      <a href="#uml">UML</a>
+      <a href="#conclusion">Conclusión</a>
+    </nav>
+
+    <main class="container">
+
+      <!-- ══════════════════════════════════════════════════════════ INTRO -->
+      <section class="section" id="intro">
+        <h2>Contexto e integración</h2>
+        <p>El Hito 11 completa el catálogo GoF de patrones de comportamiento incorporando Iterator, Mediator, Memento y Observer al sistema LogiSmart. Estos cuatro patrones abordan la travesía uniforme de colecciones, la coordinación desacoplada entre componentes, la gestión de historial de estados y la notificación reactiva a cambios.</p>
+
+        <table>
+          <thead><tr><th>Hito</th><th>Categoría</th><th>Patrones</th><th>Aporte al sistema</th></tr></thead>
+          <tbody>
+            <tr><td>6 – 7</td><td>Creacionales</td><td>Singleton, Factory Method, Abstract Factory, Builder, Prototype</td><td>Creación controlada de instancias.</td></tr>
+            <tr><td>8 – 9</td><td>Estructurales</td><td>Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy</td><td>Relaciones y composición entre objetos.</td></tr>
+            <tr><td>10</td><td>Comportamiento I</td><td>Chain of Responsibility, Command, Interpreter</td><td>Procesamiento de solicitudes, historial reversible y motor de reglas.</td></tr>
+            <tr><td><strong>11</strong></td><td><strong>Comportamiento II</strong></td><td><strong>Iterator, Mediator, Memento, Observer</strong></td><td>Travesía uniforme, coordinación desacoplada, auditoría de estados y reactividad.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="grid-4" style="margin-top:1rem;">
+          <div style="background:#fff8f3;border:1px solid #fbd38d;border-radius:8px;padding:.8rem;"><strong>Iterator</strong><p style="font-size:.86rem;color:var(--muted);">Tres colecciones (Array, Lista, Hash) con interfaz uniforme. El cliente nunca conoce la estructura interna.</p></div>
+          <div style="background:#f0f8ff;border:1px solid #bfdbfe;border-radius:8px;padding:.8rem;"><strong>Mediator</strong><p style="font-size:.86rem;color:var(--muted);">Pipeline event-driven de 5 componentes orquestados por el mediador. Ningún componente referencia a otro directamente.</p></div>
+          <div style="background:#f5f3ff;border:1px solid #ddd6fe;border-radius:8px;padding:.8rem;"><strong>Memento</strong><p style="font-size:.86rem;color:var(--muted);">Historial bidireccional de estados de un envío. Permite navegar a cualquier punto del ciclo de vida, no solo deshacer el último.</p></div>
+          <div style="background:#f0fdf4;border:1px solid #b9e7cb;border-radius:8px;padding:.8rem;"><strong>Observer</strong><p style="font-size:.86rem;color:var(--muted);">Cuatro observadores concretos reaccionan automáticamente a cada cambio de estado en <code>Envio</code>.</p></div>
+        </div>
+
+        <h3>Mapa de trazabilidad del hito</h3>
+        <table>
+          <thead><tr><th>Actividad</th><th>Patrón</th><th>Archivos principales</th><th>Evidencia</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Iterator · Diseño</td><td><code>iterator/ColeccionEnvios</code>, <code>IteradorEnvios</code></td><td>Tabla de candidatos; justificación de tres colecciones heterogéneas.</td></tr>
+            <tr><td>2</td><td>Iterator · Implementación</td><td><code>ColeccionArray</code>, <code>ColeccionLista</code>, <code>ColeccionHash</code></td><td><code>CasosDePruebaHito11.probarIterator()</code> - 7 verificaciones.</td></tr>
+            <tr><td>3</td><td>Mediator · Diseño</td><td><code>mediator/MediadorEnvios</code></td><td>Diagrama hub-and-spoke; tabla de eventos y responsabilidades.</td></tr>
+            <tr><td>4</td><td>Mediator · Implementación</td><td><code>MediadorEnviosConcreto</code>, <code>CentroDistribucion</code>, <code>ValidadorEnvio</code>, <code>SistemaPago</code>, <code>SistemaNotificacion</code>, <code>SistemaAuditoria</code></td><td><code>CasosDePruebaHito11.probarMediator()</code> - 9 verificaciones.</td></tr>
+            <tr><td>5</td><td>Memento · Diseño</td><td><code>dominio/MementoEnvio</code></td><td>Tabla de roles Originator/Memento/Caretaker; decisión de paquete en dominio.</td></tr>
+            <tr><td>6</td><td>Memento · Implementación</td><td><code>HistorialEnvios</code>, <code>MementoEnvio</code>, métodos en <code>Envio</code></td><td><code>CasosDePruebaHito11.probarMemento()</code> - 7 verificaciones.</td></tr>
+            <tr><td>7</td><td>Observer · Diseño</td><td><code>dominio/ObservadorEnvio</code></td><td>Tabla de candidatos; justificación de 4 observadores concretos.</td></tr>
+            <tr><td>8</td><td>Observer · Implementación</td><td><code>CentroDistribucionObservador</code>, <code>SistemaNotificacionObservador</code>, <code>SistemaAuditoriaObservador</code>, <code>DashboardObservador</code></td><td><code>CasosDePruebaHito11.probarObserver()</code> - 9 verificaciones.</td></tr>
+            <tr><td>9</td><td>Trade-off arquitectónico</td><td><code>dominio/ObservadorEnvio</code>, <code>dominio/MementoEnvio</code></td><td>Análisis DIP vs. cohesión del patrón; decisión documentada en sección dedicada.</td></tr>
+            <tr><td>10</td><td>Integración Event-Driven</td><td><code>SistemaLogisticaEventDriven</code></td><td><code>CasosDePruebaHito11.probarIntegracion()</code> - 4 verificaciones.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="pill">✅ 4 patrones nuevos &nbsp;·&nbsp; ✅ 22 clases implementadas &nbsp;·&nbsp; ✅ 36 verificaciones ejecutables &nbsp;·&nbsp; ✅ integración event-driven</div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ ITERATOR DISEÑO -->
+      <section class="section" id="iterator-diseno">
+        <div class="section-act">Actividad 1 · Iterator</div>
+        <h2>Identificación de candidatos</h2>
+        <p>Se analizaron los contextos del sistema donde múltiples elementos deben recorrerse de forma uniforme, independientemente de cómo estén almacenados internamente.</p>
+        <div class="pattern-badge">GoF · Iterator</div>
+
+        <h3>Candidatos identificados</h3>
+        <table>
+          <thead><tr><th>Candidato</th><th>Estructura interna</th><th>Problema sin Iterator</th><th>Por qué Iterator resuelve</th></tr></thead>
+          <tbody>
+            <tr><td>Repositorio de envíos activos</td><td>Array de tamaño fijo (O(1) por índice)</td><td>El cliente debe conocer la capacidad máxima y el índice actual.</td><td>El iterador encapsula el cursor; el cliente solo llama <code>tieneSiguiente()</code> / <code>obtenerSiguiente()</code>.</td></tr>
+            <tr><td>Cola de envíos pendientes</td><td>Lista enlazada (inserción/remoción O(1) en cabeza)</td><td>El recorrido requiere navegar punteros <code>Nodo.siguiente</code> manualmente.</td><td>El iterador de lista oculta la estructura enlazada detrás de la misma interfaz.</td></tr>
+            <tr><td>Índice de envíos por ID</td><td>HashMap&lt;String, Envio&gt; (lookup O(1))</td><td>Iterar un HashMap requiere obtener <code>values().iterator()</code>, acoplando al cliente a la implementación Java.</td><td>El iterador adapta el <code>java.util.Iterator</code> interno a la interfaz propia del dominio.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Diseño de la jerarquía</h3>
+        <p>Se definieron dos interfaces en el paquete <code>infraestructura.comportamiento.iterator</code>: <code>IteradorEnvios</code> (el cursor) y <code>ColeccionEnvios</code> (la fábrica del cursor). Cada colección concreta crea su propio iterador como clase interna, garantizando acceso al estado privado sin exponerlo al exterior.</p>
+
+        <table>
+          <thead><tr><th>Clase</th><th>Rol GoF</th><th>Estructura interna</th><th>Complejidad de iteración</th></tr></thead>
+          <tbody>
+            <tr><td><code>ColeccionArray</code></td><td>ConcreteAggregate</td><td><code>Envio[1000]</code> + <code>int tamaño</code></td><td>O(n) - acceso directo por índice</td></tr>
+            <tr><td><code>ColeccionLista</code></td><td>ConcreteAggregate</td><td>Nodos enlazados (<code>Nodo.siguiente</code>)</td><td>O(n) - seguimiento de punteros</td></tr>
+            <tr><td><code>ColeccionHash</code></td><td>ConcreteAggregate</td><td><code>HashMap&lt;String,Envio&gt;</code></td><td>O(n) - orden no garantizado</td></tr>
+            <tr><td><code>IteradorEnvios</code></td><td>Iterator (interfaz)</td><td>-</td><td><code>tieneSiguiente()</code>, <code>obtenerSiguiente()</code>, <code>reiniciar()</code></td></tr>
+          </tbody>
+        </table>
+
+        <div class="tech-note">
+          <strong>Decisión de diseño:</strong> Los iteradores son clases internas (<em>inner classes</em>) de cada colección concreta. Esto les permite acceder a los campos privados (<code>envios[]</code>, <code>cabeza</code>, <code>map</code>) sin getters adicionales, manteniendo el encapsulamiento de la estructura de datos.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ ITERATOR IMPL -->
+      <section class="section" id="iterator-impl">
+        <div class="section-act">Actividad 2 · Iterator</div>
+        <h2>Implementación</h2>
+        <p>Se implementaron las dos interfaces y tres colecciones concretas, cada una con su iterador interno. El cliente (<code>SistemaLogisticaEventDriven</code>) usa únicamente la interfaz <code>ColeccionEnvios</code> y nunca accede a la estructura interna.</p>
+        <div class="pattern-badge">GoF · Iterator</div>
+
+        <div class="grid-2">
+<pre>// Interfaz del iterador
+public interface IteradorEnvios {
+    boolean tieneSiguiente();
+    Envio   obtenerSiguiente();
+    void    reiniciar();
+}
+
+// Interfaz de la colección
+public interface ColeccionEnvios {
+    IteradorEnvios crearIterador();
+    void agregar(Envio envio);
+    void remover(Envio envio);
+    int  obtenerTamaño();
+}</pre>
+<pre>// Colección basada en array
+public class ColeccionArray implements ColeccionEnvios {
+    private static final int CAPACIDAD_MAX = 1000;
+    private final Envio[] envios = new Envio[CAPACIDAD_MAX];
+    private int tamaño = 0;
+
+    public IteradorEnvios crearIterador() {
+        return new IteradorArray();
+    }
+    public void agregar(Envio e) {
+        if (tamaño &lt; CAPACIDAD_MAX) envios[tamaño++] = e;
+    }
+    public void remover(Envio e) {
+        for (int i = 0; i &lt; tamaño; i++) {
+            if (envios[i].getId().equals(e.getId())) {
+                System.arraycopy(envios, i+1, envios, i, tamaño-i-1);
+                envios[--tamaño] = null; return;
+            }
+        }
+    }
+    public int obtenerTamaño() { return tamaño; }
+
+    private class IteradorArray implements IteradorEnvios {
+        private int indice = 0;
+        public boolean tieneSiguiente() { return indice &lt; tamaño; }
+        public Envio   obtenerSiguiente() { return envios[indice++]; }
+        public void    reiniciar()        { indice = 0; }
+    }
+}</pre>
+        </div>
+
+<pre>// Colección basada en lista enlazada
+public class ColeccionLista implements ColeccionEnvios {
+    private static class Nodo {
+        Envio dato; Nodo siguiente;
+        Nodo(Envio e) { this.dato = e; }
+    }
+    private Nodo cabeza; private int tamaño = 0;
+
+    public void agregar(Envio e) { Nodo n = new Nodo(e); n.siguiente = cabeza; cabeza = n; tamaño++; }
+    public void remover(Envio e) { /* maneja cabeza y nodos intermedios */ }
+    public int  obtenerTamaño()  { return tamaño; }
+    public IteradorEnvios crearIterador() { return new IteradorLista(); }
+
+    private class IteradorLista implements IteradorEnvios {
+        private Nodo actual = cabeza;
+        public boolean tieneSiguiente() { return actual != null; }
+        public Envio   obtenerSiguiente() { Envio e = actual.dato; actual = actual.siguiente; return e; }
+        public void    reiniciar()        { actual = cabeza; }
+    }
+}
+
+// Colección basada en HashMap
+public class ColeccionHash implements ColeccionEnvios {
+    private final Map&lt;String, Envio&gt; mapa = new HashMap&lt;&gt;();
+    public void agregar(Envio e)  { mapa.put(e.getId(), e); }
+    public void remover(Envio e)  { mapa.remove(e.getId()); }
+    public int  obtenerTamaño()   { return mapa.size(); }
+    public IteradorEnvios crearIterador() { return new IteradorHash(); }
+
+    private class IteradorHash implements IteradorEnvios {
+        private Iterator&lt;Envio&gt; interno = mapa.values().iterator();
+        public boolean tieneSiguiente() { return interno.hasNext(); }
+        public Envio   obtenerSiguiente() { return interno.next(); }
+        public void    reiniciar()        { interno = mapa.values().iterator(); }
+    }
+}</pre>
+
+        <h3>Casos de prueba - Iterator</h3>
+        <table>
+          <thead><tr><th>#</th><th>Escenario</th><th>Colección</th><th>Resultado esperado</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Iterar ColeccionArray - primer elemento es el primero insertado</td><td><code>ColeccionArray</code></td><td><code>getId() == "ENV-001"</code></td></tr>
+            <tr><td>2</td><td>Tamaño correcto tras agregar 3 elementos</td><td><code>ColeccionArray</code></td><td><code>obtenerTamaño() == 3</code></td></tr>
+            <tr><td>3</td><td>Recorrer todos los elementos de ColeccionLista</td><td><code>ColeccionLista</code></td><td>Contador = 2</td></tr>
+            <tr><td>4a</td><td>Iterador agotado después de recorrer todos los elementos del hash</td><td><code>ColeccionHash</code></td><td><code>tieneSiguiente() == false</code></td></tr>
+            <tr><td>4b</td><td>Reiniciar restaura el cursor del iterador del hash</td><td><code>ColeccionHash</code></td><td><code>tieneSiguiente() == true</code> tras <code>reiniciar()</code></td></tr>
+            <tr><td>5</td><td>Remover elemento reduce el tamaño</td><td><code>ColeccionArray</code></td><td><code>obtenerTamaño() == 2</code></td></tr>
+            <tr><td>6</td><td>Cliente uniforme itera Array y Lista con el mismo código</td><td><code>ColeccionArray + ColeccionLista</code></td><td>Total elementos = 4</td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 7/7 verificaciones OK</div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ MEDIATOR DISEÑO -->
+      <section class="section" id="mediator-diseno">
+        <div class="section-act">Actividad 3 · Mediator</div>
+        <h2>Identificación de candidatos</h2>
+        <p>Se analizaron los flujos de comunicación entre componentes del sistema para encontrar grupos donde el acoplamiento directo generaba una red compleja de referencias cruzadas.</p>
+        <div class="pattern-badge">GoF · Mediator</div>
+
+        <h3>Candidatos identificados</h3>
+        <table>
+          <thead><tr><th>Candidato</th><th>Componentes involucrados</th><th>Problema sin Mediator</th><th>Por qué Mediator resuelve</th></tr></thead>
+          <tbody>
+            <tr><td>Pipeline de procesamiento de envíos</td><td>Centro, Validador, Pago, Notificación, Auditoría</td><td>Cada componente referencia a los siguientes: 5×4 = 20 referencias cruzadas potenciales.</td><td>Cada componente solo conoce al mediador: 5 referencias en total. El orquestador define el flujo.</td></tr>
+            <tr><td>Coordinación de sistemas externos</td><td>ERP, CRM, sistema de tracking</td><td>Actualizar un sistema requiere tocar todos sus consumidores.</td><td>El mediador centraliza las actualizaciones; los consumidores reaccionan a eventos.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Diseño del pipeline de eventos</h3>
+        <p>Se modeló el procesamiento de un envío como un pipeline de eventos: cada componente finaliza su tarea notificando un evento al mediador, quien decide qué componente activa a continuación. Esto convierte el flujo en event-driven sin acoplamiento directo.</p>
+
+        <table>
+          <thead><tr><th>Evento</th><th>Emisor</th><th>Acciones del Mediator</th><th>Resultado</th></tr></thead>
+          <tbody>
+            <tr><td><code>ENVIO_CREADO</code></td><td><code>CentroDistribucion</code></td><td>Audita + llama a <code>ValidadorEnvio.validar()</code></td><td>Inicio del pipeline</td></tr>
+            <tr><td><code>VALIDACION_OK</code></td><td><code>ValidadorEnvio</code></td><td>Audita + llama a <code>SistemaPago.procesarPago()</code></td><td>Envío aprobado, procede al pago</td></tr>
+            <tr><td><code>VALIDACION_FALLIDA</code></td><td><code>ValidadorEnvio</code></td><td>Audita (fin del pipeline)</td><td>Envío rechazado sin procesar pago</td></tr>
+            <tr><td><code>PAGO_CONFIRMADO</code></td><td><code>SistemaPago</code></td><td>Audita + llama a <code>SistemaNotificacion.enviarConfirmacion()</code></td><td>Pago ok, notifica al cliente</td></tr>
+            <tr><td><code>NOTIFICACION_ENVIADA</code></td><td><code>SistemaNotificacion</code></td><td>Audita + llama a <code>CentroDistribucion.registrarEnvio()</code></td><td>Cierre del flujo comercial</td></tr>
+            <tr><td><code>ENVIO_REGISTRADO</code></td><td><code>CentroDistribucion</code></td><td>Audita (fin del pipeline)</td><td>Pipeline completo</td></tr>
+          </tbody>
+        </table>
+
+        <div class="tech-note">
+          <strong>Ventaja clave:</strong> <code>ValidadorEnvio</code> no tiene ninguna referencia a <code>SistemaPago</code>. Puede cambiarse el orden del pipeline, agregar un paso o eliminar uno modificando únicamente <code>MediadorEnviosConcreto.notificar()</code>, sin tocar ningún componente existente.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ MEDIATOR IMPL -->
+      <section class="section" id="mediator-impl">
+        <div class="section-act">Actividad 4 · Mediator</div>
+        <h2>Implementación</h2>
+        <p>Se implementaron la interfaz <code>MediadorEnvios</code>, el mediador concreto <code>MediadorEnviosConcreto</code>, cinco componentes colaboradores y la clase <code>SistemaAuditoria</code> con capacidad de consulta por tipo de evento.</p>
+        <div class="pattern-badge">GoF · Mediator</div>
+
+        <div class="grid-2">
+<pre>// Interfaz del Mediator
+public interface MediadorEnvios {
+    void registrarCentro(CentroDistribucion c);
+    void registrarValidador(ValidadorEnvio v);
+    void registrarPago(SistemaPago p);
+    void registrarNotificador(SistemaNotificacion n);
+    void registrarAuditoria(SistemaAuditoria a);
+    void notificar(String evento, Object datos);
+}</pre>
+<pre>// Componente concreto - cada uno solo conoce al mediador
+public class ValidadorEnvio {
+    private final MediadorEnvios mediador;
+
+    public ValidadorEnvio(MediadorEnvios mediador) {
+        this.mediador = mediador;
+    }
+
+    public void validar(Envio envio) {
+        boolean valido = envio.getCosto() > 0
+                      && envio.getPeso()  > 0;
+        String evento = valido
+            ? "VALIDACION_OK" : "VALIDACION_FALLIDA";
+        mediador.notificar(evento, envio);
+    }
+}</pre>
+        </div>
+
+<pre>// Mediador concreto - orquesta el pipeline completo
+public class MediadorEnviosConcreto implements MediadorEnvios {
+    private CentroDistribucion  centro;
+    private ValidadorEnvio      validador;
+    private SistemaPago         pago;
+    private SistemaNotificacion notificador;
+    private SistemaAuditoria    auditoria;
+
+    // registrar* - setters simples (omitidos por brevedad)
+
+    public void notificar(String evento, Object datos) {
+        switch (evento) {
+            case "ENVIO_CREADO":
+                auditoria.registrar("ENVIO_CREADO", datos);
+                validador.validar((Envio) datos);
+                break;
+            case "VALIDACION_OK":
+                auditoria.registrar("VALIDACION_OK", datos);
+                pago.procesarPago((Envio) datos);
+                break;
+            case "VALIDACION_FALLIDA":
+                auditoria.registrar("VALIDACION_FALLIDA", datos);
+                break;                       // ← pipeline se detiene aquí
+            case "PAGO_CONFIRMADO":
+                auditoria.registrar("PAGO_CONFIRMADO", datos);
+                notificador.enviarConfirmacion((Envio) datos);
+                break;
+            case "NOTIFICACION_ENVIADA":
+                auditoria.registrar("NOTIFICACION_ENVIADA", datos);
+                centro.registrarEnvio((Envio) datos);
+                break;
+            case "ENVIO_REGISTRADO":
+                auditoria.registrar("ENVIO_REGISTRADO", datos);
+                break;                       // ← fin del pipeline exitoso
+        }
+    }
+}</pre>
+
+        <h3>Casos de prueba - Mediator</h3>
+        <table>
+          <thead><tr><th>#</th><th>Escenario</th><th>Evento verificado</th><th>Resultado esperado</th></tr></thead>
+          <tbody>
+            <tr><td>1a</td><td>Flujo completo con datos válidos - ENVIO_CREADO auditado</td><td><code>ENVIO_CREADO</code></td><td><code>contarEventos() &ge; 1</code></td></tr>
+            <tr><td>1b</td><td>Flujo completo - VALIDACION_OK auditado</td><td><code>VALIDACION_OK</code></td><td><code>contarEventos() &ge; 1</code></td></tr>
+            <tr><td>1c</td><td>Flujo completo - PAGO_CONFIRMADO auditado</td><td><code>PAGO_CONFIRMADO</code></td><td><code>contarEventos() &ge; 1</code></td></tr>
+            <tr><td>1d</td><td>Flujo completo - ENVIO_REGISTRADO auditado</td><td><code>ENVIO_REGISTRADO</code></td><td><code>contarEventos() &ge; 1</code></td></tr>
+            <tr><td>2</td><td>Segundo envío procesado - ENVIO_CREADO auditado dos veces</td><td><code>ENVIO_CREADO</code></td><td><code>contarEventos() &ge; 2</code></td></tr>
+            <tr><td>3a</td><td>Datos inválidos (peso=0, costo=0) - VALIDACION_FALLIDA auditada</td><td><code>VALIDACION_FALLIDA</code></td><td><code>contarEventos() &ge; 1</code></td></tr>
+            <tr><td>3b</td><td>Pago no se ejecuta tras validación fallida</td><td><code>PAGO_CONFIRMADO</code></td><td>Contador sin cambios respecto al estado previo</td></tr>
+            <tr><td>4</td><td>Verificación estructural - componentes desacoplados</td><td>-</td><td>Ningún componente tiene referencia directa a otro</td></tr>
+            <tr><td>5</td><td>Log de auditoría acumula al menos 10 entradas para 3 envíos</td><td>Todos</td><td><code>obtenerLogs().size() &ge; 10</code></td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 9/9 verificaciones OK</div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ MEMENTO DISEÑO -->
+      <section class="section" id="memento-diseno">
+        <div class="section-act">Actividad 5 · Memento</div>
+        <h2>Identificación de candidatos</h2>
+        <p>Se analizaron los objetos del sistema que cambian de estado a lo largo de su ciclo de vida y cuyo historial debe ser auditable o recuperable sin exponer su estado interno.</p>
+        <div class="pattern-badge">GoF · Memento</div>
+
+        <h3>Candidatos identificados</h3>
+        <table>
+          <thead><tr><th>Candidato</th><th>Estados posibles</th><th>Por qué Memento resuelve</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Envío</strong> (seleccionado)</td><td>CONFIRMADO → EN_TRANSITO → EN_REPARTO → ENTREGADO / CANCELADO</td><td>Permite auditar el ciclo de vida completo y restaurar un estado anterior sin exponer los campos privados de <code>Envio</code>.</td></tr>
+            <tr><td>Configuración del sistema</td><td>Valores de parámetros operativos</td><td>Alternativa válida; se descartó por ser menos representativa del dominio logístico.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Roles del patrón</h3>
+        <table>
+          <thead><tr><th>Rol GoF</th><th>Clase en LogiSmart</th><th>Paquete</th><th>Responsabilidad</th></tr></thead>
+          <tbody>
+            <tr><td>Originator</td><td><code>Envio</code></td><td><code>dominio</code></td><td>Crea el snapshot con <code>crearMemento()</code> y se restaura con <code>restaurarDesdeMemento(MementoEnvio)</code>.</td></tr>
+            <tr><td>Memento</td><td><code>MementoEnvio</code></td><td><code>dominio</code></td><td>Captura inmutable de (estado, origen, destino, peso, costo, timestamp). No tiene setters.</td></tr>
+            <tr><td>Caretaker</td><td><code>HistorialEnvios</code></td><td><code>infraestructura.comportamiento.memento</code></td><td>Almacena snapshots en un <code>List&lt;MementoEnvio&gt;</code> con cursor bidireccional. Nunca accede al contenido del Memento.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Decisión de diseño - navegación bidireccional</h3>
+        <p>En lugar de un stack LIFO (solo deshacer el último estado), se eligió navegación bidireccional con índice entero: <code>irAlEstadoAnterior()</code>, <code>irAlEstadoSiguiente()</code> e <code>irAlEstado(int)</code>. Esta decisión responde a la necesidad de auditoría logística: un operador debe poder revisar cualquier punto del ciclo de vida de un envío, no solo el inmediatamente anterior.</p>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ MEMENTO IMPL -->
+      <section class="section" id="memento-impl">
+        <div class="section-act">Actividad 6 · Memento</div>
+        <h2>Implementación</h2>
+        <p>Se implementaron <code>MementoEnvio</code> (snapshot inmutable), los métodos <code>crearMemento()</code> y <code>restaurarDesdeMemento()</code> en <code>Envio</code>, y el cuidador <code>HistorialEnvios</code> con navegación bidireccional y descarte de estados futuros al guardar desde una posición intermedia.</p>
+        <div class="pattern-badge">GoF · Memento</div>
+
+        <div class="grid-2">
+<pre>// Memento - snapshot inmutable en dominio
+public class MementoEnvio {
+    private final String estado, origen, destino;
+    private final double peso, costo;
+    private final long   timestamp;
+
+    public MementoEnvio(String estado, String origen,
+            String destino, double peso, double costo) {
+        this.estado    = estado;
+        this.origen    = origen;
+        this.destino   = destino;
+        this.peso      = peso;
+        this.costo     = costo;
+        this.timestamp = System.currentTimeMillis();
+    }
+    // solo getters - no hay setters
+    public String obtenerEstado()    { return estado; }
+    public String obtenerOrigen()    { return origen; }
+    public double obtenerPeso()      { return peso;   }
+    public long   obtenerTimestamp() { return timestamp; }
+}</pre>
+<pre>// Originator - métodos en Envio
+public MementoEnvio crearMemento() {
+    return new MementoEnvio(
+        estado, origen, destino, peso, costo
+    );
+}
+
+public void restaurarDesdeMemento(MementoEnvio m) {
+    this.estado  = m.obtenerEstado();
+    this.origen  = m.obtenerOrigen();
+    this.destino = m.obtenerDestino();
+    this.peso    = m.obtenerPeso();
+    this.costo   = m.obtenerCosto();
+}
+
+public void cambiarEstado(String nuevoEstado) {
+    this.estado = nuevoEstado;
+    notificarObservadores(); // integración con Observer
+}</pre>
+        </div>
+
+<pre>// Caretaker - HistorialEnvios con navegación bidireccional
+public class HistorialEnvios {
+    private final List&lt;MementoEnvio&gt; historial    = new ArrayList&lt;&gt;();
+    private int                      indiceActual = -1;
+
+    public void guardarEstado(Envio envio) {
+        // Si navegamos hacia atrás y guardamos → descartar estados futuros
+        while (indiceActual &lt; historial.size() - 1)
+            historial.remove(historial.size() - 1);
+        historial.add(envio.crearMemento());
+        indiceActual++;
+    }
+
+    public void irAlEstadoAnterior(Envio envio) {
+        if (indiceActual > 0)
+            envio.restaurarDesdeMemento(historial.get(--indiceActual));
+    }
+
+    public void irAlEstadoSiguiente(Envio envio) {
+        if (indiceActual &lt; historial.size() - 1)
+            envio.restaurarDesdeMemento(historial.get(++indiceActual));
+    }
+
+    public void irAlEstado(int indice, Envio envio) {
+        if (indice >= 0 && indice &lt; historial.size()) {
+            indiceActual = indice;
+            envio.restaurarDesdeMemento(historial.get(indiceActual));
+        }
+    }
+    public int obtenerTamaño()      { return historial.size(); }
+    public int obtenerIndiceActual() { return indiceActual;    }
+}</pre>
+
+        <h3>Casos de prueba - Memento</h3>
+        <table>
+          <thead><tr><th>#</th><th>Escenario</th><th>Estado esperado</th><th>Tamaño historial</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Guardar estado inicial CONFIRMADO</td><td>-</td><td>1</td></tr>
+            <tr><td>2</td><td>Cambiar a EN_TRANSITO y guardar</td><td>-</td><td>2</td></tr>
+            <tr><td>3</td><td>Ir al estado anterior - restaura CONFIRMADO</td><td><code>"CONFIRMADO"</code></td><td>2</td></tr>
+            <tr><td>4</td><td>Ir al estado siguiente - regresa a EN_TRANSITO</td><td><code>"EN_TRANSITO"</code></td><td>2</td></tr>
+            <tr><td>5</td><td>Avanzar a EN_REPARTO y ENTREGADO, guardar ambos</td><td>-</td><td>4</td></tr>
+            <tr><td>6</td><td>Navegar directo a posición 0 - restaura CONFIRMADO</td><td><code>"CONFIRMADO"</code></td><td>4</td></tr>
+            <tr><td>7</td><td>Guardar CANCELADO desde posición 0 descarta los 3 estados futuros</td><td>-</td><td>2</td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 7/7 verificaciones OK</div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ OBSERVER DISEÑO -->
+      <section class="section" id="observer-diseno">
+        <div class="section-act">Actividad 7 · Observer</div>
+        <h2>Identificación de candidatos</h2>
+        <p>Se analizaron los componentes del sistema que necesitan reaccionar a cambios de estado en un envío sin que el envío los conozca directamente.</p>
+        <div class="pattern-badge">GoF · Observer</div>
+
+        <h3>Candidatos para observar cambios de estado en Envio</h3>
+        <table>
+          <thead><tr><th>Observador</th><th>Evento de interés</th><th>Reacción</th></tr></thead>
+          <tbody>
+            <tr><td><code>CentroDistribucionObservador</code></td><td>Cualquier cambio de estado</td><td>Actualiza el registro interno del centro con el nuevo estado del envío.</td></tr>
+            <tr><td><code>SistemaNotificacionObservador</code></td><td>Cualquier cambio de estado</td><td>Envía notificación al destinatario con el estado actualizado.</td></tr>
+            <tr><td><code>SistemaAuditoriaObservador</code></td><td>Cualquier cambio de estado</td><td>Registra en el log de auditoría con timestamp del sistema.</td></tr>
+            <tr><td><code>DashboardObservador</code></td><td>Cualquier cambio de estado</td><td>Refresca el panel de operaciones logísticas en tiempo real.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Diseño de la interfaz Subject</h3>
+        <p>El rol de Subject lo cumple directamente <code>Envio</code>, que mantiene una lista interna de observadores y los notifica en <code>cambiarEstado()</code>, <code>iniciar()</code> y <code>cancelar()</code>. La interfaz <code>ObservadorEnvio</code> vive en el paquete <code>dominio</code> - ver análisis de trade-off arquitectónico en la sección correspondiente.</p>
+
+        <table>
+          <thead><tr><th>Rol GoF</th><th>Elemento en LogiSmart</th><th>Paquete</th></tr></thead>
+          <tbody>
+            <tr><td>Subject</td><td><code>Envio</code> + métodos <code>adjuntarObservador()</code>, <code>desadjuntarObservador()</code>, <code>notificarObservadores()</code></td><td><code>dominio</code></td></tr>
+            <tr><td>Observer (interfaz)</td><td><code>ObservadorEnvio</code> - método <code>actualizar(Envio)</code></td><td><code>dominio</code></td></tr>
+            <tr><td>ConcreteObserver ×4</td><td><code>CentroDistribucionObservador</code>, <code>SistemaNotificacionObservador</code>, <code>SistemaAuditoriaObservador</code>, <code>DashboardObservador</code></td><td><code>infraestructura.comportamiento.observer</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ OBSERVER IMPL -->
+      <section class="section" id="observer-impl">
+        <div class="section-act">Actividad 8 · Observer</div>
+        <h2>Implementación</h2>
+        <p>Se agregaron a <code>Envio</code> los métodos de suscripción y notificación. La interfaz <code>ObservadorEnvio</code> es funcional (un solo método abstracto), lo que permite usar lambdas directamente en los tests.</p>
+        <div class="pattern-badge">GoF · Observer</div>
+
+        <div class="grid-2">
+<pre>// Interfaz funcional - en paquete dominio
+@FunctionalInterface  // opcional; ya lo es por tener un método
+public interface ObservadorEnvio {
+    void actualizar(Envio envio);
+}</pre>
+<pre>// Subject - fragmento de Envio.java
+private final List&lt;ObservadorEnvio&gt; observadores
+    = new ArrayList&lt;&gt;();
+
+public void adjuntarObservador(ObservadorEnvio o) {
+    observadores.add(o);
+}
+public void desadjuntarObservador(ObservadorEnvio o) {
+    observadores.remove(o);
+}
+private void notificarObservadores() {
+    for (ObservadorEnvio o : observadores)
+        o.actualizar(this);
+}
+public void cambiarEstado(String nuevoEstado) {
+    this.estado = nuevoEstado;
+    notificarObservadores();
+}
+public void iniciar() {
+    this.estado = "EN_CURSO";
+    notificarObservadores();
+}
+public void cancelar() {
+    this.estado = "CANCELADO";
+    notificarObservadores();
+}</pre>
+        </div>
+
+<pre>// Observador concreto - SistemaAuditoriaObservador
+public class SistemaAuditoriaObservador implements ObservadorEnvio {
+    public void actualizar(Envio envio) {
+        System.out.println("[Auditoria-Obs] LOG: envio=" + envio.getId()
+            + " | estado=" + envio.obtenerEstado()
+            + " | ts=" + System.currentTimeMillis());
+    }
+}
+
+// Uso con lambda en tests - ObservadorEnvio es funcional
+AtomicInteger contador = new AtomicInteger(0);
+ObservadorEnvio obs = e -&gt; contador.incrementAndGet();
+envio.adjuntarObservador(obs);
+envio.cambiarEstado("EN_TRANSITO"); // contador.get() == 1</pre>
+
+        <h3>Casos de prueba - Observer</h3>
+        <table>
+          <thead><tr><th>#</th><th>Escenario</th><th>Resultado esperado</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Adjuntar 5 observadores (4 concretos + 1 lambda contador); cambiarEstado → contador = 1</td><td><code>notificaciones.get() == 1</code></td></tr>
+            <tr><td>2</td><td>Segundo cambio de estado → contador acumula a 2</td><td><code>notificaciones.get() == 2</code></td></tr>
+            <tr><td>3</td><td>Desadjuntar <code>DashboardObservador</code>; el lambda sigue recibiendo notificación</td><td><code>cont2.get() == antes + 1</code></td></tr>
+            <tr><td>4a</td><td>Dos envíos con observadores independientes - envioA notifica 2 veces</td><td><code>contA.get() == 2</code></td></tr>
+            <tr><td>4b</td><td>envioB notifica 1 vez (1 cambio de estado)</td><td><code>contB.get() == 1</code></td></tr>
+            <tr><td>5</td><td><code>iniciar()</code> dispara notificación al observador</td><td><code>contIniciar.get() == 1</code></td></tr>
+            <tr><td>5b</td><td>Estado después de <code>iniciar()</code> es <code>"EN_CURSO"</code></td><td><code>"EN_CURSO".equals(obtenerEstado())</code></td></tr>
+            <tr><td>6</td><td><code>cancelar()</code> notifica al segundo observador adjunto</td><td><code>contCancelar.get() == 1</code></td></tr>
+            <tr><td>6b</td><td>Estado después de <code>cancelar()</code> es <code>"CANCELADO"</code></td><td><code>"CANCELADO".equals(obtenerEstado())</code></td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 9/9 verificaciones OK</div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ TRADE-OFF -->
+      <section class="section" id="tradeoff">
+        <h2>🔀 Análisis de trade-off arquitectónico: ubicación de ObservadorEnvio y MementoEnvio</h2>
+        <p>Al implementar los patrones Observer y Memento surgió una tensión real entre dos principios arquitectónicos. Esta sección documenta el análisis, las opciones evaluadas y la decisión tomada.</p>
+
+        <div class="tradeoff-note">
+          <strong>El problema concreto:</strong> <code>Envio</code> (clase de dominio, Originator/Subject) necesita referenciar <code>MementoEnvio</code> y <code>ObservadorEnvio</code>. Si estas clases viven en <code>infraestructura.comportamiento.*</code>, el paquete <code>dominio</code> dependería de <code>infraestructura</code>, violando el principio de capas limpias.
+        </div>
+
+        <h3>Opciones evaluadas</h3>
+        <table>
+          <thead><tr><th>Opción</th><th>Ubicación</th><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>A - Cohesión de patrón</strong></td>
+              <td><code>infraestructura.comportamiento.observer</code> y <code>infraestructura.comportamiento.memento</code></td>
+              <td>Todos los elementos de un patrón quedan en el mismo paquete. Fácil de navegar siguiendo la estructura GoF.</td>
+              <td><strong>Viola arquitectura limpia:</strong> <code>dominio.Envio</code> importa de <code>infraestructura</code>. La capa de dominio ya no es autónoma; no puede compilarse ni probarse sin infraestructura.</td>
+            </tr>
+            <tr>
+              <td><strong>B - DIP en dominio</strong> ✅ <em>Elegida</em></td>
+              <td><code>dominio</code></td>
+              <td>El dominio define el contrato (interfaz/snapshot), la infraestructura lo implementa. El dominio compila y se prueba de forma aislada. Sigue Ports &amp; Adapters / Hexagonal Architecture.</td>
+              <td>La interfaz <code>ObservadorEnvio</code> y la clase <code>MementoEnvio</code> no acompañan físicamente a los demás elementos del patrón GoF; requiere que el desarrollador busque en dos paquetes.</td>
+            </tr>
+            <tr>
+              <td><strong>C - Clase interna</strong></td>
+              <td><code>Envio</code> como clase interna</td>
+              <td>Máxima cohesión: el Memento vive dentro del Originator, como propone GoF originalmente.</td>
+              <td><code>Envio.java</code> se vuelve muy grande. La interfaz <code>ObservadorEnvio</code> debería ser pública para usarla desde infraestructura, lo que la hace un detalle de <code>Envio</code> expuesto hacia afuera - contraproducente.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Decisión adoptada: Opción B</h3>
+        <p>Se colocaron tanto <code>ObservadorEnvio</code> como <code>MementoEnvio</code> en <code>com.logismart.dominio</code> por las siguientes razones:</p>
+        <ul style="margin:.5rem 0 .5rem 1.2rem;">
+          <li><strong>Principio de Inversión de Dependencias (DIP):</strong> el dominio define contratos (ports), la infraestructura aporta implementaciones (adapters). Los observadores concretos en infraestructura implementan <code>ObservadorEnvio</code> del dominio - la flecha de dependencia apunta hacia adentro, no hacia afuera.</li>
+          <li><strong>Autonomía del dominio:</strong> el paquete <code>dominio</code> no importa nada de <code>infraestructura</code>. Puede compilarse y testearse de forma completamente independiente.</li>
+          <li><strong>Naturaleza de los artefactos:</strong> <code>MementoEnvio</code> es un snapshot de datos puramente de dominio (estado del ciclo de vida, atributos logísticos). No es un mecanismo técnico genérico; es una "fotografía" de una entidad de negocio concreta. Pertenece en dominio por contenido, no solo por conveniencia técnica.</li>
+          <li><strong>Precedente en el proyecto:</strong> esta arquitectura ya se aplica en Hitos 8–10 (interfaces de dominio, implementaciones en infraestructura).</li>
+        </ul>
+
+        <div class="tradeoff-note">
+          <strong>Compensación adoptada para mitigar la desventaja:</strong> Los JavaDoc de <code>MementoEnvio</code> y <code>ObservadorEnvio</code> documentan explícitamente el trade-off y el razonamiento. El desarrollador que llegue a esos archivos encontrará la explicación sin necesidad de buscarla en otro lugar.
+        </div>
+
+        <h3>Diagrama de dependencias - antes vs. después</h3>
+        <div class="grid-2">
+          <div>
+            <p style="font-size:.85rem;color:var(--muted);margin-bottom:.4rem;"><strong>Opción A (rechazada)</strong> - dominio depende de infraestructura</p>
+            <div class="diagram">
+<pre class="mermaid">graph TD
+  A["dominio.Envio"] -->|importa| B["infraestructura.observer.ObservadorEnvio"]
+  A -->|importa| C["infraestructura.memento.MementoEnvio"]
+  style A fill:#fee2e2,stroke:#dc2626
+  style B fill:#fef3c7,stroke:#d97706
+  style C fill:#fef3c7,stroke:#d97706</pre>
+            </div>
+          </div>
+          <div>
+            <p style="font-size:.85rem;color:var(--muted);margin-bottom:.4rem;"><strong>Opción B (adoptada)</strong> - dependencias correctas hacia adentro</p>
+            <div class="diagram">
+<pre class="mermaid">graph TD
+  A["dominio.Envio"] -->|usa| B["dominio.ObservadorEnvio"]
+  A -->|usa| C["dominio.MementoEnvio"]
+  D["infraestructura.observer.*"] -->|implementa| B
+  E["infraestructura.memento.HistorialEnvios"] -->|usa| C
+  style A fill:#d1fae5,stroke:#059669
+  style B fill:#d1fae5,stroke:#059669
+  style C fill:#d1fae5,stroke:#059669</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ INTEGRACIÓN -->
+      <section class="section" id="integracion">
+        <div class="section-act">Actividad 10 · Integración Event-Driven</div>
+        <h2>SistemaLogisticaEventDriven - los 4 patrones colaboran</h2>
+        <p><code>SistemaLogisticaEventDriven</code> orquesta los cuatro patrones en un único pipeline. Cada envío pasa por las cuatro capas de patrón en secuencia: Memento guarda el estado antes, Iterator incorpora el envío a la colección, Observer suscribe reaccionantes, y Mediator dispara el pipeline de procesamiento.</p>
+
+        <div class="grid-2">
+<pre>// Constructor - construye el pipeline completo
+public SistemaLogisticaEventDriven() {
+    // Mediator
+    this.mediador   = new MediadorEnviosConcreto();
+    this.centro     = new CentroDistribucion(mediador);
+    ValidadorEnvio      val  = new ValidadorEnvio(mediador);
+    SistemaPago         pag  = new SistemaPago(mediador);
+    SistemaNotificacion not  = new SistemaNotificacion(mediador);
+    this.auditoria  = new SistemaAuditoria();
+    mediador.registrarCentro(centro);
+    mediador.registrarValidador(val);
+    mediador.registrarPago(pag);
+    mediador.registrarNotificador(not);
+    mediador.registrarAuditoria(auditoria);
+    // Iterator
+    this.coleccion = new ColeccionArray();
+    // Memento
+    this.historial = new HistorialEnvios();
+}</pre>
+<pre>// procesarEnvios - activa los 4 patrones
+public void procesarEnvios(List&lt;Envio&gt; envios) {
+    ObservadorEnvio centroObs    = new CentroDistribucionObservador();
+    ObservadorEnvio notifObs     = new SistemaNotificacionObservador();
+    ObservadorEnvio auditoriaObs = new SistemaAuditoriaObservador();
+
+    for (Envio envio : envios) {
+        // 1. Memento - snapshot antes del pipeline
+        historial.guardarEstado(envio);
+        // 2. Iterator - ingresa a la colección
+        coleccion.agregar(envio);
+        // 3. Observer - suscribir reactivos
+        envio.adjuntarObservador(centroObs);
+        envio.adjuntarObservador(notifObs);
+        envio.adjuntarObservador(auditoriaObs);
+        // 4. Mediator - dispara el pipeline
+        centro.crearEnvio(envio);
+        // 5. Memento - snapshot después del pipeline
+        historial.guardarEstado(envio);
+    }
+}</pre>
+        </div>
+
+        <h3>Flujo event-driven para un envío válido</h3>
+        <div class="diagram">
+<pre class="mermaid">sequenceDiagram
+  participant S as SistemaLogisticaEventDriven
+  participant H as HistorialEnvios (Memento)
+  participant C as ColeccionArray (Iterator)
+  participant E as Envio (Subject)
+  participant M as MediadorEnviosConcreto
+  participant V as ValidadorEnvio
+  participant P as SistemaPago
+  participant N as SistemaNotificacion
+  participant A as SistemaAuditoria
+  participant O as Observadores
+
+  S->>H: guardarEstado(envio) [snapshot inicial]
+  S->>C: agregar(envio)
+  S->>E: adjuntarObservador(×3)
+  S->>M: centro.crearEnvio(envio)
+  M->>A: registrar("ENVIO_CREADO")
+  M->>V: validar(envio)
+  V->>M: notificar("VALIDACION_OK")
+  M->>A: registrar("VALIDACION_OK")
+  M->>P: procesarPago(envio)
+  P->>M: notificar("PAGO_CONFIRMADO")
+  M->>A: registrar("PAGO_CONFIRMADO")
+  M->>N: enviarConfirmacion(envio)
+  N->>M: notificar("NOTIFICACION_ENVIADA")
+  M->>A: registrar("NOTIFICACION_ENVIADA")
+  M->>M: centro.registrarEnvio(envio)
+  Note over E,O: cambios de estado → notificarObservadores()
+  E->>O: actualizar(envio) [×3 observadores]
+  S->>H: guardarEstado(envio) [snapshot post-pipeline]</pre>
+        </div>
+
+        <h3>Casos de prueba - Integración</h3>
+        <table>
+          <thead><tr><th>#</th><th>Patrón verificado</th><th>Escenario</th><th>Resultado esperado</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Iterator</td><td>Los 3 envíos procesados están en la colección</td><td><code>obtenerTamaño() == 3</code></td></tr>
+            <tr><td>2</td><td>Memento</td><td>Historial tiene 6 snapshots (2 por envío: antes y después del pipeline)</td><td><code>obtenerTamaño() == 6</code></td></tr>
+            <tr><td>3</td><td>Mediator</td><td>Auditoría registró exactamente 3 eventos ENVIO_REGISTRADO</td><td><code>contarEventos("ENVIO_REGISTRADO") == 3</code></td></tr>
+            <tr><td>4</td><td>Integración completa</td><td>Iterator recorre correctamente los 3 envíos post-procesamiento</td><td>Contador = 3</td></tr>
+          </tbody>
+        </table>
+        <div class="pill">✅ 4/4 verificaciones OK</div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ UML -->
+      <section class="section" id="uml">
+        <h2>Diagramas UML</h2>
+        <p>Los diagramas de clases a continuación muestran la estructura de cada patrón y sus relaciones.</p>
+
+        <h3>Iterator - jerarquía de colecciones</h3>
+        <div class="diagram">
+<pre class="mermaid">classDiagram
+  class IteradorEnvios {
+    &lt;&lt;interface&gt;&gt;
+    +tieneSiguiente() bool
+    +obtenerSiguiente() Envio
+    +reiniciar()
+  }
+  class ColeccionEnvios {
+    &lt;&lt;interface&gt;&gt;
+    +crearIterador() IteradorEnvios
+    +agregar(Envio)
+    +remover(Envio)
+    +obtenerTamaño() int
+  }
+  class ColeccionArray {
+    -CAPACIDAD_MAX: int
+    -envios: Envio[]
+    -tamaño: int
+    +crearIterador() IteradorEnvios
+    +agregar(Envio)
+    +remover(Envio)
+    +obtenerTamaño() int
+  }
+  class ColeccionLista {
+    -cabeza: Nodo
+    -tamaño: int
+    +crearIterador() IteradorEnvios
+    +agregar(Envio)
+    +remover(Envio)
+    +obtenerTamaño() int
+  }
+  class ColeccionHash {
+    -mapa: Map~String,Envio~
+    +crearIterador() IteradorEnvios
+    +agregar(Envio)
+    +remover(Envio)
+    +obtenerTamaño() int
+  }
+  ColeccionEnvios <|.. ColeccionArray
+  ColeccionEnvios <|.. ColeccionLista
+  ColeccionEnvios <|.. ColeccionHash
+  ColeccionArray ..> IteradorEnvios : crea IteradorArray (inner)
+  ColeccionLista ..> IteradorEnvios : crea IteradorLista (inner)
+  ColeccionHash  ..> IteradorEnvios : crea IteradorHash  (inner)</pre>
+        </div>
+
+        <h3>Mediator - hub de eventos</h3>
+        <div class="diagram">
+<pre class="mermaid">classDiagram
+  class MediadorEnvios {
+    &lt;&lt;interface&gt;&gt;
+    +registrarCentro(CentroDistribucion)
+    +registrarValidador(ValidadorEnvio)
+    +registrarPago(SistemaPago)
+    +registrarNotificador(SistemaNotificacion)
+    +registrarAuditoria(SistemaAuditoria)
+    +notificar(String, Object)
+  }
+  class MediadorEnviosConcreto {
+    -centro: CentroDistribucion
+    -validador: ValidadorEnvio
+    -pago: SistemaPago
+    -notificador: SistemaNotificacion
+    -auditoria: SistemaAuditoria
+    +notificar(String, Object)
+  }
+  class CentroDistribucion {
+    -mediador: MediadorEnvios
+    +crearEnvio(Envio)
+    +registrarEnvio(Envio)
+  }
+  class ValidadorEnvio {
+    -mediador: MediadorEnvios
+    +validar(Envio)
+  }
+  class SistemaPago {
+    -mediador: MediadorEnvios
+    +procesarPago(Envio)
+  }
+  class SistemaNotificacion {
+    -mediador: MediadorEnvios
+    +enviarConfirmacion(Envio)
+  }
+  class SistemaAuditoria {
+    -logs: List~String~
+    +registrar(String, Object)
+    +obtenerLogs() List~String~
+    +contarEventos(String) int
+    +mostrarLogs()
+  }
+  MediadorEnvios <|.. MediadorEnviosConcreto
+  CentroDistribucion --> MediadorEnvios
+  ValidadorEnvio --> MediadorEnvios
+  SistemaPago --> MediadorEnvios
+  SistemaNotificacion --> MediadorEnvios
+  MediadorEnviosConcreto --> SistemaAuditoria</pre>
+        </div>
+
+        <h3>Memento - roles Originator / Memento / Caretaker</h3>
+        <div class="diagram">
+<pre class="mermaid">classDiagram
+  class Envio {
+    &lt;&lt;Originator&gt;&gt;
+    -estado: String
+    -origen: String
+    -destino: String
+    -peso: double
+    -costo: double
+    -observadores: List~ObservadorEnvio~
+    +crearMemento() MementoEnvio
+    +restaurarDesdeMemento(MementoEnvio)
+    +cambiarEstado(String)
+    +obtenerEstado() String
+  }
+  class MementoEnvio {
+    &lt;&lt;Memento&gt;&gt;
+    -estado: String
+    -origen: String
+    -destino: String
+    -peso: double
+    -costo: double
+    -timestamp: long
+    +obtenerEstado() String
+    +obtenerOrigen() String
+    +obtenerPeso() double
+    +obtenerTimestamp() long
+  }
+  class HistorialEnvios {
+    &lt;&lt;Caretaker&gt;&gt;
+    -historial: List~MementoEnvio~
+    -indiceActual: int
+    +guardarEstado(Envio)
+    +irAlEstadoAnterior(Envio)
+    +irAlEstadoSiguiente(Envio)
+    +irAlEstado(int, Envio)
+    +mostrarHistorial()
+    +obtenerTamaño() int
+  }
+  Envio ..> MementoEnvio : crea
+  HistorialEnvios --> MementoEnvio : almacena
+  HistorialEnvios ..> Envio : restaura</pre>
+        </div>
+
+        <h3>Observer - Subject y observadores concretos</h3>
+        <div class="diagram">
+<pre class="mermaid">classDiagram
+  class ObservadorEnvio {
+    &lt;&lt;interface&gt;&gt;
+    +actualizar(Envio)
+  }
+  class Envio {
+    &lt;&lt;Subject&gt;&gt;
+    -observadores: List~ObservadorEnvio~
+    +adjuntarObservador(ObservadorEnvio)
+    +desadjuntarObservador(ObservadorEnvio)
+    -notificarObservadores()
+    +cambiarEstado(String)
+    +iniciar()
+    +cancelar()
+  }
+  class CentroDistribucionObservador {
+    +actualizar(Envio)
+  }
+  class SistemaNotificacionObservador {
+    +actualizar(Envio)
+  }
+  class SistemaAuditoriaObservador {
+    +actualizar(Envio)
+  }
+  class DashboardObservador {
+    +actualizar(Envio)
+  }
+  ObservadorEnvio <|.. CentroDistribucionObservador
+  ObservadorEnvio <|.. SistemaNotificacionObservador
+  ObservadorEnvio <|.. SistemaAuditoriaObservador
+  ObservadorEnvio <|.. DashboardObservador
+  Envio --> ObservadorEnvio : notifica</pre>
+        </div>
+
+        <h3>Arquitectura event-driven - integración de los 4 patrones</h3>
+        <div class="diagram">
+<pre class="mermaid">classDiagram
+  class SistemaLogisticaEventDriven {
+    -mediador: MediadorEnvios
+    -coleccion: ColeccionEnvios
+    -historial: HistorialEnvios
+    -centro: CentroDistribucion
+    -auditoria: SistemaAuditoria
+    +procesarEnvios(List~Envio~)
+    +mostrarEnviosProcesados()
+    +getColeccion() ColeccionEnvios
+    +getHistorial() HistorialEnvios
+    +getMediador() MediadorEnvios
+    +getAuditoria() SistemaAuditoria
+  }
+  SistemaLogisticaEventDriven --> MediadorEnvios : MEDIATOR
+  SistemaLogisticaEventDriven --> ColeccionEnvios : ITERATOR
+  SistemaLogisticaEventDriven --> HistorialEnvios : MEMENTO
+  SistemaLogisticaEventDriven ..> ObservadorEnvio : OBSERVER suscribe</pre>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════ CONCLUSIÓN -->
+      <section class="section" id="conclusion">
+        <h2>Conclusión</h2>
+        <p>El Hito 11 incorpora cuatro patrones de comportamiento que completan el catálogo GoF en LogiSmart. Cada patrón resolvió una necesidad concreta del dominio logístico:</p>
+        <ul style="margin:.6rem 0 .6rem 1.2rem;">
+          <li><strong>Iterator</strong> permite recorrer tres tipos de colecciones heterogéneas (array, lista enlazada, mapa) con el mismo código cliente, desacoplando los algoritmos de procesamiento de las estructuras de datos que los contienen.</li>
+          <li><strong>Mediator</strong> convierte el pipeline Centro→Validador→Pago→Notificación→Auditoría de un grafo denso de referencias cruzadas a un hub de eventos: cualquier componente puede cambiarse sin tocar a los demás.</li>
+          <li><strong>Memento</strong> provee auditoría completa del ciclo de vida de un envío con navegación bidireccional, resolviendo la necesidad de operadores de revisar cualquier estado histórico sin exponer los campos privados de <code>Envio</code>.</li>
+          <li><strong>Observer</strong> convierte a <code>Envio</code> en un sujeto reactivo: cuatro sistemas (centro, notificación, auditoría, dashboard) reaccionan automáticamente a cada transición de estado sin que el envío los conozca directamente.</li>
+        </ul>
+        <p>Los cuatro patrones se integran en <code>SistemaLogisticaEventDriven</code>, donde colaboran en cada ciclo de procesamiento: Memento guarda el estado antes y después, Iterator incorpora el envío a la colección, Observer suscribe los reactivos, y Mediator dispara el pipeline completo. Esta arquitectura event-driven permite agregar nuevos pasos al pipeline, nuevos tipos de colección o nuevos observadores sin modificar las clases existentes - cumpliendo el principio Open/Closed en sus cuatro dimensiones simultáneamente.</p>
+        <p>El análisis del trade-off arquitectónico (ubicación de <code>ObservadorEnvio</code> y <code>MementoEnvio</code> en dominio) documentó formalmente la tensión entre cohesión de patrón GoF y autonomía de la capa de dominio, optando por DIP y arquitectura limpia como prioridad.</p>
+        <div class="pill">✅ 36/36 verificaciones &nbsp;·&nbsp; ✅ 22 clases &nbsp;·&nbsp; ✅ 4 patrones integrados &nbsp;·&nbsp; ✅ trade-off documentado</div>
+      </section>
+
+    </main>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          primaryColor: "#f4f8ff",
+          primaryTextColor: "#0f172a",
+          primaryBorderColor: "#12324b",
+          lineColor: "#1f4f74",
+          tertiaryColor: "#f8fbff",
+          edgeLabelBackground: "#ffffff"
+        }
+      });
+
+      const nav = document.querySelectorAll('.side-nav a');
+      const sections = document.querySelectorAll('.section');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            nav.forEach(a => a.classList.remove('active'));
+            const active = document.querySelector(`.side-nav a[href="#${entry.target.id}"]`);
+            if (active) active.classList.add('active');
+          }
+        });
+      }, { threshold: 0.3 });
+
+      sections.forEach(s => observer.observe(s));
+    </script>
+  </body>
+</html>

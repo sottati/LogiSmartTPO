@@ -19,11 +19,11 @@ import java.util.List;
  * Gestor regional que integra los cinco patrones creacionales del sistema.
  *
  * Patrones usados:
- *   • Singleton        — Logger, ConfiguracionSistema
- *   • Abstract Factory — LogiSmartFactory (Argentina / Brasil)
- *   • Factory Method   — UsuarioFactory
- *   • Builder          — Envio.EnvioBuilder
- *   • Prototype        — Envio.clone()
+ *   • Singleton        - Logger, ConfiguracionSistema
+ *   • Abstract Factory - LogiSmartFactory (Argentina / Brasil)
+ *   • Factory Method   - UsuarioFactory
+ *   • Builder          - Envio.EnvioBuilder
+ *   • Prototype        - Envio.clone()
  */
 public class LogiSmartApp {
 
@@ -49,7 +49,7 @@ public class LogiSmartApp {
         throw new IllegalArgumentException("Región desconocida: " + region);
     }
 
-    // Builder — crea un envío individual
+    // Builder - crea un envío individual
     public void crearEnvio(String origen, String destino) {
         Envio envio = new Envio.EnvioBuilder("ENV-" + envios.size(), origen, destino)
                 .descripcion("Envío estándar")
@@ -58,7 +58,7 @@ public class LogiSmartApp {
         logger.info("Builder → envío creado: " + envio.getId() + " | " + origen + " → " + destino);
     }
 
-    // Prototype — clona un prototipo base N veces
+    // Prototype - clona un prototipo base N veces
     public void crearEnviosMultiples(int cantidad) {
         Envio prototipo = new Envio.EnvioBuilder("PROTO", "Buenos Aires", "Córdoba")
                 .descripcion("Estándar")
@@ -73,7 +73,7 @@ public class LogiSmartApp {
         logger.info("Prototype → " + cantidad + " envíos clonados (total: " + envios.size() + ")");
     }
 
-    // Factory Method — crea un usuario por tipo usando las clases existentes del dominio
+    // Factory Method - crea un usuario por tipo usando las clases existentes del dominio
     public void crearUsuario(String tipo, String nombre) {
         Usuario usuario = UsuarioFactory.crearUsuario(tipo, nombre);
         usuarios.add(usuario);
@@ -81,7 +81,7 @@ public class LogiSmartApp {
         logger.info("FactoryMethod → usuario: " + usuario.getUsername() + " [" + usuario.getRol() + "]");
     }
 
-    // Abstract Factory — procesa un envío con los objetos de la región
+    // Abstract Factory - procesa un envío con los objetos de la región
     public void procesarEnvio(String origen, String destino, double peso) {
         Vehiculo vehiculo     = factory.crearVehiculo();
         CalculadorCostos calc = factory.crearCalculadorCostos();

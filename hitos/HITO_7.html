@@ -177,7 +177,7 @@
         <div class="university">Universidad Argentina de la Empresa</div>
         <div class="subject">Proceso de Desarrollo de Software</div>
         <h1>HITO 7</h1>
-        <div class="subtitle">Patrones Creacionales II — Abstract Factory · Builder · Prototype</div>
+        <div class="subtitle">Patrones Creacionales II - Abstract Factory · Builder · Prototype</div>
         <div class="team">
           <div class="team-member">
             <strong>Rosario Presedo</strong>
@@ -237,7 +237,7 @@
       <!-- ── Actividad 1 ── -->
       <section class="section" id="s1">
         <div class="section-act">Actividad 1 · 15 min</div>
-        <h2>Abstract Factory — Diseño</h2>
+        <h2>Abstract Factory - Diseño</h2>
         <p>Se identificaron las diferencias entre regiones y se definió la interfaz de la Abstract Factory.</p>
 
         <div class="pattern-badge">GoF · Abstract Factory</div>
@@ -388,7 +388,7 @@ ProveedorMapas &lt;|.. HereMaps</pre>
       <!-- ── Actividad 2 ── -->
       <section class="section" id="s2">
         <div class="section-act">Actividad 2 · 15 min</div>
-        <h2>Abstract Factory — Implementación</h2>
+        <h2>Abstract Factory - Implementación</h2>
         <p>Se implementó <code>LogiSmartApp</code> que recibe la región y delega toda la creación a la factory correspondiente.</p>
 
         <div class="pattern-badge">GoF · Abstract Factory</div>
@@ -448,7 +448,7 @@ ProveedorMapas &lt;|.. HereMaps</pre>
       <!-- ── Actividad 3 ── -->
       <section class="section" id="s3">
         <div class="section-act">Actividad 3 · 15 min</div>
-        <h2>Builder — Diseño</h2>
+        <h2>Builder - Diseño</h2>
         <p>Se diseñó el <code>EnvioBuilder</code> anidado dentro de <code>Envio</code> para gestionar 12 atributos, 9 de ellos opcionales.</p>
 
         <div class="pattern-badge">GoF · Builder</div>
@@ -462,28 +462,28 @@ new Envio("ENV001", "BA", "CBA", "Medicinas", 2.5, true, true, false, true, "...
           <div>
             <h3>Atributos requeridos (en constructor del Builder)</h3>
             <ul>
-              <li><code>id</code> — identificador único</li>
-              <li><code>origen</code> — ciudad de origen</li>
-              <li><code>destino</code> — ciudad de destino</li>
+              <li><code>id</code> - identificador único</li>
+              <li><code>origen</code> - ciudad de origen</li>
+              <li><code>destino</code> - ciudad de destino</li>
             </ul>
             <h3 style="margin-top:0.8rem;">Atributos opcionales (métodos fluidos)</h3>
             <ul>
-              <li><code>descripcion</code> — default <code>""</code></li>
-              <li><code>peso</code> — default <code>0.0</code></li>
-              <li><code>fragil</code> — default <code>false</code></li>
-              <li><code>requiereSignatura</code> — default <code>false</code></li>
-              <li><code>requiereRefrigeracion</code> — default <code>false</code></li>
-              <li><code>requiereAseguranza</code> — default <code>false</code></li>
-              <li><code>instruccionesEspeciales</code> — default <code>""</code></li>
-              <li><code>contactoEmergencia</code> — default <code>""</code></li>
-              <li><code>horaEntregaPreferida</code> — default <code>null</code></li>
+              <li><code>descripcion</code> - default <code>""</code></li>
+              <li><code>peso</code> - default <code>0.0</code></li>
+              <li><code>fragil</code> - default <code>false</code></li>
+              <li><code>requiereSignatura</code> - default <code>false</code></li>
+              <li><code>requiereRefrigeracion</code> - default <code>false</code></li>
+              <li><code>requiereAseguranza</code> - default <code>false</code></li>
+              <li><code>instruccionesEspeciales</code> - default <code>""</code></li>
+              <li><code>contactoEmergencia</code> - default <code>""</code></li>
+              <li><code>horaEntregaPreferida</code> - default <code>null</code></li>
             </ul>
           </div>
           <div>
             <pre>public class Envio implements Cloneable {
   // ... campos existentes + nuevos campos Hito 7 ...
 
-  // Constructor privado — solo EnvioBuilder lo llama
+  // Constructor privado - solo EnvioBuilder lo llama
   private Envio(EnvioBuilder builder) {
     this.id = builder.id;
     this.origen = builder.origen;
@@ -572,13 +572,13 @@ EnvioBuilder ..&gt; Envio : build crea</pre>
       <!-- ── Actividad 4 ── -->
       <section class="section" id="s4">
         <div class="section-act">Actividad 4 · 15 min</div>
-        <h2>Builder — Implementación</h2>
+        <h2>Builder - Implementación</h2>
         <p>Se demostraron los casos de uso del Builder: envío simple (solo requeridos) y complejo (todos los opcionales).</p>
 
         <div class="pattern-badge">GoF · Builder</div>
 
         <h3>4.1 Envío simple</h3>
-        <pre>// Solo atributos requeridos — el resto toma valores por defecto
+        <pre>// Solo atributos requeridos - el resto toma valores por defecto
 Envio envioSimple = new Envio.EnvioBuilder("ENV001", "Buenos Aires", "Córdoba")
         .build();</pre>
 
@@ -612,7 +612,7 @@ Envio envioComplejo = new Envio.EnvioBuilder("ENV002", "Buenos Aires", "Mendoza"
       <!-- ── Actividad 5 ── -->
       <section class="section" id="s5">
         <div class="section-act">Actividad 5 · 15 min</div>
-        <h2>Prototype — Clonación eficiente</h2>
+        <h2>Prototype - Clonación eficiente</h2>
         <p><code>Envio</code> implementa <code>Cloneable</code>. El método <code>clone()</code> permite crear 100 copias sin invocar el Builder cada vez.</p>
 
         <div class="pattern-badge">GoF · Prototype</div>
@@ -657,9 +657,9 @@ for (int i = 0; i &lt; 100; i++) {
     clon.setId("ENV-" + (1000 + i)); // única diferencia entre clones
     envios.add(clon);
 }
-// prototipo.getId() sigue siendo "ENV-PROTO" — no se modificó</pre>
+// prototipo.getId() sigue siendo "ENV-PROTO" - no se modificó</pre>
 
-        <h3>5.3 Diagrama de secuencia — Prototype</h3>
+        <h3>5.3 Diagrama de secuencia - Prototype</h3>
         <div class="diagram">
           <pre class="mermaid">sequenceDiagram
 participant Main
@@ -705,7 +705,7 @@ Note over Proto: El prototipo no se modifica.<br/>Cada clon tiene su propio id<b
           <tbody>
             <tr><td><strong>Singleton</strong></td><td><code>Logger</code>, <code>ConfiguracionSistema</code></td><td>Constructor de <code>LogiSmartApp</code></td></tr>
             <tr><td><strong>Abstract Factory</strong></td><td><code>LogiSmartFactory</code> AR / BR</td><td><code>procesarEnvio()</code></td></tr>
-            <tr><td><strong>Factory Method</strong></td><td><code>UsuarioFactory</code> — <code>ClienteFinal</code>, <code>OperadorLogistico</code>, <code>AdminEmpresa</code></td><td><code>crearUsuario()</code></td></tr>
+            <tr><td><strong>Factory Method</strong></td><td><code>UsuarioFactory</code> - <code>ClienteFinal</code>, <code>OperadorLogistico</code>, <code>AdminEmpresa</code></td><td><code>crearUsuario()</code></td></tr>
             <tr><td><strong>Builder</strong></td><td><code>Envio.EnvioBuilder</code></td><td><code>crearEnvio()</code></td></tr>
             <tr><td><strong>Prototype</strong></td><td><code>Envio.clone()</code></td><td><code>crearEnviosMultiples()</code></td></tr>
           </tbody>
@@ -727,14 +727,14 @@ Note over Proto: El prototipo no se modifica.<br/>Cada clon tiene su propio id<b
         this.usuarios = new ArrayList&lt;&gt;();
     }
 
-    // Builder — crea un Envio con atributos declarativos
+    // Builder - crea un Envio con atributos declarativos
     public void crearEnvio(String origen, String destino) {
         Envio e = new Envio.EnvioBuilder("ENV-" + envios.size(), origen, destino)
                 .descripcion("Envío estándar").build();
         envios.add(e);
     }
 
-    // Prototype — clona un prototipo N veces
+    // Prototype - clona un prototipo N veces
     public void crearEnviosMultiples(int cantidad) {
         Envio proto = new Envio.EnvioBuilder("PROTO", "Buenos Aires", "Córdoba")
                 .peso(1.0).build();
@@ -745,14 +745,14 @@ Note over Proto: El prototipo no se modifica.<br/>Cada clon tiene su propio id<b
         }
     }
 
-    // Factory Method — crea usuario usando clase existente del dominio
+    // Factory Method - crea usuario usando clase existente del dominio
     public void crearUsuario(String tipo, String nombre) {
         Usuario u = UsuarioFactory.crearUsuario(tipo, nombre); // ClienteFinal, OperadorLogistico, AdminEmpresa
         usuarios.add(u);
         u.saludar(); // polimorfismo: cada subclase sabe cómo saludarse
     }
 
-    // Abstract Factory — procesa con objetos coherentes para la región
+    // Abstract Factory - procesa con objetos coherentes para la región
     public void procesarEnvio(String origen, String destino, double peso) {
         Vehiculo v      = factory.crearVehiculo();
         CalculadorCostos c = factory.crearCalculadorCostos();
@@ -763,7 +763,7 @@ Note over Proto: El prototipo no se modifica.<br/>Cada clon tiene su propio id<b
     }
 }</pre>
 
-        <h3>6.3 <code>Main.java</code> — Demostración completa</h3>
+        <h3>6.3 <code>Main.java</code> - Demostración completa</h3>
         <pre>public class Main {
     public static void main(String[] args) {
         // 1. SINGLETON
@@ -773,25 +773,25 @@ Note over Proto: El prototipo no se modifica.<br/>Cada clon tiene su propio id<b
         // 2. ABSTRACT FACTORY (región Argentina)
         LogiSmartApp app = new LogiSmartApp("Argentina");
 
-        // 3. FACTORY METHOD — ClienteFinal, OperadorLogistico, AdminEmpresa
+        // 3. FACTORY METHOD - ClienteFinal, OperadorLogistico, AdminEmpresa
         app.crearUsuario("cliente",  "Juan Pérez");
         app.crearUsuario("operador", "María García");
         app.crearUsuario("admin",    "Carlos López");
 
-        // 4. BUILDER — envío simple y complejo
+        // 4. BUILDER - envío simple y complejo
         app.crearEnvio("Buenos Aires", "Córdoba");
 
-        // 5. PROTOTYPE — 100 clones
+        // 5. PROTOTYPE - 100 clones
         app.crearEnviosMultiples(100);
 
-        // 6. ABSTRACT FACTORY — procesamiento por región
+        // 6. ABSTRACT FACTORY - procesamiento por región
         app.procesarEnvio("Buenos Aires", "Mendoza", 5.0);
 
         logger.info("Demostración completada");
     }
 }</pre>
 
-        <h3>6.4 Diagrama de clases final — Hito 7</h3>
+        <h3>6.4 Diagrama de clases final - Hito 7</h3>
         <div class="diagram">
           <pre class="mermaid">classDiagram
 direction LR

@@ -20,9 +20,9 @@ import java.util.Map;
 
 /**
  * Integra los tres patrones de comportamiento:
- * 1. Chain of Responsibility — valida el envío antes de procesarlo.
- * 2. Command — encapsula la creación en un comando reversible con historial.
- * 3. Interpreter — evalúa reglas de negocio sobre el envío.
+ * 1. Chain of Responsibility - valida el envío antes de procesarlo.
+ * 2. Command - encapsula la creación en un comando reversible con historial.
+ * 3. Interpreter - evalúa reglas de negocio sobre el envío.
  */
 public class SistemaLogisticaCompleto {
 

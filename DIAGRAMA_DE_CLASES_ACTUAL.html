@@ -994,6 +994,91 @@ H10SistemaLogisticaCompleto --&gt; ColaComandos
 H10SistemaLogisticaCompleto --&gt; ServicioEnvios
 H10SistemaLogisticaCompleto --&gt; Expresion
 H10SistemaLogisticaCompleto ..&gt; Envio
+
+%% ---- GOF: COMPORTAMIENTO II (Hito 11) ----
+class ObservadorEnvio {
+  &lt;&lt;interface&gt;&gt;
+  +actualizar(envio)
+}
+class MementoEnvio {
+  -estado String
+  -origen String
+  -destino String
+  -peso double
+  -costo double
+  -timestamp long
+  +obtenerEstado() String
+}
+class HistorialEnvios {
+  -historial List~MementoEnvio~
+  -indiceActual int
+  +guardarEstado(envio)
+  +irAlEstadoAnterior(envio)
+  +irAlEstadoSiguiente(envio)
+  +irAlEstado(int,envio)
+  +obtenerTamaño() int
+}
+class IteradorEnvios {
+  &lt;&lt;interface&gt;&gt;
+  +tieneSiguiente() bool
+  +obtenerSiguiente() Envio
+  +reiniciar()
+}
+class ColeccionEnvios {
+  &lt;&lt;interface&gt;&gt;
+  +crearIterador() IteradorEnvios
+  +agregar(envio)
+  +remover(envio)
+  +obtenerTamaño() int
+}
+class ColeccionArray
+class ColeccionLista
+class ColeccionHash
+class MediadorEnvios {
+  &lt;&lt;interface&gt;&gt;
+  +notificar(String, Object)
+}
+class MediadorEnviosConcreto
+class CentroDistribucionMediator
+class ValidadorEnvioMediator
+class SistemaPagoMediator
+class SistemaNotificacionMediator
+class SistemaAuditoria {
+  -logs List~String~
+  +registrar(String, Object)
+  +contarEventos(String) int
+}
+class CentroDistribucionObservador
+class SistemaNotificacionObservador
+class SistemaAuditoriaObservador
+class DashboardObservador
+class SistemaLogisticaEventDriven {
+  +procesarEnvios(List~Envio~)
+  +mostrarEnviosProcesados()
+}
+
+ObservadorEnvio &lt;|.. CentroDistribucionObservador
+ObservadorEnvio &lt;|.. SistemaNotificacionObservador
+ObservadorEnvio &lt;|.. SistemaAuditoriaObservador
+ObservadorEnvio &lt;|.. DashboardObservador
+Envio --&gt; ObservadorEnvio : notifica
+Envio ..&gt; MementoEnvio : crea
+HistorialEnvios --&gt; MementoEnvio
+MediadorEnvios &lt;|.. MediadorEnviosConcreto
+CentroDistribucionMediator --&gt; MediadorEnvios
+ValidadorEnvioMediator --&gt; MediadorEnvios
+SistemaPagoMediator --&gt; MediadorEnvios
+SistemaNotificacionMediator --&gt; MediadorEnvios
+MediadorEnviosConcreto --&gt; SistemaAuditoria
+ColeccionEnvios &lt;|.. ColeccionArray
+ColeccionEnvios &lt;|.. ColeccionLista
+ColeccionEnvios &lt;|.. ColeccionHash
+ColeccionArray ..&gt; IteradorEnvios
+ColeccionLista ..&gt; IteradorEnvios
+ColeccionHash ..&gt; IteradorEnvios
+SistemaLogisticaEventDriven --&gt; MediadorEnvios
+SistemaLogisticaEventDriven --&gt; ColeccionEnvios
+SistemaLogisticaEventDriven --&gt; HistorialEnvios
           </pre>
         </div>
       </main>
@@ -1418,6 +1503,69 @@ H10SistemaLogisticaCompleto ..&gt; Envio
               </div>
               <div class="pattern-desc">
                 <code>aplicacion.hito10.SistemaLogisticaCompleto</code> combina Chain + Command + Interpreter en el procesamiento de un envio.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 11 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge" style="background: var(--primary);">11</div>
+              <div>
+                <h2>Hito 11</h2>
+                <span>GoF - Comportamiento II</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Iterator
+              </div>
+              <div class="pattern-desc">
+                <code>ColeccionArray</code>, <code>ColeccionLista</code> y <code>ColeccionHash</code> exponen la misma interfaz <code>ColeccionEnvios</code>; el cliente itera sin conocer la estructura interna.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Mediator
+              </div>
+              <div class="pattern-desc">
+                <code>MediadorEnviosConcreto</code> orquesta el pipeline Centro→Validador→Pago→Notificacion→Auditoria via eventos String; ningun componente referencia a otro.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Memento
+              </div>
+              <div class="pattern-desc">
+                <code>HistorialEnvios</code> (Caretaker) guarda snapshots de <code>MementoEnvio</code> (inmutable, en dominio) con navegacion bidireccional sobre el ciclo de vida del envio.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Observer
+              </div>
+              <div class="pattern-desc">
+                <code>Envio</code> como Subject notifica a <code>CentroDistribucionObservador</code>, <code>SistemaNotificacionObservador</code>, <code>SistemaAuditoriaObservador</code> y <code>DashboardObservador</code> en cada cambio de estado.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Integracion
+              </div>
+              <div class="pattern-desc">
+                <code>SistemaLogisticaEventDriven</code> combina los 4 patrones en un pipeline event-driven: Memento + Iterator + Observer + Mediator colaboran en cada ciclo de procesamiento.
               </div>
             </div>
           </div>
