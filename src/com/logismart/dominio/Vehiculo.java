@@ -78,4 +78,10 @@ public class Vehiculo {
 	public void conducir() {
 		System.out.println("[" + tipo + "] Vehículo en movimiento.");
 	}
+
+	public double getCostoBaseKm() {
+		if ("CAMION".equalsIgnoreCase(tipo)) return 1.8;
+		if ("UTILITARIO".equalsIgnoreCase(tipo)) return 1.3;
+		return 1.0;
+	}
 }

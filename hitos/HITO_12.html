@@ -144,6 +144,7 @@ public void entregar() { estadoGoF.entregar(this); }</pre>
           </tbody>
         </table>
         <div class="tech-note">La consigna usaba <code>Math.random() * 500</code> para distancia. Se reemplazó por 500 km fijos para que los tests sean verificables y repetibles.</div>
+        <div class="tech-note">El campo <code>tipo</code> (URGENTE / EXPRESS / NORMAL) se construye vía <code>EnvioBuilder.tipo()</code>: los constructores especializados de Hito 10, 11 y 12 fueron consolidados en el Builder para eliminar el anti-patrón de constructores telescópicos.</div>
       </section>
 
       <section class="section" id="template">

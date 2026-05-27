@@ -56,12 +56,12 @@ public final class CasosDePruebaHito11 {
     private static void probarIterator() {
         System.out.println("\n--- Iterator ---");
 
-        Envio e1 = new Envio("ENV-001", "Buenos Aires", "Córdoba",   5.0, 150.0);
-        Envio e2 = new Envio("ENV-002", "Rosario",      "Mendoza",   8.0, 200.0);
-        Envio e3 = new Envio("ENV-003", "Córdoba",      "Salta",     3.0, 100.0);
-        Envio e4 = new Envio("ENV-004", "Mendoza",      "La Plata",  6.0, 180.0);
-        Envio e5 = new Envio("ENV-005", "La Plata",     "Junín",     7.0, 160.0);
-        Envio e6 = new Envio("ENV-006", "Junín",        "Bahía Blanca", 4.0, 120.0);
+        Envio e1 = new Envio.EnvioBuilder("ENV-001", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
+        Envio e2 = new Envio.EnvioBuilder("ENV-002", "Rosario",      "Mendoza").peso(8.0).costo(200.0).build();
+        Envio e3 = new Envio.EnvioBuilder("ENV-003", "Córdoba",      "Salta").peso(3.0).costo(100.0).build();
+        Envio e4 = new Envio.EnvioBuilder("ENV-004", "Mendoza",      "La Plata").peso(6.0).costo(180.0).build();
+        Envio e5 = new Envio.EnvioBuilder("ENV-005", "La Plata",     "Junín").peso(7.0).costo(160.0).build();
+        Envio e6 = new Envio.EnvioBuilder("ENV-006", "Junín",        "Bahía Blanca").peso(4.0).costo(120.0).build();
 
         // Caso 1: iterar ColeccionArray - orden de inserción preservado
         ColeccionEnvios arr = new ColeccionArray();
@@ -126,7 +126,7 @@ public final class CasosDePruebaHito11 {
         med.registrarAuditoria(aud);
 
         // Caso 1: flujo completo - pipeline de 5 eventos registrados
-        Envio envio1 = new Envio("ENV-101", "Buenos Aires", "Córdoba", 5.0, 150.0);
+        Envio envio1 = new Envio.EnvioBuilder("ENV-101", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
         cen.crearEnvio(envio1);
         verificar(aud.contarEventos("ENVIO_CREADO")     >= 1, "Caso 1a: ENVIO_CREADO auditado");
         verificar(aud.contarEventos("VALIDACION_OK")    >= 1, "Caso 1b: VALIDACION_OK auditado");
@@ -134,13 +134,13 @@ public final class CasosDePruebaHito11 {
         verificar(aud.contarEventos("ENVIO_REGISTRADO") >= 1, "Caso 1d: ENVIO_REGISTRADO auditado");
 
         // Caso 2: múltiples envíos procesados correctamente
-        Envio envio2 = new Envio("ENV-102", "Rosario", "Mendoza", 8.0, 200.0);
+        Envio envio2 = new Envio.EnvioBuilder("ENV-102", "Rosario", "Mendoza").peso(8.0).costo(200.0).build();
         cen.crearEnvio(envio2);
         verificar(aud.contarEventos("ENVIO_CREADO") >= 2,
                 "Caso 2: segundo envío también auditado");
 
         // Caso 3: datos inválidos - VALIDACION_FALLIDA auditada, pipeline se detiene
-        Envio invalido = new Envio("ENV-103", "La Plata", "Salta", 0.0, 0.0);
+        Envio invalido = new Envio.EnvioBuilder("ENV-103", "La Plata", "Salta").build();
         int pagoAntes = aud.contarEventos("PAGO_CONFIRMADO");
         cen.crearEnvio(invalido);
         verificar(aud.contarEventos("VALIDACION_FALLIDA") >= 1, "Caso 3a: VALIDACION_FALLIDA auditada");
@@ -163,7 +163,7 @@ public final class CasosDePruebaHito11 {
     private static void probarMemento() {
         System.out.println("\n--- Memento ---");
 
-        Envio envio = new Envio("ENV-M01", "Buenos Aires", "Córdoba", 5.0, 150.0);
+        Envio envio = new Envio.EnvioBuilder("ENV-M01", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).estado("CONFIRMADO").build();
         HistorialEnvios hist = new HistorialEnvios();
 
         // Caso 1: guardar estado inicial CONFIRMADO
@@ -212,7 +212,7 @@ public final class CasosDePruebaHito11 {
         System.out.println("\n--- Observer ---");
 
         // Caso 1: adjuntar 4 observadores y verificar que todos son notificados
-        Envio envio = new Envio("ENV-O01", "CONFIRMADO");
+        Envio envio = new Envio.EnvioBuilder("ENV-O01").estado("CONFIRMADO").build();
         AtomicInteger notificaciones = new AtomicInteger(0);
         ObservadorEnvio contador = e -> notificaciones.incrementAndGet();
 
@@ -233,7 +233,7 @@ public final class CasosDePruebaHito11 {
 
         // Caso 3: desadjuntar DashboardObservador - el resto sigue recibiendo
         ObservadorEnvio dash = new DashboardObservador();
-        Envio envio2 = new Envio("ENV-O02", "CONFIRMADO");
+        Envio envio2 = new Envio.EnvioBuilder("ENV-O02").estado("CONFIRMADO").build();
         AtomicInteger cont2 = new AtomicInteger(0);
         envio2.adjuntarObservador(dash);
         envio2.adjuntarObservador(e -> cont2.incrementAndGet());
@@ -245,8 +245,8 @@ public final class CasosDePruebaHito11 {
                 "Caso 3: desadjuntar dashboard - lambda sigue recibiendo notificación");
 
         // Caso 4: múltiples envíos con observadores independientes
-        Envio envioA = new Envio("ENV-O03", "CONFIRMADO");
-        Envio envioB = new Envio("ENV-O04", "CONFIRMADO");
+        Envio envioA = new Envio.EnvioBuilder("ENV-O03").estado("CONFIRMADO").build();
+        Envio envioB = new Envio.EnvioBuilder("ENV-O04").estado("CONFIRMADO").build();
         AtomicInteger contA = new AtomicInteger(0);
         AtomicInteger contB = new AtomicInteger(0);
         envioA.adjuntarObservador(e -> contA.incrementAndGet());
@@ -258,7 +258,7 @@ public final class CasosDePruebaHito11 {
         verificar(contB.get() == 1, "Caso 4b: envioB notificó 1 vez");
 
         // Caso 5: iniciar() también dispara notificaciones (usa constructor con estado)
-        Envio envio3 = new Envio("ENV-O05", "PENDIENTE");
+        Envio envio3 = new Envio.EnvioBuilder("ENV-O05").estado("PENDIENTE").build();
         AtomicInteger contIniciar = new AtomicInteger(0);
         envio3.adjuntarObservador(e -> contIniciar.incrementAndGet());
         envio3.iniciar();
@@ -284,9 +284,9 @@ public final class CasosDePruebaHito11 {
 
         SistemaLogisticaEventDriven sistema = new SistemaLogisticaEventDriven();
 
-        Envio envio1 = new Envio("ENV-INT1", "Buenos Aires", "Córdoba",  5.0, 150.0);
-        Envio envio2 = new Envio("ENV-INT2", "Rosario",      "Mendoza",  8.0, 200.0);
-        Envio envio3 = new Envio("ENV-INT3", "Córdoba",      "Salta",    3.0, 100.0);
+        Envio envio1 = new Envio.EnvioBuilder("ENV-INT1", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
+        Envio envio2 = new Envio.EnvioBuilder("ENV-INT2", "Rosario",      "Mendoza").peso(8.0).costo(200.0).build();
+        Envio envio3 = new Envio.EnvioBuilder("ENV-INT3", "Córdoba",      "Salta").peso(3.0).costo(100.0).build();
 
         sistema.procesarEnvios(Arrays.asList(envio1, envio2, envio3));
 

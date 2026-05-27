@@ -250,11 +250,31 @@ class IPermisos {
   +puedeAdministrarEmpresas() boolean
 }
 
+class Rol {
+  &lt;&lt;enumeration&gt;&gt;
+  OPERADOR
+  ADMIN_EMPRESA
+  ADMIN_PLATAFORMA
+  CLIENTE
+  TRANSPORTISTA
+  +puedeCrearEnvio() boolean
+  +puedeAsignarRuta() boolean
+  +puedeVerReportes() boolean
+  +puedeGestionarFlota() boolean
+  +puedeAdministrarEmpresas() boolean
+}
+
 OperadorLogistico ..|&gt; IPermisos
 AdminEmpresa ..|&gt; IPermisos
 Transportista ..|&gt; IPermisos
 ClienteFinal ..|&gt; IPermisos
 AdminPlataforma ..|&gt; IPermisos
+
+OperadorLogistico ..&gt; Rol : delega
+AdminEmpresa ..&gt; Rol : delega
+Transportista ..&gt; Rol : delega
+ClienteFinal ..&gt; Rol : delega
+AdminPlataforma ..&gt; Rol : delega
 
 AdminEmpresa --|&gt; Usuario
 OperadorLogistico --|&gt; Usuario
@@ -295,6 +315,7 @@ class Vehiculo {
   +estaOperativo() boolean
   +liberar()
   +actualizarCapacidad(nuevaCapacidadKg)
+  +getCostoBaseKm() double
 }
 
 class Envio {
@@ -375,6 +396,7 @@ class PosicionGPS {
   -precision: double
   +esValida() boolean
   +distanciaA(otra) double
+  +haversineKm(lat1, lng1, lat2, lng2)$ double
 }
 
 class ETA {
@@ -642,11 +664,23 @@ class EnvioBuilder {
   -id String
   -origen String
   -destino String
+  -estado String
   -descripcion String
   -peso double
+  -costo double
+  -metodoPago String
+  -productoId String
+  -tipo String
   -fragil boolean
+  +EnvioBuilder(id, origen, destino)
+  +EnvioBuilder(id)
+  +estado(e) EnvioBuilder
   +descripcion(d) EnvioBuilder
   +peso(p) EnvioBuilder
+  +costo(c) EnvioBuilder
+  +metodoPago(m) EnvioBuilder
+  +productoId(p) EnvioBuilder
+  +tipo(t) EnvioBuilder
   +fragil(f) EnvioBuilder
   +build() Envio
 }
@@ -1313,7 +1347,7 @@ SistemaLogisticaAvanzada --&gt; NodoCentroRegional
                 Polymorphism
               </div>
               <div class="pattern-desc">
-                <code>IPermisos</code> (5 impl.), <code>Notificador</code> (3 impl.), <code>CalculadorDeRuta</code> (3 impl.). Elimina <code>instanceof</code> y <code>switch</code>.
+                <code>IPermisos</code> (5 impl.), <code>Notificador</code> (3 impl.), <code>CalculadorDeRuta</code> (3 impl.). Elimina <code>instanceof</code> y <code>switch</code>. El enum <code>Rol</code> centraliza la matriz de permisos: cada subclase delega sus 5 metodos en <code>Rol.CLASE</code>.
               </div>
             </div>
 
@@ -1413,7 +1447,7 @@ SistemaLogisticaAvanzada --&gt; NodoCentroRegional
                 Builder
               </div>
               <div class="pattern-desc">
-                <code>Envio.EnvioBuilder</code>: clase interna estática con API fluida. 9 campos opcionales con valores por defecto. Elimina constructores telescópicos.
+                <code>Envio.EnvioBuilder</code>: clase interna estática con API fluida. 14 campos opcionales con valores por defecto — incluyendo <code>estado</code>, <code>costo</code>, <code>metodoPago</code>, <code>productoId</code> y <code>tipo</code>. Único punto de construcción para todos los hitos de comportamiento. Elimina todos los constructores especializados.
               </div>
             </div>
 
@@ -1729,6 +1763,59 @@ SistemaLogisticaAvanzada --&gt; NodoCentroRegional
               </div>
               <div class="pattern-desc">
                 <code>SistemaLogisticaAvanzada</code> combina State + Strategy + Template Method + Visitor en un flujo unico con 36 verificaciones ejecutables.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Refactoring post-Hito 12 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge" style="background: #6b7280;">R</div>
+              <div>
+                <h2>Refactoring</h2>
+                <span>Correcciones de diseño post-Hito 12</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Information Expert — Vehiculo y Ruta
+              </div>
+              <div class="pattern-desc">
+                <code>Vehiculo.getCostoBaseKm()</code> centraliza la tabla de costos por tipo. <code>Ruta.calcularCostoEstimado()</code> delega en ese experto. <code>Ruta.optimizar()</code> ordena paradas por <code>ordenParada</code> y recalcula distancia.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Information Expert — PosicionGPS
+              </div>
+              <div class="pattern-desc">
+                <code>PosicionGPS.haversineKm()</code> reemplaza la formula euclidea incorrecta. <code>distanciaA()</code> y <code>Ruta.calcularDistanciaTotal()</code> delegan en el experto geografico.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Polymorphism — enum Rol
+              </div>
+              <div class="pattern-desc">
+                El enum <code>Rol</code> centraliza la matriz de permisos (5×5 booleans). Cada subclase declara <code>private static final Rol ROL</code> y delega los 5 metodos de <code>IPermisos</code>. Elimina 25 booleanos duplicados.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-grasp">GRASP</span>
+                Constructor delegation — SeguimientoEnvio y Entrega
+              </div>
+              <div class="pattern-desc">
+                Constructor de 4 args de <code>SeguimientoEnvio</code> delega en el de 2 args via <code>this(...)</code>. Ambos constructores de <code>Entrega</code> inicializan <code>pruebaAdjunta = ""</code> para evitar NPE en <code>getPruebaAdjunta()</code>.
               </div>
             </div>
           </div>

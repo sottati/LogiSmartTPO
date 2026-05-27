@@ -1,6 +1,6 @@
-# LogiSmart - Hito 10
+# LogiSmart - Hito 12
 
-Implementacion acumulada del TPO LogiSmart hasta Hito 10.
+Implementacion acumulada del TPO LogiSmart hasta Hito 12.
 
 ## Alcance actual
 
@@ -9,6 +9,10 @@ Implementacion acumulada del TPO LogiSmart hasta Hito 10.
 - Hito 8: Adapter, Bridge y Composite
 - Hito 9: Decorator, Facade, Flyweight y Proxy
 - Hito 10: Chain of Responsibility, Command e Interpreter
+- Hito 11: Iterator, Mediator, Memento, Observer
+- Hito 12: State, Strategy, Template Method, Visitor
+
+Total: 23 patrones GoF acumulados.
 
 ## Requisitos
 
@@ -18,24 +22,16 @@ Implementacion acumulada del TPO LogiSmart hasta Hito 10.
 ## Estructura relevante
 
 - `src/com/logismart/app/Main.java`
-- `src/com/logismart/aplicacion/hito9/`
 - `src/com/logismart/aplicacion/hito10/`
+- `src/com/logismart/aplicacion/hito11/`
+- `src/com/logismart/aplicacion/hito12/`
+- `src/com/logismart/infraestructura/comportamiento/`
 - `src/com/logismart/infraestructura/decorator/envio/`
 - `src/com/logismart/infraestructura/flyweight/ubicacion/`
 - `src/com/logismart/infraestructura/proxy/envio/`
-- `src/com/logismart/infraestructura/comportamiento/`
-- `skills/pds-clase-01/`
-- `skills/pds-clase-02/`
-- `skills/pds-clase-03/`
-- `skills/pds-clase-04/`
-- `skills/pds-clase-05/`
-- `skills/pds-clase-06/`
-- `skills/pds-clase-07/`
-- `skills/pds-clase-09/`
-- `skills/pds-clase-10/`
-- `hitos/HITO_8.html`
-- `hitos/HITO_9.html`
 - `hitos/HITO_10.html`
+- `hitos/HITO_11.html`
+- `hitos/HITO_12.html`
 - `DIAGRAMA_DE_CLASES_ACTUAL.html`
 
 ## Compilar
@@ -61,11 +57,24 @@ La demo ejecuta:
 7. Casos de Hito 8
 8. Casos de Hito 9
 9. Casos de Hito 10
+10. Casos de Hito 11
+11. Casos de Hito 12
+
+## Refactoring post-Hito 12
+
+Correcciones de diseño aplicadas al dominio tras completar el Hito 12 (148/148 tests en verde):
+
+- `Rol.java` (nuevo enum): centraliza la matriz de permisos 5×5, elimina 25 booleans duplicados en subclases
+- `PosicionGPS`: `distanciaA()` corregida a Haversine; nuevo método estático `haversineKm()`
+- `Vehiculo`: nuevo `getCostoBaseKm()` (Information Expert)
+- `Ruta`: usa `PosicionGPS.haversineKm()` y `vehiculo.getCostoBaseKm()`; `optimizar()` implementado
+- `SeguimientoEnvio`: constructor delegation via `this(...)`
+- `Entrega`: `pruebaAdjunta` inicializada en ambos constructores
+- Subclases de `Usuario`: IPermisos delegado a `Rol`, stubs implementados, `saludar()` completo
 
 ## Entregables incluidos
 
 - Codigo Java compilable y funcional
-- Skills locales de Clase 1 a 7, 9 y 10 en `skills/`
-- Documentos visuales `hitos/HITO_8.html`, `hitos/HITO_9.html` y `hitos/HITO_10.html`
-- Diagrama acumulativo actualizado
-- `DOCUMENTACION.md` con decisiones y cobertura de hitos 6 a 10
+- Documentos visuales `hitos/HITO_10.html`, `hitos/HITO_11.html` y `hitos/HITO_12.html`
+- Diagrama acumulativo `DIAGRAMA_DE_CLASES_ACTUAL.html`
+- `DOCUMENTACION.md` con decisiones y cobertura de hitos 6 a 12 y refactoring

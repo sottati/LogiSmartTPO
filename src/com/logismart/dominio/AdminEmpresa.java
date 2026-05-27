@@ -1,6 +1,8 @@
 package com.logismart.dominio;
 
 public class AdminEmpresa extends Usuario implements IPermisos {
+	private static final Rol ROL = Rol.ADMIN_EMPRESA;
+
 	private Empresa empresa;
 	private String permisosAdmin;
 	private String notificaciones;
@@ -21,37 +23,23 @@ public class AdminEmpresa extends Usuario implements IPermisos {
 		this.notificaciones = notificaciones;
 	}
 
-	public Empresa getEmpresa() {
-		return empresa;
-	}
+	public Empresa getEmpresa()                          { return empresa; }
+	public void setEmpresa(Empresa empresa)              { this.empresa = empresa; }
+	public String getPermisosAdmin()                     { return permisosAdmin; }
+	public void setPermisosAdmin(String permisosAdmin)   { this.permisosAdmin = permisosAdmin; }
+	public String getNotificaciones()                    { return notificaciones; }
+	public void setNotificaciones(String notificaciones) { this.notificaciones = notificaciones; }
 
-	public void setEmpresa(Empresa empresa) {
-		this.empresa = empresa;
-	}
-
-	public String getPermisosAdmin() {
-		return permisosAdmin;
-	}
-
-	public void setPermisosAdmin(String permisosAdmin) {
-		this.permisosAdmin = permisosAdmin;
-	}
-
-	public String getNotificaciones() {
-		return notificaciones;
-	}
-
-	public void setNotificaciones(String notificaciones) {
-		this.notificaciones = notificaciones;
-	}
-	
 	public void configurarEmpresa() {
+		System.out.println("[AdminEmpresa] Configurando empresa...");
 	}
 
 	public void consultarReportes() {
+		System.out.println("[AdminEmpresa] Consultando reportes de empresa...");
 	}
 
 	public void gestionarSuscripcion() {
+		System.out.println("[AdminEmpresa] Gestionando suscripción...");
 	}
 
 	public String getNombre() { return getUsername(); }
@@ -61,29 +49,9 @@ public class AdminEmpresa extends Usuario implements IPermisos {
 		System.out.println("[AdminEmpresa] Hola, soy el administrador de empresa " + getUsername() + ".");
 	}
 
-	// IPermisos: AdminEmpresa gestiona su empresa, consulta reportes, pero no asigna rutas
-	@Override
-	public boolean puedeCrearEnvio() {
-		return true;
-	}
-
-	@Override
-	public boolean puedeAsignarRuta() {
-		return false;
-	}
-
-	@Override
-	public boolean puedeVerReportes() {
-		return true;
-	}
-
-	@Override
-	public boolean puedeGestionarFlota() {
-		return false;
-	}
-
-	@Override
-	public boolean puedeAdministrarEmpresas() {
-		return false;
-	}
+	@Override public boolean puedeCrearEnvio()          { return ROL.puedeCrearEnvio(); }
+	@Override public boolean puedeAsignarRuta()         { return ROL.puedeAsignarRuta(); }
+	@Override public boolean puedeVerReportes()         { return ROL.puedeVerReportes(); }
+	@Override public boolean puedeGestionarFlota()      { return ROL.puedeGestionarFlota(); }
+	@Override public boolean puedeAdministrarEmpresas() { return ROL.puedeAdministrarEmpresas(); }
 }

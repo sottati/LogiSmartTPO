@@ -23,12 +23,9 @@ public class SeguimientoEnvio {
 	}
 
 	public SeguimientoEnvio(String id, String estadoActual, String ultimoEvento, LocalDateTime ultimaActualizacion) {
-		this.id = id;
-		this.estadoActual = estadoActual;
+		this(id, estadoActual);
 		this.ultimoEvento = ultimoEvento;
 		this.ultimaActualizacion = ultimaActualizacion;
-		this.eta = new ETA(0, LocalDateTime.now(), 0.0);
-		this.historialPosiciones = new ArrayList<>();
 	}
 
 	public String getId() {

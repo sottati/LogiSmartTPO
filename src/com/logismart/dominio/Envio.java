@@ -53,68 +53,6 @@ public class Envio implements Cloneable {
 	private String tipo;
 	private EstrategiaCalculoCosto estrategia;
 
-	// Constructor Hito 11 - Observer (id + estado inicial)
-	public Envio(String id, String estadoInicial) {
-		this.id            = id;
-		this.empresa       = null;
-		this.estado        = estadoInicial;
-		this.prioridad     = "MEDIA";
-		this.fechaProgramada = null;
-		this.ordenes       = new ArrayList<>();
-		this.seguimiento   = new SeguimientoEnvio(id + "-seg", estadoInicial);
-		this.entrega       = new Entrega(id + "-ent");
-	}
-
-	// Constructor Hito 11 - Memento (id + datos logísticos sin método de pago)
-	public Envio(String id, String origen, String destino, double peso, double costo) {
-		this.id            = id;
-		this.empresa       = null;
-		this.estado        = "CONFIRMADO";
-		this.prioridad     = "MEDIA";
-		this.fechaProgramada = null;
-		this.ordenes       = new ArrayList<>();
-		this.seguimiento   = new SeguimientoEnvio(id + "-seg", "CONFIRMADO");
-		this.entrega       = new Entrega(id + "-ent");
-		this.origen        = origen;
-		this.destino       = destino;
-		this.peso          = peso;
-		this.costo         = costo;
-	}
-
-	// Constructor Hito 10 - usado por Chain / Command / Interpreter
-	public Envio(String origen, String destino, double peso, double costo, String metodoPago, String productoId) {
-		this.id = "H10-" + java.util.UUID.randomUUID().toString().substring(0, 8);
-		this.empresa = null;
-		this.estado = "PENDIENTE";
-		this.prioridad = "MEDIA";
-		this.fechaProgramada = null;
-		this.ordenes = new ArrayList<>();
-		this.seguimiento = new SeguimientoEnvio(this.id + "-seg", "PENDIENTE");
-		this.entrega = new Entrega(this.id + "-ent");
-		this.origen = origen;
-		this.destino = destino;
-		this.peso = peso;
-		this.costo = costo;
-		this.metodoPago = metodoPago;
-		this.productoId = productoId;
-	}
-
-	// Constructor Hito 12 - Strategy
-	public Envio(String id, String origen, String destino, double peso, String tipo) {
-		this.id            = id;
-		this.empresa       = null;
-		this.estado        = "CONFIRMADO";
-		this.prioridad     = "MEDIA";
-		this.fechaProgramada = null;
-		this.ordenes       = new ArrayList<>();
-		this.seguimiento   = new SeguimientoEnvio(id + "-seg", "CONFIRMADO");
-		this.entrega       = new Entrega(id + "-ent");
-		this.origen        = origen;
-		this.destino       = destino;
-		this.peso          = peso;
-		this.tipo          = tipo;
-	}
-
 	// Constructor original - lo usan FabricaDeEnvios y sus subclases
 	public Envio(String id, Empresa empresa, String prioridad, LocalDateTime fechaProgramada) {
 		this.id = id;
@@ -131,16 +69,20 @@ public class Envio implements Cloneable {
 	private Envio(EnvioBuilder builder) {
 		this.id = builder.id;
 		this.empresa = null;
-		this.estado = "PENDIENTE";
+		this.estado = builder.estado;
 		this.prioridad = "MEDIA";
 		this.fechaProgramada = null;
 		this.ordenes = new ArrayList<>();
-		this.seguimiento = new SeguimientoEnvio(builder.id + "-seg", "PENDIENTE");
+		this.seguimiento = new SeguimientoEnvio(builder.id + "-seg", builder.estado);
 		this.entrega = new Entrega(builder.id + "-ent");
 		this.origen = builder.origen;
 		this.destino = builder.destino;
 		this.descripcion = builder.descripcion;
 		this.peso = builder.peso;
+		this.costo = builder.costo;
+		this.metodoPago = builder.metodoPago;
+		this.productoId = builder.productoId;
+		this.tipo = builder.tipo;
 		this.fragil = builder.fragil;
 		this.requiereSignatura = builder.requiereSignatura;
 		this.requiereRefrigeracion = builder.requiereRefrigeracion;
@@ -174,8 +116,13 @@ public class Envio implements Cloneable {
 		private final String id;
 		private final String origen;
 		private final String destino;
+		private String estado = "PENDIENTE";
 		private String descripcion = "";
 		private double peso = 0.0;
+		private double costo = 0.0;
+		private String metodoPago = null;
+		private String productoId = null;
+		private String tipo = null;
 		private boolean fragil = false;
 		private boolean requiereSignatura = false;
 		private boolean requiereRefrigeracion = false;
@@ -190,15 +137,26 @@ public class Envio implements Cloneable {
 			this.destino = destino;
 		}
 
-		public EnvioBuilder descripcion(String descripcion) { this.descripcion = descripcion; return this; }
-		public EnvioBuilder peso(double peso)               { this.peso = peso; return this; }
-		public EnvioBuilder fragil(boolean fragil)          { this.fragil = fragil; return this; }
-		public EnvioBuilder requiereSignatura(boolean r)    { this.requiereSignatura = r; return this; }
-		public EnvioBuilder requiereRefrigeracion(boolean r){ this.requiereRefrigeracion = r; return this; }
-		public EnvioBuilder requiereAseguranza(boolean r)   { this.requiereAseguranza = r; return this; }
-		public EnvioBuilder instruccionesEspeciales(String i){ this.instruccionesEspeciales = i; return this; }
-		public EnvioBuilder contactoEmergencia(String c)    { this.contactoEmergencia = c; return this; }
-		public EnvioBuilder horaEntregaPreferida(LocalTime h){ this.horaEntregaPreferida = h; return this; }
+		public EnvioBuilder(String id) {
+			this.id = id;
+			this.origen = "";
+			this.destino = "";
+		}
+
+		public EnvioBuilder estado(String estado)             { this.estado = estado; return this; }
+		public EnvioBuilder descripcion(String descripcion)   { this.descripcion = descripcion; return this; }
+		public EnvioBuilder peso(double peso)                 { this.peso = peso; return this; }
+		public EnvioBuilder costo(double costo)               { this.costo = costo; return this; }
+		public EnvioBuilder metodoPago(String metodoPago)     { this.metodoPago = metodoPago; return this; }
+		public EnvioBuilder productoId(String productoId)     { this.productoId = productoId; return this; }
+		public EnvioBuilder tipo(String tipo)                 { this.tipo = tipo; return this; }
+		public EnvioBuilder fragil(boolean fragil)            { this.fragil = fragil; return this; }
+		public EnvioBuilder requiereSignatura(boolean r)      { this.requiereSignatura = r; return this; }
+		public EnvioBuilder requiereRefrigeracion(boolean r)  { this.requiereRefrigeracion = r; return this; }
+		public EnvioBuilder requiereAseguranza(boolean r)     { this.requiereAseguranza = r; return this; }
+		public EnvioBuilder instruccionesEspeciales(String i) { this.instruccionesEspeciales = i; return this; }
+		public EnvioBuilder contactoEmergencia(String c)      { this.contactoEmergencia = c; return this; }
+		public EnvioBuilder horaEntregaPreferida(LocalTime h) { this.horaEntregaPreferida = h; return this; }
 
 		public Envio build() { return new Envio(this); }
 	}

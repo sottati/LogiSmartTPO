@@ -61,7 +61,7 @@ public class Usuario {
 	}
 	
 	public void iniciarSesion(String username, String password) {
-		
+		System.out.println("[Usuario] Sesión iniciada: " + username + ".");
 	}
 	
 	public void cambiarPassword(String newPasswordHash) {

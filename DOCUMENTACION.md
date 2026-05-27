@@ -27,7 +27,6 @@ Adiciones compatibles con hitos anteriores:
 - `getTipo()`
 - `establecerEstrategia(EstrategiaCalculoCosto)`
 - `calcularCostoConEstrategia()`
-- constructor `Envio(String id, String origen, String destino, double peso, String tipo)`
 
 Se mantienen intactos:
 
@@ -36,6 +35,8 @@ Se mantienen intactos:
 - `cancelar()`
 - `cerrar()`
 - Memento y Observer de Hito 11
+
+Nota: el campo `tipo` se asigna vía `EnvioBuilder.tipo(String)` — el constructor especializado `Envio(id, origen, destino, peso, tipo)` fue consolidado en el Builder (ver refactorización post-Hito 12).
 
 ## 3) State
 
@@ -188,7 +189,55 @@ Resultado relevante:
 
 - Hito 12: 36 casos ejecutados, 36 OK.
 
-## 9) Documentación actualizada
+## 9) Refactoring post-Hito 12
+
+Correcciones de diseño aplicadas al dominio base tras completar el Hito 12. 148/148 tests siguen en verde.
+
+### `Rol.java` (nuevo enum)
+
+Paquete: `src/com/logismart/dominio/`
+
+Centraliza la matriz de permisos 5×5 (crearEnvio, asignarRuta, verReportes, gestionarFlota, administrarEmpresas) para los 5 roles. Elimina 25 booleanos duplicados distribuidos en las subclases de `Usuario`.
+
+### Subclases de `Usuario`
+
+`OperadorLogistico`, `AdminEmpresa`, `AdminPlataforma`, `ClienteFinal`, `Transportista`:
+
+- Añaden `private static final Rol ROL = Rol.CLASE`.
+- Los 5 métodos de `IPermisos` delegan en `ROL.puedeXxx()`.
+- Los métodos stub vacíos reciben implementaciones mínimas con `System.out.println`.
+- `AdminPlataforma` agrega el `saludar()` que faltaba.
+- `Transportista` agrega `saludar()` y marca `disponibilidad` en `iniciarRecorrido()` / `registrarEntrega()`.
+
+### `PosicionGPS.java`
+
+- `distanciaA(PosicionGPS)` reemplaza la fórmula euclidea incorrecta por delegación a `haversineKm()`.
+- Nuevo método estático `haversineKm(lat1, lng1, lat2, lng2)` con la fórmula de Haversine (radio = 6371 km).
+
+### `Vehiculo.java`
+
+- Nuevo método `getCostoBaseKm()`: CAMION=1.8, UTILITARIO=1.3, default=1.0. Aplica GRASP Information Expert.
+
+### `Ruta.java`
+
+- `calcularDistanciaTotal()` usa `PosicionGPS.haversineKm()` en lugar del método privado duplicado.
+- `calcularCostoEstimado()` delega en `vehiculo.getCostoBaseKm()`.
+- `optimizar()` implementado: ordena `paradas` por `ordenParada` y llama `recalcular()`.
+- Eliminado método privado `distanciaEntre()` (lógica movida al experto `PosicionGPS`).
+
+### `SeguimientoEnvio.java`
+
+- Constructor de 4 argumentos delega en el de 2 argumentos via `this(id, estadoActual)`. Elimina inicialización duplicada de `eta` e `historialPosiciones`.
+
+### `Entrega.java`
+
+- Ambos constructores inicializan `this.pruebaAdjunta = ""`. Garantiza que `getPruebaAdjunta()` nunca retorne `null`.
+
+### `Usuario.java`
+
+- `iniciarSesion(username, password)` y `cerrarSesion()` implementados con `System.out.println`.
+
+## 10) Documentación actualizada
 
 - `hitos/HITO_12.html`
 - `DIAGRAMA_DE_CLASES_ACTUAL.html`

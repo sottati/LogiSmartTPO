@@ -13,6 +13,7 @@ public class Entrega {
 		this.id = id;
 		this.resultado = "PENDIENTE";
 		this.observaciones = "";
+		this.pruebaAdjunta = "";
 	}
 
 	public Entrega(String id, String resultado, LocalDateTime fechaHora, String observaciones) {
@@ -20,6 +21,7 @@ public class Entrega {
 		this.resultado = resultado;
 		this.fechaHora = fechaHora;
 		this.observaciones = observaciones;
+		this.pruebaAdjunta = "";
 	}
 
 	public String getId() {

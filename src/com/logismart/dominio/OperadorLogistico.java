@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class OperadorLogistico extends Usuario implements IPermisos {
+	private static final Rol ROL = Rol.OPERADOR;
+
 	private Empresa empresa;
 	private String zonaOperacion;
 	private String turno;
@@ -24,39 +26,23 @@ public class OperadorLogistico extends Usuario implements IPermisos {
 		this.turno = turno;
 	}
 
-	public Empresa getEmpresa() {
-		return empresa;
-	}
-
-	public void setEmpresa(Empresa empresa) {
-		this.empresa = empresa;
-	}
-
-	public String getZonaOperacion() {
-		return zonaOperacion;
-	}
-
-	public void setZonaOperacion(String zonaOperacion) {
-		this.zonaOperacion = zonaOperacion;
-	}
-
-	public String getTurno() {
-		return turno;
-	}
-
-	public void setTurno(String turno) {
-		this.turno = turno;
-	}
+	public Empresa getEmpresa()                        { return empresa; }
+	public void setEmpresa(Empresa empresa)            { this.empresa = empresa; }
+	public String getZonaOperacion()                   { return zonaOperacion; }
+	public void setZonaOperacion(String zonaOperacion) { this.zonaOperacion = zonaOperacion; }
+	public String getTurno()                           { return turno; }
+	public void setTurno(String turno)                 { this.turno = turno; }
 
 	public void importarOrdenes() {
-		
+		System.out.println("[OperadorLogistico] Importando órdenes para zona: " + zonaOperacion + ".");
 	}
 
 	public void gestionarFlota() {
+		System.out.println("[OperadorLogistico] Gestionando flota en turno: " + turno + ".");
 	}
 
 	public void planificarRuta() {
-		
+		System.out.println("[OperadorLogistico] Planificando ruta para zona: " + zonaOperacion + ".");
 	}
 
 	public Envio crearEnvio(String prioridad, LocalDateTime fechaProgramada) {
@@ -72,8 +58,9 @@ public class OperadorLogistico extends Usuario implements IPermisos {
 		ruta.asignarTransportista(transportista);
 		return ruta;
 	}
-	
+
 	public void asignarRuta() {
+		System.out.println("[OperadorLogistico] Asignando ruta...");
 	}
 
 	public String getNombre() { return getUsername(); }
@@ -83,29 +70,9 @@ public class OperadorLogistico extends Usuario implements IPermisos {
 		System.out.println("[Operador] Hola, soy el operador logístico " + getUsername() + ".");
 	}
 
-	// IPermisos: OperadorLogistico tiene permisos completos de operacion
-	@Override
-	public boolean puedeCrearEnvio() {
-		return true;
-	}
-
-	@Override
-	public boolean puedeAsignarRuta() {
-		return true;
-	}
-
-	@Override
-	public boolean puedeVerReportes() {
-		return true;
-	}
-
-	@Override
-	public boolean puedeGestionarFlota() {
-		return true;
-	}
-
-	@Override
-	public boolean puedeAdministrarEmpresas() {
-		return false;
-	}
+	@Override public boolean puedeCrearEnvio()          { return ROL.puedeCrearEnvio(); }
+	@Override public boolean puedeAsignarRuta()         { return ROL.puedeAsignarRuta(); }
+	@Override public boolean puedeVerReportes()         { return ROL.puedeVerReportes(); }
+	@Override public boolean puedeGestionarFlota()      { return ROL.puedeGestionarFlota(); }
+	@Override public boolean puedeAdministrarEmpresas() { return ROL.puedeAdministrarEmpresas(); }
 }

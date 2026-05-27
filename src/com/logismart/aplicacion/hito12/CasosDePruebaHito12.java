@@ -80,7 +80,7 @@ public final class CasosDePruebaHito12 {
     private static void probarStrategy() {
         System.out.println("\n--- Strategy ---");
 
-        Envio envio = new Envio("ENV-ST01", "Buenos Aires", "Cordoba", 10.0, "URGENTE");
+        Envio envio = new Envio.EnvioBuilder("ENV-ST01", "Buenos Aires", "Cordoba").peso(10.0).tipo("URGENTE").build();
 
         envio.establecerEstrategia(new EstrategiaDistancia());
         verificar(envio.calcularCostoConEstrategia() == 5000.0, "Caso 1: estrategia distancia usa 500 km fijos");
@@ -159,7 +159,7 @@ public final class CasosDePruebaHito12 {
         System.out.println("\n--- Integracion ---");
 
         SistemaLogisticaAvanzada sistema = new SistemaLogisticaAvanzada(redDePrueba());
-        Envio envio = new Envio("ENV-I01", "Buenos Aires", "Cordoba", 10.0, "EXPRESS");
+        Envio envio = new Envio.EnvioBuilder("ENV-I01", "Buenos Aires", "Cordoba").peso(10.0).tipo("EXPRESS").build();
         double costo = sistema.procesarEnvio(envio, new EstrategiaUrgencia(), new ProcesoNacional());
 
         verificar(costo == 300.0, "Caso 1: integracion calcula costo por Strategy");
@@ -171,7 +171,7 @@ public final class CasosDePruebaHito12 {
     }
 
     private static Envio nuevoEnvio(String id) {
-        Envio envio = new Envio(id, "Buenos Aires", "Cordoba", 5.0, "NORMAL");
+        Envio envio = new Envio.EnvioBuilder(id, "Buenos Aires", "Cordoba").peso(5.0).tipo("NORMAL").build();
         envio.cambiarEstado(new EstadoConfirmado());
         return envio;
     }
