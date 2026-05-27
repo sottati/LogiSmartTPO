@@ -1079,6 +1079,106 @@ ColeccionHash ..&gt; IteradorEnvios
 SistemaLogisticaEventDriven --&gt; MediadorEnvios
 SistemaLogisticaEventDriven --&gt; ColeccionEnvios
 SistemaLogisticaEventDriven --&gt; HistorialEnvios
+
+%% ---- GOF: COMPORTAMIENTO III (Hito 12) ----
+class EstadoEnvio {
+  &lt;&lt;interface&gt;&gt;
+  +validar(envio)
+  +entregar(envio)
+  +cancelar(envio)
+  +retener(envio)
+  +devolver(envio)
+  +reclamar(envio)
+  +obtenerNombre() String
+}
+class EstadoConfirmado
+class EstadoEnTransito
+class EstadoEnReparto
+class EstadoEntregado
+class EstadoCancelado
+class EstadoRetenido
+EstadoEnvio &lt;|.. EstadoConfirmado
+EstadoEnvio &lt;|.. EstadoEnTransito
+EstadoEnvio &lt;|.. EstadoEnReparto
+EstadoEnvio &lt;|.. EstadoEntregado
+EstadoEnvio &lt;|.. EstadoCancelado
+EstadoEnvio &lt;|.. EstadoRetenido
+Envio --&gt; EstadoEnvio : estadoGoF
+
+class EstrategiaCalculoCosto {
+  &lt;&lt;interface&gt;&gt;
+  +calcular(envio) double
+  +obtenerNombre() String
+}
+class EstrategiaDistancia
+class EstrategiaPeso
+class EstrategiaUrgencia
+class EstrategiaVolumen
+class EstrategiaHibrida
+EstrategiaCalculoCosto &lt;|.. EstrategiaDistancia
+EstrategiaCalculoCosto &lt;|.. EstrategiaPeso
+EstrategiaCalculoCosto &lt;|.. EstrategiaUrgencia
+EstrategiaCalculoCosto &lt;|.. EstrategiaVolumen
+EstrategiaCalculoCosto &lt;|.. EstrategiaHibrida
+Envio --&gt; EstrategiaCalculoCosto : estrategia
+
+class ProcesoEnvio {
+  &lt;&lt;abstract&gt;&gt;
+  +procesarEnvio(envio) final
+  #validar(envio)
+  #calcularCosto(envio)
+  #procesarPago(envio)
+  #notificar(envio)
+}
+class ProcesoNacional
+class ProcesoInternacional
+class ProcesoUrgente
+ProcesoEnvio &lt;|-- ProcesoNacional
+ProcesoEnvio &lt;|-- ProcesoInternacional
+ProcesoEnvio &lt;|-- ProcesoUrgente
+
+class VisitorCentro {
+  &lt;&lt;interface&gt;&gt;
+  +visitar(punto)
+  +visitar(centro)
+}
+class ElementoDistribucion {
+  &lt;&lt;interface&gt;&gt;
+  +aceptar(visitor)
+  +obtenerNombre() String
+}
+class NodoPuntoEntrega {
+  -paquetes int
+  -capacidad int
+  -costoOperativo double
+}
+class NodoCentroRegional {
+  -hijos List~ElementoDistribucion~
+  +agregar(elemento)
+}
+class VisitorCalculoOcupacion
+class VisitorGeneradorReporte
+class VisitorCalculoCostoOperativo
+class VisitorBusquedaPuntosCriticos
+ElementoDistribucion &lt;|.. NodoPuntoEntrega
+ElementoDistribucion &lt;|.. NodoCentroRegional
+NodoCentroRegional o-- ElementoDistribucion
+VisitorCentro &lt;|.. VisitorCalculoOcupacion
+VisitorCentro &lt;|.. VisitorGeneradorReporte
+VisitorCentro &lt;|.. VisitorCalculoCostoOperativo
+VisitorCentro &lt;|.. VisitorBusquedaPuntosCriticos
+ElementoDistribucion --&gt; VisitorCentro : acepta
+
+class SistemaLogisticaAvanzada {
+  -redDistribucion NodoCentroRegional
+  +procesarEnvio(envio, estrategia, proceso) double
+  +calcularOcupacionRed() double
+  +calcularCostoOperativoRed() double
+}
+SistemaLogisticaAvanzada --&gt; EstadoEnvio
+SistemaLogisticaAvanzada --&gt; EstrategiaCalculoCosto
+SistemaLogisticaAvanzada --&gt; ProcesoEnvio
+SistemaLogisticaAvanzada --&gt; NodoCentroRegional
           </pre>
         </div>
       </main>
@@ -1566,6 +1666,69 @@ SistemaLogisticaEventDriven --&gt; HistorialEnvios
               </div>
               <div class="pattern-desc">
                 <code>SistemaLogisticaEventDriven</code> combina los 4 patrones en un pipeline event-driven: Memento + Iterator + Observer + Mediator colaboran en cada ciclo de procesamiento.
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Hito 12 -->
+          <div class="hito-block">
+            <div class="hito-block-header">
+              <div class="hito-badge" style="background: var(--primary);">12</div>
+              <div>
+                <h2>Hito 12</h2>
+                <span>GoF - Comportamiento III</span>
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                State
+              </div>
+              <div class="pattern-desc">
+                <code>Envio</code> conserva sus metodos historicos y suma <code>estadoGoF</code> para delegar validar, entregar, retener, devolver y reclamar en 6 estados concretos.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Strategy
+              </div>
+              <div class="pattern-desc">
+                <code>EstrategiaCalculoCosto</code> encapsula 5 calculos: distancia determinista, peso, urgencia, volumen e hibrida.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Template Method
+              </div>
+              <div class="pattern-desc">
+                <code>ProcesoEnvio</code> fija el algoritmo de procesamiento y <code>ProcesoNacional</code>, <code>ProcesoInternacional</code> y <code>ProcesoUrgente</code> especializan los pasos.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Visitor
+              </div>
+              <div class="pattern-desc">
+                <code>VisitorCentro</code> agrega operaciones sobre <code>NodoCentroRegional</code> y <code>NodoPuntoEntrega</code> sin modificar la estructura.
+              </div>
+            </div>
+
+            <div class="pattern">
+              <div class="pattern-name">
+                <span class="pattern-tag tag-gof">GoF</span>
+                Integracion
+              </div>
+              <div class="pattern-desc">
+                <code>SistemaLogisticaAvanzada</code> combina State + Strategy + Template Method + Visitor en un flujo unico con 36 verificaciones ejecutables.
               </div>
             </div>
           </div>

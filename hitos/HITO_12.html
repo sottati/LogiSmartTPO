@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITO 12 - LogiSmart | Patrones de Comportamiento III</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+      :root { --primary:#17324d; --primary-2:#1f4d78; --accent:#dc6b1f; --bg:#f4f7fb; --surface:#fff; --text:#14202c; --muted:#4f6172; --border:#d9e2ec; --ok:#165b3b; --ok-bg:#ecfdf3; }
+      * { box-sizing:border-box; margin:0; padding:0; }
+      html { scroll-behavior:smooth; }
+      body { font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif; background:linear-gradient(180deg,#f7f9fc 0%,#f2f6fa 100%); color:var(--text); line-height:1.6; }
+      .cover { min-height:70vh; display:grid; place-items:center; text-align:center; padding:2rem; background:radial-gradient(circle at 20% 20%,rgba(31,77,120,.12),transparent 45%),radial-gradient(circle at 80% 10%,rgba(220,107,31,.10),transparent 35%),var(--surface); border-bottom:8px solid var(--primary); }
+      .cover-content { max-width:780px; width:100%; }
+      .university { font-size:.8rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:.4rem; }
+      .subject { font-size:.95rem; font-weight:500; color:var(--primary-2); margin-bottom:2rem; }
+      .cover h1 { font-size:clamp(2.4rem,8vw,4.8rem); color:var(--primary); letter-spacing:-.03em; }
+      .subtitle { margin-top:.75rem; font-size:1.1rem; color:var(--muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:.85rem 0; margin-bottom:2rem; }
+      .team { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; max-width:420px; margin:0 auto 2rem; border-top:2px solid var(--bg); padding-top:1.75rem; }
+      .team-member strong { display:block; font-size:1rem; color:var(--text); margin-bottom:.2rem; }
+      .team-member span { font-size:.82rem; color:var(--muted); font-family:monospace; }
+      .cover-date { font-size:.85rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.12em; }
+      .container { max-width:1080px; margin:0 auto; padding:2.5rem 1.25rem 4rem; }
+      .section { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.75rem; margin-bottom:1.3rem; box-shadow:0 2px 5px rgba(20,32,44,.05); }
+      .section-act { display:inline-flex; align-items:center; gap:.5rem; font-size:.72rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:.4rem; }
+      h2 { color:var(--primary); font-size:1.45rem; margin-bottom:.25rem; }
+      .section > p { color:var(--muted); margin-bottom:.8rem; }
+      h3 { margin:1rem 0 .4rem; color:var(--primary-2); font-size:1.03rem; }
+      ul { margin-left:1.2rem; }
+      li { margin-bottom:.35rem; }
+      table { width:100%; border-collapse:collapse; margin-top:.6rem; font-size:.92rem; }
+      th,td { border:1px solid var(--border); padding:.55rem .7rem; text-align:left; vertical-align:top; }
+      thead th { background:var(--primary); color:#fff; font-size:.8rem; letter-spacing:.04em; text-transform:uppercase; }
+      pre { background:#0f1722; color:#dce9ff; border-radius:10px; padding:1rem; overflow-x:auto; font-size:.8rem; line-height:1.45; }
+      pre.mermaid { background:none; }
+      code { background:#eef3fa; border-radius:4px; padding:.05rem .3rem; }
+      .pill { display:inline-block; margin-top:.6rem; background:var(--ok-bg); color:var(--ok); border:1px solid #b9e7cb; border-radius:999px; padding:.2rem .6rem; font-size:.78rem; font-weight:600; }
+      .tech-note { border-left:4px solid var(--accent); background:#fff8f3; padding:.8rem 1rem; border-radius:8px; margin:.9rem 0; color:var(--text); }
+      .grid-2 { display:grid; gap:1.75rem; grid-template-columns:1fr 1fr; margin-bottom:1.5rem; }
+      .grid-4 { display:grid; gap:1.25rem; grid-template-columns:1fr 1fr 1fr 1fr; }
+      .pattern-badge { display:inline-flex; align-items:center; gap:.4rem; background:#fff0e3; color:#7a3200; border:1px solid #fbd38d; border-radius:6px; padding:.3rem .7rem; font-size:.8rem; font-weight:700; margin-bottom:.6rem; }
+      .side-nav { position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:.15rem; padding:.6rem .5rem; background:rgba(255,255,255,.92); border-right:1px solid var(--border); border-radius:0 10px 10px 0; box-shadow:2px 0 8px rgba(20,32,44,.06); }
+      .side-nav a { display:block; padding:.35rem .75rem; font-size:.7rem; font-weight:500; color:var(--muted); text-decoration:none; border-left:3px solid transparent; transition:all .2s ease; white-space:nowrap; border-radius:0 4px 4px 0; }
+      .side-nav a:hover { color:var(--primary); border-left-color:var(--border); }
+      @media (max-width:1200px) { .side-nav { display:none; } }
+      @media (max-width:900px) { .grid-2,.grid-4 { grid-template-columns:1fr; } .team { grid-template-columns:1fr; max-width:220px; } }
+    </style>
+  </head>
+  <body>
+    <header class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+        <h1>HITO 12</h1>
+        <div class="subtitle">Patrones de Comportamiento III &mdash; State &middot; Strategy &middot; Template Method &middot; Visitor</div>
+        <div class="team">
+          <div class="team-member"><strong>Rosario Presedo</strong><span>LU: 1146894</span></div>
+          <div class="team-member"><strong>Simon Ottati</strong><span>LU: 1155931</span></div>
+        </div>
+        <div class="cover-date">Mayo 2026</div>
+      </div>
+    </header>
+
+    <nav class="side-nav">
+      <a href="#intro">Introducción</a>
+      <a href="#state">State</a>
+      <a href="#strategy">Strategy</a>
+      <a href="#template">Template</a>
+      <a href="#visitor">Visitor</a>
+      <a href="#integracion">Integración</a>
+      <a href="#uml">UML</a>
+      <a href="#conclusion">Conclusión</a>
+    </nav>
+
+    <main class="container">
+      <section class="section" id="intro">
+        <h2>Contexto e integración</h2>
+        <p>El Hito 12 completa el bloque de comportamiento incorporando State, Strategy, Template Method y Visitor. La implementación mantiene a <code>DIAGRAMA_DE_CLASES_ACTUAL.html</code> como fuente de verdad acumulada y agrega 36 verificaciones ejecutables en <code>CasosDePruebaHito12</code>.</p>
+        <table>
+          <thead><tr><th>Hito</th><th>Categoría</th><th>Patrones</th><th>Aporte</th></tr></thead>
+          <tbody>
+            <tr><td>10</td><td>Comportamiento I</td><td>Chain, Command, Interpreter</td><td>Validación, acciones reversibles, reglas.</td></tr>
+            <tr><td>11</td><td>Comportamiento II</td><td>Iterator, Mediator, Memento, Observer</td><td>Recorrido, coordinación, historial, notificación.</td></tr>
+            <tr><td><strong>12</strong></td><td><strong>Comportamiento III</strong></td><td><strong>State, Strategy, Template Method, Visitor</strong></td><td>Estados polimórficos, algoritmos intercambiables, esqueleto de proceso, operaciones externas sobre árbol.</td></tr>
+          </tbody>
+        </table>
+        <h3>Mapa de trazabilidad</h3>
+        <table>
+          <thead><tr><th>Sección</th><th>Archivos</th><th>Evidencia</th></tr></thead>
+          <tbody>
+            <tr><td>State</td><td><code>state/EstadoEnvio</code>, 6 estados, <code>Envio.estadoGoF</code></td><td>10 verificaciones de flujo e inválidas.</td></tr>
+            <tr><td>Strategy</td><td><code>strategy/EstrategiaCalculoCosto</code>, 5 estrategias</td><td>7 verificaciones, cálculo determinista.</td></tr>
+            <tr><td>Template Method</td><td><code>template/ProcesoEnvio</code>, 3 procesos</td><td>7 verificaciones, orden de pasos.</td></tr>
+            <tr><td>Visitor</td><td><code>visitor/*</code></td><td>8 verificaciones, doble dispatch y recorrido.</td></tr>
+            <tr><td>Integración</td><td><code>SistemaLogisticaAvanzada</code></td><td>4 verificaciones combinadas.</td></tr>
+          </tbody>
+        </table>
+        <div class="pill">23 patrones GoF acumulados · 28 clases nuevas · 36 verificaciones OK</div>
+      </section>
+
+      <section class="section" id="state">
+        <div class="section-act">Actividad 1 · State</div>
+        <h2>State: máquina de estados del envío</h2>
+        <p><code>Envio</code> actúa como contexto. El campo <code>estadoGoF</code> delega comportamiento en objetos estado, evitando condicionales por texto para operaciones como validar, entregar, retener, devolver y reclamar.</p>
+        <div class="pattern-badge">GoF · State</div>
+        <table>
+          <thead><tr><th>Estado</th><th>Transiciones principales</th><th>Transiciones inválidas relevantes</th></tr></thead>
+          <tbody>
+            <tr><td>CONFIRMADO</td><td>validar → EN_TRANSITO, retener → RETENIDO, cancelar → CANCELADO</td><td>entregar, devolver, reclamar</td></tr>
+            <tr><td>EN_TRANSITO</td><td>entregar → EN_REPARTO, retener → RETENIDO, devolver → CONFIRMADO</td><td>validar no avanza</td></tr>
+            <tr><td>EN_REPARTO</td><td>entregar → ENTREGADO, retener → RETENIDO, devolver → EN_TRANSITO</td><td>cancelar</td></tr>
+            <tr><td>ENTREGADO</td><td>devolver → CONFIRMADO, reclamar registra reclamo</td><td>validar, entregar, retener, cancelar</td></tr>
+            <tr><td>CANCELADO</td><td>terminal</td><td>todas las operaciones operativas</td></tr>
+            <tr><td>RETENIDO</td><td>validar → EN_TRANSITO, devolver → CONFIRMADO, cancelar → CANCELADO</td><td>entregar</td></tr>
+          </tbody>
+        </table>
+        <h3>Implementación</h3>
+        <pre>private EstadoEnvio estadoGoF = new EstadoConfirmado();
+
+public void cambiarEstado(EstadoEnvio nuevoEstado) {
+    this.estadoGoF = nuevoEstado;
+    this.estado = nuevoEstado.obtenerNombre();
+    notificarObservadores();
+}
+
+public void validar()  { estadoGoF.validar(this); }
+public void entregar() { estadoGoF.entregar(this); }</pre>
+        <p>Los métodos históricos <code>iniciar()</code>, <code>cancelar()</code> y <code>cerrar()</code> quedan intactos para no romper Hito 11.</p>
+      </section>
+
+      <section class="section" id="strategy">
+        <div class="section-act">Actividad 2 · Strategy</div>
+        <h2>Strategy: cálculo de costo intercambiable</h2>
+        <p>El envío ahora puede recibir una <code>EstrategiaCalculoCosto</code> en runtime y ejecutar <code>calcularCostoConEstrategia()</code>. Esto separa la política de cálculo del objeto que contiene los datos logísticos.</p>
+        <div class="pattern-badge">GoF · Strategy</div>
+        <table>
+          <thead><tr><th>Estrategia</th><th>Fórmula</th><th>Decisión</th></tr></thead>
+          <tbody>
+            <tr><td>Distancia</td><td><code>peso × 500</code></td><td>Distancia fija para tests deterministas.</td></tr>
+            <tr><td>Peso</td><td><code>peso × 5.0</code></td><td>Cálculo lineal simple.</td></tr>
+            <tr><td>Urgencia</td><td>URGENTE=500, EXPRESS=300, default=100</td><td>Usa <code>Envio.getTipo()</code>.</td></tr>
+            <tr><td>Volumen</td><td><code>peso × 2 × 2.0</code></td><td>Simulación volumétrica.</td></tr>
+            <tr><td>Híbrida</td><td>40% distancia + 30% peso + 30% urgencia</td><td>Compone estrategias existentes.</td></tr>
+          </tbody>
+        </table>
+        <div class="tech-note">La consigna usaba <code>Math.random() * 500</code> para distancia. Se reemplazó por 500 km fijos para que los tests sean verificables y repetibles.</div>
+      </section>
+
+      <section class="section" id="template">
+        <div class="section-act">Actividad 3 · Template Method</div>
+        <h2>Template Method: proceso estándar de envío</h2>
+        <p><code>ProcesoEnvio</code> define el algoritmo final <code>procesarEnvio(Envio)</code> y delega los pasos variables a subclases. El orden queda cerrado: validar, calcular costo, procesar pago y notificar.</p>
+        <div class="pattern-badge">GoF · Template Method</div>
+        <div class="grid-2">
+          <pre>public abstract class ProcesoEnvio {
+    public final void procesarEnvio(Envio envio) {
+        validar(envio);
+        calcularCosto(envio);
+        procesarPago(envio);
+        notificar(envio);
+    }
+
+    protected abstract void validar(Envio envio);
+    protected abstract void calcularCosto(Envio envio);
+    protected abstract void procesarPago(Envio envio);
+    protected abstract void notificar(Envio envio);
+}</pre>
+          <table>
+            <thead><tr><th>Subclase</th><th>Costo</th><th>Especialización</th></tr></thead>
+            <tbody>
+              <tr><td>ProcesoNacional</td><td><code>peso × 100</code></td><td>Validación nacional.</td></tr>
+              <tr><td>ProcesoInternacional</td><td><code>peso × 250 + 1000</code></td><td>Aduana y documentación.</td></tr>
+              <tr><td>ProcesoUrgente</td><td><code>peso × 180 + 500</code></td><td>Prioridad urgente.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="visitor">
+        <div class="section-act">Actividad 4 · Visitor</div>
+        <h2>Visitor: operaciones sobre red de distribución</h2>
+        <p>Se evita chocar nombres existentes renombrando los elementos del Visitor: <code>ElementoDistribucion</code>, <code>NodoPuntoEntrega</code> y <code>NodoCentroRegional</code>. La operación se mueve al visitor y la estructura solo acepta visitantes.</p>
+        <div class="pattern-badge">GoF · Visitor</div>
+        <table>
+          <thead><tr><th>Visitor</th><th>Resultado</th><th>Recorrido</th></tr></thead>
+          <tbody>
+            <tr><td>VisitorCalculoOcupacion</td><td>Porcentaje total de ocupación</td><td>Cuenta centros y puntos.</td></tr>
+            <tr><td>VisitorGeneradorReporte</td><td>Reporte textual de nodos</td><td>Incluye centros y puntos.</td></tr>
+            <tr><td>VisitorCalculoCostoOperativo</td><td>Costo operativo acumulado</td><td>Centros + puntos.</td></tr>
+            <tr><td>VisitorBusquedaPuntosCriticos</td><td>Puntos con ocupación ≥ 90%</td><td>Detecta nodos críticos.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="integracion">
+        <div class="section-act">Actividad 5 · Integración</div>
+        <h2>SistemaLogisticaAvanzada</h2>
+        <p>La clase de integración ejecuta los cuatro patrones en un flujo único: State avanza el envío, Strategy calcula costo, Template Method procesa el envío y Visitor analiza la red de distribución.</p>
+        <pre>public double procesarEnvio(Envio envio, EstrategiaCalculoCosto estrategia, ProcesoEnvio proceso) {
+    envio.cambiarEstado(new EstadoConfirmado());
+    envio.validar();
+    envio.entregar();
+    envio.establecerEstrategia(estrategia);
+    double costo = envio.calcularCostoConEstrategia();
+    proceso.procesarEnvio(envio);
+    envio.entregar();
+    return costo;
+}</pre>
+      </section>
+
+      <section class="section" id="uml">
+        <div class="section-act">Actividad 6 · UML</div>
+        <h2>Diagramas Mermaid</h2>
+        <h3>State</h3>
+        <pre class="mermaid">classDiagram
+Envio --> EstadoEnvio : estadoGoF
+EstadoEnvio <|.. EstadoConfirmado
+EstadoEnvio <|.. EstadoEnTransito
+EstadoEnvio <|.. EstadoEnReparto
+EstadoEnvio <|.. EstadoEntregado
+EstadoEnvio <|.. EstadoCancelado
+EstadoEnvio <|.. EstadoRetenido</pre>
+        <h3>Strategy</h3>
+        <pre class="mermaid">classDiagram
+Envio --> EstrategiaCalculoCosto : estrategia
+EstrategiaCalculoCosto <|.. EstrategiaDistancia
+EstrategiaCalculoCosto <|.. EstrategiaPeso
+EstrategiaCalculoCosto <|.. EstrategiaUrgencia
+EstrategiaCalculoCosto <|.. EstrategiaVolumen
+EstrategiaCalculoCosto <|.. EstrategiaHibrida</pre>
+        <h3>Template Method</h3>
+        <pre class="mermaid">classDiagram
+ProcesoEnvio <|-- ProcesoNacional
+ProcesoEnvio <|-- ProcesoInternacional
+ProcesoEnvio <|-- ProcesoUrgente
+ProcesoEnvio : +procesarEnvio(Envio) final</pre>
+        <h3>Visitor</h3>
+        <pre class="mermaid">classDiagram
+VisitorCentro <|.. VisitorCalculoOcupacion
+VisitorCentro <|.. VisitorGeneradorReporte
+VisitorCentro <|.. VisitorCalculoCostoOperativo
+VisitorCentro <|.. VisitorBusquedaPuntosCriticos
+ElementoDistribucion <|.. NodoPuntoEntrega
+ElementoDistribucion <|.. NodoCentroRegional
+NodoCentroRegional o-- ElementoDistribucion</pre>
+        <h3>Integración</h3>
+        <pre class="mermaid">sequenceDiagram
+participant Sistema as SistemaLogisticaAvanzada
+participant Envio
+participant Strategy
+participant Template as ProcesoEnvio
+participant Visitor
+Sistema->>Envio: validar()/entregar()
+Sistema->>Strategy: calcular(envio)
+Sistema->>Template: procesarEnvio(envio)
+Sistema->>Envio: entregar()
+Sistema->>Visitor: aceptar(red)</pre>
+      </section>
+
+      <section class="section" id="conclusion">
+        <h2>Conclusión</h2>
+        <p>El Hito 12 cierra el catálogo GoF con cuatro patrones de comportamiento aplicados sobre puntos reales del dominio. La solución agrega comportamiento sin romper hitos previos, mantiene compatibilidad con Observer/Memento y deja tests deterministas para validar la integración.</p>
+        <div class="pill">Main ejecuta Hito 12 al final · 36/36 OK</div>
+      </section>
+    </main>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "base" });
+    </script>
+  </body>
+</html>

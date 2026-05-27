@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clase 13: Patrones de Comportamiento III - State, Strategy, Template Method, Visitor</title>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: #667eea;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #667eea;
+            border-left: 3px solid #fff;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background: white;
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .example-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .diagram {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+
+        .comparison-table {
+            margin: 20px 0;
+        }
+
+        .exercise-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .exercise-box h4 {
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+
+        .solution-box {
+            background: #f0f8f0;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .solution-box.show {
+            display: block;
+        }
+
+        .toggle-solution {
+            background: #2196F3;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .toggle-solution:hover {
+            background: #0b7dda;
+        }
+    
+        
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<aside class="sidebar">
+<h2>📚 Clase 13</h2>
+<div class="nav-item active" onclick="showSection('intro')">🎯 Introducción</div>
+<div class="nav-item" onclick="showSection('state')">🔄 State</div>
+<div class="nav-item" onclick="showSection('strategy')">🎯 Strategy</div>
+<div class="nav-item" onclick="showSection('template')">📋 Template Method</div>
+<div class="nav-item" onclick="showSection('visitor')">🚀 Visitor</div>
+<div class="nav-item" onclick="showSection('comparacion')">📈 Comparación</div>
+<div class="nav-item" onclick="showSection('ejercicios')">✏️ Ejercicios</div>
+<div class="nav-item" onclick="showSection('casos')">💼 Casos Reales</div>
+<div class="nav-item" onclick="showSection('resumen')">✅ Resumen</div>
+</aside>
+<main class="main-content">
+<!-- INTRODUCCIÓN -->
+<section class="section active" id="intro">
+<h1>🎯 Clase 13: Patrones de Comportamiento III</h1>
+<h2>State, Strategy, Template Method, Visitor</h2>
+<h2>Objetivo de la Clase</h2>
+<p>Estudiar patrones que definen cómo los objetos cambian comportamiento y se procesan:</p>
+<ul>
+<li>Cambiar comportamiento según el estado interno</li>
+<li>Seleccionar algoritmo en tiempo de ejecución</li>
+<li>Definir esqueleto de algoritmo en clase base</li>
+<li>Procesar elementos de una estructura sin cambiarla</li>
+</ul>
+<h2>Diferencia con Clases Anteriores</h2>
+<table>
+<tr>
+<th>Clase 11</th>
+<th>Clase 12</th>
+<th>Clase 13</th>
+</tr>
+<tr>
+<td>Chain of Responsibility</td>
+<td>Iterator</td>
+<td>State</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>Mediator</td>
+<td>Strategy</td>
+</tr>
+<tr>
+<td>Interpreter</td>
+<td>Memento</td>
+<td>Template Method</td>
+</tr>
+<tr>
+<td>-</td>
+<td>Observer</td>
+<td>Visitor</td>
+</tr>
+</table>
+<h2>Duración de la Clase</h2>
+<ul>
+<li><strong>Introducción:</strong> 5 minutos</li>
+<li><strong>State:</strong> 20 minutos</li>
+<li><strong>Strategy:</strong> 20 minutos</li>
+<li><strong>Template Method:</strong> 15 minutos</li>
+<li><strong>Visitor:</strong> 15 minutos</li>
+<li><strong>Comparación:</strong> 5 minutos</li>
+<li><strong>Ejercicios de Selección:</strong> 10 minutos</li>
+<li><strong>Casos Reales:</strong> 5 minutos</li>
+<li><strong>Total:</strong> 90 minutos</li>
+</ul>
+<div class="highlight">
+<h3>Pregunta Central</h3>
+<p>¿Cómo cambio comportamiento según estado? ¿Cómo selecciono algoritmo? ¿Cómo defino esqueleto? ¿Cómo proceso estructuras?</p>
+</div>
+</section>
+<!-- STATE -->
+<section class="section" id="state">
+<h1>🔄 State Pattern</h1>
+<h2>Problema: Comportamiento Dependiente del Estado</h2>
+<p>LogiSmart tiene envíos con múltiples estados:</p>
+<ul>
+<li>CONFIRMADO: puede ser validado o cancelado</li>
+<li>EN_TRANSITO: puede ser entregado o retenido</li>
+<li>ENTREGADO: puede ser reclamado</li>
+<li>CANCELADO: no puede hacer nada</li>
+</ul>
+<p><strong>Problema:</strong> ¿Cómo cambiar comportamiento según estado sin if/else anidados?</p>
+<div class="diagram">
+Sin State (Acoplamiento Alto):
+    if (estado == CONFIRMADO) { validar(); }
+    else if (estado == EN_TRANSITO) { entregar(); }
+    else if (estado == ENTREGADO) { reclamar(); }
+    else if (estado == CANCELADO) { error(); }
+
+Con State (Desacoplamiento):
+    estado.validar();  // Comportamiento según estado
+                </div>
+<h2>Solución: State</h2>
+<p>Permite que un objeto altere su comportamiento cuando su estado interno cambia.</p>
+<h2>Implementación</h2>
+<h3>Paso 1: Interfaz State</h3>
+<div class="code-block"><pre>public interface EstadoEnvio {
+    void validar(Envio envio);
+    void entregar(Envio envio);
+    void cancelar(Envio envio);
+    String obtenerNombre();
+}</pre></div>
+<h3>Paso 2: Estados Concretos</h3>
+<div class="code-block"><pre>// Estado: CONFIRMADO
+public class EstadoConfirmado implements EstadoEnvio {
+    @Override
+    public void validar(Envio envio) {
+        System.out.println("✓ Envío validado");
+        envio.cambiarEstado(new EstadoEnTransito());
+    }
+    
+    @Override
+    public void entregar(Envio envio) {
+        System.out.println("✗ No se puede entregar, debe estar en tránsito");
+    }
+    
+    @Override
+    public void cancelar(Envio envio) {
+        System.out.println("✓ Envío cancelado");
+        envio.cambiarEstado(new EstadoCancelado());
+    }
+    
+    @Override
+    public String obtenerNombre() {
+        return "CONFIRMADO";
+    }
+}
+
+// Estado: EN_TRANSITO
+public class EstadoEnTransito implements EstadoEnvio {
+    @Override
+    public void validar(Envio envio) {
+        System.out.println("✗ Ya está validado");
+    }
+    
+    @Override
+    public void entregar(Envio envio) {
+        System.out.println("✓ Envío entregado");
+        envio.cambiarEstado(new EstadoEntregado());
+    }
+    
+    @Override
+    public void cancelar(Envio envio) {
+        System.out.println("✗ No se puede cancelar, está en tránsito");
+    }
+    
+    @Override
+    public String obtenerNombre() {
+        return "EN_TRANSITO";
+    }
+}
+
+// Estado: ENTREGADO
+public class EstadoEntregado implements EstadoEnvio {
+    @Override
+    public void validar(Envio envio) {
+        System.out.println("✗ Ya fue entregado");
+    }
+    
+    @Override
+    public void entregar(Envio envio) {
+        System.out.println("✗ Ya está entregado");
+    }
+    
+    @Override
+    public void cancelar(Envio envio) {
+        System.out.println("✗ No se puede cancelar, ya fue entregado");
+    }
+    
+    @Override
+    public String obtenerNombre() {
+        return "ENTREGADO";
+    }
+}
+
+// Estado: CANCELADO
+public class EstadoCancelado implements EstadoEnvio {
+    @Override
+    public void validar(Envio envio) {
+        System.out.println("✗ Envío cancelado, no se puede validar");
+    }
+    
+    @Override
+    public void entregar(Envio envio) {
+        System.out.println("✗ Envío cancelado, no se puede entregar");
+    }
+    
+    @Override
+    public void cancelar(Envio envio) {
+        System.out.println("✗ Ya está cancelado");
+    }
+    
+    @Override
+    public String obtenerNombre() {
+        return "CANCELADO";
+    }
+}</pre></div>
+<h3>Paso 3: Contexto</h3>
+<div class="code-block"><pre>public class Envio {
+    private String id;
+    private EstadoEnvio estado;
+    
+    public Envio(String id) {
+        this.id = id;
+        this.estado = new EstadoConfirmado();
+    }
+    
+    public void cambiarEstado(EstadoEnvio nuevoEstado) {
+        this.estado = nuevoEstado;
+        System.out.println("[Envio] Estado cambiado a: " + nuevoEstado.obtenerNombre());
+    }
+    
+    public void validar() {
+        estado.validar(this);
+    }
+    
+    public void entregar() {
+        estado.entregar(this);
+    }
+    
+    public void cancelar() {
+        estado.cancelar(this);
+    }
+    
+    public String obtenerEstado() {
+        return estado.obtenerNombre();
+    }
+}</pre></div>
+<h3>Paso 4: Uso del State</h3>
+<div class="code-block"><pre>Envio envio = new Envio("ENV-001");
+System.out.println("Estado: " + envio.obtenerEstado());
+
+envio.validar();      // CONFIRMADO → EN_TRANSITO
+envio.entregar();     // EN_TRANSITO → ENTREGADO
+envio.cancelar();     // No se puede cancelar (ya entregado)
+
+Envio envio2 = new Envio("ENV-002");
+envio2.cancelar();    // CONFIRMADO → CANCELADO
+envio2.validar();     // No se puede validar (cancelado)</pre></div>
+<h2>Ventajas</h2>
+<ul>
+<li><strong>Sin if/else:</strong> Comportamiento encapsulado en estados</li>
+<li><strong>Fácil agregar estados:</strong> Solo crear nueva clase</li>
+<li><strong>Principio Single Responsibility:</strong> Cada estado es responsable de sí</li>
+</ul>
+<h2>Desventajas</h2>
+<ul>
+<li><strong>Más clases:</strong> Una por cada estado</li>
+<li><strong>Complejidad:</strong> Puede ser excesivo para pocos estados</li>
+</ul>
+<div class="footer">Tiempo estimado: 20 minutos</div>
+</section>
+<!-- STRATEGY -->
+<section class="section" id="strategy">
+<h1>🎯 Strategy Pattern</h1>
+<h2>Problema: Múltiples Algoritmos</h2>
+<p>LogiSmart necesita calcular costos de envío con diferentes estrategias:</p>
+<ul>
+<li>Por peso</li>
+<li>Por distancia</li>
+<li>Por urgencia</li>
+<li>Combinación de los anteriores</li>
+</ul>
+<p><strong>Problema:</strong> ¿Cómo seleccionar algoritmo en tiempo de ejecución sin if/else?</p>
+<h2>Solución: Strategy</h2>
+<p>Define una familia de algoritmos, encapsula cada uno, y los hace intercambiables.</p>
+<div class="diagram">
+┌──────────────────────────────┐
+│ Contexto (Envio)             │
+│ - estrategia                 │
+│ - calcularCosto()            │
+└──────────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────┐
+│ Strategy (Interfaz)          │
+│ - calcular()                 │
+└──────────────────────────────┘
+    │
+    ├─ EstrategiaDistancia
+    ├─ EstrategiaPeso
+    ├─ EstrategiaUrgencia
+    └─ EstrategiaHibrida
+                </div>
+<h2>Implementación</h2>
+<h3>Paso 1: Interfaz Strategy</h3>
+<div class="code-block"><pre>public interface EstrategiaCalculoCosto {
+    double calcular(Envio envio);
+    String obtenerNombre();
+}</pre></div>
+<h3>Paso 2: Estrategias Concretas</h3>
+<div class="code-block"><pre>// Estrategia: Por Distancia
+public class EstrategiaDistancia implements EstrategiaCalculoCosto {
+    private double costoPorKm = 10.0;
+    
+    @Override
+    public double calcular(Envio envio) {
+        double distancia = calcularDistancia(envio.getOrigen(), envio.getDestino());
+        return distancia * costoPorKm;
+    }
+    
+    @Override
+    public String obtenerNombre() {
+        return "Por Distancia";
+    }
+    
+    private double calcularDistancia(String origen, String destino) {
+        // Simulación
+        return Math.random() * 500;
+    }
+}
+
+// Estrategia: Por Peso
+public class EstrategiaPeso implements EstrategiaCalculoCosto {
+    private double costoPorKg = 5.0;
+    
+    @Override
+    public double calcular(Envio envio) {
+        return envio.getPeso() * costoPorKg;
+    }
+    
+    @Override
+    public String obtenerNombre() {
+        return "Por Peso";
+    }
+}
+
+// Estrategia: Por Urgencia
+public class EstrategiaUrgencia implements EstrategiaCalculoCosto {
+    @Override
+    public double calcular(Envio envio) {
+        if ("URGENTE".equals(envio.getTipo())) {
+            return 500.0;
+        } else if ("NORMAL".equals(envio.getTipo())) {
+            return 200.0;
+        }
+        return 100.0;
+    }
+    
+    @Override
+    public String obtenerNombre() {
+        return "Por Urgencia";
+    }
+}
+
+// Estrategia: Híbrida
+public class EstrategiaHibrida implements EstrategiaCalculoCosto {
+    @Override
+    public double calcular(Envio envio) {
+        double costoDistancia = new EstrategiaDistancia().calcular(envio);
+        double costoPeso = new EstrategiaPeso().calcular(envio);
+        double costoUrgencia = new EstrategiaUrgencia().calcular(envio);
+        
+        return (costoDistancia * 0.5) + (costoPeso * 0.3) + (costoUrgencia * 0.2);
+    }
+    
+    @Override
+    public String obtenerNombre() {
+        return "Híbrida";
+    }
+}</pre></div>
+<h3>Paso 3: Contexto</h3>
+<div class="code-block"><pre>public class Envio {
+    private String id;
+    private String origen;
+    private String destino;
+    private double peso;
+    private String tipo;
+    private EstrategiaCalculoCosto estrategia;
+    
+    public Envio(String id, String origen, String destino, double peso, String tipo) {
+        this.id = id;
+        this.origen = origen;
+        this.destino = destino;
+        this.peso = peso;
+        this.tipo = tipo;
+        this.estrategia = new EstrategiaDistancia(); // Default
+    }
+    
+    public void establecerEstrategia(EstrategiaCalculoCosto estrategia) {
+        this.estrategia = estrategia;
+        System.out.println("[Envio] Estrategia cambiada a: " + estrategia.obtenerNombre());
+    }
+    
+    public double calcularCosto() {
+        return estrategia.calcular(this);
+    }
+    
+    public String getOrigen() { return origen; }
+    public String getDestino() { return destino; }
+    public double getPeso() { return peso; }
+    public String getTipo() { return tipo; }
+}</pre></div>
+<h3>Paso 4: Uso del Strategy</h3>
+<div class="code-block"><pre>Envio envio = new Envio("ENV-001", "Buenos Aires", "Córdoba", 5.0, "URGENTE");
+
+// Usar estrategia por defecto (distancia)
+System.out.println("Costo (Distancia): $" + envio.calcularCosto());
+
+// Cambiar a estrategia por peso
+envio.establecerEstrategia(new EstrategiaPeso());
+System.out.println("Costo (Peso): $" + envio.calcularCosto());
+
+// Cambiar a estrategia por urgencia
+envio.establecerEstrategia(new EstrategiaUrgencia());
+System.out.println("Costo (Urgencia): $" + envio.calcularCosto());
+
+// Cambiar a estrategia híbrida
+envio.establecerEstrategia(new EstrategiaHibrida());
+System.out.println("Costo (Híbrida): $" + envio.calcularCosto());</pre></div>
+<h2>Ventajas</h2>
+<ul>
+<li><strong>Intercambiable:</strong> Cambiar algoritmo en tiempo de ejecución</li>
+<li><strong>Sin if/else:</strong> Comportamiento encapsulado</li>
+<li><strong>Fácil agregar:</strong> Solo crear nueva estrategia</li>
+</ul>
+<h2>Desventajas</h2>
+<ul>
+<li><strong>Más clases:</strong> Una por cada estrategia</li>
+<li><strong>Overhead:</strong> Si solo hay una estrategia, es excesivo</li>
+</ul>
+<h2>Diferencia con State</h2>
+<table>
+<tr>
+<th>State</th>
+<th>Strategy</th>
+</tr>
+<tr>
+<td>Cambia el comportamiento según estado</td>
+<td>Cambia el algoritmo según preferencia</td>
+</tr>
+<tr>
+<td>El objeto cambia de estado automáticamente</td>
+<td>El cliente elige la estrategia</td>
+</tr>
+<tr>
+<td>Estados relacionados entre sí</td>
+<td>Estrategias independientes</td>
+</tr>
+</table>
+<div class="footer">Tiempo estimado: 20 minutos</div>
+</section>
+<!-- TEMPLATE METHOD -->
+<section class="section" id="template">
+<h1>📋 Template Method Pattern</h1>
+<h2>Problema: Algoritmos Similares</h2>
+<p>LogiSmart tiene procesos similares para diferentes tipos de envíos:</p>
+<ul>
+<li>Envío nacional: validar → calcular costo → procesar pago → notificar</li>
+<li>Envío internacional: validar → calcular costo + aduanas → procesar pago → notificar + trámites</li>
+<li>Envío urgente: validar → calcular costo prioritario → procesar pago → notificar urgente</li>
+</ul>
+<p><strong>Problema:</strong> ¿Cómo reutilizar estructura común sin duplicar código?</p>
+<h2>Solución: Template Method</h2>
+<p>Define el esqueleto de un algoritmo en una clase base, permitiendo que subclases implementen pasos específicos.</p>
+<div class="diagram">
+┌──────────────────────────────────┐
+│ ClaseProceso (Abstracta)         │
+│ + procesarEnvio() [Template]     │
+│   1. validar()                   │
+│   2. calcularCosto()             │
+│   3. procesarPago()              │
+│   4. notificar()                 │
+│ # validar() [Abstract]           │
+│ # calcularCosto() [Abstract]     │
+│ # procesarPago() [Abstract]      │
+│ # notificar() [Abstract]         │
+└──────────────────────────────────┘
+    │
+    ├─ ProcesoProcesosNacional
+    ├─ ProcesoInternacional
+    └─ ProcesoUrgente
+                </div>
+<h2>Implementación</h2>
+<h3>Paso 1: Clase Base Abstracta</h3>
+<div class="code-block"><pre>public abstract class ProcesoProcesosEnvio {
+    /**
+     * Template Method: Define el esqueleto del algoritmo
+     */
+    public final void procesarEnvio(Envio envio) {
+        System.out.println("[Proceso] Iniciando procesamiento...");
+        validar(envio);
+        calcularCosto(envio);
+        procesarPago(envio);
+        notificar(envio);
+        System.out.println("[Proceso] ✓ Procesamiento completado\n");
+    }
+    
+    // Métodos abstractos que las subclases deben implementar
+    protected abstract void validar(Envio envio);
+    protected abstract void calcularCosto(Envio envio);
+    protected abstract void procesarPago(Envio envio);
+    protected abstract void notificar(Envio envio);
+}</pre></div>
+<h3>Paso 2: Subclases Concretas</h3>
+<div class="code-block"><pre>// Proceso: Nacional
+public class ProcesoNacional extends ProcesoProcesosEnvio {
+    @Override
+    protected void validar(Envio envio) {
+        System.out.println("[Nacional] Validando envío nacional...");
+        System.out.println("[Nacional] ✓ Validación OK");
+    }
+    
+    @Override
+    protected void calcularCosto(Envio envio) {
+        double costo = 100.0 + (envio.getPeso() * 5);
+        envio.setCosto(costo);
+        System.out.println("[Nacional] Costo calculado: $" + costo);
+    }
+    
+    @Override
+    protected void procesarPago(Envio envio) {
+        System.out.println("[Nacional] Procesando pago de $" + envio.getCosto());
+        System.out.println("[Nacional] ✓ Pago confirmado");
+    }
+    
+    @Override
+    protected void notificar(Envio envio) {
+        System.out.println("[Nacional] Enviando notificación al cliente...");
+        System.out.println("[Nacional] ✓ Notificación enviada");
+    }
+}
+
+// Proceso: Internacional
+public class ProcesoInternacional extends ProcesoProcesosEnvio {
+    @Override
+    protected void validar(Envio envio) {
+        System.out.println("[Internacional] Validando envío internacional...");
+        System.out.println("[Internacional] Verificando documentación aduanal...");
+        System.out.println("[Internacional] ✓ Validación OK");
+    }
+    
+    @Override
+    protected void calcularCosto(Envio envio) {
+        double costoBase = 200.0 + (envio.getPeso() * 10);
+        double costoAduanas = costoBase * 0.15;
+        double costoTotal = costoBase + costoAduanas;
+        envio.setCosto(costoTotal);
+        System.out.println("[Internacional] Costo base: $" + costoBase);
+        System.out.println("[Internacional] Costo aduanas: $" + costoAduanas);
+        System.out.println("[Internacional] Costo total: $" + costoTotal);
+    }
+    
+    @Override
+    protected void procesarPago(Envio envio) {
+        System.out.println("[Internacional] Procesando pago internacional de $" + envio.getCosto());
+        System.out.println("[Internacional] Verificando cambio de moneda...");
+        System.out.println("[Internacional] ✓ Pago confirmado");
+    }
+    
+    @Override
+    protected void notificar(Envio envio) {
+        System.out.println("[Internacional] Enviando notificación al cliente...");
+        System.out.println("[Internacional] Enviando información aduanal...");
+        System.out.println("[Internacional] ✓ Notificación enviada");
+    }
+}
+
+// Proceso: Urgente
+public class ProcesoUrgente extends ProcesoProcesosEnvio {
+    @Override
+    protected void validar(Envio envio) {
+        System.out.println("[Urgente] Validando envío urgente...");
+        System.out.println("[Urgente] ✓ Validación acelerada OK");
+    }
+    
+    @Override
+    protected void calcularCosto(Envio envio) {
+        double costo = 500.0 + (envio.getPeso() * 15);
+        envio.setCosto(costo);
+        System.out.println("[Urgente] Costo prioritario: $" + costo);
+    }
+    
+    @Override
+    protected void procesarPago(Envio envio) {
+        System.out.println("[Urgente] Procesando pago urgente de $" + envio.getCosto());
+        System.out.println("[Urgente] ✓ Pago confirmado inmediatamente");
+    }
+    
+    @Override
+    protected void notificar(Envio envio) {
+        System.out.println("[Urgente] Enviando notificación urgente al cliente...");
+        System.out.println("[Urgente] Enviando SMS de confirmación...");
+        System.out.println("[Urgente] ✓ Notificación urgente enviada");
+    }
+}</pre></div>
+<h3>Paso 3: Uso del Template Method</h3>
+<div class="code-block"><pre>Envio envio1 = new Envio("ENV-001", "Buenos Aires", "Córdoba", 5.0);
+ProcesoProcesosEnvio procesoNacional = new ProcesoNacional();
+procesoNacional.procesarEnvio(envio1);
+
+Envio envio2 = new Envio("ENV-002", "Buenos Aires", "Madrid", 3.0);
+ProcesoProcesosEnvio procesoInternacional = new ProcesoInternacional();
+procesoInternacional.procesarEnvio(envio2);
+
+Envio envio3 = new Envio("ENV-003", "Buenos Aires", "La Plata", 1.0);
+ProcesoProcesosEnvio procesoUrgente = new ProcesoUrgente();
+procesoUrgente.procesarEnvio(envio3);</pre></div>
+<h2>Ventajas</h2>
+<ul>
+<li><strong>Reutilización:</strong> Estructura común en clase base</li>
+<li><strong>Control:</strong> Clase base controla el flujo</li>
+<li><strong>Consistencia:</strong> Todos siguen el mismo patrón</li>
+</ul>
+<h2>Desventajas</h2>
+<ul>
+<li><strong>Rigidez:</strong> Estructura fija en clase base</li>
+<li><strong>Herencia:</strong> Requiere jerarquía de clases</li>
+</ul>
+<div class="footer">Tiempo estimado: 15 minutos</div>
+</section>
+<!-- VISITOR -->
+<section class="section" id="visitor">
+<h1>🚀 Visitor Pattern</h1>
+<h2>Problema: Operaciones en Estructuras Complejas</h2>
+<p>LogiSmart tiene una estructura jerárquica de centros de distribución:</p>
+<ul>
+<li>Centro Nacional</li>
+<li>├─ Centro Regional</li>
+<li>│  ├─ Punto de Entrega</li>
+<li>│  └─ Punto de Entrega</li>
+<li>└─ Centro Regional</li>
+</ul>
+<p><strong>Problema:</strong> ¿Cómo realizar múltiples operaciones (calcular ocupación, generar reporte, etc.) sin modificar las clases?</p>
+<h2>Solución: Visitor</h2>
+<p>Representa una operación a realizar sobre elementos de una estructura de objetos, permitiendo definir nuevas operaciones sin cambiar las clases de los elementos.</p>
+<div class="diagram">
+┌──────────────────────────────┐
+│ Visitor (Interfaz)           │
+│ + visitar(PuntoEntrega)      │
+│ + visitar(CentroRegional)    │
+└──────────────────────────────┘
+    │
+    ├─ VisitorCalculoOcupacion
+    ├─ VisitorGeneradorReporte
+    └─ VisitorCalculoCosto
+
+┌──────────────────────────────┐
+│ Elemento (Interfaz)          │
+│ + aceptar(Visitor)           │
+└──────────────────────────────┘
+    │
+    ├─ PuntoEntrega
+    └─ CentroRegional
+                </div>
+<h2>Implementación</h2>
+<h3>Paso 1: Interfaz Visitor</h3>
+<div class="code-block"><pre>public interface VisitorCentro {
+    void visitar(PuntoEntrega punto);
+    void visitar(CentroRegional centro);
+}</pre></div>
+<h3>Paso 2: Interfaz Elemento</h3>
+<div class="code-block"><pre>public interface CentroDistribucion {
+    void aceptar(VisitorCentro visitor);
+    String obtenerNombre();
+}</pre></div>
+<h3>Paso 3: Elementos Concretos</h3>
+<div class="code-block"><pre>// Elemento: Punto de Entrega
+public class PuntoEntrega implements CentroDistribucion {
+    private String nombre;
+    private double ocupacion;
+    
+    public PuntoEntrega(String nombre, double ocupacion) {
+        this.nombre = nombre;
+        this.ocupacion = ocupacion;
+    }
+    
+    @Override
+    public void aceptar(VisitorCentro visitor) {
+        visitor.visitar(this);
+    }
+    
+    @Override
+    public String obtenerNombre() {
+        return nombre;
+    }
+    
+    public double obtenerOcupacion() {
+        return ocupacion;
+    }
+}
+
+// Elemento: Centro Regional
+public class CentroRegional implements CentroDistribucion {
+    private String nombre;
+    private List&lt;centrodistribucion&gt; subcentros = new ArrayList&amp;lt;&amp;gt;();
+    
+    public CentroRegional(String nombre) {
+        this.nombre = nombre;
+    }
+    
+    public void agregarSubcentro(CentroDistribucion centro) {
+        subcentros.add(centro);
+    }
+    
+    @Override
+    public void aceptar(VisitorCentro visitor) {
+        visitor.visitar(this);
+        for (CentroDistribucion centro : subcentros) {
+            centro.aceptar(visitor);
+        }
+    }
+    
+    @Override
+    public String obtenerNombre() {
+        return nombre;
+    }
+    
+    public List&lt;centrodistribucion&gt; obtenerSubcentros() {
+        return subcentros;
+    }
+}&lt;/centrodistribucion&gt;&lt;/centrodistribucion&gt;</pre></div>
+<h3>Paso 4: Visitors Concretos</h3>
+<div class="code-block"><pre>// Visitor: Calcular Ocupación
+public class VisitorCalculoOcupacion implements VisitorCentro {
+    private double ocupacionTotal = 0;
+    
+    @Override
+    public void visitar(PuntoEntrega punto) {
+        ocupacionTotal += punto.obtenerOcupacion();
+        System.out.println("[Ocupación] Punto: " + punto.obtenerNombre() + 
+                          " → " + punto.obtenerOcupacion() + "%");
+    }
+    
+    @Override
+    public void visitar(CentroRegional centro) {
+        System.out.println("[Ocupación] Centro Regional: " + centro.obtenerNombre());
+    }
+    
+    public double obtenerOcupacionTotal() {
+        return ocupacionTotal;
+    }
+}
+
+// Visitor: Generar Reporte
+public class VisitorGeneradorReporte implements VisitorCentro {
+    private StringBuilder reporte = new StringBuilder();
+    private int nivel = 0;
+    
+    @Override
+    public void visitar(PuntoEntrega punto) {
+        agregarIndentacion();
+        reporte.append("- Punto: ").append(punto.obtenerNombre())
+               .append(" (Ocupación: ").append(punto.obtenerOcupacion()).append("%)\n");
+    }
+    
+    @Override
+    public void visitar(CentroRegional centro) {
+        agregarIndentacion();
+        reporte.append("+ Centro Regional: ").append(centro.obtenerNombre()).append("\n");
+        nivel++;
+    }
+    
+    private void agregarIndentacion() {
+        for (int i = 0; i &amp;lt; nivel; i++) {
+            reporte.append("  ");
+        }
+    }
+    
+    public String obtenerReporte() {
+        return reporte.toString();
+    }
+}
+
+// Visitor: Calcular Costo
+public class VisitorCalculoCosto implements VisitorCentro {
+    private double costoTotal = 0;
+    
+    @Override
+    public void visitar(PuntoEntrega punto) {
+        double costo = punto.obtenerOcupacion() * 10;
+        costoTotal += costo;
+        System.out.println("[Costo] Punto: " + punto.obtenerNombre() + " → $" + costo);
+    }
+    
+    @Override
+    public void visitar(CentroRegional centro) {
+        System.out.println("[Costo] Centro Regional: " + centro.obtenerNombre());
+    }
+    
+    public double obtenerCostoTotal() {
+        return costoTotal;
+    }
+}</pre></div>
+<h3>Paso 5: Uso del Visitor</h3>
+<div class="code-block"><pre>// Crear estructura
+CentroRegional centroNacional = new CentroRegional("Centro Nacional");
+
+CentroRegional centroCABA = new CentroRegional("Centro CABA");
+centroCABA.agregarSubcentro(new PuntoEntrega("Punto San Telmo", 75.0));
+centroCABA.agregarSubcentro(new PuntoEntrega("Punto Recoleta", 85.0));
+
+CentroRegional centroMendoza = new CentroRegional("Centro Mendoza");
+centroMendoza.agregarSubcentro(new PuntoEntrega("Punto Mendoza Centro", 60.0));
+
+centroNacional.agregarSubcentro(centroCABA);
+centroNacional.agregarSubcentro(centroMendoza);
+
+// Usar Visitor: Calcular Ocupación
+System.out.println("=== Cálculo de Ocupación ===");
+VisitorCalculoOcupacion visitorOcupacion = new VisitorCalculoOcupacion();
+centroNacional.aceptar(visitorOcupacion);
+System.out.println("Ocupación Total: " + visitorOcupacion.obtenerOcupacionTotal() + "%\n");
+
+// Usar Visitor: Generar Reporte
+System.out.println("=== Reporte de Estructura ===");
+VisitorGeneradorReporte visitorReporte = new VisitorGeneradorReporte();
+centroNacional.aceptar(visitorReporte);
+System.out.println(visitorReporte.obtenerReporte());
+
+// Usar Visitor: Calcular Costo
+System.out.println("=== Cálculo de Costo ===");
+VisitorCalculoCosto visitorCosto = new VisitorCalculoCosto();
+centroNacional.aceptar(visitorCosto);
+System.out.println("Costo Total: $" + visitorCosto.obtenerCostoTotal());</pre></div>
+<h2>Ventajas</h2>
+<ul>
+<li><strong>Fácil agregar operaciones:</strong> Solo crear nuevo Visitor</li>
+<li><strong>Separación de responsabilidades:</strong> Operación separada de estructura</li>
+<li><strong>Sin modificar elementos:</strong> Elementos no cambian</li>
+</ul>
+<h2>Desventajas</h2>
+<ul>
+<li><strong>Difícil agregar elementos:</strong> Requiere cambiar todos los Visitors</li>
+<li><strong>Complejidad:</strong> Patrón complejo de entender</li>
+</ul>
+<div class="footer">Tiempo estimado: 15 minutos</div>
+</section>
+<!-- COMPARACIÓN -->
+<section class="section" id="comparacion">
+<h1>📈 Comparación de Patrones</h1>
+<h2>Tabla Comparativa</h2>
+<table class="comparison-table">
+<tr>
+<th>Patrón</th>
+<th>Propósito</th>
+<th>Cuándo Usar</th>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>Cambiar comportamiento según estado</td>
+<td>Objeto con múltiples estados con comportamiento diferente</td>
+</tr>
+<tr>
+<td><strong>Strategy</strong></td>
+<td>Seleccionar algoritmo en tiempo de ejecución</td>
+<td>Múltiples algoritmos intercambiables</td>
+</tr>
+<tr>
+<td><strong>Template Method</strong></td>
+<td>Definir esqueleto de algoritmo</td>
+<td>Algoritmos similares con pasos diferentes</td>
+</tr>
+<tr>
+<td><strong>Visitor</strong></td>
+<td>Realizar operaciones en estructuras complejas</td>
+<td>Múltiples operaciones en elementos de estructura</td>
+</tr>
+</table>
+<h2>Matriz de Decisión</h2>
+<ul>
+<li><strong>¿Comportamiento según estado?</strong> → State</li>
+<li><strong>¿Algoritmo intercambiable?</strong> → Strategy</li>
+<li><strong>¿Esqueleto común?</strong> → Template Method</li>
+<li><strong>¿Operaciones en estructura?</strong> → Visitor</li>
+</ul>
+<div class="footer">Tiempo estimado: 5 minutos</div>
+</section>
+<!-- EJERCICIOS -->
+<section class="section" id="ejercicios">
+<h1>✏️ Ejercicios de Selección de Patrones</h1>
+<h2>Instrucciones</h2>
+<p>Para cada problema, identifica cuál patrón es más apropiado y explica por qué.</p>
+<h2>Ejercicio 1: Sistema de Pedidos</h2>
+<div class="exercise-box">
+<h4>Problema</h4>
+<p>Un sistema de pedidos online necesita procesar pedidos de diferentes formas:</p>
+<ul>
+<li>Envío estándar: validar → calcular envío → procesar pago → confirmar</li>
+<li>Envío express: validar → calcular envío prioritario → procesar pago → confirmar urgente</li>
+<li>Envío internacional: validar → calcular envío + aduanas → procesar pago → confirmar + trámites</li>
+</ul>
+<p>¿Cuál patrón usarías?</p>
+<button class="toggle-solution" onclick="toggleSolution('sol1')">Ver Solución</button>
+</div>
+<div class="solution-box" id="sol1">
+<h4>Solución</h4>
+<p><strong>Respuesta: Template Method</strong></p>
+<p><strong>Justificación:</strong></p>
+<ul>
+<li>Todos los procesos siguen un esqueleto similar (validar → calcular → pagar → confirmar)</li>
+<li>Los pasos son diferentes en cada tipo de envío</li>
+<li>La estructura del algoritmo es fija, solo varían los detalles</li>
+<li>Template Method permite definir el esqueleto en clase base y que subclases implementen los pasos</li>
+</ul>
+</div>
+<h2>Ejercicio 2: Máquina Expendedora</h2>
+<div class="exercise-box">
+<h4>Problema</h4>
+<p>Una máquina expendedora tiene diferentes estados:</p>
+<ul>
+<li>ESPERANDO: espera que el usuario seleccione producto</li>
+<li>ESPERANDO_PAGO: espera que el usuario pague</li>
+<li>DISPENSANDO: entrega el producto</li>
+<li>FUERA_DE_SERVICIO: no hace nada</li>
+</ul>
+<p>Cada estado tiene comportamientos diferentes para las mismas acciones (seleccionar, pagar, dispensar).</p>
+<p>¿Cuál patrón usarías?</p>
+<button class="toggle-solution" onclick="toggleSolution('sol2')">Ver Solución</button>
+</div>
+<div class="solution-box" id="sol2">
+<h4>Solución</h4>
+<p><strong>Respuesta: State</strong></p>
+<p><strong>Justificación:</strong></p>
+<ul>
+<li>El comportamiento depende del estado actual</li>
+<li>Los estados son mutuamente excluyentes</li>
+<li>La máquina transiciona entre estados automáticamente</li>
+<li>State permite encapsular comportamiento por estado sin if/else</li>
+</ul>
+</div>
+<h2>Ejercicio 3: Generador de Reportes</h2>
+<div class="exercise-box">
+<h4>Problema</h4>
+<p>Un sistema necesita generar reportes en múltiples formatos:</p>
+<ul>
+<li>PDF</li>
+<li>Excel</li>
+<li>HTML</li>
+<li>JSON</li>
+</ul>
+<p>El cliente puede elegir el formato en tiempo de ejecución. Todos los formatos generan el mismo contenido, solo cambia la presentación.</p>
+<p>¿Cuál patrón usarías?</p>
+<button class="toggle-solution" onclick="toggleSolution('sol3')">Ver Solución</button>
+</div>
+<div class="solution-box" id="sol3">
+<h4>Solución</h4>
+<p><strong>Respuesta: Strategy</strong></p>
+<p><strong>Justificación:</strong></p>
+<ul>
+<li>Hay múltiples algoritmos (formatos) intercambiables</li>
+<li>El cliente elige el algoritmo en tiempo de ejecución</li>
+<li>Los algoritmos son independientes entre sí</li>
+<li>Strategy permite cambiar el algoritmo sin cambiar el código del cliente</li>
+</ul>
+</div>
+<h2>Ejercicio 4: Análisis de Árbol de Carpetas</h2>
+<div class="exercise-box">
+<h4>Problema</h4>
+<p>Un sistema de archivos tiene una estructura jerárquica de carpetas y archivos. Necesitas realizar múltiples operaciones:</p>
+<ul>
+<li>Calcular tamaño total</li>
+<li>Generar reporte de estructura</li>
+<li>Buscar archivos por extensión</li>
+<li>Calcular cantidad de archivos</li>
+</ul>
+<p>Necesitas agregar nuevas operaciones frecuentemente sin modificar las clases de carpetas y archivos.</p>
+<p>¿Cuál patrón usarías?</p>
+<button class="toggle-solution" onclick="toggleSolution('sol4')">Ver Solución</button>
+</div>
+<div class="solution-box" id="sol4">
+<h4>Solución</h4>
+<p><strong>Respuesta: Visitor</strong></p>
+<p><strong>Justificación:</strong></p>
+<ul>
+<li>Hay una estructura compleja (árbol de carpetas y archivos)</li>
+<li>Necesitas múltiples operaciones diferentes en la estructura</li>
+<li>Necesitas agregar nuevas operaciones frecuentemente</li>
+<li>Visitor permite agregar operaciones sin modificar las clases de elementos</li>
+</ul>
+</div>
+<h2>Ejercicio 5: Cálculo de Impuestos</h2>
+<div class="exercise-box">
+<h4>Problema</h4>
+<p>Un sistema de facturación necesita calcular impuestos de diferentes formas según el tipo de cliente:</p>
+<ul>
+<li>Cliente común: 21% IVA</li>
+<li>Cliente mayorista: 21% IVA - 5% descuento</li>
+<li>Cliente exento: 0% IVA</li>
+<li>Cliente extranjero: 0% IVA + 5% tasa</li>
+</ul>
+<p>El cálculo se realiza en tiempo de ejecución según el tipo de cliente.</p>
+<p>¿Cuál patrón usarías?</p>
+<button class="toggle-solution" onclick="toggleSolution('sol5')">Ver Solución</button>
+</div>
+<div class="solution-box" id="sol5">
+<h4>Solución</h4>
+<p><strong>Respuesta: Strategy</strong></p>
+<p><strong>Justificación:</strong></p>
+<ul>
+<li>Hay múltiples algoritmos de cálculo (estrategias)</li>
+<li>El cliente se elige en tiempo de ejecución</li>
+<li>Los algoritmos son independientes entre sí</li>
+<li>Strategy permite cambiar el algoritmo de cálculo dinámicamente</li>
+</ul>
+</div>
+<div class="footer">Tiempo estimado: 10 minutos</div>
+</section>
+<!-- CASOS REALES -->
+<section class="section" id="casos">
+<h1>💼 Casos de Aplicación en Sistemas Reales</h1>
+<h2>State</h2>
+<ul>
+<li><strong>Máquinas de estado:</strong> Semáforos, ascensores, máquinas expendedoras</li>
+<li><strong>Workflows:</strong> Estados de documento, estados de pedido</li>
+<li><strong>Juegos:</strong> Estados de personaje (idle, corriendo, saltando)</li>
+</ul>
+<h2>Strategy</h2>
+<ul>
+<li><strong>Algoritmos de ordenamiento:</strong> QuickSort, MergeSort, BubbleSort</li>
+<li><strong>Compresión:</strong> ZIP, RAR, 7Z</li>
+<li><strong>Cálculos:</strong> Impuestos, comisiones, descuentos</li>
+</ul>
+<h2>Template Method</h2>
+<ul>
+<li><strong>Frameworks:</strong> Spring, Android (Activity lifecycle)</li>
+<li><strong>Procesamiento de datos:</strong> Lectura, transformación, escritura</li>
+<li><strong>Parsers:</strong> XML, JSON, CSV</li>
+</ul>
+<h2>Visitor</h2>
+<ul>
+<li><strong>Compiladores:</strong> Análisis de árbol de sintaxis</li>
+<li><strong>Sistemas de archivos:</strong> Búsqueda, estadísticas</li>
+<li><strong>Gráficos:</strong> Renderizado, animación</li>
+</ul>
+<div class="footer">Tiempo estimado: 5 minutos</div>
+</section>
+<!-- RESUMEN -->
+<section class="section" id="resumen">
+<h1>✅ Resumen de la Clase</h1>
+<h2>Conceptos Clave</h2>
+<h3>State</h3>
+<ul>
+<li>Comportamiento según estado interno</li>
+<li>Estados mutuamente excluyentes</li>
+<li>Transiciones automáticas</li>
+</ul>
+<h3>Strategy</h3>
+<ul>
+<li>Algoritmos intercambiables</li>
+<li>Cliente elige algoritmo</li>
+<li>Algoritmos independientes</li>
+</ul>
+<h3>Template Method</h3>
+<ul>
+<li>Esqueleto de algoritmo</li>
+<li>Pasos implementados por subclases</li>
+<li>Estructura fija, detalles variables</li>
+</ul>
+<h3>Visitor</h3>
+<ul>
+<li>Operaciones en estructuras complejas</li>
+<li>Fácil agregar operaciones</li>
+<li>Difícil agregar elementos</li>
+</ul>
+<h2>Patrones de Comportamiento III</h2>
+<table>
+<tr>
+<th>Patrón</th>
+<th>Clase</th>
+<th>Propósito</th>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>13</td>
+<td>Cambio de comportamiento por estado</td>
+</tr>
+<tr>
+<td><strong>Strategy</strong></td>
+<td>13</td>
+<td>Selección de algoritmo</td>
+</tr>
+<tr>
+<td><strong>Template Method</strong></td>
+<td>13</td>
+<td>Esqueleto de algoritmo</td>
+</tr>
+<tr>
+<td><strong>Visitor</strong></td>
+<td>13</td>
+<td>Operaciones en estructuras</td>
+</tr>
+</table>
+<h2>Ejercicios de Selección</h2>
+<p>Se proporcionan 5 ejercicios con soluciones para practicar la selección del patrón correcto ante un problema dado.</p>
+<h2>Preguntas de Reflexión</h2>
+<ul>
+<li>¿Cuándo usarías State vs Strategy?</li>
+<li>¿Cómo combinarías Template Method con Strategy?</li>
+<li>¿Qué ventajas tiene Visitor sobre if/else?</li>
+</ul>
+<h2>Próximos Pasos</h2>
+<ul>
+<li><strong>Hito 12 (Práctica):</strong> Aplicar patrones de comportamiento III</li>
+<li><strong>Clase 14:</strong> Patrones Arquitectónicos</li>
+</ul>
+<h2>Recursos</h2>
+<ul>
+<li><strong>Refactoring Guru:</strong> https://refactoring.guru/design-patterns/behavioral-patterns</li>
+<li><strong>Design Patterns: Elements of Reusable Object-Oriented Software</strong> - Gang of Four</li>
+</ul>
+<div class="highlight">
+<h3>Duración Total de la Clase</h3>
+<p>90 minutos de teoría, cubriendo State (20 min), Strategy (20 min), Template Method (15 min), Visitor (15 min), Comparación (5 min), Ejercicios (10 min), Casos Reales (5 min).</p>
+</div>
+<p style="margin-top: 40px; text-align: center; font-style: italic;">La práctica del Hito 12 se realiza en una sesión separada con enunciado específico.</p>
+<div class="footer">Fin de la Clase 13</div>
+</section>
+</main>
+</div>
+<script>
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function toggleSolution(id) {
+            const solution = document.getElementById(id);
+            solution.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>

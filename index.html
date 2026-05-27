@@ -611,6 +611,15 @@
               </div>
               <div class="hito-arrow">›</div>
             </a>
+            <a class="hito-card" href="hitos/HITO_12.html">
+              <div class="hito-number">12</div>
+              <div class="hito-body">
+                <div class="hito-label">Hito 12</div>
+                <div class="hito-title">Patrones de Comportamiento III</div>
+                <div class="hito-desc">State · Strategy · Template Method · Visitor</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
           </div>
 
         </div>
@@ -661,7 +670,7 @@
             Los Hitos 1 y 2 definen el dominio y los casos de uso.
             Los Hitos 4 y 5 aplican los <strong>9 patrones GRASP</strong> para asignar
             responsabilidades correctamente.
-            Los Hitos 6 a 11 aplican <strong>19 patrones GoF</strong> para mejorar
+            Los Hitos 6 a 12 aplican <strong>23 patrones GoF</strong> para mejorar
             la creacion de objetos, la integracion externa, la estructura del sistema, el acceso a recursos
             y la coordinacion de comportamiento entre objetos.
             El resultado es un sistema coherente, extensible y bien documentado donde cada
@@ -814,7 +823,7 @@
             </li>
             <li>
               <span class="pkg-name">com.logismart.infraestructura.comportamiento</span>
-              <span class="pkg-desc">Patrones de Hito 10 (chain, command, interpreter) y Hito 11 (iterator, mediator, memento, observer): cadena de validacion, comandos reversibles, reglas interpretables, colecciones traversables, pipeline event-driven, historial bidireccional y notificaciones reactivas.</span>
+              <span class="pkg-desc">Patrones de Hito 10, Hito 11 y Hito 12: chain, command, interpreter, iterator, mediator, memento, observer, state, strategy, template method y visitor.</span>
             </li>
             <li>
               <span class="pkg-name">com.logismart.infraestructura.{costo,tiempo,ruta,vehiculo}</span>
@@ -927,7 +936,7 @@
 
         <!-- ── Patrones GoF ── -->
         <div class="docs-block" id="gof">
-          <div class="docs-block-eyebrow">Hitos 6 a 10 · Gang of Four</div>
+          <div class="docs-block-eyebrow">Hitos 6 a 12 · Gang of Four</div>
           <h3>Patrones GoF Aplicados</h3>
           <p>
             Los patrones GoF (<em>Design Patterns: Elements of Reusable Object-Oriented Software</em>,
@@ -1139,6 +1148,46 @@
               <div class="p-applied-label">Implementado en</div>
               <div class="p-applied">
                 <code>Envio</code> como Subject notifica a <code>CentroDistribucionObservador</code>, <code>SistemaNotificacionObservador</code>, <code>SistemaAuditoriaObservador</code> y <code>DashboardObservador</code> en cada transicion de estado. La interfaz <code>ObservadorEnvio</code> es funcional y admite lambdas.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 12</span></div>
+              <div class="p-name">State</div>
+              <div class="p-intent">Permitir que un objeto altere su comportamiento cuando cambia su estado interno.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>Envio</code> delega en <code>EstadoEnvio</code> y 6 estados concretos: confirmado, en transito, en reparto, entregado, cancelado y retenido.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 12</span></div>
+              <div class="p-name">Strategy</div>
+              <div class="p-intent">Definir una familia de algoritmos, encapsularlos y hacerlos intercambiables en runtime.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>EstrategiaCalculoCosto</code> con distancia, peso, urgencia, volumen e hibrida. <code>Envio</code> calcula con la estrategia configurada.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 12</span></div>
+              <div class="p-name">Template Method</div>
+              <div class="p-intent">Definir el esqueleto de un algoritmo y dejar que subclases redefinan pasos especificos.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>ProcesoEnvio</code> fija validar, calcular costo, procesar pago y notificar. Nacional, internacional y urgente especializan los pasos.
+              </div>
+            </div>
+
+            <div class="p-card">
+              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 12</span></div>
+              <div class="p-name">Visitor</div>
+              <div class="p-intent">Agregar operaciones sobre una estructura de objetos sin modificar las clases de esa estructura.</div>
+              <div class="p-applied-label">Implementado en</div>
+              <div class="p-applied">
+                <code>VisitorCentro</code> opera sobre <code>NodoCentroRegional</code> y <code>NodoPuntoEntrega</code> para ocupacion, reporte, costo operativo y puntos criticos.
               </div>
             </div>
 

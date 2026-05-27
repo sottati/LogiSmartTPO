@@ -1,5 +1,9 @@
 package com.logismart.dominio;
 
+import com.logismart.infraestructura.comportamiento.state.EstadoConfirmado;
+import com.logismart.infraestructura.comportamiento.state.EstadoEnvio;
+import com.logismart.infraestructura.comportamiento.strategy.EstrategiaCalculoCosto;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -43,6 +47,11 @@ public class Envio implements Cloneable {
 
 	// ─── Campos Hito 11 (Observer) ───────────────────────────────────────────
 	private final java.util.List<ObservadorEnvio> observadores = new java.util.ArrayList<>();
+
+	// ─── Campos Hito 12 (State / Strategy) ───────────────────────────────────
+	private EstadoEnvio estadoGoF = new EstadoConfirmado();
+	private String tipo;
+	private EstrategiaCalculoCosto estrategia;
 
 	// Constructor Hito 11 - Observer (id + estado inicial)
 	public Envio(String id, String estadoInicial) {
@@ -88,6 +97,22 @@ public class Envio implements Cloneable {
 		this.costo = costo;
 		this.metodoPago = metodoPago;
 		this.productoId = productoId;
+	}
+
+	// Constructor Hito 12 - Strategy
+	public Envio(String id, String origen, String destino, double peso, String tipo) {
+		this.id            = id;
+		this.empresa       = null;
+		this.estado        = "CONFIRMADO";
+		this.prioridad     = "MEDIA";
+		this.fechaProgramada = null;
+		this.ordenes       = new ArrayList<>();
+		this.seguimiento   = new SeguimientoEnvio(id + "-seg", "CONFIRMADO");
+		this.entrega       = new Entrega(id + "-ent");
+		this.origen        = origen;
+		this.destino       = destino;
+		this.peso          = peso;
+		this.tipo          = tipo;
 	}
 
 	// Constructor original - lo usan FabricaDeEnvios y sus subclases
@@ -248,6 +273,7 @@ public class Envio implements Cloneable {
 	public String   getInstruccionesEspeciales()  { return instruccionesEspeciales; }
 	public String   getContactoEmergencia()       { return contactoEmergencia; }
 	public LocalTime getHoraEntregaPreferida()    { return horaEntregaPreferida; }
+	public String   getTipo()                     { return tipo; }
 
 	// ─── Getters / Setters Hito 10 ───────────────────────────────────────────
 
@@ -292,6 +318,39 @@ public class Envio implements Cloneable {
 		this.estado = nuevoEstado;
 		System.out.println("[Envio " + id + "] Estado → " + nuevoEstado);
 		notificarObservadores();
+	}
+
+	// ─── Hito 12: State ──────────────────────────────────────────────────────
+
+	public void cambiarEstado(EstadoEnvio nuevoEstado) {
+		this.estadoGoF = nuevoEstado;
+		this.estado = nuevoEstado.obtenerNombre();
+		System.out.println("[Envio " + id + "] Estado GoF → " + nuevoEstado.obtenerNombre());
+		notificarObservadores();
+	}
+
+	public void validar()  { estadoGoF.validar(this); }
+	public void entregar() { estadoGoF.entregar(this); }
+	public void retener()  { estadoGoF.retener(this); }
+	public void devolver() { estadoGoF.devolver(this); }
+	public void reclamar() { estadoGoF.reclamar(this); }
+
+	public String obtenerNombreEstadoGoF() {
+		return estadoGoF.obtenerNombre();
+	}
+
+	// ─── Hito 12: Strategy ───────────────────────────────────────────────────
+
+	public void establecerEstrategia(EstrategiaCalculoCosto estrategia) {
+		this.estrategia = estrategia;
+	}
+
+	public double calcularCostoConEstrategia() {
+		if (estrategia == null) {
+			throw new IllegalStateException("No hay estrategia de calculo configurada");
+		}
+		this.costo = estrategia.calcular(this);
+		return costo;
 	}
 
 	// ─── Hito 11: Observer - Sujeto ──────────────────────────────────────────
