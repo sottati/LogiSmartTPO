@@ -321,6 +321,110 @@
       .p-tradeoff { margin-top: 0.55rem; padding-top: 0.55rem; border-top: 1px solid var(--border); font-size: 0.74rem; color: var(--muted); line-height: 1.5; }
       .p-tradeoff strong { color: var(--primary-2); }
 
+      /* ──────────────────────────── QUALITY ATTRIBUTES ──────────────────────────── */
+      .qa-badge {
+        display: inline-block;
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .qa-alta  { background: #dcfce7; color: #166534; }
+      .qa-media { background: #fef9c3; color: #854d0e; }
+      .qa-baja  { background: #fee2e2; color: #991b1b; }
+
+      .qa-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      .qa-card {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.25rem 1.3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+      }
+
+      .qa-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.6rem;
+      }
+
+      .qa-eyebrow {
+        font-size: 0.63rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.2rem;
+      }
+
+      .qa-title {
+        font-size: 0.97rem;
+        font-weight: 800;
+        color: var(--primary);
+      }
+
+      .qa-lead {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      .qa-patterns {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 0.1rem;
+      }
+
+      .qa-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: baseline;
+        font-size: 0.8rem;
+        line-height: 1.55;
+      }
+
+      .qa-hito-badge {
+        flex-shrink: 0;
+        align-self: flex-start;
+        background: var(--primary);
+        color: #fff;
+        font-size: 0.58rem;
+        font-weight: 700;
+        padding: 0.15rem 0.45rem;
+        border-radius: 4px;
+        letter-spacing: 0.05em;
+        margin-top: 0.18rem;
+      }
+
+      .qa-row strong { color: var(--primary-2); }
+      .qa-row .qa-muted { color: var(--muted); }
+      .qa-row code { background: #eef2f8; padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.73rem; }
+
+      .qa-infra-note {
+        padding: 0.55rem 0.75rem;
+        background: #fff8f3;
+        border-left: 3px solid var(--accent);
+        border-radius: 0 6px 6px 0;
+        font-size: 0.76rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
       /* ──────────────────────────── RESPONSIVE ──────────────────────────── */
       @media (max-width: 1000px) {
         .pattern-grid { grid-template-columns: repeat(2, 1fr); }
@@ -335,6 +439,7 @@
         .kpi-row  { grid-template-columns: 1fr; }
         .pillar-row { grid-template-columns: 1fr; }
         .pkg-name { min-width: 200px; }
+        .qa-grid { grid-template-columns: 1fr; }
       }
       @media (max-width: 600px) {
         .team { grid-template-columns: 1fr; max-width: 220px; }
@@ -645,6 +750,7 @@
           <a href="#arquitectura">Arquitectura</a>
           <a href="#grasp">Patrones GRASP</a>
           <a href="#gof">Patrones GoF</a>
+          <a href="#calidad">Atributos de Calidad</a>
         </nav>
 
         <!-- ── El Proyecto ── -->
@@ -1189,6 +1295,184 @@
               <div class="p-applied">
                 <code>VisitorCentro</code> opera sobre <code>NodoCentroRegional</code> y <code>NodoPuntoEntrega</code> para ocupacion, reporte, costo operativo y puntos criticos.
               </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Atributos de Calidad ── -->
+        <div class="docs-block" id="calidad">
+          <div class="docs-block-eyebrow">Hito 1 → Hitos 6–12</div>
+          <h3>Atributos de Calidad</h3>
+          <p>
+            En el Hito 1 se definieron cinco atributos de calidad que debían condicionar las decisiones
+            arquitectónicas del sistema. Esta sección evalúa en qué medida los patrones GRASP y GoF
+            implementados a lo largo de los hitos respaldan efectivamente cada uno de esos atributos.
+          </p>
+
+          <table class="domain-table" style="margin-bottom: 1.75rem;">
+            <thead>
+              <tr>
+                <th>Atributo</th>
+                <th>Categoría</th>
+                <th>Cobertura</th>
+                <th>Patrones principales</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Interoperabilidad</td>
+                <td>Mantenibilidad</td>
+                <td><span class="qa-badge qa-alta">Alta</span></td>
+                <td>Adapter (H8) · Facade (H9) · Bridge (H8)</td>
+              </tr>
+              <tr>
+                <td>Eficiencia de Respuesta</td>
+                <td>Performance</td>
+                <td><span class="qa-badge qa-alta">Alta</span></td>
+                <td>Flyweight (H9) · Proxy (H9) · Chain of Responsibility (H10)</td>
+              </tr>
+              <tr>
+                <td>Alta Disponibilidad</td>
+                <td>Confiabilidad</td>
+                <td><span class="qa-badge qa-media">Media</span></td>
+                <td>Command (H10) · Observer (H11) · State (H12)</td>
+              </tr>
+              <tr>
+                <td>Elasticidad</td>
+                <td>Escalabilidad</td>
+                <td><span class="qa-badge qa-media">Media</span></td>
+                <td>Flyweight (H9) · Proxy (H9) · Singleton (H6)</td>
+              </tr>
+              <tr>
+                <td>Aislamiento de Datos</td>
+                <td>Seguridad</td>
+                <td><span class="qa-badge qa-baja">Baja</span></td>
+                <td>Proxy parcial (H9) · requiere infraestructura</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="qa-grid">
+
+            <div class="qa-card">
+              <div class="qa-card-header">
+                <div>
+                  <div class="qa-eyebrow">Mantenibilidad</div>
+                  <div class="qa-title">Interoperabilidad</div>
+                </div>
+                <span class="qa-badge qa-alta">Alta</span>
+              </div>
+              <p class="qa-lead">El sistema debe integrarse con e-commerce, mapas y pagos de forma fluida. Es el atributo mejor respaldado por la arquitectura de patrones.</p>
+              <div class="qa-patterns">
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H8</span>
+                  <div><strong>Adapter</strong> - <span class="qa-muted">DHL/FedEx/UPS y PayPal/Stripe quedan detrás de <code>ProveedorEnvio</code> y <code>ProveedorPago</code>. Cambiar proveedor no toca el dominio.</span></div>
+                </div>
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H9</span>
+                  <div><strong>Facade</strong> - <span class="qa-muted"><code>ServicioLogisticaFacade</code> encapsula 5 subsistemas en 3 métodos públicos. Cambiar implementaciones internas es transparente para el cliente.</span></div>
+                </div>
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H8</span>
+                  <div><strong>Bridge</strong> - <span class="qa-muted">Desacopla abstracciones de implementaciones, permitiendo reemplazar Google Maps por Mapbox sin tocar el dominio (mitigación RI2).</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="qa-card">
+              <div class="qa-card-header">
+                <div>
+                  <div class="qa-eyebrow">Performance</div>
+                  <div class="qa-title">Eficiencia de Respuesta</div>
+                </div>
+                <span class="qa-badge qa-alta">Alta</span>
+              </div>
+              <p class="qa-lead">El cálculo de rutas y la visualización del mapa deben ser rápidos. Múltiples patrones reducen latencia y presión de memoria de forma directa.</p>
+              <div class="qa-patterns">
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H9</span>
+                  <div><strong>Flyweight</strong> - <span class="qa-muted">10.000 envíos a 3 ciudades usan solo 3 instancias de <code>Ubicacion</code>, reduciendo drásticamente la presión sobre GC.</span></div>
+                </div>
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H9</span>
+                  <div><strong>Proxy</strong> - <span class="qa-muted">Cache por ID y cache de lista evitan consultas repetidas al repositorio real, reduciendo latencia en operaciones frecuentes.</span></div>
+                </div>
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H10</span>
+                  <div><strong>Chain of Responsibility</strong> - <span class="qa-muted">Validadores ordenados por costo creciente: datos inválidos se rechazan en O(1) antes de ejecutar operaciones costosas.</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="qa-card">
+              <div class="qa-card-header">
+                <div>
+                  <div class="qa-eyebrow">Confiabilidad · Crítica</div>
+                  <div class="qa-title">Alta Disponibilidad</div>
+                </div>
+                <span class="qa-badge qa-media">Media</span>
+              </div>
+              <p class="qa-lead">El sistema debe garantizar 99,9% de uptime sin puntos únicos de falla. Los patrones aportan resiliencia a nivel de diseño; la redundancia cloud es infraestructural.</p>
+              <div class="qa-patterns">
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H10</span>
+                  <div><strong>Command</strong> - <span class="qa-muted">El historial undo/redo permite revertir operaciones si una falla a mitad del flujo, aportando resiliencia ante errores parciales.</span></div>
+                </div>
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H11</span>
+                  <div><strong>Observer</strong> - <span class="qa-muted"><code>SistemaAuditoriaObservador</code> detecta cambios reactivamente sin polling, acelerando la respuesta ante fallos de estado.</span></div>
+                </div>
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H12</span>
+                  <div><strong>State</strong> - <span class="qa-muted">Transiciones inválidas son rechazadas por cada estado concreto, evitando que el envío quede en estados inconsistentes ante fallos parciales.</span></div>
+                </div>
+              </div>
+              <div class="qa-infra-note">El circuit breaker (RI4) y la redundancia cloud (RI6) son mitigaciones de nivel infraestructural que exceden el alcance de los patrones GoF.</div>
+            </div>
+
+            <div class="qa-card">
+              <div class="qa-card-header">
+                <div>
+                  <div class="qa-eyebrow">Escalabilidad · Media-Alta</div>
+                  <div class="qa-title">Elasticidad</div>
+                </div>
+                <span class="qa-badge qa-media">Media</span>
+              </div>
+              <p class="qa-lead">El sistema debe adaptar sus recursos según la demanda y pagar solo por lo consumido. Los patrones reducen el footprint de objetos; el auto-scaling es infraestructura.</p>
+              <div class="qa-patterns">
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H9</span>
+                  <div><strong>Flyweight</strong> - <span class="qa-muted">Reduce el footprint de memoria en alta carga, mejorando la densidad de instancias en servidores cloud.</span></div>
+                </div>
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H9</span>
+                  <div><strong>Proxy</strong> - <span class="qa-muted">Lazy loading retrasa la inicialización de recursos costosos hasta que son necesarios, alineado con el modelo "pagar por lo consumido".</span></div>
+                </div>
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H6</span>
+                  <div><strong>Singleton</strong> - <span class="qa-muted"><code>ConexionBD</code> y <code>ConfiguracionSistema</code> garantizan que recursos compartidos no se multipliquen innecesariamente.</span></div>
+                </div>
+              </div>
+              <div class="qa-infra-note">El auto-scaling de instancias en cloud es una decisión de infraestructura no modelable con patrones de diseño.</div>
+            </div>
+
+            <div class="qa-card" style="grid-column: 1 / -1;">
+              <div class="qa-card-header">
+                <div>
+                  <div class="qa-eyebrow">Seguridad · Alta</div>
+                  <div class="qa-title">Aislamiento de Datos</div>
+                </div>
+                <span class="qa-badge qa-baja">Baja</span>
+              </div>
+              <p class="qa-lead">Garantiza que los datos de cada PyME sean técnica y legalmente inaccesibles para otras. Es el atributo con menor cobertura a nivel de patrones porque es fundamentalmente un problema de infraestructura multitenant.</p>
+              <div class="qa-patterns">
+                <div class="qa-row">
+                  <span class="qa-hito-badge">H9</span>
+                  <div><strong>Proxy</strong> - <span class="qa-muted"><code>ProxyRepositorioEnvios</code> incluye validación de usuario antes de delegar al repositorio real. Es la única aproximación al control de acceso a nivel de diseño.</span></div>
+                </div>
+              </div>
+              <div class="qa-infra-note">El aislamiento multitenant real requiere: campo <code>tenantId</code> en las tablas de base de datos, middleware de autenticación con JWT y claims de tenant, y políticas de autorización en la capa de infraestructura. Estos aspectos están correctamente fuera del alcance de los patrones GoF pero son esenciales para la seguridad del SaaS.</div>
             </div>
 
           </div>

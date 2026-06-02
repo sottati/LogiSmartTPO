@@ -5,7 +5,11 @@
       "Bash(git merge *)",
       "Bash(git push *)",
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Rosario\\\\Claude\\\\LogiSmartTPO\\\\src\" -Recurse -Filter \"*.java\")",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "mcp__claude_ai_Google_Drive__read_file_content",
+      "Bash(ls -la \"C:\\\\Users\\\\Rosario\\\\Documentos\\\\Claude\\\\Projects\\\\Procesos de Desarrollo de Software\" 2>&1)",
+      "Read(//c/Users/Rosario/Documentos/Claude/Projects/Procesos de Desarrollo de Software/**)",
+      "mcp__claude_ai_Google_Drive__search_files"
     ]
   }
 }

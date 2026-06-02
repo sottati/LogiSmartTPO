@@ -36,7 +36,7 @@ Se mantienen intactos:
 - `cerrar()`
 - Memento y Observer de Hito 11
 
-Nota: el campo `tipo` se asigna vía `EnvioBuilder.tipo(String)` — el constructor especializado `Envio(id, origen, destino, peso, tipo)` fue consolidado en el Builder (ver refactorización post-Hito 12).
+Nota: el campo `tipo` se asigna vía `EnvioBuilder.tipo(String)` - el constructor especializado `Envio(id, origen, destino, peso, tipo)` fue consolidado en el Builder (ver refactorización post-Hito 12).
 
 ## 3) State
 

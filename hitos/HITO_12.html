@@ -69,6 +69,7 @@
       <a href="#visitor">Visitor</a>
       <a href="#integracion">Integración</a>
       <a href="#uml">UML</a>
+      <a href="#ventajas">Ventajas/Desventajas</a>
       <a href="#conclusion">Conclusión</a>
     </nav>
 
@@ -256,6 +257,52 @@ Sistema->>Strategy: calcular(envio)
 Sistema->>Template: procesarEnvio(envio)
 Sistema->>Envio: entregar()
 Sistema->>Visitor: aceptar(red)</pre>
+      </section>
+
+      <section class="section" id="ventajas">
+        <div class="section-act">Análisis</div>
+        <h2>Ventajas y desventajas por patrón</h2>
+        <p>Cada patrón resuelve un problema concreto del dominio e introduce compromisos. Se analiza la decisión aplicada a LogiSmart, no solo la teoría general.</p>
+
+        <h3>State</h3>
+        <table>
+          <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr><td>Elimina los condicionales por texto de estado (<code>if estado.equals("EN_TRANSITO")</code>): cada estado encapsula su propio comportamiento.</td><td>Genera una clase por estado (6 estados = 6 clases), aumentando el número de archivos a mantener.</td></tr>
+            <tr><td>Las transiciones inválidas se manejan localmente en cada estado, haciendo la máquina explícita y verificable.</td><td>La lógica de transición queda dispersa entre las clases de estado; ver el flujo completo exige recorrer varias clases.</td></tr>
+            <tr><td>Agregar un estado nuevo no rompe los existentes; <code>Envio</code> solo delega en <code>estadoGoF</code>.</td><td>El contexto y los estados quedan acoplados: cada estado necesita conocer a qué estados puede transicionar.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Strategy</h3>
+        <table>
+          <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr><td>Permite intercambiar el algoritmo de cálculo de costo en runtime (<code>establecerEstrategia()</code>) sin tocar <code>Envio</code>.</td><td>El cliente debe conocer las estrategias disponibles para elegir la adecuada.</td></tr>
+            <tr><td>Cada fórmula (distancia, peso, urgencia, volumen, híbrida) queda aislada y testeable por separado.</td><td>Aumenta el número de objetos; estrategias muy simples pueden no justificar una clase propia.</td></tr>
+            <tr><td>La estrategia híbrida demuestra composición: combina estrategias existentes sin duplicar lógica.</td><td>Si las estrategias necesitan muchos datos del contexto, la interfaz tiende a crecer y a filtrar detalles del <code>Envio</code>.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Template Method</h3>
+        <table>
+          <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr><td>Fija el orden del algoritmo en <code>procesarEnvio()</code> (validar, calcular, pagar, notificar) y evita que las subclases lo alteren al declararlo <code>final</code>.</td><td>Usa herencia, no composición: una subclase está atada a la clase base y no puede cambiar de jerarquía en runtime.</td></tr>
+            <tr><td>Reutiliza el esqueleto común y solo obliga a implementar los pasos variables, reduciendo duplicación.</td><td>Si los pasos variables crecen, la clase base puede volverse rígida y difícil de extender sin romper subclases.</td></tr>
+            <tr><td>El orden cerrado garantiza que ningún proceso (nacional, internacional, urgente) se saltee un paso obligatorio.</td><td>Menos flexible que Strategy: el comportamiento se elige por subclase, no por inyección dinámica.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Visitor</h3>
+        <table>
+          <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr><td>Permite agregar operaciones nuevas sobre la red de distribución (ocupación, reporte, costo, puntos críticos) sin modificar las clases de nodo.</td><td>Lo inverso es costoso: agregar un tipo de nodo nuevo obliga a tocar todos los visitors existentes.</td></tr>
+            <tr><td>Concentra cada operación en una sola clase visitor, en vez de dispersarla por todos los nodos.</td><td>El doble dispatch (<code>aceptar</code>/<code>visitar</code>) es indirecto y menos intuitivo de leer al principio.</td></tr>
+            <tr><td>Separa el algoritmo de la estructura: la jerarquía de nodos solo sabe aceptar visitantes.</td><td>El visitor suele necesitar acceso al estado interno de los nodos, lo que puede romper su encapsulamiento.</td></tr>
+          </tbody>
+        </table>
       </section>
 
       <section class="section" id="conclusion">

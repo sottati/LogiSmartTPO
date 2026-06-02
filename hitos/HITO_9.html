@@ -70,6 +70,7 @@
       <a href="#proxy">Proxy</a>
       <a href="#integracion">Integracion</a>
       <a href="#uml">UML</a>
+      <a href="#ventajas">Ventajas/Desventajas</a>
       <a href="#conclusion">Conclusion</a>
     </nav>
 
@@ -240,12 +241,14 @@ public static Ubicacion obtener(String ciudad, String provincia, String cp) {
       </section>
 
       <section class="section" id="uml">
-        <div class="section-act">Diagrama UML</div>
+        <div class="section-act">Diagramas UML</div>
         <h2>Estructura del Hito 9</h2>
+        <p>Se presenta un diagrama de clases especifico por patron, mostrando solo los participantes y roles propios de cada uno, mas un diagrama de integracion que los conecta.</p>
+
+        <h3>Decorator - composicion de servicios</h3>
         <div class="diagram"><pre class="mermaid">classDiagram
 direction LR
-
-class EnvioDecoradorContrato["Envio <<interface>>"] {
+class EnvioDecoradorContrato["Envio &lt;&lt;interface&gt;&gt;"] {
   +obtenerCosto() double
   +obtenerTiempoEntrega() int
   +obtenerDescripcion() String
@@ -253,22 +256,29 @@ class EnvioDecoradorContrato["Envio <<interface>>"] {
 }
 class EnvioBasico
 class DecoradorEnvio {
-  <<abstract>>
+  &lt;&lt;abstract&gt;&gt;
   #envioDecorado Envio
 }
 class DecoradorSeguro
 class DecoradorRastreoGPS
 class DecoradorNotificacionesSMS
 class DecoradorPrioritario
-EnvioDecoradorContrato <|.. EnvioBasico
-EnvioDecoradorContrato <|.. DecoradorEnvio
-DecoradorEnvio <|-- DecoradorSeguro
-DecoradorEnvio <|-- DecoradorRastreoGPS
-DecoradorEnvio <|-- DecoradorNotificacionesSMS
-DecoradorEnvio <|-- DecoradorPrioritario
-DecoradorEnvio o-- EnvioDecoradorContrato
+EnvioDecoradorContrato &lt;|.. EnvioBasico
+EnvioDecoradorContrato &lt;|.. DecoradorEnvio
+DecoradorEnvio &lt;|-- DecoradorSeguro
+DecoradorEnvio &lt;|-- DecoradorRastreoGPS
+DecoradorEnvio &lt;|-- DecoradorNotificacionesSMS
+DecoradorEnvio &lt;|-- DecoradorPrioritario
+DecoradorEnvio o-- EnvioDecoradorContrato</pre></div>
 
-class ServicioLogisticaFacade
+        <h3>Facade - interfaz unificada de subsistemas</h3>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction TB
+class ServicioLogisticaFacade {
+  +crearEnvio(String, double, String, String) String
+  +cancelarEnvio(String)
+  +consultarEstado(String) String
+}
 class SistemaInventario
 class SistemaPagos
 class SistemaNotificaciones
@@ -278,26 +288,99 @@ ServicioLogisticaFacade --> SistemaInventario
 ServicioLogisticaFacade --> SistemaPagos
 ServicioLogisticaFacade --> SistemaNotificaciones
 ServicioLogisticaFacade --> SistemaRastreo
-ServicioLogisticaFacade --> SistemaReportes
+ServicioLogisticaFacade --> SistemaReportes</pre></div>
 
-class Ubicacion
-class FabricaUbicaciones
-FabricaUbicaciones --> Ubicacion
+        <h3>Flyweight - ubicaciones compartidas</h3>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction LR
+class Ubicacion {
+  -ciudad String
+  -provincia String
+  -codigoPostal String
+}
+class FabricaUbicaciones {
+  -pool Map~String,Ubicacion~
+  +obtener(String, String, String) Ubicacion
+  +cantidadInstancias() int
+}
+FabricaUbicaciones o-- Ubicacion : reutiliza pool</pre></div>
 
+        <h3>Proxy - lazy loading y cache</h3>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction LR
 class RepositorioEnvios {
-  <<interface>>
+  &lt;&lt;interface&gt;&gt;
+  +guardarEnvio(Envio)
+  +buscarPorId(String) Envio
+  +listarEnvios() List
 }
 class RepositorioEnviosReal
-class ProxyRepositorioEnvios
-RepositorioEnvios <|.. RepositorioEnviosReal
-RepositorioEnvios <|.. ProxyRepositorioEnvios
-ProxyRepositorioEnvios --> RepositorioEnviosReal
+class ProxyRepositorioEnvios {
+  -repositorioReal RepositorioEnviosReal
+  -cache Map~String,Envio~
+}
+RepositorioEnvios &lt;|.. RepositorioEnviosReal
+RepositorioEnvios &lt;|.. ProxyRepositorioEnvios
+ProxyRepositorioEnvios --> RepositorioEnviosReal : crea bajo demanda</pre></div>
 
+        <h3>Integracion - ServicioLogisticaCompleto</h3>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction TB
 class ServicioLogisticaCompleto
-ServicioLogisticaCompleto --> ServicioLogisticaFacade
-ServicioLogisticaCompleto --> ProxyRepositorioEnvios
-ServicioLogisticaCompleto --> FabricaUbicaciones
-ServicioLogisticaCompleto ..> EnvioDecoradorContrato</pre></div>
+class ServicioLogisticaFacade
+class ProxyRepositorioEnvios
+class FabricaUbicaciones
+class EnvioDecoradorContrato["Envio &lt;&lt;interface&gt;&gt;"]
+ServicioLogisticaCompleto --> ServicioLogisticaFacade : orquesta
+ServicioLogisticaCompleto --> ProxyRepositorioEnvios : persiste
+ServicioLogisticaCompleto --> FabricaUbicaciones : comparte ubicacion
+ServicioLogisticaCompleto ..> EnvioDecoradorContrato : compone servicios</pre></div>
+      </section>
+
+      <section class="section" id="ventajas">
+        <div class="section-act">Analisis</div>
+        <h2>Ventajas y desventajas por patron</h2>
+        <p>Cada patron resuelve un problema concreto del dominio pero introduce compromisos. Se analiza la decision aplicada a LogiSmart, no solo la teoria general.</p>
+
+        <h3>Decorator</h3>
+        <table>
+          <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr><td>Permite combinar servicios (seguro, GPS, SMS, prioridad) en cualquier orden y cantidad sin una explosion de subclases (<code>EnvioConSeguroYGPS</code>, etc.).</td><td>El costo final depende del orden de envoltura, lo que puede ser poco intuitivo al depurar una cadena larga de decoradores.</td></tr>
+            <tr><td>Respeta Open/Closed: agregar un servicio nuevo es crear una clase, sin tocar <code>EnvioBasico</code> ni los demas decoradores.</td><td>Genera muchos objetos pequenos y una pila de llamadas anidadas que dificulta seguir el flujo paso a paso.</td></tr>
+            <tr><td>Cada decorador es responsabilidad unica (SRP): solo conoce su incremento de costo o tiempo.</td><td>El cliente debe construir la cadena manualmente; un Builder o Factory ayudaria a ocultar el armado.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Facade</h3>
+        <table>
+          <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr><td>Reduce el acoplamiento del cliente: pasa de coordinar 5 subsistemas a invocar 3 metodos de alto nivel.</td><td>Si se le agregan demasiadas responsabilidades, el Facade puede degenerar en un objeto-dios con baja cohesion.</td></tr>
+            <tr><td>Centraliza el orden correcto de las operaciones (stock, pago, tracking, notificacion, reporte), evitando errores de secuencia.</td><td>Oculta capacidades de los subsistemas: si un cliente necesita un control fino, debe saltearse el Facade.</td></tr>
+            <tr><td>Facilita futuros cambios internos sin afectar al cliente mientras la firma publica se mantenga.</td><td>Agrega una capa de indireccion que no aporta logica nueva, solo coordinacion.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Flyweight</h3>
+        <table>
+          <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr><td>Ahorro de memoria drastico: 10.000 envios a 3 ciudades reutilizan 3 instancias de <code>Ubicacion</code> en lugar de crear 30.000.</td><td>Solo funciona si el estado es inmutable y compartible; cualquier dato mutable por envio debe quedar fuera del flyweight.</td></tr>
+            <tr><td>El pool en <code>FabricaUbicaciones</code> garantiza una unica instancia por clave (ciudad+provincia+CP).</td><td>Introduce una indireccion (lookup en el mapa) en cada obtencion, con costo de hashing.</td></tr>
+            <tr><td>La inmutabilidad de <code>Ubicacion</code> la hace segura para compartir entre hilos sin sincronizacion.</td><td>El beneficio es marginal si las ubicaciones rara vez se repiten; en ese caso solo agrega complejidad.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Proxy</h3>
+        <table>
+          <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr><td>Lazy loading: el repositorio real solo se instancia en la primera consulta, ahorrando recursos si nunca se accede.</td><td>El primer acceso paga el costo de inicializacion (latencia inicial mayor que la del objeto real directo).</td></tr>
+            <tr><td>La cache por id y la cache de lista reducen consultas repetidas al repositorio real.</td><td>La cache puede quedar desactualizada (stale): requiere invalidacion correcta al guardar o modificar.</td></tr>
+            <tr><td>Implementa la misma interfaz <code>RepositorioEnvios</code>, asi que el cliente no distingue proxy de objeto real (transparencia).</td><td>Agrega una clase y logica de sincronizacion de cache que debe testearse aparte.</td></tr>
+          </tbody>
+        </table>
       </section>
 
       <section class="section" id="conclusion">

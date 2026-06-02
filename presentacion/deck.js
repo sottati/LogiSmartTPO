@@ -1,0 +1,167 @@
+/* ════════════════════════════════════════════════════════════════
+   LogiSmart · Defensa TPO — Interacciones
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── 1 · TARJETAS DE PATRÓN EXPANDIBLES ─────────────────────────── */
+document.querySelectorAll('.pcard').forEach(card => {
+  card.addEventListener('click', () => {
+    const open = card.classList.contains('open');
+    card.parentElement.querySelectorAll('.pcard').forEach(s => s.classList.remove('open'));
+    if (!open) card.classList.add('open');
+  });
+});
+
+/* ── 2 · COMPARADOR (tabs) ──────────────────────────────────────── */
+document.querySelectorAll('.cmp-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const scope = tab.closest('section');
+    const id = tab.dataset.cmp;
+    scope.querySelectorAll('.cmp-tab').forEach(t => t.classList.toggle('active', t === tab));
+    scope.querySelectorAll('.cmp-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === id));
+  });
+});
+
+/* ── 3 · DIAGRAMA DE SECUENCIA INTERACTIVO ──────────────────────── */
+(function buildSequence(){
+  const root = document.getElementById('seq-root');
+  if (!root) return;
+
+  const actors = [
+    { nm: 'Cliente',      role: 'actor' },
+    { nm: 'Facade',       role: 'ServicioLogística' },
+    { nm: 'Builder',      role: 'EnvioBuilder' },
+    { nm: 'Validadores',  role: 'CadenaValidadores' },
+    { nm: 'Strategy',     role: 'EstrategiaCosto' },
+    { nm: 'Proceso',      role: 'ProcesoNacional' },
+    { nm: 'Envío',        role: 'State' },
+    { nm: 'Observers',    role: 'suscriptores' },
+  ];
+
+  const steps = [
+    { from:0, to:1, label:'crearYProcesarEnvio()', pat:'Facade',
+      txt:'El cliente llama un único método. La fachada orquesta todos los subsistemas internos sin exponerlos.' },
+    { from:1, to:2, label:'new EnvioBuilder()…build()', pat:'Builder',
+      txt:'La fachada arma el Envío paso a paso —tipo, peso, origen, destino— de forma legible y segura.' },
+    { from:2, to:1, ret:true, label:'Envio', pat:'Builder',
+      txt:'El Builder devuelve un Envío ya construido y consistente.' },
+    { from:1, to:3, label:'validar(envio)', pat:'Chain of Responsibility',
+      txt:'El envío pasa por 5 validadores en orden de costo. Si uno falla, corta la cadena (fail-fast).' },
+    { from:3, to:1, ret:true, label:'OK', pat:'Chain of Responsibility',
+      txt:'Todos los validadores pasaron: el envío es válido y la cadena devuelve el control.' },
+    { from:1, to:4, label:'calcularCosto(envio)', pat:'Strategy',
+      txt:'Se inyecta la estrategia adecuada (ej. Híbrida). El algoritmo de costo es intercambiable en runtime.' },
+    { from:4, to:1, ret:true, label:'costo', pat:'Strategy',
+      txt:'La estrategia devuelve el costo sin que la fachada conozca la fórmula interna.' },
+    { from:1, to:5, label:'procesarEnvio()', pat:'Template Method',
+      txt:'El proceso ejecuta un esqueleto fijo y final: validar → calcular → cobrar → notificar.' },
+    { from:5, to:6, label:'cambiarEstado(EnTránsito)', pat:'State',
+      txt:'Confirmado el pago, el Envío transiciona. Delega la lógica al objeto de estado actual.' },
+    { from:6, to:7, label:'notificar()', pat:'Observer',
+      txt:'El cambio de estado notifica automáticamente al dashboard, la auditoría y las notificaciones.' },
+  ];
+
+  const N = actors.length;
+  const M = steps.length;
+  const center = i => (i + 0.5) / N * 100; // % center of column i
+
+  /* actors header */
+  const head = document.createElement('div');
+  head.className = 'seq-actors';
+  head.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+  head.innerHTML = actors.map((a,i) =>
+    `<div class="seq-actor" data-actor="${i}"><div class="role">${a.role}</div><div class="nm">${a.nm}</div></div>`
+  ).join('');
+  root.appendChild(head);
+
+  /* canvas: lifelines + messages */
+  const canvas = document.createElement('div');
+  canvas.className = 'seq-canvas';
+  const lines = document.createElement('div');
+  lines.className = 'seq-lines';
+  lines.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+  lines.innerHTML = actors.map((_,i) => `<div class="ll" data-ll="${i}"></div>`).join('');
+  canvas.appendChild(lines);
+
+  const msgs = document.createElement('div');
+  msgs.className = 'seq-msgs';
+  msgs.style.justifyContent = 'space-evenly';
+  steps.forEach((s,k) => {
+    const lo = Math.min(s.from, s.to), hi = Math.max(s.from, s.to);
+    const dir = s.to > s.from ? 'right' : 'left';
+    const left = center(lo), width = center(hi) - center(lo);
+    const m = document.createElement('div');
+    m.className = 'seq-msg';
+    m.dataset.step = k + 1;
+    m.innerHTML =
+      `<div class="seq-arrow ${dir}${s.ret ? ' ret' : ''}" style="left:${left}%;width:${width}%">
+         <div class="line"></div><div class="head"></div>
+         <div class="seq-label${s.ret ? ' ret' : ''}">${s.label}</div>
+       </div>`;
+    msgs.appendChild(m);
+  });
+  canvas.appendChild(msgs);
+  root.appendChild(canvas);
+
+  /* footer: caption + controls */
+  const foot = document.createElement('div');
+  foot.className = 'seq-foot';
+  foot.innerHTML =
+    `<div class="seq-caption">
+       <div class="pat" id="seq-pat">Diagrama de secuencia</div>
+       <div class="txt" id="seq-txt">Seguí el flujo de un envío a través de los patrones. Pulsá “Siguiente paso” para empezar.</div>
+     </div>
+     <div class="seq-controls">
+       <span class="seq-step-n" id="seq-stepn">0 / ${M}</span>
+       <div class="seq-dots" id="seq-dots">${steps.map((_,i)=>`<span class="d" data-d="${i+1}"></span>`).join('')}</div>
+       <button class="seq-btn" id="seq-prev">◀ Atrás</button>
+       <button class="seq-btn primary" id="seq-next">Siguiente paso ▶</button>
+       <button class="seq-btn" id="seq-reset" title="Reiniciar">↺</button>
+     </div>`;
+  root.appendChild(foot);
+
+  let cur = 0; // 0 = nada mostrado; 1..M
+  const patEl = foot.querySelector('#seq-pat');
+  const txtEl = foot.querySelector('#seq-txt');
+  const stepnEl = foot.querySelector('#seq-stepn');
+  const prevBtn = foot.querySelector('#seq-prev');
+  const nextBtn = foot.querySelector('#seq-next');
+  const resetBtn = foot.querySelector('#seq-reset');
+
+  function render(){
+    msgs.querySelectorAll('.seq-msg').forEach(m => {
+      m.classList.toggle('show', +m.dataset.step <= cur);
+    });
+    foot.querySelectorAll('.seq-dots .d').forEach(d => {
+      const n = +d.dataset.d;
+      d.classList.toggle('done', n <= cur);
+      d.classList.toggle('cur', n === cur);
+    });
+    // highlight live actors + lifelines for current step
+    const live = cur > 0 ? [steps[cur-1].from, steps[cur-1].to] : [];
+    head.querySelectorAll('.seq-actor').forEach(a => a.classList.toggle('live', live.includes(+a.dataset.actor)));
+    lines.querySelectorAll('.ll').forEach(l => l.classList.toggle('live', live.includes(+l.dataset.ll)));
+
+    if (cur === 0) {
+      patEl.textContent = 'Diagrama de secuencia';
+      txtEl.textContent = 'Seguí el flujo de un envío a través de los patrones. Pulsá “Siguiente paso” para empezar.';
+    } else {
+      patEl.textContent = `Paso ${cur} · ${steps[cur-1].pat}`;
+      txtEl.textContent = steps[cur-1].txt;
+    }
+    stepnEl.textContent = `${cur} / ${M}`;
+    prevBtn.disabled = cur === 0;
+    nextBtn.disabled = cur === M;
+  }
+
+  const next = () => { if (cur < M) { cur++; render(); } };
+  const prev = () => { if (cur > 0) { cur--; render(); } };
+  const reset = () => { cur = 0; render(); };
+
+  nextBtn.addEventListener('click', next);
+  prevBtn.addEventListener('click', prev);
+  resetBtn.addEventListener('click', reset);
+  // click en el lienzo avanza (no en los botones)
+  canvas.addEventListener('click', next);
+
+  render();
+})();

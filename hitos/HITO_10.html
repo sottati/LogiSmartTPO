@@ -75,6 +75,7 @@
       <a href="#interpreter-impl">Interpreter · Impl.</a>
       <a href="#integracion">Integración</a>
       <a href="#uml">UML</a>
+      <a href="#ventajas">Ventajas/Desventajas</a>
       <a href="#conclusion">Conclusión</a>
     </nav>
 
@@ -525,11 +526,13 @@ public class ExpresionRestringido implements Expresion {
 
       <!-- ══════════════════════════════════════════════ UML -->
       <section class="section" id="uml">
-        <div class="section-act">Diagrama UML</div>
+        <div class="section-act">Diagramas UML</div>
         <h2>Estructura del Hito 10</h2>
+        <p>Un diagrama de clases especifico por patron, con solo los participantes y roles de cada uno, mas un diagrama de integracion.</p>
+
+        <h3>Chain of Responsibility - cadena de validadores</h3>
         <div class="diagram"><pre class="mermaid">classDiagram
 direction TB
-
 class ValidadorEnvio {
   &lt;&lt;abstract&gt;&gt;
   #siguiente ValidadorEnvio
@@ -557,10 +560,14 @@ ValidadorEnvio &lt;|-- ValidadorInventario
 ValidadorEnvio &lt;|-- ValidadorPago
 ValidadorEnvio &lt;|-- ValidadorSeguridad
 ValidadorEnvio &lt;|-- ValidadorCapacidad
+ValidadorEnvio --> ValidadorEnvio : siguiente
 CadenaValidadores --> ValidadorEnvio
 ValidadorInventario --> SistemaInventario
-ValidadorCapacidad --> SistemaCapacidad
+ValidadorCapacidad --> SistemaCapacidad</pre></div>
 
+        <h3>Command - operaciones reversibles con historial</h3>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction TB
 class Comando {
   &lt;&lt;interface&gt;&gt;
   +ejecutar()
@@ -591,13 +598,16 @@ Comando &lt;|.. ComandoCancelarEnvio
 Comando &lt;|.. ComandoActualizarEstado
 Comando &lt;|.. ComandoCambiarMetodoPago
 Comando &lt;|.. ComandoAgregarServicio
-ColaComandos --> Comando
+ColaComandos --> Comando : invoker
 ComandoCrearEnvio --> ServicioEnvios
 ComandoCancelarEnvio --> ServicioEnvios
 ComandoActualizarEstado --> ServicioEnvios
 ComandoCambiarMetodoPago --> ServicioEnvios
-ComandoAgregarServicio --> ServicioEnvios
+ComandoAgregarServicio --> ServicioEnvios</pre></div>
 
+        <h3>Interpreter - arbol de expresiones de reglas</h3>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction TB
 class Expresion {
   &lt;&lt;interface&gt;&gt;
   +evaluar(Envio) bool
@@ -618,20 +628,63 @@ Expresion &lt;|.. ExpresionRestringido
 Expresion &lt;|.. ExpresionAND
 Expresion &lt;|.. ExpresionOR
 Expresion &lt;|.. ExpresionNOT
-ExpresionAND --> Expresion
-ExpresionOR --> Expresion
-ExpresionNOT --> Expresion
+ExpresionAND --> Expresion : izq/der
+ExpresionOR --> Expresion : izq/der
+ExpresionNOT --> Expresion : unico</pre></div>
 
+        <h3>Integracion - SistemaLogisticaCompleto</h3>
+        <div class="diagram"><pre class="mermaid">classDiagram
+direction TB
 class SistemaLogisticaCompleto {
   +procesarEnvio(Envio) String
   +getServicio() ServicioEnvios
   +getCola() ColaComandos
   +getValidadores() CadenaValidadores
 }
-SistemaLogisticaCompleto --> CadenaValidadores
-SistemaLogisticaCompleto --> ColaComandos
-SistemaLogisticaCompleto --> ServicioEnvios
-SistemaLogisticaCompleto ..> Expresion</pre></div>
+class CadenaValidadores
+class ColaComandos
+class ServicioEnvios
+class Expresion
+SistemaLogisticaCompleto --> CadenaValidadores : 1-valida
+SistemaLogisticaCompleto --> ColaComandos : 2-registra
+SistemaLogisticaCompleto --> ServicioEnvios : receiver
+SistemaLogisticaCompleto ..> Expresion : 3-evalua reglas</pre></div>
+      </section>
+
+      <section class="section" id="ventajas">
+        <div class="section-act">Análisis</div>
+        <h2>Ventajas y desventajas por patrón</h2>
+        <p>Cada patrón resuelve un problema concreto del dominio e introduce compromisos. Se analiza la decisión aplicada a LogiSmart, no solo la teoría general.</p>
+
+        <h3>Chain of Responsibility</h3>
+        <table>
+          <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr><td>Desacopla al cliente de las reglas concretas: <code>CadenaValidadores</code> arma el orden y el cliente solo llama <code>validarEnvio()</code>.</td><td>No garantiza que la solicitud sea atendida: si ningún eslabón corta, el resultado depende del valor por defecto al final de la cadena.</td></tr>
+            <tr><td>Agregar, quitar o reordenar validadores no toca los eslabones existentes (Open/Closed).</td><td>Una cadena larga puede ser difícil de depurar: hay que rastrear qué eslabón rechazó y por qué.</td></tr>
+            <tr><td>El orden por costo creciente permite "fallo rápido": las reglas O(1) actúan antes que las que tocan estado global.</td><td>El orden es responsabilidad del armador; un orden mal elegido degrada el rendimiento sin error visible.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Command</h3>
+        <table>
+          <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr><td>Convierte cada operación en un objeto con undo/redo e historial auditable, aportando trazabilidad real.</td><td>Multiplica el número de clases: una por cada operación reversible.</td></tr>
+            <tr><td>El invoker (<code>ColaComandos</code>) no conoce el receiver: se pueden encolar, diferir o registrar comandos de forma uniforme.</td><td>Cada comando debe capturar correctamente el estado previo; un descuido rompe el undo de forma silenciosa.</td></tr>
+            <tr><td>El historial lineal con índice simplifica la poda del "futuro" al ejecutar un comando nuevo tras un undo.</td><td>El historial crece en memoria; sin límite o serialización puede volverse costoso en sesiones largas.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Interpreter</h3>
+        <table>
+          <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
+          <tbody>
+            <tr><td>Externaliza las reglas de negocio: se definen nuevas combinando terminales (Origen, Peso, Costo) y operadores (AND, OR, NOT) sin tocar código.</td><td>La gramática se vuelve difícil de mantener si crece: muchas clases pequeñas por cada terminal y operador.</td></tr>
+            <tr><td>El árbol de expresiones es componible y recursivo: reglas complejas se arman anidando reglas simples.</td><td>No es eficiente para gramáticas grandes; para reglas masivas conviene un parser o motor dedicado.</td></tr>
+            <tr><td>Cada expresión es testeable en aislamiento, lo que facilita validar reglas por separado.</td><td>Construir el árbol a mano es verboso; sin una capa de parsing el cliente debe ensamblar nodos manualmente.</td></tr>
+          </tbody>
+        </table>
       </section>
 
       <!-- ══════════════════════════════════════════════ CONCLUSIÓN -->
