@@ -4,6 +4,7 @@
 **Patrones:** Data Mapper · Repository · Unit of Work · Lazy Load
 **Carácter:** Hito final del TPO (integra todo lo anterior)
 **Estado de este documento:** planificación previa a la implementación
+**Última revisión:** incorpora reutilización de entidades, mitigación de desfasaje y foco de diseño del TPO.
 
 ---
 
@@ -22,12 +23,33 @@ amarra esta capa con el dominio ya construido en los hitos 1–12.
 
 ---
 
-## 2) Metodología (la de siempre)
+## 2) Qué pide realmente el TPO (encuadre)
 
-Replica exacta del flujo usado en hitos 8–12:
+El documento maestro del TPO es explícito:
+
+> "La implementación no es el foco, pero el diseño debe ser expresado principalmente
+> a través de diagramas UML (Clases, Secuencia, Casos de Uso)... y la justificación
+> de las decisiones de diseño."
+
+Y el hito de persistencia está descrito como:
+
+> "Diseño de la Capa de Persistencia: **Diagrama de clases** para la capa de datos
+> aplicando patrones como Repository o Data Mapper."
+
+**Conclusión:** el entregable que el profesor puntúa es el **diagrama de clases de la
+capa de datos + la justificación de decisiones**. El código JDBC de la consigna es
+ilustrativo. Implementar y ejecutar el proyecto de verdad (con `javac`/`java`) es una
+**decisión propia del equipo, por encima de lo pedido** — y, como tal, fuente de
+aprendizaje real y de los desafíos que se documentan abajo.
+
+---
+
+## 3) Metodología (la de siempre)
+
+Replica del flujo usado en hitos 8–12:
 
 1. **Código** en `src/com/logismart/...`
-   - Patrones nuevos → bajo `infraestructura/` (paquete dedicado al hito).
+   - Patrones nuevos → bajo `infraestructura/persistencia/`.
    - Integración + casos de prueba → `aplicacion/hito13/`.
 2. **Runner**: agregar `CasosDePruebaHito13.ejecutar()` a `app/Main.java`.
 3. **Compilación/test** (mismo comando que H12):
@@ -46,58 +68,126 @@ Replica exacta del flujo usado en hitos 8–12:
 
 ---
 
-## 3) Decisiones de diseño (claves del hito)
+## 4) Decisiones de diseño
 
-### 3.1 Reutilizar el `Envio` del dominio (decisión tomada)
+### 4.1 Reutilizar el dominio existente (decisión central)
 
-El `Envio` real del proyecto **no es** el `Envio` simplificado de la consigna:
+La consigna trae código de ejemplo de 4 entidades "puras" (`Envio`, `Cliente`,
+`CentroDistribucion`, `Pago`), pero **no exige crearlas nuevas**: es una plantilla
+genérica que asume que no existen. Tras 12 hitos, LogiSmart ya modela casi todas.
+Decisión: **reutilizar lo que ya existe; crear solo lo que falta.**
 
-| Aspecto            | `Envio` consigna        | `Envio` real del repo                          |
-|--------------------|-------------------------|------------------------------------------------|
-| `id`               | `int`                   | `String`                                       |
-| Construcción       | constructor de 4 args   | `EnvioBuilder` + estado GoF                     |
-| `estado`           | `EstadoEnvio` (enum)    | `String estado` + `EstadoEnvio estadoGoF` (State)|
-| Campos             | 6                       | ~20 (empresa, prioridad, órdenes, etc.)         |
+| Entidad consigna     | Resolución                              | Acción                                  |
+|----------------------|-----------------------------------------|-----------------------------------------|
+| `Envio`              | Reutilizar `dominio/Envio` (Builder, `String id`, estado GoF) | Mapper adaptado al `Envio` real |
+| `Cliente`            | Reutilizar `dominio/ClienteFinal` (es un `Usuario`) | Mapper persiste subconjunto      |
+| `Pago`               | Reutilizar `dominio/Cobro`              | Agregar campo `envioId` (aditivo)        |
+| `CentroDistribucion` | **Crear** entidad de persistencia nueva | Única clase de entidad nueva del hito    |
 
-**Implicancias para el plan:**
+Resultado: se reutilizan **3** entidades y se crea **1**.
 
-- `EnvioMapper` mapea sólo el **subconjunto persistente** del `Envio` real:
-  `id (VARCHAR)`, `origen`, `destino`, `peso`, `estado (String)`, `costo`,
-  `metodoPago`, `tipo`. El resto de la riqueza del dominio queda fuera del mapeo
-  (no se rompe nada de H1–H12).
+### 4.2 `Envio`: adaptar el mapper al dominio real
+
+El `Envio` real no es el de la consigna:
+
+| Aspecto      | `Envio` consigna       | `Envio` real del repo                              |
+|--------------|------------------------|----------------------------------------------------|
+| `id`         | `int`                  | `String`                                           |
+| Construcción | constructor 4 args     | `EnvioBuilder` + estado GoF                        |
+| `estado`     | `EstadoEnvio` (enum)   | `String estado` + `EstadoEnvio estadoGoF` (State)  |
+| Campos       | 6                      | ~20 (empresa, prioridad, órdenes, etc.)            |
+
+- `EnvioMapper` mapea el **subconjunto persistente**: `id (VARCHAR)`, `origen`,
+  `destino`, `peso`, `estado (String)`, `costo`, `metodoPago`, `tipo`.
 - `findById` reconstruye el `Envio` vía `EnvioBuilder` (no con `new Envio(int,...)`).
 - La columna `id` de la tabla `envios` es `VARCHAR`, no `INT`.
-- `RepositorioEnvio.obtener(...)` y los proxies usan `String id` para envíos.
-  → **Atención:** la interfaz genérica de la consigna define `T obtener(int id)`.
-  Resolución: mantener `int` para las entidades nuevas (Cliente, Centro, Pago) y
-  ofrecer en `RepositorioEnvio` un overload `obtener(String id)`, documentando la
-  divergencia. (Alternativa más simple: que `EnvioMapper` use un `int` sintético;
-  se evita para no falsear el dominio.)
 
-### 3.2 Entidades nuevas vs. colisiones
+### 4.3 `ClienteFinal` como `Cliente`
 
-- **`Envio`** → se reutiliza el del dominio (ver 3.1).
-- **`Cliente`** → **no existe** como entidad de dominio (sólo `ClienteFinal`, que es
-  un `Usuario`). Se crea `Cliente` nuevo como entidad de persistencia simple.
-- **`CentroDistribucion`** → **ya existe** en `composite/centro/` y en
-  `comportamiento/mediator/`. Para evitar colisión se crea la entidad de
-  persistencia en un paquete propio (import calificado) o se renombra a
-  `CentroDistribucionDatos` dentro del paquete del hito. **Recomendación:** paquete
-  dedicado + nombre `CentroDistribucion` calificado por paquete (como se hizo con
-  `Nodo*` en Visitor del H12).
-- **`Pago`** → no existe entidad (sólo `ProveedorPago`, `ValidadorPago`). Se crea
-  `Pago` nuevo.
+`ClienteFinal extends Usuario` ya tiene `nombre`, `email` (heredado de `Usuario`) y
+`telefono` — los tres campos del `Cliente` de la consigna — más `direccionEntrega`.
+Conceptualmente son lo mismo; la consigna lo modela como registro plano y el proyecto
+como usuario con login + permisos.
 
-### 3.3 Ubicación de paquetes (propuesta)
+- `ClienteMapper` persiste el subconjunto `id (VARCHAR)`, `nombre`, `email`, `telefono`.
+- Ignora `passwordHash`, `rol`, `estado` y permisos (no son responsabilidad de este
+  mapper). Se documenta la decisión.
+
+### 4.4 `Cobro` como `Pago`
+
+`Cobro` ya existe con `id`, `monto`, `estado`, `fecha`, `medioPago` y comportamiento
+(`autorizar`, `registrarPago`, `marcarFallido`, `emitirComprobante`). Es el concepto
+"pago" ya resuelto. Ajustes:
+
+- **Estado**: se mantiene como `String`. **No** se introduce el enum `EstadoPago`:
+  sus valores ni coinciden (`AUTORIZADO/PAGADO/FALLIDO` vs
+  `PENDIENTE/PROCESANDO/COMPLETADO/RECHAZADO`) y forzarlo cambiaría el comportamiento
+  ya testeado de `Cobro`, con riesgo de regresión. (Nota histórica: `EstadoPago`
+  no fue pedido en ninguna consigna previa; solo aparece en el ejemplo del Hito 13.
+  El Hito 2 dejó abierta la pregunta "¿Pago clase o atributo?", resuelta con `Cobro`.)
+- **Vínculo con el envío**: se agrega un campo `envioId` a `Cobro` de forma **aditiva**
+  (constructor/​setter opcional; `Cobro` es una clase de datos plana sin subclases →
+  riesgo mínimo). Habilita `RepositorioPago.buscarPorEnvio(envioId)` limpio.
+
+### 4.5 `CentroDistribucion`: separar dominio de persistencia, **con mitigación de desfasaje**
+
+Los `CentroDistribucion` existentes no sirven como entidad de persistencia:
+
+- `composite/centro/CentroDistribucion` es **abstracto** (patrón Composite); su
+  `ocupacion`/`capacidad` se **calculan** sumando hijos, no son campos almacenados.
+- `comportamiento/mediator/CentroDistribucion` es un colega del Mediator, no un dato.
+
+Decisión: crear una entidad de persistencia plana `CentroDistribucion` en el paquete
+de persistencia (los paquetes Java desambiguan; sin sufijos). Esto **separa el modelo
+de dominio** (Composite, rico, jerárquico) del **modelo de persistencia** (fila plana).
+
+**Trade-off reconocido:** la separación introduce duplicación y un riesgo de
+**desfasaje** (el snapshot plano podría divergir del Composite).
+
+**Mitigación (no se asume el riesgo, se neutraliza):**
+
+- El **Composite es la única fuente de verdad** de `capacidad`/`ocupacion`.
+- La entidad de persistencia **no se edita por su cuenta**; se **genera como
+  proyección** desde el Composite al momento de guardar, vía un *assembler*
+  (`CentroAssembler.aPersistencia(centroComposite)`) que lee `obtenerCapacidad()` y
+  `obtenerOcupacion()` y los vuelca a la fila.
+- Por construcción, el snapshot siempre se recalcula desde el dominio → no puede
+  divergir. La fila es una vista materializada, no un dato editable en paralelo.
+
+### 4.6 Interfaz genérica `obtener(int)` vs `id` String
+
+`Repositorio<T>` define `T obtener(int id)`, pero `Envio`, `ClienteFinal` y `Cobro`
+usan `String id`. Tensión entre la genericidad "linda" y la fidelidad al dominio.
+
+- Resolución: para las entidades con `String id`, los repositorios específicos
+  exponen un overload `obtener(String id)`; la firma `int` queda para la entidad
+  nueva (`CentroDistribucion`) o se documenta la divergencia. Se justifica en
+  `DOCUMENTACION.md`.
+
+### 4.7 JDBC vs base de datos: SQL ilustrativo, tests en memoria
+
+`java.sql.*` (Connection, PreparedStatement) **es parte del JDK**: los Data Mapper SQL
+**compilan con `javac` pelado** y cuentan como clases del hito. Solo no pueden
+**conectarse** sin un driver y una base corriendo.
+
+- Las impl **SQL** se escriben y compilan (demuestran dominio de JDBC) pero **no se
+  ejecutan** en los tests (no hay base en el build).
+- Los tests automáticos corren contra las impl **en memoria** (`HashMap`),
+  deterministas y sin dependencias externas.
+- El **diagrama de clases** muestra la arquitectura completa respaldada por SQL; las
+  impl en memoria quedan anotadas como dobles de prueba.
+- Mismo criterio que el Hito 12 (distancia fija 500 para tests deterministas).
+
+### 4.8 Ubicación de paquetes (propuesta)
 
 ```
 src/com/logismart/infraestructura/persistencia/
-├── entidad/        # Cliente, CentroDistribucion(datos), Pago, EstadoPago
-│                   #  (Envio se reutiliza del dominio)
-├── mapper/         # EnvioMapper, ClienteMapper, CentroDistribucionMapper, PagoMapper
+├── entidad/        # CentroDistribucion (persistencia) + assembler
+│                   #  (Envio, ClienteFinal y Cobro se reutilizan del dominio)
+├── mapper/         # EnvioMapper, ClienteMapper, CentroDistribucionMapper, CobroMapper
 ├── repositorio/    # interfaces Repositorio<T> + Repositorio{Envio,Cliente,Centro,Pago}
-│   ├── sql/        # impl SQL
-│   └── memoria/    # impl en memoria (para tests sin BD)
+│   ├── sql/        # impl SQL (compiladas, no ejecutadas en tests)
+│   └── memoria/    # impl en memoria (testeadas)
 ├── unitofwork/     # UnitOfWork
 └── lazy/           # ClienteLazyProxy, CentroDistribucionLazyProxy, HistorialEnviosLazyProxy
 
@@ -108,115 +198,131 @@ src/com/logismart/aplicacion/hito13/
 └── CasosDePruebaHito13            # runner de tests del hito
 ```
 
-### 3.4 Tests sin base de datos real
+---
 
-La consigna usa `java.sql.Connection`. El proyecto se compila/ejecuta con
-`javac/java` plano (sin dependencias externas, ver H12). **Decisión:**
+## 5) Inventario de clases
 
-- Las implementaciones **SQL** se escriben completas (cumplen la consigna y la
-  rúbrica "4 interfaces + 8 impl"), pero **los tests corren contra las
-  implementaciones en memoria**, que no necesitan driver JDBC.
-- Para `UnitOfWork`, que recibe `Connection`, los tests usan un repositorio en
-  memoria + una `Connection` nula/stub donde el commit/rollback se simula sobre las
-  colecciones internas (o se aísla el flujo transaccional para que sea verificable
-  sin BD). Esto se documenta como decisión (igual criterio que "distancia fija 500"
-  en Strategy del H12: priorizar tests deterministas).
+| Bloque        | Clases                                                                                   | #  |
+|---------------|-------------------------------------------------------------------------------------------|----|
+| Entidades     | `CentroDistribucion` (persistencia) + `CentroAssembler` (Envio/ClienteFinal/Cobro reusados) | 2 |
+| Data Mapper   | `EnvioMapper`, `ClienteMapper`, `CentroDistribucionMapper`, `CobroMapper`                 | 4  |
+| Repository    | `Repositorio<T>` + 4 interfaces específicas                                               | 5  |
+| Repo SQL      | `RepositorioEnvioSQL`, `...ClienteSQL`, `...CentroSQL`, `...PagoSQL`                       | 4  |
+| Repo Memoria  | `RepositorioEnvioMemoria`, `...ClienteMemoria`, `...CentroMemoria`, `...PagoMemoria`      | 4  |
+| Unit of Work  | `UnitOfWork`                                                                               | 1  |
+| Lazy Load     | `ClienteLazyProxy`, `CentroDistribucionLazyProxy`, `HistorialEnviosLazyProxy`             | 3  |
+| Servicios     | `ServicioEnvios`, `ServicioClientes`, `ServicioCentros`, `ServicioPagos`                  | 4  |
+| Fachada       | `LogisticaFacade`                                                                          | 1  |
+| Integración   | `SistemaPersistencia`, `CasosDePruebaHito13`                                              | 2  |
+
+> La consigna dice "Total: 29 clases" contando 4 entidades nuevas. Al reutilizar 3
+> entidades, el conteo de **clases nuevas** baja (~30 con mappers/repos/proxies/servicios,
+> pero solo 1 entidad nueva + 1 assembler). Esto se documenta como **decisión de diseño
+> superior** (reutilización), no como un atajo. Mismo criterio de aclaración de conteo
+> que en el H12. Además, las entidades reutilizadas **no son "puras"** (arrastran
+> herencia/comportamiento), lo cual es más realista y se justifica en la doc.
 
 ---
 
-## 4) Inventario de clases (objetivo: 29 según rúbrica)
+## 6) Plan de tests (meta: 40+ casos)
 
-| Bloque        | Clases                                                                                  | #  |
-|---------------|------------------------------------------------------------------------------------------|----|
-| Entidades     | `Cliente`, `CentroDistribucion`(datos), `Pago` + enum `EstadoPago` (`Envio` reutilizado) | 3 (+enum) |
-| Data Mapper   | `EnvioMapper`, `ClienteMapper`, `CentroDistribucionMapper`, `PagoMapper`                 | 4  |
-| Repository    | `Repositorio<T>` + 4 interfaces específicas                                              | 5  |
-| Repo SQL      | `RepositorioEnvioSQL`, `...ClienteSQL`, `...CentroSQL`, `...PagoSQL`                      | 4  |
-| Repo Memoria  | `RepositorioEnvioMemoria`, `...ClienteMemoria`, `...CentroMemoria`, `...PagoMemoria`     | 4  |
-| Unit of Work  | `UnitOfWork`                                                                              | 1  |
-| Lazy Load     | `ClienteLazyProxy`, `CentroDistribucionLazyProxy`, `HistorialEnviosLazyProxy`            | 3  |
-| Servicios     | `ServicioEnvios`, `ServicioClientes`, `ServicioCentros`, `ServicioPagos`                 | 4  |
-| Fachada       | `LogisticaFacade`                                                                         | 1  |
-| Integración   | `SistemaPersistencia`, `CasosDePruebaHito13`                                             | 2  |
-
-> La consigna dice "Total: 29 clases" contando entidades=4. Como reutilizamos
-> `Envio`, el conteo de **clases nuevas** baja a ~28 + el enum `EstadoPago`. Se
-> documenta la equivalencia en `DOCUMENTACION.md` (mismo criterio de aclaración de
-> conteo que en el H12).
-
----
-
-## 5) Plan de tests (meta: 40+ casos, rúbrica "Excelente")
-
-Distribución por actividad (alineada con los entregables de la consigna):
-
-| Método en `CasosDePruebaHito13`   | Cubre                                              | Casos |
-|-----------------------------------|----------------------------------------------------|-------|
-| `probarDataMapper()`              | insert/find/update/delete de las 4 entidades       | 8–10  |
-| `probarRepository()`              | guardar/obtener/obtenerTodos + búsquedas; SQL vs memoria | 10 |
-| `probarUnitOfWork()`              | commit exitoso, modificaciones, rollback, multi-entidad, consistencia | 8 |
+| Método en `CasosDePruebaHito13`   | Cubre                                                    | Casos |
+|-----------------------------------|----------------------------------------------------------|-------|
+| `probarDataMapper()`              | insert/find/update/delete sobre las 4 entidades (memoria)| 8–10  |
+| `probarRepository()`              | guardar/obtener/obtenerTodos + búsquedas; SQL vs memoria | 10    |
+| `probarUnitOfWork()`              | commit, modificaciones, rollback, multi-entidad, consistencia | 8 |
 | `probarLazyLoad()`                | no-carga inicial, carga al 1er acceso, no recarga, 3 proxies | 8 |
-| `probarArquitectura()`            | 4 servicios + fachada `procesarEnvioCompleto` + lazy | 8 |
-| **Total**                         |                                                    | **42+** |
+| `probarArquitectura()`            | 4 servicios + fachada `procesarEnvioCompleto` + lazy + assembler | 8 |
+| **Total**                         |                                                          | **42+** |
 
 Cada caso: aserción simple + impresión ✓/✗. Cierre con conteo "42 casos, 42 OK".
+Tests corren contra impl en memoria (sin BD).
 
 ---
 
-## 6) Orden de trabajo (cuando se implemente)
+## 7) Orden de trabajo
 
-1. **Entidades** (`Cliente`, `CentroDistribucion`datos, `Pago`, `EstadoPago`).
-2. **Data Mappers** (4) — incluyendo el `EnvioMapper` adaptado al `Envio` real.
-3. **Interfaces Repository** (genérica + 4).
-4. **Repos en Memoria** (4) — habilitan los tests desde temprano.
-5. **Repos SQL** (4) — cumplen rúbrica; no requeridos para correr tests.
-6. **Unit of Work** (1) + su flujo commit/rollback verificable sin BD.
-7. **Lazy Proxies** (3).
-8. **Servicios** (4) + **Fachada** (1).
-9. **`SistemaPersistencia`** + **`CasosDePruebaHito13`** (42+ casos).
-10. Enganchar en `Main.java`; compilar y correr hasta "42/42 OK" sin romper
-    los 148 tests previos.
-11. **Documentación**: `DOCUMENTACION.md`, `hitos/HITO_13.html`,
-    `DIAGRAMA_DE_CLASES_ACTUAL.html`, `index.html`.
-12. **Skills**: convertir cualquier `clase_*.html` nuevo a skill local.
-13. **Verificación final**: re-ejecutar todo el `Main`, confirmar regresión 0.
-
----
-
-## 7) Riesgos y mitigaciones
-
-| Riesgo                                                        | Mitigación                                                                 |
-|--------------------------------------------------------------|----------------------------------------------------------------------------|
-| `Envio` real ≠ `Envio` consigna (`String` id, Builder)       | Mapper adaptado + overload `obtener(String)`; documentar divergencia       |
-| Colisión de nombre `CentroDistribucion`                      | Paquete dedicado de persistencia; imports calificados                      |
-| `Connection`/JDBC sin driver en el entorno de compilación    | Tests sobre impl en memoria; SQL escrito pero no ejecutado en tests        |
-| Romper los 148 tests de H1–H12                               | No tocar firmas del dominio; sólo **agregar**; correr suite completa        |
-| Interfaz genérica `obtener(int)` vs `Envio.id String`        | Decisión explícita (overload) registrada en `DOCUMENTACION.md`             |
-| Conteo de clases (29 vs ~28 por reutilizar `Envio`)          | Aclaración de conteo en la doc (precedente del H12)                        |
+1. **Entidad `CentroDistribucion`** (persistencia) + **`CentroAssembler`** (proyección
+   desde el Composite, mitigación de desfasaje).
+2. **Ajuste aditivo a `Cobro`**: campo `envioId` (constructor/​setter opcional).
+3. **Data Mappers** (4) — `EnvioMapper` adaptado al `Envio` real; `ClienteMapper`
+   sobre `ClienteFinal`; `CobroMapper`; `CentroDistribucionMapper`.
+4. **Interfaces Repository** (genérica + 4, con overload `obtener(String)` donde aplique).
+5. **Repos en Memoria** (4) — habilitan los tests desde temprano.
+6. **Repos SQL** (4) — compilan; no requeridos para correr tests.
+7. **Unit of Work** (1) + flujo commit/rollback verificable sin BD.
+8. **Lazy Proxies** (3).
+9. **Servicios** (4) + **Fachada** (1).
+10. **`SistemaPersistencia`** + **`CasosDePruebaHito13`** (42+ casos).
+11. Enganchar en `Main.java`; compilar y correr hasta "42/42 OK" **sin romper los
+    148 tests previos**.
+12. **Diagrama de clases de la capa de persistencia** (entregable estrella) +
+    actualización del diagrama global, `DOCUMENTACION.md`, `hitos/HITO_13.html`,
+    `index.html`.
+13. **Skills**: convertir cualquier `clase_*.html` nuevo a skill local.
+14. **Verificación final**: re-ejecutar todo el `Main`, confirmar regresión 0.
 
 ---
 
-## 8) Entregables finales del hito
+## 8) Riesgos y mitigaciones
 
-- **Código Java**: ~28 clases nuevas + enum, compilando y con 42+ tests en verde.
+| Riesgo                                                        | Mitigación                                                                                 |
+|--------------------------------------------------------------|--------------------------------------------------------------------------------------------|
+| `Envio` real ≠ `Envio` consigna (`String` id, Builder)       | Mapper adaptado + reconstrucción con `EnvioBuilder`; `id` VARCHAR                            |
+| Colisión de nombre `CentroDistribucion`                      | Entidad de persistencia en paquete dedicado; imports calificados                            |
+| **Desfasaje** entidad de persistencia ↔ Composite           | Composite = única fuente de verdad; entidad generada por *assembler* como proyección, nunca editada por su cuenta |
+| `Cobro` sin `envioId` / estados distintos al enum            | `envioId` aditivo; `estado` se mantiene `String` (no se fuerza `EstadoPago`)                |
+| JDBC sin base de datos en el build                           | SQL compila (java.sql es JDK) pero no se ejecuta; tests sobre impl en memoria               |
+| Romper los 148 tests de H1–H12                               | Solo **agregar**, nunca modificar firmas del dominio; correr suite completa al final         |
+| Interfaz genérica `obtener(int)` vs `id` String              | Overload `obtener(String)` documentado en `DOCUMENTACION.md`                                |
+| Conteo de clases (29 vs reutilización)                       | Documentar reutilización como decisión de diseño superior, con aclaración de conteo (precedente H12) |
+| Entidades reutilizadas no son "puras"                        | Justificar que la fidelidad al dominio real prima sobre la pureza del ejemplo de cátedra    |
+
+---
+
+## 9) Entregables finales del hito
+
+- **Diagrama de clases de la capa de persistencia** (entregable que el TPO puntúa):
+  5 capas (Presentación → Aplicación → Dominio → Persistencia → Datos), mostrando
+  Data Mapper, Repository, Unit of Work, Lazy Load y la relación dominio↔persistencia.
 - **Documento Markdown**: descripción de cada patrón, implementación paso a paso,
-  casos de prueba, decisiones de diseño, ventajas/desventajas, integración y
-  reflexión sobre arquitectura (sección en `DOCUMENTACION.md`).
-- **Diagrama arquitectónico**: 5 capas (Presentación → Aplicación → Dominio →
-  Persistencia → Datos) en `hitos/HITO_13.html` + actualización del diagrama global.
+  casos de prueba, decisiones de diseño, ventajas/desventajas, integración y reflexión
+  (sección en `DOCUMENTACION.md`).
+- **Código Java**: ~30 clases (1 entidad nueva + assembler + mappers/repos/UoW/proxies/
+  servicios/fachada), compilando y con 42+ tests en verde, regresión 0.
+- **Diagrama global y `hitos/HITO_13.html`** actualizados.
 - **Skills** actualizadas si corresponde.
 
 ---
 
-## 9) Checklist de cierre (rúbrica "Excelente")
+## 10) Checklist de cierre (rúbrica "Excelente")
 
 - [ ] Data Mapper: 4 mappers completos
-- [ ] Repository: 4 interfaces + 8 implementaciones (SQL + memoria)
+- [ ] Repository: 4 interfaces + 8 implementaciones (SQL compiladas + memoria testeadas)
 - [ ] Unit of Work: completo, con transacciones (commit/rollback)
 - [ ] Lazy Load: 3 proxies funcionales
 - [ ] Servicios: 4 + fachada
-- [ ] Diagrama: arquitectura de 5 capas completa
-- [ ] Código limpio y documentado
-- [ ] Documentación completa con decisiones de diseño
+- [ ] Entidad `CentroDistribucion` + assembler (mitigación de desfasaje implementada)
+- [ ] `Cobro` con `envioId` aditivo, sin romper comportamiento existente
+- [ ] Diagrama de clases de la capa de persistencia (entregable estrella)
+- [ ] Código limpio y documentado con decisiones justificadas
 - [ ] 40+ casos de prueba, todos en verde
 - [ ] Regresión 0 sobre los 148 tests de hitos previos
+
+---
+
+## 11) Material de "experiencia" para la defensa (a desarrollar aparte)
+
+Momentos del Hito 13 que sirven para contar el *proceso vivido* (no el trabajo, sino
+las decisiones y desafíos):
+
+- **"La consigna asumía entidades nuevas; descubrimos que ya teníamos casi todas."**
+  El hito de persistencia se volvió un ejercicio de reutilización.
+- **Una pregunta del Hito 2 que se cierra recién acá**: "¿Pago clase o atributo?" →
+  resuelta con `Cobro`, confirmada al mapearlo en el Hito 13.
+- **"Implementamos más de lo que el profe pedía"**: él pedía diseño en papel; correr
+  el código de verdad nos dio aprendizaje, pero también el problema de testear sin
+  base de datos, que resolvimos con impl en memoria.
+- **El choque dominio vs persistencia** en `CentroDistribucion`: aceptamos la
+  separación, detectamos el riesgo de desfasaje y lo **mitigamos** con el assembler.
+- **Disciplina sostenida 13 hitos**: regresión 0, "solo agregar, nunca romper".

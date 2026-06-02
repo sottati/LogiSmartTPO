@@ -74,7 +74,8 @@
       <a href="#interpreter-diseno">Interpreter · Diseño</a>
       <a href="#interpreter-impl">Interpreter · Impl.</a>
       <a href="#integracion">Integración</a>
-      <a href="#uml">UML</a>
+      <a href="#uml">UML · Clases</a>
+      <a href="#secuencias">UML · Secuencia</a>
       <a href="#ventajas">Ventajas/Desventajas</a>
       <a href="#conclusion">Conclusión</a>
     </nav>
@@ -651,8 +652,91 @@ SistemaLogisticaCompleto --> ServicioEnvios : receiver
 SistemaLogisticaCompleto ..> Expresion : 3-evalua reglas</pre></div>
       </section>
 
+      <!-- ══════════════════════════════════════════ DIAGRAMAS DE SECUENCIA -->
+      <section class="section" id="secuencias">
+        <div class="section-act">Diagramas de Secuencia · Los 3 Patrones</div>
+        <h2>Flujos dinámicos en tiempo de ejecución</h2>
+        <p>Cada diagrama muestra las interacciones entre objetos para el escenario principal de cada patrón, complementando los diagramas de clases de la sección anterior.</p>
+
+        <h3>Chain of Responsibility — validación de un envío (camino feliz)</h3>
+        <p>El cliente entrega el envío a <code>CadenaValidadores</code>. Cada eslabón evalúa su condición y delega al siguiente si aprueba. Si cualquier eslabón rechaza, la cadena corta y retorna <code>false</code> sin evaluar los eslabones restantes (fail-fast).</p>
+        <div class="diagram"><pre class="mermaid">sequenceDiagram
+    participant Cliente
+    participant CV as CadenaValidadores
+    participant V1 as ValidadorDatos
+    participant V2 as ValidadorInventario
+    participant V3 as ValidadorPago
+    participant V4 as ValidadorSeguridad
+    participant V5 as ValidadorCapacidad
+
+    Cliente->>CV: validarEnvio(envio)
+    CV->>V1: validar(envio)
+    V1->>V2: validar(envio)
+    V2->>V3: validar(envio)
+    V3->>V4: validar(envio)
+    V4->>V5: validar(envio)
+    V5-->>V4: true
+    V4-->>V3: true
+    V3-->>V2: true
+    V2-->>V1: true
+    V1-->>CV: true
+    CV-->>Cliente: true
+
+    Note over V1,V5: Fallo rapido: si V1 falla (datos invalidos), retorna false sin llamar a V2..V5</pre></div>
+
+        <h3>Command — ejecutar, deshacer y rehacer una operación</h3>
+        <p><code>ColaComandos</code> es el invoker. Antes de aplicar el cambio, el comando captura el estado previo en <code>ServicioEnvios</code> (receiver). El undo usa ese snapshot para restaurar el estado anterior. El redo re-ejecuta el mismo comando.</p>
+        <div class="diagram"><pre class="mermaid">sequenceDiagram
+    participant Operador
+    participant CC as ColaComandos
+    participant CMD as ComandoCambiarMetodoPago
+    participant SE as ServicioEnvios
+
+    Operador->>CC: ejecutar(cmd)
+    CC->>CMD: ejecutar()
+    CMD->>SE: obtenerMetodoPago(numero)
+    SE-->>CMD: "TARJETA"
+    Note over CMD: guarda metodoAnterior = "TARJETA"
+    CMD->>SE: cambiarMetodoPago(numero, "EFECTIVO")
+    CC-->>Operador: OK  indiceActual=0
+
+    Operador->>CC: deshacer()
+    CC->>CMD: deshacer()
+    CMD->>SE: cambiarMetodoPago(numero, "TARJETA")
+    CC-->>Operador: OK  indiceActual=-1
+
+    Operador->>CC: rehacer()
+    CC->>CMD: ejecutar()
+    CMD->>SE: cambiarMetodoPago(numero, "EFECTIVO")
+    CC-->>Operador: OK  indiceActual=0</pre></div>
+
+        <h3>Interpreter — evaluación de la regla <code>ORIGEN = "Buenos Aires" AND PESO &lt; 10</code></h3>
+        <p><code>ExpresionAND</code> delega a sus dos hijos en orden: primero <code>ExpresionOrigen</code> consulta <code>getOrigen()</code> al envío, luego <code>ExpresionPeso</code> consulta <code>getPeso()</code>. Si la izquierda devuelve <code>false</code>, <code>AND</code> no evalúa la derecha (short-circuit).</p>
+        <div class="diagram"><pre class="mermaid">sequenceDiagram
+    participant C as Cliente
+    participant eAND as ExpresionAND
+    participant eOrigen as ExpresionOrigen
+    participant ePeso as ExpresionPeso
+    participant E as Envio
+
+    C->>eAND: evaluar(envio)
+    eAND->>eOrigen: evaluar(envio)
+    eOrigen->>E: getOrigen()
+    E-->>eOrigen: "Buenos Aires"
+    eOrigen-->>eAND: true
+    eAND->>ePeso: evaluar(envio)
+    ePeso->>E: getPeso()
+    E-->>ePeso: 5.0
+    ePeso-->>eAND: true
+    eAND-->>C: true
+
+    Note over eAND,eOrigen: Regla: ORIGEN = Buenos Aires AND PESO menor 10</pre></div>
+
+        <div class="pill">✅ 3 diagramas de secuencia &nbsp;·&nbsp; Chain · Command · Interpreter</div>
+      </section>
+
       <section class="section" id="ventajas">
-        <div class="section-act">Análisis</div>
+        <div class="section-act">Ventajas y Desventajas · Los 3 Patrones</div>
         <h2>Ventajas y desventajas por patrón</h2>
         <p>Cada patrón resuelve un problema concreto del dominio e introduce compromisos. Se analiza la decisión aplicada a LogiSmart, no solo la teoría general.</p>
 
