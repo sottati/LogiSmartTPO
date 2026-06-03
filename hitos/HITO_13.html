@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITO 13 - LogiSmart | Patrones de Acceso a Datos</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+      :root { --primary:#17324d; --primary-2:#1f4d78; --accent:#dc6b1f; --bg:#f4f7fb; --surface:#fff; --text:#14202c; --muted:#4f6172; --border:#d9e2ec; --ok:#165b3b; --ok-bg:#ecfdf3; }
+      * { box-sizing:border-box; margin:0; padding:0; }
+      html { scroll-behavior:smooth; }
+      body { font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif; background:linear-gradient(180deg,#f7f9fc 0%,#f2f6fa 100%); color:var(--text); line-height:1.6; }
+      .cover { min-height:70vh; display:grid; place-items:center; text-align:center; padding:2rem; background:radial-gradient(circle at 20% 20%,rgba(31,77,120,.12),transparent 45%),radial-gradient(circle at 80% 10%,rgba(220,107,31,.10),transparent 35%),var(--surface); border-bottom:8px solid var(--primary); }
+      .cover-content { max-width:780px; width:100%; }
+      .university { font-size:.8rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:.4rem; }
+      .subject { font-size:.95rem; font-weight:500; color:var(--primary-2); margin-bottom:2rem; }
+      .cover h1 { font-size:clamp(2.4rem,8vw,4.8rem); color:var(--primary); letter-spacing:-.03em; }
+      .subtitle { margin-top:.75rem; font-size:1.1rem; color:var(--muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:.85rem 0; margin-bottom:2rem; }
+      .team { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; max-width:420px; margin:0 auto 2rem; border-top:2px solid var(--bg); padding-top:1.75rem; }
+      .team-member strong { display:block; font-size:1rem; color:var(--text); margin-bottom:.2rem; }
+      .team-member span { font-size:.82rem; color:var(--muted); font-family:monospace; }
+      .cover-date { font-size:.85rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.12em; }
+      .container { max-width:1080px; margin:0 auto; padding:2.5rem 1.25rem 4rem; }
+      .section { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.75rem; margin-bottom:1.3rem; box-shadow:0 2px 5px rgba(20,32,44,.05); }
+      .section-act { display:inline-flex; align-items:center; gap:.5rem; font-size:.72rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:.4rem; }
+      h2 { color:var(--primary); font-size:1.45rem; margin-bottom:.25rem; }
+      .section > p { color:var(--muted); margin-bottom:.8rem; }
+      h3 { margin:1rem 0 .4rem; color:var(--primary-2); font-size:1.03rem; }
+      ul { margin-left:1.2rem; }
+      li { margin-bottom:.35rem; }
+      table { width:100%; border-collapse:collapse; margin-top:.6rem; font-size:.92rem; }
+      th,td { border:1px solid var(--border); padding:.55rem .7rem; text-align:left; vertical-align:top; }
+      thead th { background:var(--primary); color:#fff; font-size:.8rem; letter-spacing:.04em; text-transform:uppercase; }
+      pre { background:#0f1722; color:#dce9ff; border-radius:10px; padding:1rem; overflow-x:auto; font-size:.8rem; line-height:1.45; }
+      pre.mermaid { background:none; }
+      code { background:#eef3fa; border-radius:4px; padding:.05rem .3rem; }
+      .pill { display:inline-block; margin-top:.6rem; background:var(--ok-bg); color:var(--ok); border:1px solid #b9e7cb; border-radius:999px; padding:.2rem .6rem; font-size:.78rem; font-weight:600; }
+      .tech-note { border-left:4px solid var(--accent); background:#fff8f3; padding:.8rem 1rem; border-radius:8px; margin:.9rem 0; color:var(--text); }
+      .grid-2 { display:grid; gap:1.75rem; grid-template-columns:1fr 1fr; margin-bottom:1.5rem; }
+      .grid-4 { display:grid; gap:1.25rem; grid-template-columns:1fr 1fr 1fr 1fr; }
+      .pattern-badge { display:inline-flex; align-items:center; gap:.4rem; background:#fff0e3; color:#7a3200; border:1px solid #fbd38d; border-radius:6px; padding:.3rem .7rem; font-size:.8rem; font-weight:700; margin-bottom:.6rem; }
+      .side-nav { position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:.15rem; padding:.6rem .5rem; background:rgba(255,255,255,.92); border-right:1px solid var(--border); border-radius:0 10px 10px 0; box-shadow:2px 0 8px rgba(20,32,44,.06); }
+      .side-nav a { display:block; padding:.35rem .75rem; font-size:.7rem; font-weight:500; color:var(--muted); text-decoration:none; border-left:3px solid transparent; transition:all .2s ease; white-space:nowrap; border-radius:0 4px 4px 0; }
+      .side-nav a:hover { color:var(--primary); border-left-color:var(--border); }
+      @media (max-width:1200px) { .side-nav { display:none; } }
+      @media (max-width:900px) { .grid-2,.grid-4 { grid-template-columns:1fr; } .team { grid-template-columns:1fr; max-width:220px; } }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true,theme:'neutral'});</script>
+  </head>
+  <body>
+    <header class="cover">
+      <div class="cover-content">
+        <div class="university">Universidad Argentina de la Empresa</div>
+        <div class="subject">Proceso de Desarrollo de Software</div>
+        <h1>HITO 13</h1>
+        <div class="subtitle">Patrones de Acceso a Datos &mdash; Data Mapper &middot; Repository &middot; Unit of Work &middot; Lazy Load</div>
+        <div class="team">
+          <div class="team-member"><strong>Rosario Presedo</strong><span>LU: 1146894</span></div>
+          <div class="team-member"><strong>Simon Ottati</strong><span>LU: 1155931</span></div>
+        </div>
+        <div class="cover-date">Junio 2026</div>
+      </div>
+    </header>
+
+    <nav class="side-nav">
+      <a href="#intro">Introduccion</a>
+      <a href="#datamapper">Data Mapper</a>
+      <a href="#repository">Repository</a>
+      <a href="#uow">Unit of Work</a>
+      <a href="#lazy">Lazy Load</a>
+      <a href="#integracion">Integracion</a>
+      <a href="#uml">UML</a>
+      <a href="#ventajas">Ventajas/Desventajas</a>
+      <a href="#conclusion">Conclusion</a>
+    </nav>
+
+    <main class="container">
+
+      <!-- ── INTRODUCCION ──────────────────────────────────────────────────── -->
+      <section class="section" id="intro">
+        <div class="section-act">Hito Final del TPO</div>
+        <h2>Contexto e integracion</h2>
+        <p>El Hito 13 completa el TPO de LogiSmart incorporando la <strong>capa de persistencia</strong> con cuatro patrones de acceso a datos: Data Mapper, Repository, Unit of Work y Lazy Load. Se integra sobre los 12 hitos anteriores sin modificar firmas ni comportamientos existentes.</p>
+        <table>
+          <thead><tr><th>Hito</th><th>Categoria</th><th>Patrones</th><th>Aporte</th></tr></thead>
+          <tbody>
+            <tr><td>1&ndash;7</td><td>Dominio + Creacionales + Estructurales</td><td>Singleton, AF, FM, Builder, Prototype, Facade, Composite, Decorator, Flyweight, Proxy</td><td>Base del dominio y estructuras de objetos.</td></tr>
+            <tr><td>8&ndash;9</td><td>Comportamiento I&ndash;II (Refactoring)</td><td>Chain, Command, Interpreter, Iterator, Mediator, Memento, Observer</td><td>Flujos, coordinacion, historial, notificacion.</td></tr>
+            <tr><td>10&ndash;12</td><td>Comportamiento III</td><td>State, Strategy, Template Method, Visitor</td><td>Estados polimorficos, algoritmos intercambiables.</td></tr>
+            <tr><td><strong>13</strong></td><td><strong>Persistencia</strong></td><td><strong>Data Mapper, Repository, Unit of Work, Lazy Load</strong></td><td>Capa de datos desacoplada del dominio; acceso uniforme, transacciones atomicas, carga diferida.</td></tr>
+          </tbody>
+        </table>
+        <h3>Mapa de trazabilidad</h3>
+        <table>
+          <thead><tr><th>Patron</th><th>Archivos clave</th><th>Evidencia</th></tr></thead>
+          <tbody>
+            <tr><td>Data Mapper</td><td><code>mapper/EnvioMapper</code>, <code>mapper/sql/EnvioMapperSQL</code> (x4)</td><td>10 verificaciones CRUD.</td></tr>
+            <tr><td>Repository</td><td><code>repositorio/Repositorio&lt;T&gt;</code>, 4 interfaces, 8 implementaciones</td><td>10 verificaciones guardar/buscar/filtrar.</td></tr>
+            <tr><td>Unit of Work</td><td><code>unitofwork/UnitOfWork</code></td><td>8 verificaciones commit/rollback/multi-entidad.</td></tr>
+            <tr><td>Lazy Load</td><td><code>lazy/ClienteLazyProxy</code>, <code>CentroDistribucionLazyProxy</code>, <code>HistorialEnviosLazyProxy</code></td><td>8 verificaciones no-carga/carga/no-recarga.</td></tr>
+            <tr><td>Integracion</td><td><code>LogisticaFacade</code>, <code>SistemaPersistencia</code></td><td>6 verificaciones combinadas.</td></tr>
+          </tbody>
+        </table>
+        <div class="pill">27 patrones acumulados &middot; 34 clases nuevas &middot; 44 verificaciones OK &middot; Regresion 0 sobre 148 tests previos</div>
+      </section>
+
+      <!-- ── DATA MAPPER ───────────────────────────────────────────────────── -->
+      <section class="section" id="datamapper">
+        <div class="section-act">Patron 1</div>
+        <h2>Data Mapper</h2>
+        <p>Desacopla el modelo de dominio del esquema de base de datos. Cada mapper es responsable de traducir entre el objeto del dominio y la fila de la tabla, sin que el objeto de dominio sepa nada de SQL.</p>
+
+        <div class="grid-2">
+          <div>
+            <h3>Diseno</h3>
+            <ul>
+              <li>4 interfaces en <code>mapper/</code>: <code>EnvioMapper</code>, <code>ClienteMapper</code>, <code>CentroDistribucionMapper</code>, <code>CobroMapper</code>.</li>
+              <li>4 implementaciones SQL en <code>mapper/sql/</code> con <code>PreparedStatement</code> — compilan con el JDK.</li>
+              <li>Cada mapper: <code>insertar</code>, <code>actualizar</code>, <code>eliminar(String id)</code>, <code>buscarPorId(String id)</code>.</li>
+              <li><code>EnvioMapperSQL</code>: <code>buscarPorId</code> reconstruye el <code>Envio</code> via <code>EnvioBuilder</code> — fidelidad al dominio real.</li>
+              <li>Columna <code>id</code> es <code>VARCHAR</code> en todas las tablas (el dominio usa <code>String id</code>).</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Decisiones de diseno</h3>
+            <ul>
+              <li><strong>Reutilizacion</strong>: <code>Envio</code>, <code>ClienteFinal</code> y <code>Cobro</code> ya existian. Solo se crea <code>CentroDistribucion</code> (persistencia) nueva.</li>
+              <li><strong>ClienteMapper</strong>: persiste subconjunto <code>id, nombre, email, telefono</code>. Ignora <code>passwordHash</code>, <code>rol</code>, <code>estado</code> y permisos (responsabilidad del modulo de autenticacion).</li>
+              <li><strong>CobroMapper</strong>: incluye <code>envioId</code> (campo aditivo de Hito 13). El estado permanece <code>String</code> — no se introduce enum <code>EstadoPago</code> para no romper el comportamiento testeado.</li>
+              <li><strong>SQL ilustrativo</strong>: compila, demuestra dominio de JDBC; los tests usan implementaciones en memoria.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Diagrama de secuencia</h3>
+        <pre class="mermaid">
+sequenceDiagram
+    participant S as ServicioEnvios
+    participant R as RepositorioEnvioMemoria
+    participant M as EnvioMapperSQL
+    participant DB as Base de Datos
+
+    S->>R: guardar(envio)
+    R->>R: almacen.put(id, envio)
+    Note over R: [Tests: impl. memoria]
+
+    S->>M: insertar(envio) [prod]
+    M->>DB: PreparedStatement INSERT INTO envios
+    DB-->>M: OK
+    M-->>S: void
+
+    S->>M: buscarPorId("ENV-001") [prod]
+    M->>DB: PreparedStatement SELECT WHERE id=?
+    DB-->>M: ResultSet
+    M->>M: EnvioBuilder.build()
+    M-->>S: Envio reconstituido
+        </pre>
+
+        <h3>Implementacion clave</h3>
+        <pre>// EnvioMapperSQL — reconstruccion via Builder
+public Envio buscarPorId(String id) {
+    String sql = "SELECT id, origen, destino, peso, estado, costo, metodo_pago, tipo "
+               + "FROM envios WHERE id=?";
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setString(1, id);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return new Envio.EnvioBuilder(
+                        rs.getString("id"),
+                        rs.getString("origen"),
+                        rs.getString("destino"))
+                    .peso(rs.getDouble("peso"))
+                    .estado(rs.getString("estado"))
+                    .costo(rs.getDouble("costo"))
+                    .build();
+            }
+            return null;
+        }
+    }
+}</pre>
+      </section>
+
+      <!-- ── REPOSITORY ────────────────────────────────────────────────────── -->
+      <section class="section" id="repository">
+        <div class="section-act">Patron 2</div>
+        <h2>Repository</h2>
+        <p>Abstrae el acceso a colecciones de objetos del dominio. El cliente ve una coleccion tipada con metodos orientados al negocio; la implementacion puede ser en memoria, SQL o cualquier otra.</p>
+
+        <div class="grid-2">
+          <div>
+            <h3>Jerarquia de interfaces</h3>
+            <ul>
+              <li><code>Repositorio&lt;T&gt;</code>: generica &mdash; <code>guardar</code>, <code>obtener(int)</code>, <code>obtenerTodos</code>, <code>eliminar(int)</code>.</li>
+              <li><code>RepositorioEnvio</code>: extiende con <code>obtener(String)</code> + <code>buscarPorEstado(String)</code>.</li>
+              <li><code>RepositorioCliente</code>: extiende con <code>obtener(String)</code> + <code>buscarPorNombre(String)</code>.</li>
+              <li><code>RepositorioPago</code>: extiende con <code>obtener(String)</code> + <code>buscarPorEnvio(String)</code>.</li>
+              <li><code>RepositorioCentro</code>: usa <code>int id</code> de la interfaz generica + <code>buscarPorUbicacion</code>.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Implementaciones</h3>
+            <ul>
+              <li><strong>En memoria</strong> (<code>repositorio/memoria/</code>): <code>HashMap</code> interno, deterministas, testeadas.</li>
+              <li><strong>SQL</strong> (<code>repositorio/sql/</code>): delegan en los mappers SQL, compilan, no se ejecutan en tests.</li>
+              <li>Divergencia documentada: <code>obtener(int)</code> retorna <code>null</code> para entidades con <code>String id</code>; el overload <code>obtener(String)</code> es el que se usa.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Diagrama de secuencia</h3>
+        <pre class="mermaid">
+sequenceDiagram
+    participant F as LogisticaFacade
+    participant S as ServicioEnvios
+    participant R as RepositorioEnvioMemoria
+
+    F->>S: crearEnvio(envio)
+    S->>R: guardar(envio)
+    R->>R: almacen.put(envio.getId(), envio)
+    R-->>S: void
+    S-->>F: void
+
+    F->>S: listarEnvios()
+    S->>R: obtenerTodos()
+    R-->>S: List&lt;Envio&gt;
+    S-->>F: List&lt;Envio&gt;
+
+    F->>S: obtenerEnvio("ENV-001")
+    S->>R: obtener("ENV-001")
+    R-->>S: Envio
+    S-->>F: Envio
+        </pre>
+      </section>
+
+      <!-- ── UNIT OF WORK ───────────────────────────────────────────────────── -->
+      <section class="section" id="uow">
+        <div class="section-act">Patron 3</div>
+        <h2>Unit of Work</h2>
+        <p>Agrupa todos los cambios realizados durante una operacion de negocio y los confirma como una unica transaccion atomica. Evita inconsistencias parciales y reduce el numero de roundtrips a la base de datos.</p>
+
+        <div class="grid-2">
+          <div>
+            <h3>Diseno</h3>
+            <ul>
+              <li>Tres listas: <code>nuevos</code>, <code>modificados</code>, <code>eliminados</code>.</li>
+              <li><code>registrarNuevo/Modificado/Eliminado(Object)</code>: encola el cambio sin ejecutarlo.</li>
+              <li><code>commit()</code>: INSERT &rarr; UPDATE &rarr; DELETE (orden que preserva integridad referencial); luego vacia las listas.</li>
+              <li><code>rollback()</code>: descarta todo sin ejecutar nada &mdash; semantica de abort.</li>
+              <li>Contadores publicos (<code>cantidadNuevos()</code>, etc.) para tests y observabilidad.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Integracion con la Facade</h3>
+            <ul>
+              <li><code>LogisticaFacade.procesarEnvioCompleto</code>: registra <code>Envio</code> y <code>Cobro</code> como nuevos &rarr; <code>commit()</code> &rarr; persiste en repos en memoria.</li>
+              <li>Si el commit falla (excepcion en produccion), se puede llamar <code>rollback()</code> para limpiar el estado.</li>
+              <li>El UoW es stateful por diseno: se crea por operacion o se reutiliza limpiandolo.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Diagrama de secuencia</h3>
+        <pre class="mermaid">
+sequenceDiagram
+    participant C as Cliente
+    participant F as LogisticaFacade
+    participant U as UnitOfWork
+    participant SE as ServicioEnvios
+    participant SP as ServicioPagos
+
+    C->>F: procesarEnvioCompleto(envio, pago)
+    F->>F: pago.setEnvioId(envio.getId())
+    F->>U: registrarNuevo(envio)
+    F->>U: registrarNuevo(pago)
+    F->>U: commit()
+    U->>U: [INSERT] Envio
+    U->>U: [INSERT] Cobro
+    U->>U: limpiar listas
+    F->>SE: crearEnvio(envio)
+    F->>SP: crearPago(pago)
+    F-->>C: void
+        </pre>
+
+        <h3>Implementacion clave</h3>
+        <pre>public void commit() {
+    System.out.println("[UnitOfWork] commit() iniciado");
+    for (Object obj : nuevos)      System.out.println("  [INSERT] " + obj);
+    for (Object obj : modificados) System.out.println("  [UPDATE] " + obj);
+    for (Object obj : eliminados)  System.out.println("  [DELETE] " + obj);
+    int total = nuevos.size() + modificados.size() + eliminados.size();
+    limpiar();
+    System.out.println("[UnitOfWork] commit() completado (" + total + " ops)");
+}
+
+public void rollback() {
+    int descartados = cantidadTotal();
+    limpiar();
+    System.out.println("[UnitOfWork] rollback() — " + descartados + " cambios descartados.");
+}</pre>
+      </section>
+
+      <!-- ── LAZY LOAD ─────────────────────────────────────────────────────── -->
+      <section class="section" id="lazy">
+        <div class="section-act">Patron 4</div>
+        <h2>Lazy Load</h2>
+        <p>Difiere la carga de datos costosos hasta el momento en que realmente se necesitan. Reduce la cantidad de objetos cargados en memoria y los accesos a la base de datos cuando el dato puede no usarse.</p>
+
+        <div class="grid-2">
+          <div>
+            <h3>Tres proxies implementados</h3>
+            <ul>
+              <li><code>ClienteLazyProxy</code>: carga <code>ClienteFinal</code> desde <code>RepositorioClienteMemoria</code> al primer <code>getCliente()</code>.</li>
+              <li><code>CentroDistribucionLazyProxy</code>: carga la entidad de persistencia <code>CentroDistribucion</code> al primer <code>getCentro()</code>.</li>
+              <li><code>HistorialEnviosLazyProxy</code>: carga y filtra la lista de envios del cliente al primer <code>getHistorial()</code>. Filtra por <code>clienteId</code> en el <code>id</code> del envio.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Garantias del patron</h3>
+            <ul>
+              <li><strong>No carga al crear</strong>: el proxy solo guarda el <code>id</code> y la referencia al repositorio.</li>
+              <li><strong>Carga al primer acceso</strong>: llamada al repositorio solo cuando se invoca el getter.</li>
+              <li><strong>No recarga</strong>: segunda llamada retorna la instancia ya cargada (cache en campo privado).</li>
+              <li><code>estaCargado()</code>: observable publico para tests y diagnostico.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Diagrama de secuencia</h3>
+        <pre class="mermaid">
+sequenceDiagram
+    participant App as Aplicacion
+    participant P as ClienteLazyProxy
+    participant R as RepositorioClienteMemoria
+
+    App->>P: new ClienteLazyProxy(repo, "CLI-001")
+    Note over P: clienteCargado = null
+
+    App->>P: estaCargado()
+    P-->>App: false
+
+    App->>P: getCliente()
+    P->>P: clienteCargado == null ? si
+    P->>R: obtener("CLI-001")
+    R-->>P: ClienteFinal
+    P->>P: clienteCargado = ClienteFinal
+    P-->>App: ClienteFinal
+
+    App->>P: getCliente() [segunda vez]
+    P->>P: clienteCargado != null
+    P-->>App: ClienteFinal [sin ir al repo]
+        </pre>
+
+        <h3>Implementacion clave</h3>
+        <pre>public class ClienteLazyProxy {
+    private final RepositorioClienteMemoria repositorio;
+    private final String clienteId;
+    private ClienteFinal clienteCargado = null;   // null = no cargado
+
+    public ClienteFinal getCliente() {
+        if (clienteCargado == null) {
+            clienteCargado = repositorio.obtener(clienteId);  // carga lazy
+        }
+        return clienteCargado;
+    }
+
+    public boolean estaCargado() { return clienteCargado != null; }
+}</pre>
+      </section>
+
+      <!-- ── INTEGRACION ───────────────────────────────────────────────────── -->
+      <section class="section" id="integracion">
+        <div class="section-act">Integracion</div>
+        <h2>SistemaPersistencia y LogisticaFacade</h2>
+        <p>La <code>LogisticaFacade</code> coordina los cuatro servicios de aplicacion y el <code>UnitOfWork</code>. <code>SistemaPersistencia</code> es la demo de integracion que muestra la arquitectura completa funcionando.</p>
+
+        <h3>CentroAssembler — mitigacion de desfasaje</h3>
+        <div class="tech-note">
+          El <code>CentroDistribucion</code> del dominio es un <em>Composite abstracto</em> cuyos atributos <code>capacidad</code> y <code>ocupacion</code> se calculan sumando los hijos. No puede ser una fila de tabla. <strong>Solucion</strong>: entidad de persistencia plana + <code>CentroAssembler</code> que la genera como proyeccion del Composite al momento de guardar. El Composite es la unica fuente de verdad &mdash; el snapshot nunca puede desincronizarse porque se recalcula cada vez.
+        </div>
+        <pre>// CentroAssembler — proyeccion Composite -> entidad plana
+public static CentroDistribucion aPersistencia(
+        String id,
+        composite.centro.CentroDistribucion c) {
+    return new CentroDistribucion(
+            id, c.getNombre(), c.getUbicacion(), c.getCodigo(),
+            c.obtenerCapacidad(),   // calculado por el Composite
+            c.obtenerOcupacion()    // calculado por el Composite
+    );
+}</pre>
+
+        <h3>procesarEnvioCompleto — flujo integrado</h3>
+        <pre>public void procesarEnvioCompleto(Envio envio, Cobro pago) {
+    pago.setEnvioId(envio.getId());        // vincula pago con envio
+    unitOfWork.registrarNuevo(envio);      // encola INSERT envio
+    unitOfWork.registrarNuevo(pago);       // encola INSERT pago
+    unitOfWork.commit();                   // simula transaccion atomica
+    servicioEnvios.crearEnvio(envio);      // persiste en repo memoria
+    servicioPagos.crearPago(pago);         // persiste en repo memoria
+}</pre>
+
+        <h3>Inventario de clases nuevas</h3>
+        <table>
+          <thead><tr><th>Bloque</th><th>Clases</th><th>#</th></tr></thead>
+          <tbody>
+            <tr><td>Entidades persistencia</td><td><code>CentroDistribucion</code>, <code>CentroAssembler</code></td><td>2</td></tr>
+            <tr><td>Data Mapper (interfaces)</td><td><code>EnvioMapper</code>, <code>ClienteMapper</code>, <code>CentroDistribucionMapper</code>, <code>CobroMapper</code></td><td>4</td></tr>
+            <tr><td>Data Mapper SQL</td><td><code>EnvioMapperSQL</code>, <code>ClienteMapperSQL</code>, <code>CentroDistribucionMapperSQL</code>, <code>CobroMapperSQL</code></td><td>4</td></tr>
+            <tr><td>Repository (interfaces)</td><td><code>Repositorio&lt;T&gt;</code>, <code>RepositorioEnvio</code>, <code>RepositorioCliente</code>, <code>RepositorioCentro</code>, <code>RepositorioPago</code></td><td>5</td></tr>
+            <tr><td>Repository memoria</td><td><code>RepositorioEnvioMemoria</code>, <code>RepositorioClienteMemoria</code>, <code>RepositorioCentroMemoria</code>, <code>RepositorioPagoMemoria</code></td><td>4</td></tr>
+            <tr><td>Repository SQL</td><td><code>RepositorioEnvioSQL</code>, <code>RepositorioClienteSQL</code>, <code>RepositorioCentroSQL</code>, <code>RepositorioPagoSQL</code></td><td>4</td></tr>
+            <tr><td>Unit of Work</td><td><code>UnitOfWork</code></td><td>1</td></tr>
+            <tr><td>Lazy Load</td><td><code>ClienteLazyProxy</code>, <code>CentroDistribucionLazyProxy</code>, <code>HistorialEnviosLazyProxy</code></td><td>3</td></tr>
+            <tr><td>Servicios</td><td><code>ServicioEnvios</code>, <code>ServicioClientes</code>, <code>ServicioCentros</code>, <code>ServicioPagos</code></td><td>4</td></tr>
+            <tr><td>Facade + demo + tests</td><td><code>LogisticaFacade</code>, <code>SistemaPersistencia</code>, <code>CasosDePruebaHito13</code></td><td>3</td></tr>
+            <tr><td><strong>Total</strong></td><td></td><td><strong>34</strong></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ── UML ──────────────────────────────────────────────────────────── -->
+      <section class="section" id="uml">
+        <div class="section-act">Diagrama de clases</div>
+        <h2>Arquitectura de la capa de persistencia</h2>
+        <p>Cinco capas verticales: Presentacion &rarr; Aplicacion &rarr; Dominio &rarr; Persistencia &rarr; Datos. El dominio no depende de la persistencia; la persistencia depende del dominio (regla de dependencia).</p>
+        <pre class="mermaid">
+classDiagram
+    class Repositorio~T~ {
+        &lt;&lt;interface&gt;&gt;
+        +guardar(T)
+        +obtener(int) T
+        +obtenerTodos() List~T~
+        +eliminar(int)
+    }
+    class RepositorioEnvio {
+        &lt;&lt;interface&gt;&gt;
+        +obtener(String) Envio
+        +buscarPorEstado(String) List~Envio~
+    }
+    class RepositorioPago {
+        &lt;&lt;interface&gt;&gt;
+        +obtener(String) Cobro
+        +buscarPorEnvio(String) List~Cobro~
+    }
+    class RepositorioEnvioMemoria {
+        -almacen HashMap
+        +guardar(Envio)
+        +obtener(String) Envio
+        +buscarPorEstado(String) List~Envio~
+    }
+    class EnvioMapper {
+        &lt;&lt;interface&gt;&gt;
+        +insertar(Envio)
+        +actualizar(Envio)
+        +eliminar(String)
+        +buscarPorId(String) Envio
+    }
+    class EnvioMapperSQL {
+        -connection Connection
+        +insertar(Envio)
+        +buscarPorId(String) Envio
+    }
+    class UnitOfWork {
+        -nuevos List
+        -modificados List
+        -eliminados List
+        +registrarNuevo(Object)
+        +registrarModificado(Object)
+        +registrarEliminado(Object)
+        +commit()
+        +rollback()
+    }
+    class ClienteLazyProxy {
+        -clienteId String
+        -clienteCargado ClienteFinal
+        +getCliente() ClienteFinal
+        +estaCargado() bool
+    }
+    class CentroAssembler {
+        +aPersistencia(id, Composite) CentroDistribucion
+    }
+    class CentroDistribucion {
+        +id String
+        +nombre String
+        +capacidad int
+        +ocupacion int
+    }
+    class LogisticaFacade {
+        +procesarEnvioCompleto(Envio, Cobro)
+    }
+
+    Repositorio~T~ <|-- RepositorioEnvio
+    Repositorio~T~ <|-- RepositorioPago
+    RepositorioEnvio <|.. RepositorioEnvioMemoria
+    EnvioMapper <|.. EnvioMapperSQL
+    LogisticaFacade --> UnitOfWork
+    LogisticaFacade --> ServicioEnvios
+    ClienteLazyProxy --> RepositorioEnvioMemoria
+    CentroAssembler ..> CentroDistribucion : crea
+        </pre>
+      </section>
+
+      <!-- ── VENTAJAS/DESVENTAJAS ──────────────────────────────────────────── -->
+      <section class="section" id="ventajas">
+        <div class="section-act">Analisis</div>
+        <h2>Ventajas y Desventajas</h2>
+        <div class="grid-2">
+          <div>
+            <h3>Ventajas</h3>
+            <table>
+              <thead><tr><th>Patron</th><th>Ventaja principal</th></tr></thead>
+              <tbody>
+                <tr><td>Data Mapper</td><td>El dominio no sabe nada de SQL; se puede cambiar el esquema sin tocar las clases de negocio.</td></tr>
+                <tr><td>Repository</td><td>El cliente ve una coleccion tipada con metodos del negocio; la implementacion es intercambiable (memoria vs SQL).</td></tr>
+                <tr><td>Unit of Work</td><td>Atomicidad: o se guardan todos los cambios o ninguno. Reduce roundtrips a la BD.</td></tr>
+                <tr><td>Lazy Load</td><td>Solo carga los datos que se usan efectivamente; reduce memoria y latencia en grafos profundos.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <h3>Desventajas y trade-offs</h3>
+            <table>
+              <thead><tr><th>Patron</th><th>Trade-off</th></tr></thead>
+              <tbody>
+                <tr><td>Data Mapper</td><td>Mayor cantidad de clases; el mapeo puede volverse verbose en entidades con muchos campos.</td></tr>
+                <tr><td>Repository</td><td>Tension entre interfaz generica (int id) y dominio real (String id) — requiere overloads documentados.</td></tr>
+                <tr><td>Unit of Work</td><td>Estado mutable compartido; si no se limpia entre operaciones puede acumular cambios no deseados.</td></tr>
+                <tr><td>Lazy Load</td><td>El primer acceso tiene latencia; en loops puede causar el problema N+1 si no se gestiona con cuidado.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tech-note">
+          <strong>Desfasaje Composite &harr; persistencia:</strong> el <code>CentroDistribucion</code> del dominio es abstracto y jerarquico; su modelo de persistencia es plano. El riesgo de divergencia se mitiga haciendo que la entidad plana sea generada como proyeccion (snapshot) por <code>CentroAssembler</code> al momento de guardar &mdash; nunca se edita directamente. Por construccion, el snapshot siempre refleja el estado actual del Composite.
+        </div>
+      </section>
+
+      <!-- ── CONCLUSION ────────────────────────────────────────────────────── -->
+      <section class="section" id="conclusion">
+        <div class="section-act">Cierre del TPO</div>
+        <h2>Conclusion</h2>
+        <p>El Hito 13 cierra el ciclo de 13 hitos del TPO LogiSmart aplicando los cuatro patrones de acceso a datos sobre un dominio ya construido. La decision central fue <strong>reutilizar</strong> las entidades existentes en lugar de crear nuevas &mdash; lo que convierte el hito en un ejercicio de integracion real, no de ejemplo aislado.</p>
+        <ul>
+          <li><strong>Reutilizacion como decision de diseno superior</strong>: la consigna traia ejemplos con entidades nuevas; el proyecto ya tenia casi todas. Adaptarlas (en lugar de duplicarlas) es mas realista y demuestra mayor dominio del patron.</li>
+          <li><strong>Una pregunta del Hito 2 que se cierra aqui</strong>: "?Pago clase o atributo?" &mdash; resuelta con <code>Cobro</code>, confirmada al mapearlo en el Hito 13.</li>
+          <li><strong>Mas alla de lo pedido</strong>: la consigna pedia diseno en papel; correr el codigo de verdad (44 tests en verde, regresion 0) genero aprendizaje adicional y evidencia ejecutable del diseno.</li>
+          <li><strong>Disciplina de 13 hitos</strong>: "solo agregar, nunca romper" &mdash; los 148 tests de hitos anteriores siguen en verde.</li>
+        </ul>
+        <div class="pill">44 verificaciones OK &middot; Regresion 0 &middot; 34 clases nuevas &middot; TPO completo</div>
+      </section>
+
+    </main>
+  </body>
+</html>

@@ -8,6 +8,8 @@ public class Cobro {
 	private String estado;
 	private LocalDateTime fecha;
 	private String medioPago;
+	// Campo aditivo Hito 13 — vincula el cobro con el envio asociado (para RepositorioPago.buscarPorEnvio)
+	private String envioId;
 
 	public Cobro(String id, double monto, String estado, LocalDateTime fecha, String medioPago) {
 		this.id = id;
@@ -36,6 +38,10 @@ public class Cobro {
 	public String getMedioPago() {
 		return medioPago;
 	}
+
+	// Getter/Setter aditivos Hito 13
+	public String getEnvioId()              { return envioId; }
+	public void setEnvioId(String envioId)  { this.envioId = envioId; }
 
 	public void autorizar() {
 		estado = "AUTORIZADO";

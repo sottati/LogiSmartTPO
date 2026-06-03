@@ -3,6 +3,7 @@ package com.logismart.app;
 import com.logismart.aplicacion.hito10.CasosDePruebaHito10;
 import com.logismart.aplicacion.hito11.CasosDePruebaHito11;
 import com.logismart.aplicacion.hito12.CasosDePruebaHito12;
+import com.logismart.aplicacion.hito13.CasosDePruebaHito13;
 import com.logismart.aplicacion.hito8.CasosDePruebaHito8;
 import com.logismart.aplicacion.hito9.CasosDePruebaHito9;
 import com.logismart.dominio.Envio;
@@ -111,6 +112,7 @@ public class Main {
         CasosDePruebaHito10.ejecutar();
         CasosDePruebaHito11.ejecutar();
         CasosDePruebaHito12.ejecutar();
+        CasosDePruebaHito13.ejecutar();
 
         sep("RESUMEN");
         logger.info("Demostración completada exitosamente");

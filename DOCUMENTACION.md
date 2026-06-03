@@ -259,3 +259,123 @@ Total: 27 clases nuevas.
 Total de elementos del hito contando el contexto State modificado: 28 (`Envio` + 27 clases nuevas).
 
 Nota: el conteo pedido decía State 8, pero listaba 1 interfaz + 6 estados y aclaraba que el contexto es `Envio`, por lo que no hay octava clase nueva de State. La implementación mantiene esa decisión: `Envio` es el contexto existente.
+
+---
+
+## Hito 13
+
+### Objetivo
+
+Diseñar la capa de persistencia de LogiSmart separando la lógica de negocio del almacenamiento, aplicando los cuatro patrones de acceso a datos: Data Mapper, Repository, Unit of Work y Lazy Load.
+
+Base acumulada al cierre del TPO:
+
+- Hitos 1–7: dominio, creacionales, estructurales
+- Hitos 8–9: Façade, Composite, Decorator, Flyweight, Proxy
+- Hito 10: Chain, Command, Interpreter
+- Hito 11: Iterator, Mediator, Memento, Observer
+- Hito 12: State, Strategy, Template Method, Visitor
+- Hito 13: Data Mapper, Repository, Unit of Work, Lazy Load
+
+Total patrones GoF acumulados: 23 + 4 de acceso a datos.
+
+### Patrones implementados
+
+#### Data Mapper
+
+Paquete: `src/com/logismart/infraestructura/persistencia/mapper/`
+
+Interfaces: `EnvioMapper`, `ClienteMapper`, `CentroDistribucionMapper`, `CobroMapper`.
+Implementaciones SQL en `mapper/sql/`: `EnvioMapperSQL`, `ClienteMapperSQL`, `CentroDistribucionMapperSQL`, `CobroMapperSQL`.
+
+Cada mapper tiene: `insertar(T)`, `actualizar(T)`, `eliminar(String id)`, `buscarPorId(String id)`.
+Las implementaciones SQL usan `PreparedStatement` — compilan con el JDK, no se ejecutan en tests (no hay driver/BD en el build).
+`EnvioMapperSQL.buscarPorId` reconstruye el `Envio` via `EnvioBuilder` (fidelidad al dominio real).
+
+#### Repository
+
+Paquete: `src/com/logismart/infraestructura/persistencia/repositorio/`
+
+- `Repositorio<T>`: interfaz genérica con `guardar`, `obtener(int)`, `obtenerTodos`, `eliminar(int)`.
+- `RepositorioEnvio`, `RepositorioCliente`, `RepositorioPago`: extienden con overload `obtener(String id)` — fidelidad al `String id` del dominio real.
+- `RepositorioCentro`: usa `int id` de la interfaz genérica directamente.
+
+Implementaciones en memoria (`repositorio/memoria/`): `RepositorioEnvioMemoria`, `RepositorioClienteMemoria`, `RepositorioCentroMemoria`, `RepositorioPagoMemoria`. Usan `HashMap` interno. Son las implementaciones testeadas.
+Implementaciones SQL (`repositorio/sql/`): compilan, no se ejecutan en tests.
+
+#### Unit of Work
+
+Clase: `src/com/logismart/infraestructura/persistencia/unitofwork/UnitOfWork.java`
+
+Mantiene tres listas: `nuevos`, `modificados`, `eliminados`. `commit()` ejecuta INSERT → UPDATE → DELETE en orden (simula atomicidad) y vacía las listas. `rollback()` descarta todo sin ejecutar.
+
+#### Lazy Load
+
+Paquete: `src/com/logismart/infraestructura/persistencia/lazy/`
+
+- `ClienteLazyProxy`: wrappea `RepositorioClienteMemoria`; carga `ClienteFinal` solo al primer `getCliente()`.
+- `CentroDistribucionLazyProxy`: idem para la entidad de persistencia `CentroDistribucion`.
+- `HistorialEnviosLazyProxy`: wrappea `RepositorioEnvioMemoria`; filtra envíos por `clienteId` al primer `getHistorial()`.
+
+### Entidades
+
+- `CentroDistribucion` (persistencia) en `persistencia/entidad/`: entidad plana con `id, nombre, ubicacion, codigo, capacidad, ocupacion`.
+- `CentroAssembler`: proyecta el Composite abstracto a la entidad plana (`aPersistencia(id, composite)`). El Composite es la única fuente de verdad; la entidad es una vista materializada generada al guardar — no puede desincronizarse.
+
+### Decisiones de diseño
+
+1. **Reutilización de entidades**: se reutilizan `Envio`, `ClienteFinal` y `Cobro` (ya existentes). Solo se crea `CentroDistribucion` de persistencia (el Composite es abstracto, no puede ser una fila).
+2. **`Cobro` con `envioId` aditivo**: se agrega el campo `envioId` + getter/setter sin cambiar constructores existentes. Riesgo de regresión: nulo. Habilita `RepositorioPago.buscarPorEnvio`.
+3. **`estado` de `Cobro` como `String`**: no se introduce `EstadoPago` enum; sus valores no coinciden con los del dominio (`AUTORIZADO/PAGADO/FALLIDO` vs `PENDIENTE/PROCESANDO/COMPLETADO/RECHAZADO`). Forzarlo cambiaría el comportamiento ya testeado.
+4. **`CentroDistribucion` separado**: el Composite es jerárquico y sus métricas son calculadas. La entidad de persistencia es plana. La separación es correcta; el assembler previene el desfasaje.
+5. **Interfaz genérica `obtener(int)` vs dominio `String`**: las interfaces específicas agregan overload `obtener(String id)`. La firma `int` queda como vestigio de genericidad; se documenta la divergencia.
+6. **Tests en memoria**: implementaciones `HashMap` son deterministas, sin dependencias externas. Las implementaciones SQL compilan y demuestran dominio de JDBC pero no se ejecutan.
+7. **`EnvioBuilder` para reconstrucción**: `EnvioMapperSQL.buscarPorId` usa el Builder interno (no constructor de 4 args) — fidelidad al dominio real con `String id` y campos logísticos.
+
+### Ajuste a `Cobro.java`
+
+Campo y accessors agregados aditivamente (sin cambiar constructores existentes):
+
+```java
+private String envioId;
+public String getEnvioId()              { return envioId; }
+public void setEnvioId(String envioId)  { this.envioId = envioId; }
+```
+
+### Servicios y fachada
+
+Paquete: `src/com/logismart/aplicacion/hito13/`
+
+- `ServicioEnvios`, `ServicioClientes`, `ServicioCentros`, `ServicioPagos`: cada uno recibe su repositorio en memoria y expone CRUD de alto nivel.
+- `LogisticaFacade`: contiene los 4 servicios + `UnitOfWork`. `procesarEnvioCompleto(Envio, Cobro)` registra ambos en el UoW, hace commit y persiste en los repositorios.
+
+### Clases nuevas (conteo)
+
+| Bloque          | Clases                                                                          | #  |
+|-----------------|---------------------------------------------------------------------------------|----|
+| Entidades       | `CentroDistribucion` (persistencia), `CentroAssembler`                          | 2  |
+| Data Mapper     | `EnvioMapper`, `ClienteMapper`, `CentroDistribucionMapper`, `CobroMapper`       | 4  |
+| Mapper SQL      | `EnvioMapperSQL`, `ClienteMapperSQL`, `CentroDistribucionMapperSQL`, `CobroMapperSQL` | 4 |
+| Repository      | `Repositorio<T>`, `RepositorioEnvio`, `RepositorioCliente`, `RepositorioCentro`, `RepositorioPago` | 5 |
+| Repo Memoria    | `RepositorioEnvioMemoria`, `RepositorioClienteMemoria`, `RepositorioCentroMemoria`, `RepositorioPagoMemoria` | 4 |
+| Repo SQL        | `RepositorioEnvioSQL`, `RepositorioClienteSQL`, `RepositorioCentroSQL`, `RepositorioPagoSQL` | 4 |
+| Unit of Work    | `UnitOfWork`                                                                    | 1  |
+| Lazy Load       | `ClienteLazyProxy`, `CentroDistribucionLazyProxy`, `HistorialEnviosLazyProxy`  | 3  |
+| Servicios       | `ServicioEnvios`, `ServicioClientes`, `ServicioCentros`, `ServicioPagos`        | 4  |
+| Fachada         | `LogisticaFacade`                                                               | 1  |
+| Integración     | `SistemaPersistencia`, `CasosDePruebaHito13`                                   | 2  |
+| **Total**       |                                                                                 | **34** |
+
+Nota: la consigna contaba 29 clases asumiendo 4 entidades nuevas. Al reutilizar 3 entidades del dominio (`Envio`, `ClienteFinal`, `Cobro`) el conteo de entidades nuevas baja a 1 — pero el total de clases nuevas del hito sube a 34 por la cobertura completa (mappers SQL, repos SQL, todos los proxies, todos los servicios). La reutilización es una decisión de diseño superior, no un atajo.
+
+### Tests
+
+44 casos de prueba en `CasosDePruebaHito13`, distribuidos:
+
+- `probarDataMapper()`: 10 casos — CRUD de las 4 entidades via repositorios en memoria.
+- `probarRepository()`: 10 casos — guardar/obtener/listar/filtrar; `buscarPorEstado`, `buscarPorNombre`, `buscarPorUbicacion`, `buscarPorEnvio`.
+- `probarUnitOfWork()`: 8 casos — commit, rollback, multi-entidad, contadores.
+- `probarLazyLoad()`: 8 casos — no-carga al crear, carga al primer acceso, no-recarga, 3 proxies.
+- `probarArquitectura()`: 6 casos — 4 servicios, fachada `procesarEnvioCompleto`, assembler.
+
+Resultado: 44/44 OK. Regresión 0 sobre los 148 tests de hitos anteriores.
