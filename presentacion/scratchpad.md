@@ -1,67 +1,63 @@
-# LogiSmart — Rediseño del deck de defensa TPO
+# LogiSmart — Deck de defensa TPO (versión canónica)
 
-## Brief (respuestas del usuario)
-- Doble uso: legible proyectado + interactivo.
-- Estética: producto moderno SaaS, limpio, UN acento potente.
-- Mantener interactividad: tarjetas expandibles + comparador.
-- Caso de uso del envío → DIAGRAMA DE SECUENCIA interactivo (estilo UML), se completa paso a paso.
-- Diagramas a mano (HTML/CSS), no Mermaid.
-- Reorganizar para mejor narrativa. 15–20 min.
+## Estructura del deck
+Archivo principal: `LogiSmart Arquitectura.html` (17 slides, 1920×1080)
+Narrativa: negocio sobre arquitectura en 5 capas — cada capa arranca por la
+necesidad de negocio y recién después aparece la decisión de diseño que la cumple.
 
-## Sistema visual
-Base: deck_stage.js, 1920×1080.
+## Números vigentes
+- 27 patrones GoF + persistencia (23 GoF acumulados al Hito 12 + 4 de acceso a datos)
+- 229 clases · 148 tests en verde · Hito 13
 
-### Tipografía
-- Display/títulos: "Space Grotesk" (500/600/700) — moderno, técnico, geométrico.
-- Cuerpo/UI: "IBM Plex Sans" (400/500/600) — limpio, ingenieril, legible.
-- Código/mono: "IBM Plex Mono" (400/500) — para clases y paths (hay muchísimos).
+## Secuencia de slides (17 en total)
+01. Portada (oscura) — chips: 5 capas · 35 patrones · 200 clases · H13
+02. El cliente y su problema — antes/después (planillas → SaaS multitenant)
+03. Qué le prometimos — CU-01 / CU-03 / CU-07 + actores
+04. Atributos de calidad — 5 atributos como brújula de diseño
+05. La arquitectura en 5 capas — hero: cada atributo vive en una capa
+06. Del problema al diseño — sustantivos→clases, verbos→CUs, adjetivos→patrones
+07. Presentación → Aislamiento de datos (Controller, Rol/Polymorphism)
+08. [DECISIÓN B] 25 booleanos → Rol enum — GRASP Information Expert, refactoring con 148 tests
+09. Aplicación → Alta disponibilidad (Facade, Chain of Responsibility)
+10. Dominio · Envío el corazón — diagrama radial interactivo con 6 patrones
+11. Dominio → Tiempo real (State, Observer, Memento)
+12. Persistencia → Eficiencia de respuesta (Repository+DataMapper, Proxy+Lazy, UoW)
+13. [DECISIÓN A] H7 sembró H13 cosechó — Builder reutilizado en persistencia, RUP iterativo
+14. Infraestructura → Interoperabilidad + Elasticidad (Adapter, Abstract Factory, Flyweight)
+15. [DECISIÓN E] Abstract Factory como decisión de negocio — AR vs BR, coherencia regional
+16. Flujo de un envío — diagrama de secuencia interactivo (generado por JS)
+17. [DECISIÓN C] Por qué cada cosa está donde está — 5 decisiones de ubicación por capa
+18. [DECISIÓN D] Lo que decidimos no hacer — 4 sacrificios deliberados
+19. Cierre (oscura) — pediste → cumplimos
 
-### Color (claro, SaaS, 1 acento hero)
-- --paper #F6F7F9 (fondo slide), --surface #FFFFFF (cards), --ink #15171C, --body #3A3F4A, --muted #6F7682, --line #E6E8EC
-- ACENTO HERO: violeta-índigo eléctrico — oklch(0.53 0.245 276). Tints + strong para texto.
-- Triada de categorías (dots/labels chicos, equal L≈0.64 C≈0.14, varía hue):
-  - Creacional → naranja oklch(0.66 0.15 50)
-  - Estructural → cian oklch(0.62 0.12 215)
-  - Comportamiento → verde oklch(0.60 0.14 150)
-- Sin gradientes decorativos. Hairlines, mucho aire, tipografía fuerte.
+## Narrativa por capa
+- **Presentación**: aislamiento de datos multitenant → Controller + Polymorphism
+- **Aplicación**: alta disponibilidad → Facade + Chain of Responsibility
+- **Dominio**: trazabilidad en tiempo real → State + Observer + Memento
+- **Persistencia**: eficiencia de respuesta → Repository + Data Mapper + Proxy + UoW
+- **Infraestructura**: interoperabilidad + elasticidad → Adapter + Abstract Factory + Flyweight
 
-### Escala (px, 1920×1080) — piso 24px SIEMPRE
-- display 104 / h1(divider) 76 / title 56 / h3 30 / lead 32 / body 25 / mono 24 / label 24(uppercase, tracking)
-- pad-x 112 / pad-top 84 / pad-bottom 76 / gap 28
+## Interacciones (deck.js)
+1. Tarjetas expandibles (`.pcard`): click abre `.pcard-body`, colapsa hermanas
+2. Comparador (`.cmp-tab` / `.cmp-panel`): tabs con `.active`
+3. Diagrama de secuencia (#seq-root): generado por JS, 8 lifelines, 10 mensajes,
+   botones Atrás/Siguiente/Reset + dots de progreso
 
-## Secuencia de títulos (noun-phrase corto, paralelo)
-01. LogiSmart — portada
-02. El sistema — qué es LogiSmart (dominio Envío + métricas)
-03. El recorrido — 23 patrones en 7 hitos (roadmap/agenda)
-04. ░ Creacionales (divider, Hitos 6–7)
-05. Creacionales — cómo se crean los objetos (5 cards)
-06. ░ Estructurales (divider, Hitos 8–9)
-07. Estructurales — cómo se componen las clases (7 cards)
-08. ░ Comportamiento (divider, Hitos 10–12)
-09. Comportamiento I — Chain · Command · Interpreter
-10. Comportamiento II — Iterator · Mediator · Memento · Observer
-11. Comportamiento III — State · Strategy · Template Method · Visitor
-12. El envío de punta a punta — DIAGRAMA DE SECUENCIA interactivo
-13. Ciclo de vida del envío — diagrama de estados (State, a mano)
-14. La red como árbol — diagrama Composite (a mano)
-15. ¿Cuál es cuál? — comparador interactivo
-16. Principios de diseño — SOLID · GRASP · decisiones
-17. Cierre — LogiSmart completo
+## Sistema visual (deck.css)
+- Tipografía: Space Grotesk (títulos) / IBM Plex Sans (cuerpo) / IBM Plex Mono (mono)
+- Acento: violeta-índigo eléctrico oklch(0.53 0.245 276)
+- Triada categorías: naranja (creacional) / cian (estructural) / verde (comportamiento)
+- Escala 1920×1080, piso 24px
 
-Lectura solo-títulos: presenta sistema → mapa → recorre las 3 familias → muestra cómo colaboran (secuencia) → dos estructuras clave → diferencias finas → fundamentos → cierre. Coherente.
-
-## Componentes
-- Section divider: número grande + palabra categoría + hitos + lista de patrones (parallel layout las 3).
-- Pattern card: dot categoría + nombre (Space Grotesk) + idea 1 línea; click → expande detalle (clases + por qué) en panel, colapsa hermanos.
-- Métricas: números grandes Space Grotesk.
-- Roadmap: timeline horizontal de hitos 6→12 con chips de patrones.
-- Secuencia: lifelines (header boxes) + líneas verticales dashed + mensajes grid revelados paso a paso + caption del patrón. Botones Anterior/Siguiente + dots.
-- State diagram: nodos posicionados + flechas SVG etiquetadas. Happy path horizontal + ramas.
-- Composite tree: árbol CSS root→regional→puntos, conectores.
-- Comparador: tabs + paneles (Strategy/State, Adapter/Decorator/Proxy, FactoryMethod/AbstractFactory).
+## Reglas de CSS a respetar (bugs ya corregidos, no reintroducir)
+- NO usar `transition: <tiempo>` pelado (= `transition: all`) en elementos dentro
+  de un slide — captura el visibility hidden→visible de deck-stage y los congela.
+  Usar siempre listas explícitas de propiedades.
+- Animaciones del cover (.anim/.anim-2/.anim-3): base con `opacity:1`, animación
+  solo por `transform` (keyframe riseT), para que el título no quede invisible.
 
 ## Archivos
-- LogiSmart Defensa.html (slides estáticas, editable)
-- deck.css (sistema + componentes)
-- deck.js (expand cards, comparador, stepper secuencia)
-- deck-stage.js (starter)
+- `LogiSmart Arquitectura.html` — markup de las 17 slides (deck canónico)
+- `deck.css` — sistema visual + todos los componentes nuevos (business-led reframe)
+- `deck.js` — 3 interacciones (cards, comparador, secuencia) — sin cambios
+- `deck-stage.js` — web component contenedor (escala, navegación, print) — sin cambios

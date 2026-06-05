@@ -11,6 +11,85 @@ document.querySelectorAll('.pcard').forEach(card => {
   });
 });
 
+/* ── 4 · HEART SATELLITES (slide 09 — satélite → panel detalle) ── */
+(function heartSatellites(){
+  const sats = document.querySelectorAll('.heart-sat[data-hpat]');
+  if (!sats.length) return;
+  const detail  = document.getElementById('heart-detail');
+  if (!detail) return;
+  const idle    = detail.querySelector('.hd-idle');
+  const active  = detail.querySelector('.hd-active');
+  const nameEl  = active.querySelector('.hd-name');
+  const clsEl   = active.querySelector('.hd-cls');
+  const descEl  = active.querySelector('.hd-desc');
+  const preEl   = active.querySelector('.hd-pre');
+
+  const data = {
+    builder:   { name:'Builder',   cls:'Envio.EnvioBuilder (inner class)',
+                 desc:'Construye el Envío con 12 atributos (9 opcionales) vía API fluida. Evita constructores con demasiados parámetros y objetos inconsistentes.',
+                 code:'new Envio.EnvioBuilder("id", empresa)\n    .tipoEnvio(URGENTE).peso(12.5).build();' },
+    prototype: { name:'Prototype', cls:'Envio implements Cloneable',
+                 desc:'Clona un envío prototipo para generar lotes idénticos. Evita reconstruir con Builder cuando origen y destino se repiten.',
+                 code:'Envio lote = (Envio) envioBase.clone();\n// deep copy del estado completo' },
+    state:     { name:'State',     cls:'EstadoEnvio (interface) · 6 estados concretos',
+                 desc:'Happy path: Confirmado → EnTránsito → EnReparto → Entregado.  Alternativos: Cancelado · Retenido.  Cada estado decide sus propias transiciones válidas — sin switch gigante.',
+                 code:'// EstadoConfirmado.java\ncambiarEstado(new EstadoEnTransito(envio));' },
+    strategy:  { name:'Strategy',  cls:'EstrategiaCalculoCosto · 5 estrategias',
+                 desc:'La fórmula de tarifa se inyecta desde afuera. Cambiar de EstrategiaDistancia a EstrategiaUrgencia no toca Envio.',
+                 code:'envio.setEstrategia(new EstrategiaUrgencia());\nenvio.calcularCosto(); // delega a la estrategia' },
+    memento:   { name:'Memento',   cls:'MementoEnvio · HistorialEnvios',
+                 desc:'Snapshot inmutable del envío (estado, costo, timestamp) sin exponer campos privados. Permite auditar y restaurar.',
+                 code:'MementoEnvio snap = envio.guardarEstado();\nenvio.restaurarEstado(snap);' },
+    observer:  { name:'Observer',  cls:'ObservadorEnvio · Dashboard · Auditoría · SMS',
+                 desc:'Al cambiar de estado, Envio notifica automáticamente a todos sus suscriptores. Agregar un observador nuevo no toca Envio.',
+                 code:'envio.notificarObservadores();\n// → Dashboard + SistemaAuditoria + NotificadorSMS' },
+  };
+
+  sats.forEach(sat => {
+    sat.addEventListener('click', e => {
+      e.stopPropagation();
+      const isActive = sat.classList.contains('hs-active');
+      sats.forEach(s => s.classList.remove('hs-active', 'hs-dim'));
+      if (!isActive) {
+        sat.classList.add('hs-active');
+        sats.forEach(s => { if (s !== sat) s.classList.add('hs-dim'); });
+        const p = data[sat.dataset.hpat];
+        nameEl.textContent = p.name;
+        clsEl.textContent  = p.cls;
+        descEl.textContent = p.desc;
+        preEl.textContent  = p.code;
+        idle.style.display   = 'none';
+        active.style.display = 'flex';
+      } else {
+        idle.style.display   = '';
+        active.style.display = 'none';
+      }
+    });
+  });
+})();
+
+/* ── 5 · CODE PEEK (tarjeta → fragmento de código) ─────────────── */
+document.querySelectorAll('.pgrid[data-preview]').forEach(grid => {
+  const preview = document.getElementById(grid.dataset.preview);
+  if (!preview) return;
+  const idle     = preview.querySelector('.cp-idle');
+  const snippets = preview.querySelectorAll('.cp-snippet');
+  grid.addEventListener('click', () => {
+    requestAnimationFrame(() => {
+      const openCard = grid.querySelector('.pcard.open');
+      if (!openCard) {
+        idle.style.display = '';
+        snippets.forEach(s => s.style.display = 'none');
+      } else {
+        idle.style.display = 'none';
+        snippets.forEach(s => {
+          s.style.display = s.dataset.snippet === openCard.dataset.snippet ? 'block' : 'none';
+        });
+      }
+    });
+  });
+});
+
 /* ── 2 · COMPARADOR (tabs) ──────────────────────────────────────── */
 document.querySelectorAll('.cmp-tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -38,26 +117,26 @@ document.querySelectorAll('.cmp-tab').forEach(tab => {
   ];
 
   const steps = [
-    { from:0, to:1, label:'crearYProcesarEnvio()', pat:'Facade',
+    { from:0, to:1, label:'crearEnvio()', pat:'Facade',
       txt:'El cliente llama un único método. La fachada orquesta todos los subsistemas internos sin exponerlos.' },
     { from:1, to:2, label:'new EnvioBuilder()…build()', pat:'Builder',
       txt:'La fachada arma el Envío paso a paso —tipo, peso, origen, destino— de forma legible y segura.' },
     { from:2, to:1, ret:true, label:'Envio', pat:'Builder',
       txt:'El Builder devuelve un Envío ya construido y consistente.' },
-    { from:1, to:3, label:'validar(envio)', pat:'Chain of Responsibility',
+    { from:1, to:3, label:'validarEnvio(envio)', pat:'Chain of Responsibility',
       txt:'El envío pasa por 5 validadores en orden de costo. Si uno falla, corta la cadena (fail-fast).' },
-    { from:3, to:1, ret:true, label:'OK', pat:'Chain of Responsibility',
+    { from:3, to:1, ret:true, label:'true', pat:'Chain of Responsibility',
       txt:'Todos los validadores pasaron: el envío es válido y la cadena devuelve el control.' },
-    { from:1, to:4, label:'calcularCosto(envio)', pat:'Strategy',
+    { from:1, to:4, label:'calcular(envio)', pat:'Strategy',
       txt:'Se inyecta la estrategia adecuada (ej. Híbrida). El algoritmo de costo es intercambiable en runtime.' },
-    { from:4, to:1, ret:true, label:'costo', pat:'Strategy',
+    { from:4, to:1, ret:true, label:'costo :double', pat:'Strategy',
       txt:'La estrategia devuelve el costo sin que la fachada conozca la fórmula interna.' },
-    { from:1, to:5, label:'procesarEnvio()', pat:'Template Method',
+    { from:1, to:5, label:'procesarEnvio(envio)', pat:'Template Method',
       txt:'El proceso ejecuta un esqueleto fijo y final: validar → calcular → cobrar → notificar.' },
-    { from:5, to:6, label:'cambiarEstado(EnTránsito)', pat:'State',
+    { from:5, to:6, label:'cambiarEstado(EstadoEnTransito)', pat:'State',
       txt:'Confirmado el pago, el Envío transiciona. Delega la lógica al objeto de estado actual.' },
-    { from:6, to:7, label:'notificar()', pat:'Observer',
-      txt:'El cambio de estado notifica automáticamente al dashboard, la auditoría y las notificaciones.' },
+    { from:6, to:7, label:'notificarObservadores()', pat:'Observer',
+      txt:'cambiarEstado() llama internamente a notificarObservadores(). El dashboard, la auditoría y el SMS reciben el evento automáticamente.' },
   ];
 
   const N = actors.length;
