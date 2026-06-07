@@ -123,13 +123,13 @@ document.querySelectorAll('.cmp-tab').forEach(tab => {
       txt:'La fachada arma el Envío paso a paso —tipo, peso, origen, destino— de forma legible y segura.' },
     { from:2, to:1, ret:true, label:'Envio', pat:'Builder',
       txt:'El Builder devuelve un Envío ya construido y consistente.' },
-    { from:1, to:3, label:'validarEnvio(envio)', pat:'Chain of Responsibility',
+    { from:1, to:3, label:'validarEnvio(envio)', pat:'Chain of Responsibility', chip:'Chain',
       txt:'El envío pasa por 5 validadores en orden de costo. Si uno falla, corta la cadena (fail-fast).' },
-    { from:3, to:1, ret:true, label:'true', pat:'Chain of Responsibility',
+    { from:3, to:1, ret:true, label:'true', pat:'Chain of Responsibility', chip:'Chain',
       txt:'Todos los validadores pasaron: el envío es válido y la cadena devuelve el control.' },
     { from:1, to:4, label:'calcular(envio)', pat:'Strategy',
       txt:'Se inyecta la estrategia adecuada (ej. Híbrida). El algoritmo de costo es intercambiable en runtime.' },
-    { from:4, to:1, ret:true, label:'costo :double', pat:'Strategy',
+    { from:4, to:1, ret:true, label:'costo', pat:'Strategy',
       txt:'La estrategia devuelve el costo sin que la fachada conozca la fórmula interna.' },
     { from:1, to:5, label:'procesarEnvio(envio)', pat:'Template Method',
       txt:'El proceso ejecuta un esqueleto fijo y final: validar → calcular → cobrar → notificar.' },
@@ -171,9 +171,11 @@ document.querySelectorAll('.cmp-tab').forEach(tab => {
     const m = document.createElement('div');
     m.className = 'seq-msg';
     m.dataset.step = k + 1;
+    const chip = s.chip || s.pat;
     m.innerHTML =
       `<div class="seq-arrow ${dir}${s.ret ? ' ret' : ''}" style="left:${left}%;width:${width}%">
          <div class="line"></div><div class="head"></div>
+         ${s.ret ? '' : `<div class="seq-chip">${chip}</div>`}
          <div class="seq-label${s.ret ? ' ret' : ''}">${s.label}</div>
        </div>`;
     msgs.appendChild(m);

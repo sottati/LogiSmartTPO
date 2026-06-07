@@ -1,4 +1,4 @@
-﻿package com.logismart.app;
+package com.logismart.aplicacion.demos.hito5;
 
 import com.logismart.dominio.envio.Envio;
 import com.logismart.dominio.usuario.Usuario;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Gestor regional que integra los cinco patrones creacionales del sistema.
+ * Demo integrada de los cinco patrones creacionales (Hito 5).
  *
  * Patrones usados:
  *   • Singleton        - Logger, ConfiguracionSistema
@@ -49,7 +49,6 @@ public class LogiSmartApp {
         throw new IllegalArgumentException("Región desconocida: " + region);
     }
 
-    // Builder - crea un envío individual
     public void crearEnvio(String origen, String destino) {
         Envio envio = new Envio.EnvioBuilder("ENV-" + envios.size(), origen, destino)
                 .descripcion("Envío estándar")
@@ -58,7 +57,6 @@ public class LogiSmartApp {
         logger.info("Builder → envío creado: " + envio.getId() + " | " + origen + " → " + destino);
     }
 
-    // Prototype - clona un prototipo base N veces
     public void crearEnviosMultiples(int cantidad) {
         Envio prototipo = new Envio.EnvioBuilder("PROTO", "Buenos Aires", "Córdoba")
                 .descripcion("Estándar")
@@ -73,7 +71,6 @@ public class LogiSmartApp {
         logger.info("Prototype → " + cantidad + " envíos clonados (total: " + envios.size() + ")");
     }
 
-    // Factory Method - crea un usuario por tipo usando las clases existentes del dominio
     public void crearUsuario(String tipo, String nombre) {
         Usuario usuario = UsuarioFactory.crearUsuario(tipo, nombre);
         usuarios.add(usuario);
@@ -81,7 +78,6 @@ public class LogiSmartApp {
         logger.info("FactoryMethod → usuario: " + usuario.getUsername() + " [" + usuario.getRol() + "]");
     }
 
-    // Abstract Factory - procesa un envío con los objetos de la región
     public void procesarEnvio(String origen, String destino, double peso) {
         Vehiculo vehiculo     = factory.crearVehiculo();
         CalculadorCostos calc = factory.crearCalculadorCostos();
@@ -100,4 +96,3 @@ public class LogiSmartApp {
     public int totalEnvios()   { return envios.size(); }
     public int totalUsuarios() { return usuarios.size(); }
 }
-

@@ -1,5 +1,6 @@
-﻿package com.logismart.app;
+package com.logismart.aplicacion;
 
+import com.logismart.aplicacion.demos.hito5.LogiSmartApp;
 import com.logismart.aplicacion.demos.hito10.CasosDePruebaHito10;
 import com.logismart.aplicacion.demos.hito11.CasosDePruebaHito11;
 import com.logismart.aplicacion.demos.hito12.CasosDePruebaHito12;
@@ -15,9 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Demo acumulada hasta Hito 10.
- * Mantiene la secuencia de hitos creacionales y luego ejecuta
- * los casos estructurales y de comportamiento de los ultimos hitos.
+ * Punto de entrada único de LogiSmart.
+ * Ejecuta los demos creacionales (Hito 5) y los casos de prueba de los hitos siguientes.
  */
 public class Main {
 
@@ -31,13 +31,9 @@ public class Main {
         System.out.println("Logger es Singleton: " + (logger == Logger.getInstance()));
         System.out.println("Config es Singleton: " + (config == ConfiguracionSistema.getInstance()));
 
-        // ─────────────────────────────────────────────────────────────────────
-
         sep("2. ABSTRACT FACTORY - LogiSmartApp Argentina");
 
         LogiSmartApp app = new LogiSmartApp("Argentina");
-
-        // ─────────────────────────────────────────────────────────────────────
 
         sep("3. FACTORY METHOD - Crear usuarios");
 
@@ -45,16 +41,12 @@ public class Main {
         app.crearUsuario("operador", "María García");
         app.crearUsuario("admin",    "Carlos López");
 
-        // ─────────────────────────────────────────────────────────────────────
-
         sep("4. BUILDER - EnvioBuilder");
 
-        // Envío simple (solo campos requeridos)
         Envio simple = new Envio.EnvioBuilder("ENV001", "Buenos Aires", "Córdoba")
                 .build();
         System.out.println("Envío simple:   " + simple);
 
-        // Envío complejo (todos los atributos opcionales)
         Envio complejo = new Envio.EnvioBuilder("ENV002", "Buenos Aires", "Mendoza")
                 .descripcion("Medicinas urgentes")
                 .peso(2.5)
@@ -72,8 +64,6 @@ public class Main {
                 + ", hora=" + complejo.getHoraEntregaPreferida());
 
         app.crearEnvio("Buenos Aires", "Córdoba");
-
-        // ─────────────────────────────────────────────────────────────────────
 
         sep("5. PROTOTYPE - Clonación masiva");
 
@@ -96,16 +86,14 @@ public class Main {
 
         app.crearEnviosMultiples(100);
 
-        // ─────────────────────────────────────────────────────────────────────
-
-        sep("6. ABSTRACT FACTORY - Procesar envíos");
+        sep("6. ABSTRACT FACTORY - Procesar envíos regionales");
 
         app.procesarEnvio("Buenos Aires", "Mendoza", 5.0);
 
         LogiSmartApp appBR = new LogiSmartApp("Brasil");
         appBR.procesarEnvio("São Paulo", "Rio de Janeiro", 3.0);
 
-        // ─────────────────────────────────────────────────────────────────────
+        sep("7–13. CASOS DE PRUEBA POR HITO");
 
         CasosDePruebaHito8.ejecutar();
         CasosDePruebaHito9.ejecutar();
@@ -126,4 +114,3 @@ public class Main {
         System.out.println("══════════════════════════════════════════════");
     }
 }
-
