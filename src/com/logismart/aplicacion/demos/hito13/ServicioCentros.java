@@ -1,4 +1,4 @@
-package com.logismart.aplicacion.hito13;
+package com.logismart.aplicacion.demos.hito13;
 
 import com.logismart.infraestructura.persistencia.entidad.CentroDistribucionEntity;
 import com.logismart.infraestructura.persistencia.repositorio.memoria.RepositorioCentroMemoria;

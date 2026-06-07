@@ -1,4 +1,4 @@
-﻿package com.logismart.aplicacion.hito11;
+package com.logismart.aplicacion.demos.hito11;
 
 import com.logismart.dominio.envio.Envio;
 import com.logismart.dominio.envio.ObservadorEnvio;
@@ -33,9 +33,9 @@ public final class CasosDePruebaHito11 {
         total = 0;
         ok    = 0;
 
-        System.out.println("\n══════════════════════════════════════════════");
+        System.out.println("\n----------------------------------------------");
         System.out.println("  GOF - HITO 11: Comportamiento II");
-        System.out.println("══════════════════════════════════════════════");
+        System.out.println("----------------------------------------------");
 
         probarIterator();
         probarMediator();
@@ -49,29 +49,29 @@ public final class CasosDePruebaHito11 {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
     // ITERATOR - 6 casos
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
     private static void probarIterator() {
         System.out.println("\n--- Iterator ---");
 
-        Envio e1 = new Envio.EnvioBuilder("ENV-001", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
+        Envio e1 = new Envio.EnvioBuilder("ENV-001", "Buenos Aires", "C�rdoba").peso(5.0).costo(150.0).build();
         Envio e2 = new Envio.EnvioBuilder("ENV-002", "Rosario",      "Mendoza").peso(8.0).costo(200.0).build();
-        Envio e3 = new Envio.EnvioBuilder("ENV-003", "Córdoba",      "Salta").peso(3.0).costo(100.0).build();
+        Envio e3 = new Envio.EnvioBuilder("ENV-003", "C�rdoba",      "Salta").peso(3.0).costo(100.0).build();
         Envio e4 = new Envio.EnvioBuilder("ENV-004", "Mendoza",      "La Plata").peso(6.0).costo(180.0).build();
-        Envio e5 = new Envio.EnvioBuilder("ENV-005", "La Plata",     "Junín").peso(7.0).costo(160.0).build();
-        Envio e6 = new Envio.EnvioBuilder("ENV-006", "Junín",        "Bahía Blanca").peso(4.0).costo(120.0).build();
+        Envio e5 = new Envio.EnvioBuilder("ENV-005", "La Plata",     "Jun�n").peso(7.0).costo(160.0).build();
+        Envio e6 = new Envio.EnvioBuilder("ENV-006", "Jun�n",        "Bah�a Blanca").peso(4.0).costo(120.0).build();
 
-        // Caso 1: iterar ColeccionArray - orden de inserción preservado
+        // Caso 1: iterar ColeccionArray - orden de inserci�n preservado
         ColeccionEnvios arr = new ColeccionArray();
         arr.agregar(e1); arr.agregar(e2);
         IteradorEnvios it = arr.crearIterador();
         String primerArray = it.obtenerSiguiente().getId();
-        verificar("ENV-001".equals(primerArray), "Caso 1: ColeccionArray preserva orden de inserción");
+        verificar("ENV-001".equals(primerArray), "Caso 1: ColeccionArray preserva orden de inserci�n");
 
-        // Caso 2: ColeccionArray - obtenerTamaño correcto
+        // Caso 2: ColeccionArray - obtenerTama�o correcto
         arr.agregar(e3);
-        verificar(arr.obtenerTamaño() == 3, "Caso 2: ColeccionArray.obtenerTamaño() = 3");
+        verificar(arr.obtenerTama�o() == 3, "Caso 2: ColeccionArray.obtenerTama�o() = 3");
 
         // Caso 3: iterar ColeccionLista - recorre todos los elementos
         ColeccionEnvios lista = new ColeccionLista();
@@ -90,11 +90,11 @@ public final class CasosDePruebaHito11 {
         itHash.reiniciar();
         verificar(itHash.tieneSiguiente(), "Caso 4b: reiniciar restaura el cursor");
 
-        // Caso 5: remover elemento de ColeccionArray y verificar tamaño
+        // Caso 5: remover elemento de ColeccionArray y verificar tama�o
         arr.remover(e1);
-        verificar(arr.obtenerTamaño() == 2, "Caso 5: remover reduce tamaño a 2");
+        verificar(arr.obtenerTama�o() == 2, "Caso 5: remover reduce tama�o a 2");
 
-        // Caso 6: mismo cliente itera Array y Lista sin cambiar su código
+        // Caso 6: mismo cliente itera Array y Lista sin cambiar su c�digo
         ColeccionEnvios[] colecciones = { new ColeccionArray(), new ColeccionLista() };
         for (ColeccionEnvios c : colecciones) { c.agregar(e1); c.agregar(e2); }
         int totalElementos = 0;
@@ -106,9 +106,9 @@ public final class CasosDePruebaHito11 {
                 "Caso 6: cliente uniforme itera Array y Lista - 4 elementos totales");
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
     // MEDIATOR - 7 casos
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
     private static void probarMediator() {
         System.out.println("\n--- Mediator ---");
 
@@ -125,54 +125,54 @@ public final class CasosDePruebaHito11 {
         med.registrarAuditoria(aud);
 
         // Caso 1: flujo completo - pipeline de 5 eventos registrados
-        Envio envio1 = new Envio.EnvioBuilder("ENV-101", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
+        Envio envio1 = new Envio.EnvioBuilder("ENV-101", "Buenos Aires", "C�rdoba").peso(5.0).costo(150.0).build();
         cen.crearEnvio(envio1);
         verificar(aud.contarEventos("ENVIO_CREADO")     >= 1, "Caso 1a: ENVIO_CREADO auditado");
         verificar(aud.contarEventos("VALIDACION_OK")    >= 1, "Caso 1b: VALIDACION_OK auditado");
         verificar(aud.contarEventos("PAGO_CONFIRMADO")  >= 1, "Caso 1c: PAGO_CONFIRMADO auditado");
         verificar(aud.contarEventos("ENVIO_REGISTRADO") >= 1, "Caso 1d: ENVIO_REGISTRADO auditado");
 
-        // Caso 2: múltiples envíos procesados correctamente
+        // Caso 2: m�ltiples env�os procesados correctamente
         Envio envio2 = new Envio.EnvioBuilder("ENV-102", "Rosario", "Mendoza").peso(8.0).costo(200.0).build();
         cen.crearEnvio(envio2);
         verificar(aud.contarEventos("ENVIO_CREADO") >= 2,
-                "Caso 2: segundo envío también auditado");
+                "Caso 2: segundo env�o tambi�n auditado");
 
-        // Caso 3: datos inválidos - VALIDACION_FALLIDA auditada, pipeline se detiene
+        // Caso 3: datos inv�lidos - VALIDACION_FALLIDA auditada, pipeline se detiene
         Envio invalido = new Envio.EnvioBuilder("ENV-103", "La Plata", "Salta").build();
         int pagoAntes = aud.contarEventos("PAGO_CONFIRMADO");
         cen.crearEnvio(invalido);
         verificar(aud.contarEventos("VALIDACION_FALLIDA") >= 1, "Caso 3a: VALIDACION_FALLIDA auditada");
         verificar(aud.contarEventos("PAGO_CONFIRMADO") == pagoAntes,
-                "Caso 3b: pago no se ejecuta tras validación fallida");
+                "Caso 3b: pago no se ejecuta tras validaci�n fallida");
 
         // Caso 4: componentes desacoplados - ValidadorEnvio no tiene referencia a SistemaPago
-        // (verificación estructural: el campo pago es privado del mediador)
-        verificar(true, "Caso 4: componentes se comunican sólo a través del Mediator");
+        // (verificaci�n estructural: el campo pago es privado del mediador)
+        verificar(true, "Caso 4: componentes se comunican s�lo a trav�s del Mediator");
 
-        // Caso 5: logs de auditoría contienen al menos 10 entradas
+        // Caso 5: logs de auditor�a contienen al menos 10 entradas
         aud.mostrarLogs();
         verificar(aud.obtenerLogs().size() >= 10,
-                "Caso 5: auditoría acumula al menos 10 entradas para 3 envíos");
+                "Caso 5: auditor�a acumula al menos 10 entradas para 3 env�os");
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
     // MEMENTO - 7 casos
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
     private static void probarMemento() {
         System.out.println("\n--- Memento ---");
 
-        Envio envio = new Envio.EnvioBuilder("ENV-M01", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).estado("CONFIRMADO").build();
+        Envio envio = new Envio.EnvioBuilder("ENV-M01", "Buenos Aires", "C�rdoba").peso(5.0).costo(150.0).estado("CONFIRMADO").build();
         HistorialEnvios hist = new HistorialEnvios();
 
         // Caso 1: guardar estado inicial CONFIRMADO
         hist.guardarEstado(envio);
-        verificar(hist.obtenerTamaño() == 1, "Caso 1: historial tiene 1 entrada tras primer guardado");
+        verificar(hist.obtenerTama�o() == 1, "Caso 1: historial tiene 1 entrada tras primer guardado");
 
         // Caso 2: avanzar a EN_TRANSITO y guardar
         envio.cambiarEstado("EN_TRANSITO");
         hist.guardarEstado(envio);
-        verificar(hist.obtenerTamaño() == 2, "Caso 2: historial tiene 2 entradas");
+        verificar(hist.obtenerTama�o() == 2, "Caso 2: historial tiene 2 entradas");
 
         // Caso 3: ir al estado anterior - vuelve a CONFIRMADO
         hist.irAlEstadoAnterior(envio);
@@ -184,29 +184,29 @@ public final class CasosDePruebaHito11 {
         verificar("EN_TRANSITO".equals(envio.obtenerEstado()),
                 "Caso 4: irAlEstadoSiguiente regresa a EN_TRANSITO");
 
-        // Caso 5: avanzar hasta ENTREGADO y guardar 2 estados más
+        // Caso 5: avanzar hasta ENTREGADO y guardar 2 estados m�s
         envio.cambiarEstado("EN_REPARTO");
         hist.guardarEstado(envio);
         envio.cambiarEstado("ENTREGADO");
         hist.guardarEstado(envio);
         hist.mostrarHistorial();
-        verificar(hist.obtenerTamaño() == 4, "Caso 5: historial completo tiene 4 entradas");
+        verificar(hist.obtenerTama�o() == 4, "Caso 5: historial completo tiene 4 entradas");
 
-        // Caso 6: navegar directo a posición 0 (CONFIRMADO)
+        // Caso 6: navegar directo a posici�n 0 (CONFIRMADO)
         hist.irAlEstado(0, envio);
         verificar("CONFIRMADO".equals(envio.obtenerEstado()),
                 "Caso 6: irAlEstado(0) restaura estado inicial CONFIRMADO");
 
-        // Caso 7: guardar desde posición intermedia descarta estados futuros
+        // Caso 7: guardar desde posici�n intermedia descarta estados futuros
         envio.cambiarEstado("CANCELADO");
         hist.guardarEstado(envio);
-        verificar(hist.obtenerTamaño() == 2,
-                "Caso 7: guardar desde posición 0 descarta estados futuros (tamaño=2)");
+        verificar(hist.obtenerTama�o() == 2,
+                "Caso 7: guardar desde posici�n 0 descarta estados futuros (tama�o=2)");
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
     // OBSERVER - 6 casos
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
     private static void probarObserver() {
         System.out.println("\n--- Observer ---");
 
@@ -241,9 +241,9 @@ public final class CasosDePruebaHito11 {
         envio2.desadjuntarObservador(dash);
         envio2.cambiarEstado("ENTREGADO");
         verificar(cont2.get() == antes + 1,
-                "Caso 3: desadjuntar dashboard - lambda sigue recibiendo notificación");
+                "Caso 3: desadjuntar dashboard - lambda sigue recibiendo notificaci�n");
 
-        // Caso 4: múltiples envíos con observadores independientes
+        // Caso 4: m�ltiples env�os con observadores independientes
         Envio envioA = new Envio.EnvioBuilder("ENV-O03").estado("CONFIRMADO").build();
         Envio envioB = new Envio.EnvioBuilder("ENV-O04").estado("CONFIRMADO").build();
         AtomicInteger contA = new AtomicInteger(0);
@@ -253,71 +253,71 @@ public final class CasosDePruebaHito11 {
         envioA.cambiarEstado("EN_TRANSITO");
         envioA.cambiarEstado("ENTREGADO");
         envioB.cambiarEstado("CANCELADO");
-        verificar(contA.get() == 2, "Caso 4a: envioA notificó 2 veces");
-        verificar(contB.get() == 1, "Caso 4b: envioB notificó 1 vez");
+        verificar(contA.get() == 2, "Caso 4a: envioA notific� 2 veces");
+        verificar(contB.get() == 1, "Caso 4b: envioB notific� 1 vez");
 
-        // Caso 5: iniciar() también dispara notificaciones (usa constructor con estado)
+        // Caso 5: iniciar() tambi�n dispara notificaciones (usa constructor con estado)
         Envio envio3 = new Envio.EnvioBuilder("ENV-O05").estado("PENDIENTE").build();
         AtomicInteger contIniciar = new AtomicInteger(0);
         envio3.adjuntarObservador(e -> contIniciar.incrementAndGet());
         envio3.iniciar();
-        verificar(contIniciar.get() == 1, "Caso 5: iniciar() dispara notificación a observadores");
+        verificar(contIniciar.get() == 1, "Caso 5: iniciar() dispara notificaci�n a observadores");
         verificar("EN_CURSO".equals(envio3.obtenerEstado()),
-                "Caso 5b: estado después de iniciar() es EN_CURSO");
+                "Caso 5b: estado despu�s de iniciar() es EN_CURSO");
 
-        // Caso 6: cancelar() también dispara notificaciones
+        // Caso 6: cancelar() tambi�n dispara notificaciones
         AtomicInteger contCancelar = new AtomicInteger(0);
         envio3.adjuntarObservador(e -> contCancelar.incrementAndGet());
         envio3.cancelar();
-        // ambos observadores del envio3 reciben la notificación
+        // ambos observadores del envio3 reciben la notificaci�n
         verificar(contCancelar.get() == 1, "Caso 6: cancelar() notifica al segundo observador");
         verificar("CANCELADO".equals(envio3.obtenerEstado()),
-                "Caso 6b: estado después de cancelar() es CANCELADO");
+                "Caso 6b: estado despu�s de cancelar() es CANCELADO");
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // INTEGRACIÓN EVENT-DRIVEN - 4 casos
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
+    // INTEGRACI�N EVENT-DRIVEN - 4 casos
+    // -------------------------------------------------------------------------
     private static void probarIntegracion() {
-        System.out.println("\n--- Integración Event-Driven ---");
+        System.out.println("\n--- Integraci�n Event-Driven ---");
 
         SistemaLogisticaEventDriven sistema = new SistemaLogisticaEventDriven();
 
-        Envio envio1 = new Envio.EnvioBuilder("ENV-INT1", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
+        Envio envio1 = new Envio.EnvioBuilder("ENV-INT1", "Buenos Aires", "C�rdoba").peso(5.0).costo(150.0).build();
         Envio envio2 = new Envio.EnvioBuilder("ENV-INT2", "Rosario",      "Mendoza").peso(8.0).costo(200.0).build();
-        Envio envio3 = new Envio.EnvioBuilder("ENV-INT3", "Córdoba",      "Salta").peso(3.0).costo(100.0).build();
+        Envio envio3 = new Envio.EnvioBuilder("ENV-INT3", "C�rdoba",      "Salta").peso(3.0).costo(100.0).build();
 
         sistema.procesarEnvios(Arrays.asList(envio1, envio2, envio3));
 
-        // Caso 1: Iterator - los 3 envíos están en la colección
+        // Caso 1: Iterator - los 3 env�os est�n en la colecci�n
         sistema.mostrarEnviosProcesados();
-        verificar(sistema.getColeccion().obtenerTamaño() == 3,
-                "Caso 1 (Iterator): 3 envíos almacenados en la colección");
+        verificar(sistema.getColeccion().obtenerTama�o() == 3,
+                "Caso 1 (Iterator): 3 env�os almacenados en la colecci�n");
 
-        // Caso 2: Memento - historial tiene snapshots de los 3 envíos (2 por envío = 6)
-        verificar(sistema.getHistorial().obtenerTamaño() == 6,
-                "Caso 2 (Memento): 6 snapshots guardados (2 por envío)");
+        // Caso 2: Memento - historial tiene snapshots de los 3 env�os (2 por env�o = 6)
+        verificar(sistema.getHistorial().obtenerTama�o() == 6,
+                "Caso 2 (Memento): 6 snapshots guardados (2 por env�o)");
 
-        // Caso 3: Mediator - auditoría registró ENVIO_REGISTRADO para cada envío
+        // Caso 3: Mediator - auditor�a registr� ENVIO_REGISTRADO para cada env�o
         verificar(sistema.getAuditoria().contarEventos("ENVIO_REGISTRADO") == 3,
-                "Caso 3 (Mediator): 3 registros de ENVIO_REGISTRADO en auditoría");
+                "Caso 3 (Mediator): 3 registros de ENVIO_REGISTRADO en auditor�a");
 
-        // Caso 4: sistema completo - todos los patrones activos simultáneamente
-        // Verificamos navegación hacia atrás en el historial (Memento) y
-        // lectura por iterador (Iterator) después del procesamiento
+        // Caso 4: sistema completo - todos los patrones activos simult�neamente
+        // Verificamos navegaci�n hacia atr�s en el historial (Memento) y
+        // lectura por iterador (Iterator) despu�s del procesamiento
         IteradorEnvios it = sistema.getColeccion().crearIterador();
         int count = 0;
         while (it.tieneSiguiente()) { it.obtenerSiguiente(); count++; }
         verificar(count == 3,
-                "Caso 4 (Integración): Iterator recorre correctamente los 3 envíos procesados");
+                "Caso 4 (Integraci�n): Iterator recorre correctamente los 3 env�os procesados");
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
 
     private static void verificar(boolean condicion, String descripcion) {
         total++;
         if (!condicion) {
-            throw new IllegalStateException("✗ FALLO: " + descripcion);
+            throw new IllegalStateException("? FALLO: " + descripcion);
         }
         ok++;
         System.out.println("[OK] " + descripcion);

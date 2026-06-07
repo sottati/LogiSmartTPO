@@ -113,11 +113,11 @@
             <tr><td>1</td><td>Iterator · Diseño</td><td><code>iterator/ColeccionEnvios</code>, <code>IteradorEnvios</code></td><td>Tabla de candidatos; justificación de tres colecciones heterogéneas.</td></tr>
             <tr><td>2</td><td>Iterator · Implementación</td><td><code>ColeccionArray</code>, <code>ColeccionLista</code>, <code>ColeccionHash</code></td><td><code>CasosDePruebaHito11.probarIterator()</code> - 7 verificaciones.</td></tr>
             <tr><td>3</td><td>Mediator · Diseño</td><td><code>mediator/MediadorEnvios</code></td><td>Diagrama hub-and-spoke; tabla de eventos y responsabilidades.</td></tr>
-            <tr><td>4</td><td>Mediator · Implementación</td><td><code>MediadorEnviosConcreto</code>, <code>CentroDistribucion</code>, <code>ValidadorEnvio</code>, <code>SistemaPago</code>, <code>SistemaNotificacion</code>, <code>SistemaAuditoria</code></td><td><code>CasosDePruebaHito11.probarMediator()</code> - 9 verificaciones.</td></tr>
+            <tr><td>4</td><td>Mediator · Implementación</td><td><code>MediadorEnviosConcreto</code>, <code>CentroDistribucionMediator</code>, <code>ValidadorEnvioMediator</code>, <code>SistemaPago</code>, <code>SistemaNotificacion</code>, <code>SistemaAuditoria</code></td><td><code>CasosDePruebaHito11.probarMediator()</code> - 9 verificaciones.</td></tr>
             <tr><td>5</td><td>Memento · Diseño</td><td><code>dominio/MementoEnvio</code></td><td>Tabla de roles Originator/Memento/Caretaker; decisión de paquete en dominio.</td></tr>
             <tr><td>6</td><td>Memento · Implementación</td><td><code>HistorialEnvios</code>, <code>MementoEnvio</code>, métodos en <code>Envio</code></td><td><code>CasosDePruebaHito11.probarMemento()</code> - 7 verificaciones.</td></tr>
             <tr><td>7</td><td>Observer · Diseño</td><td><code>dominio/ObservadorEnvio</code></td><td>Tabla de candidatos; justificación de 4 observadores concretos.</td></tr>
-            <tr><td>8</td><td>Observer · Implementación</td><td><code>CentroDistribucionObservador</code>, <code>SistemaNotificacionObservador</code>, <code>SistemaAuditoriaObservador</code>, <code>DashboardObservador</code></td><td><code>CasosDePruebaHito11.probarObserver()</code> - 9 verificaciones.</td></tr>
+            <tr><td>8</td><td>Observer · Implementación</td><td><code>CentroDistribucionObservador</code>, <code>SistemaNotificacionObservador</code>, <code>SistemaAuditoria</code>, <code>DashboardObservador</code></td><td><code>CasosDePruebaHito11.probarObserver()</code> - 9 verificaciones.</td></tr>
             <tr><td>9</td><td>Trade-off arquitectónico</td><td><code>dominio/ObservadorEnvio</code>, <code>dominio/MementoEnvio</code></td><td>Análisis DIP vs. cohesión del patrón; decisión documentada en sección dedicada.</td></tr>
             <tr><td>10</td><td>Integración Event-Driven</td><td><code>SistemaLogisticaEventDriven</code></td><td><code>CasosDePruebaHito11.probarIntegracion()</code> - 4 verificaciones.</td></tr>
           </tbody>
@@ -278,7 +278,7 @@ public class ColeccionHash implements ColeccionEnvios {
         <table>
           <thead><tr><th>Candidato</th><th>Componentes involucrados</th><th>Problema sin Mediator</th><th>Por qué Mediator resuelve</th></tr></thead>
           <tbody>
-            <tr><td>Pipeline de procesamiento de envíos</td><td>Centro, Validador, Pago, Notificación, Auditoría</td><td>Cada componente referencia a los siguientes: 5×4 = 20 referencias cruzadas potenciales.</td><td>Cada componente solo conoce al mediador: 5 referencias en total. El orquestador define el flujo.</td></tr>
+            <tr><td>Pipeline de procesamiento de envíos</td><td><code>CentroDistribucionMediator</code>, <code>ValidadorEnvioMediator</code>, Pago, Notificación, Auditoría</td><td>Cada componente referencia a los siguientes: 5×4 = 20 referencias cruzadas potenciales.</td><td>Cada componente solo conoce al mediador: 5 referencias en total. El orquestador define el flujo.</td></tr>
             <tr><td>Coordinación de sistemas externos</td><td>ERP, CRM, sistema de tracking</td><td>Actualizar un sistema requiere tocar todos sus consumidores.</td><td>El mediador centraliza las actualizaciones; los consumidores reaccionan a eventos.</td></tr>
           </tbody>
         </table>
@@ -289,17 +289,17 @@ public class ColeccionHash implements ColeccionEnvios {
         <table>
           <thead><tr><th>Evento</th><th>Emisor</th><th>Acciones del Mediator</th><th>Resultado</th></tr></thead>
           <tbody>
-            <tr><td><code>ENVIO_CREADO</code></td><td><code>CentroDistribucion</code></td><td>Audita + llama a <code>ValidadorEnvio.validar()</code></td><td>Inicio del pipeline</td></tr>
-            <tr><td><code>VALIDACION_OK</code></td><td><code>ValidadorEnvio</code></td><td>Audita + llama a <code>SistemaPago.procesarPago()</code></td><td>Envío aprobado, procede al pago</td></tr>
-            <tr><td><code>VALIDACION_FALLIDA</code></td><td><code>ValidadorEnvio</code></td><td>Audita (fin del pipeline)</td><td>Envío rechazado sin procesar pago</td></tr>
+            <tr><td><code>ENVIO_CREADO</code></td><td><code>CentroDistribucionMediator</code></td><td>Audita + llama a <code>ValidadorEnvioMediator.validar()</code></td><td>Inicio del pipeline</td></tr>
+            <tr><td><code>VALIDACION_OK</code></td><td><code>ValidadorEnvioMediator</code></td><td>Audita + llama a <code>SistemaPago.procesarPago()</code></td><td>Envío aprobado, procede al pago</td></tr>
+            <tr><td><code>VALIDACION_FALLIDA</code></td><td><code>ValidadorEnvioMediator</code></td><td>Audita (fin del pipeline)</td><td>Envío rechazado sin procesar pago</td></tr>
             <tr><td><code>PAGO_CONFIRMADO</code></td><td><code>SistemaPago</code></td><td>Audita + llama a <code>SistemaNotificacion.enviarConfirmacion()</code></td><td>Pago ok, notifica al cliente</td></tr>
-            <tr><td><code>NOTIFICACION_ENVIADA</code></td><td><code>SistemaNotificacion</code></td><td>Audita + llama a <code>CentroDistribucion.registrarEnvio()</code></td><td>Cierre del flujo comercial</td></tr>
-            <tr><td><code>ENVIO_REGISTRADO</code></td><td><code>CentroDistribucion</code></td><td>Audita (fin del pipeline)</td><td>Pipeline completo</td></tr>
+            <tr><td><code>NOTIFICACION_ENVIADA</code></td><td><code>SistemaNotificacion</code></td><td>Audita + llama a <code>CentroDistribucionMediator.registrarEnvio()</code></td><td>Cierre del flujo comercial</td></tr>
+            <tr><td><code>ENVIO_REGISTRADO</code></td><td><code>CentroDistribucionMediator</code></td><td>Audita (fin del pipeline)</td><td>Pipeline completo</td></tr>
           </tbody>
         </table>
 
         <div class="tech-note">
-          <strong>Ventaja clave:</strong> <code>ValidadorEnvio</code> no tiene ninguna referencia a <code>SistemaPago</code>. Puede cambiarse el orden del pipeline, agregar un paso o eliminar uno modificando únicamente <code>MediadorEnviosConcreto.notificar()</code>, sin tocar ningún componente existente.
+          <strong>Ventaja clave:</strong> <code>ValidadorEnvioMediator</code> no tiene ninguna referencia a <code>SistemaPago</code>. Puede cambiarse el orden del pipeline, agregar un paso o eliminar uno modificando únicamente <code>MediadorEnviosConcreto.notificar()</code>, sin tocar ningún componente existente.
         </div>
       </section>
 
@@ -307,24 +307,24 @@ public class ColeccionHash implements ColeccionEnvios {
       <section class="section" id="mediator-impl">
         <div class="section-act">Actividad 4 · Mediator</div>
         <h2>Implementación</h2>
-        <p>Se implementaron la interfaz <code>MediadorEnvios</code>, el mediador concreto <code>MediadorEnviosConcreto</code>, cinco componentes colaboradores y la clase <code>SistemaAuditoria</code> con capacidad de consulta por tipo de evento.</p>
+        <p>Se implementaron la interfaz <code>MediadorEnvios</code>, el mediador concreto <code>MediadorEnviosConcreto</code>, cinco componentes colaboradores (<code>CentroDistribucionMediator</code>, <code>ValidadorEnvioMediator</code>, <code>SistemaPago</code>, <code>SistemaNotificacion</code>, <code>SistemaAuditoria</code>) con capacidad de consulta por tipo de evento.</p>
         <div class="pattern-badge">GoF · Mediator</div>
 
         <div class="grid-2">
 <pre>// Interfaz del Mediator
 public interface MediadorEnvios {
-    void registrarCentro(CentroDistribucion c);
-    void registrarValidador(ValidadorEnvio v);
+    void registrarCentro(CentroDistribucionMediator c);
+    void registrarValidador(ValidadorEnvioMediator v);
     void registrarPago(SistemaPago p);
     void registrarNotificador(SistemaNotificacion n);
     void registrarAuditoria(SistemaAuditoria a);
     void notificar(String evento, Object datos);
 }</pre>
 <pre>// Componente concreto - cada uno solo conoce al mediador
-public class ValidadorEnvio {
+public class ValidadorEnvioMediator {
     private final MediadorEnvios mediador;
 
-    public ValidadorEnvio(MediadorEnvios mediador) {
+    public ValidadorEnvioMediator(MediadorEnvios mediador) {
         this.mediador = mediador;
     }
 
@@ -340,8 +340,8 @@ public class ValidadorEnvio {
 
 <pre>// Mediador concreto - orquesta el pipeline completo
 public class MediadorEnviosConcreto implements MediadorEnvios {
-    private CentroDistribucion  centro;
-    private ValidadorEnvio      validador;
+    private CentroDistribucionMediator  centro;
+    private ValidadorEnvioMediator      validador;
     private SistemaPago         pago;
     private SistemaNotificacion notificador;
     private SistemaAuditoria    auditoria;
@@ -536,7 +536,7 @@ public class HistorialEnvios {
           <tbody>
             <tr><td><code>CentroDistribucionObservador</code></td><td>Cualquier cambio de estado</td><td>Actualiza el registro interno del centro con el nuevo estado del envío.</td></tr>
             <tr><td><code>SistemaNotificacionObservador</code></td><td>Cualquier cambio de estado</td><td>Envía notificación al destinatario con el estado actualizado.</td></tr>
-            <tr><td><code>SistemaAuditoriaObservador</code></td><td>Cualquier cambio de estado</td><td>Registra en el log de auditoría con timestamp del sistema.</td></tr>
+            <tr><td><code>SistemaAuditoria</code></td><td>Cualquier cambio de estado</td><td>Registra en el log de auditoría con timestamp del sistema.</td></tr>
             <tr><td><code>DashboardObservador</code></td><td>Cualquier cambio de estado</td><td>Refresca el panel de operaciones logísticas en tiempo real.</td></tr>
           </tbody>
         </table>
@@ -549,7 +549,7 @@ public class HistorialEnvios {
           <tbody>
             <tr><td>Subject</td><td><code>Envio</code> + métodos <code>adjuntarObservador()</code>, <code>desadjuntarObservador()</code>, <code>notificarObservadores()</code></td><td><code>dominio</code></td></tr>
             <tr><td>Observer (interfaz)</td><td><code>ObservadorEnvio</code> - método <code>actualizar(Envio)</code></td><td><code>dominio</code></td></tr>
-            <tr><td>ConcreteObserver ×4</td><td><code>CentroDistribucionObservador</code>, <code>SistemaNotificacionObservador</code>, <code>SistemaAuditoriaObservador</code>, <code>DashboardObservador</code></td><td><code>infraestructura.comportamiento.observer</code></td></tr>
+            <tr><td>ConcreteObserver ×4</td><td><code>CentroDistribucionObservador</code>, <code>SistemaNotificacionObservador</code>, <code>SistemaAuditoria</code>, <code>DashboardObservador</code></td><td><code>infraestructura.comportamiento.observer</code></td></tr>
           </tbody>
         </table>
       </section>
@@ -595,8 +595,8 @@ public void cancelar() {
 }</pre>
         </div>
 
-<pre>// Observador concreto - SistemaAuditoriaObservador
-public class SistemaAuditoriaObservador implements ObservadorEnvio {
+<pre>// Observador concreto - SistemaAuditoria
+public class SistemaAuditoria implements ObservadorEnvio {
     public void actualizar(Envio envio) {
         System.out.println("[Auditoria-Obs] LOG: envio=" + envio.getId()
             + " | estado=" + envio.obtenerEstado()
@@ -715,8 +715,8 @@ envio.cambiarEstado("EN_TRANSITO"); // contador.get() == 1</pre>
 public SistemaLogisticaEventDriven() {
     // Mediator
     this.mediador   = new MediadorEnviosConcreto();
-    this.centro     = new CentroDistribucion(mediador);
-    ValidadorEnvio      val  = new ValidadorEnvio(mediador);
+    this.centro     = new CentroDistribucionMediator(mediador);
+    ValidadorEnvioMediator      val  = new ValidadorEnvioMediator(mediador);
     SistemaPago         pag  = new SistemaPago(mediador);
     SistemaNotificacion not  = new SistemaNotificacion(mediador);
     this.auditoria  = new SistemaAuditoria();
@@ -734,7 +734,7 @@ public SistemaLogisticaEventDriven() {
 public void procesarEnvios(List&lt;Envio&gt; envios) {
     ObservadorEnvio centroObs    = new CentroDistribucionObservador();
     ObservadorEnvio notifObs     = new SistemaNotificacionObservador();
-    ObservadorEnvio auditoriaObs = new SistemaAuditoriaObservador();
+    ObservadorEnvio auditoriaObs = new SistemaAuditoria();
 
     for (Envio envio : envios) {
         // 1. Memento - snapshot antes del pipeline
@@ -761,7 +761,7 @@ public void procesarEnvios(List&lt;Envio&gt; envios) {
   participant C as ColeccionArray (Iterator)
   participant E as Envio (Subject)
   participant M as MediadorEnviosConcreto
-  participant V as ValidadorEnvio
+  participant V as ValidadorEnvioMediator
   participant P as SistemaPago
   participant N as SistemaNotificacion
   participant A as SistemaAuditoria
@@ -858,27 +858,27 @@ public void procesarEnvios(List&lt;Envio&gt; envios) {
 <pre class="mermaid">classDiagram
   class MediadorEnvios {
     &lt;&lt;interface&gt;&gt;
-    +registrarCentro(CentroDistribucion)
-    +registrarValidador(ValidadorEnvio)
+    +registrarCentro(CentroDistribucionMediator)
+    +registrarValidador(ValidadorEnvioMediator)
     +registrarPago(SistemaPago)
     +registrarNotificador(SistemaNotificacion)
     +registrarAuditoria(SistemaAuditoria)
     +notificar(String, Object)
   }
   class MediadorEnviosConcreto {
-    -centro: CentroDistribucion
-    -validador: ValidadorEnvio
+    -centro: CentroDistribucionMediator
+    -validador: ValidadorEnvioMediator
     -pago: SistemaPago
     -notificador: SistemaNotificacion
     -auditoria: SistemaAuditoria
     +notificar(String, Object)
   }
-  class CentroDistribucion {
+  class CentroDistribucionMediator {
     -mediador: MediadorEnvios
     +crearEnvio(Envio)
     +registrarEnvio(Envio)
   }
-  class ValidadorEnvio {
+  class ValidadorEnvioMediator {
     -mediador: MediadorEnvios
     +validar(Envio)
   }
@@ -898,8 +898,8 @@ public void procesarEnvios(List&lt;Envio&gt; envios) {
     +mostrarLogs()
   }
   MediadorEnvios <|.. MediadorEnviosConcreto
-  CentroDistribucion --> MediadorEnvios
-  ValidadorEnvio --> MediadorEnvios
+  CentroDistribucionMediator --> MediadorEnvios
+  ValidadorEnvioMediator --> MediadorEnvios
   SistemaPago --> MediadorEnvios
   SistemaNotificacion --> MediadorEnvios
   MediadorEnviosConcreto --> SistemaAuditoria</pre>
@@ -973,7 +973,7 @@ public void procesarEnvios(List&lt;Envio&gt; envios) {
   class SistemaNotificacionObservador {
     +actualizar(Envio)
   }
-  class SistemaAuditoriaObservador {
+  class SistemaAuditoria {
     +actualizar(Envio)
   }
   class DashboardObservador {
@@ -981,7 +981,7 @@ public void procesarEnvios(List&lt;Envio&gt; envios) {
   }
   ObservadorEnvio <|.. CentroDistribucionObservador
   ObservadorEnvio <|.. SistemaNotificacionObservador
-  ObservadorEnvio <|.. SistemaAuditoriaObservador
+  ObservadorEnvio <|.. SistemaAuditoria
   ObservadorEnvio <|.. DashboardObservador
   Envio --> ObservadorEnvio : notifica</pre>
         </div>
@@ -993,7 +993,7 @@ public void procesarEnvios(List&lt;Envio&gt; envios) {
     -mediador: MediadorEnvios
     -coleccion: ColeccionEnvios
     -historial: HistorialEnvios
-    -centro: CentroDistribucion
+    -centro: CentroDistribucionMediator
     -auditoria: SistemaAuditoria
     +procesarEnvios(List~Envio~)
     +mostrarEnviosProcesados()
@@ -1015,7 +1015,7 @@ public void procesarEnvios(List&lt;Envio&gt; envios) {
         <p>El Hito 11 incorpora cuatro patrones de comportamiento que completan el catálogo GoF en LogiSmart. Cada patrón resolvió una necesidad concreta del dominio logístico:</p>
         <ul style="margin:.6rem 0 .6rem 1.2rem;">
           <li><strong>Iterator</strong> permite recorrer tres tipos de colecciones heterogéneas (array, lista enlazada, mapa) con el mismo código cliente, desacoplando los algoritmos de procesamiento de las estructuras de datos que los contienen.</li>
-          <li><strong>Mediator</strong> convierte el pipeline Centro→Validador→Pago→Notificación→Auditoría de un grafo denso de referencias cruzadas a un hub de eventos: cualquier componente puede cambiarse sin tocar a los demás.</li>
+          <li><strong>Mediator</strong> convierte el pipeline <code>CentroDistribucionMediator</code>→<code>ValidadorEnvioMediator</code>→Pago→Notificación→Auditoría de un grafo denso de referencias cruzadas a un hub de eventos: cualquier componente puede cambiarse sin tocar a los demás.</li>
           <li><strong>Memento</strong> provee auditoría completa del ciclo de vida de un envío con navegación bidireccional, resolviendo la necesidad de operadores de revisar cualquier estado histórico sin exponer los campos privados de <code>Envio</code>.</li>
           <li><strong>Observer</strong> convierte a <code>Envio</code> en un sujeto reactivo: cuatro sistemas (centro, notificación, auditoría, dashboard) reaccionan automáticamente a cada transición de estado sin que el envío los conozca directamente.</li>
         </ul>

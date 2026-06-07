@@ -1,4 +1,4 @@
-﻿package com.logismart.aplicacion.hito13;
+package com.logismart.aplicacion.demos.hito13;
 
 import com.logismart.dominio.empresa.Cobro;
 import com.logismart.dominio.envio.Envio;
@@ -6,7 +6,7 @@ import com.logismart.infraestructura.persistencia.unitofwork.UnitOfWork;
 
 /**
  * Facade de la capa logistica de persistencia.
- * Patron: Facade (GoF) — simplifica el acceso a los 4 servicios + UnitOfWork.
+ * Patron: Facade (GoF) � simplifica el acceso a los 4 servicios + UnitOfWork.
  *
  * procesarEnvioCompleto: registra el envio y el cobro en el UnitOfWork,
  * hace commit (transaccion atomica simulada) y luego persiste ambos en sus

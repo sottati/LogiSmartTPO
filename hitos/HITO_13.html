@@ -125,7 +125,7 @@
           <div>
             <h3>Decisiones de diseno</h3>
             <ul>
-              <li><strong>Reutilizacion</strong>: <code>Envio</code>, <code>ClienteFinal</code> y <code>Cobro</code> ya existian. Solo se crea <code>CentroDistribucion</code> (persistencia) nueva.</li>
+              <li><strong>Reutilizacion</strong>: <code>Envio</code>, <code>ClienteFinal</code> y <code>Cobro</code> ya existian. Solo se crea <code>CentroDistribucionEntity</code> (persistencia) nueva.</li>
               <li><strong>ClienteMapper</strong>: persiste subconjunto <code>id, nombre, email, telefono</code>. Ignora <code>passwordHash</code>, <code>rol</code>, <code>estado</code> y permisos (responsabilidad del modulo de autenticacion).</li>
               <li><strong>CobroMapper</strong>: incluye <code>envioId</code> (campo aditivo de Hito 13). El estado permanece <code>String</code> — no se introduce enum <code>EstadoPago</code> para no romper el comportamiento testeado.</li>
               <li><strong>SQL ilustrativo</strong>: compila, demuestra dominio de JDBC; los tests usan implementaciones en memoria.</li>
@@ -311,7 +311,7 @@ public void rollback() {
             <h3>Tres proxies implementados</h3>
             <ul>
               <li><code>ClienteLazyProxy</code>: carga <code>ClienteFinal</code> desde <code>RepositorioClienteMemoria</code> al primer <code>getCliente()</code>.</li>
-              <li><code>CentroDistribucionLazyProxy</code>: carga la entidad de persistencia <code>CentroDistribucion</code> al primer <code>getCentro()</code>.</li>
+              <li><code>CentroDistribucionLazyProxy</code>: carga la entidad de persistencia <code>CentroDistribucionEntity</code> al primer <code>getCentro()</code>.</li>
               <li><code>HistorialEnviosLazyProxy</code>: carga y filtra la lista de envios del cliente al primer <code>getHistorial()</code>. Filtra por <code>clienteId</code> en el <code>id</code> del envio.</li>
             </ul>
           </div>
@@ -376,13 +376,13 @@ sequenceDiagram
 
         <h3>CentroAssembler — mitigacion de desfasaje</h3>
         <div class="tech-note">
-          El <code>CentroDistribucion</code> del dominio es un <em>Composite abstracto</em> cuyos atributos <code>capacidad</code> y <code>ocupacion</code> se calculan sumando los hijos. No puede ser una fila de tabla. <strong>Solucion</strong>: entidad de persistencia plana + <code>CentroAssembler</code> que la genera como proyeccion del Composite al momento de guardar. El Composite es la unica fuente de verdad &mdash; el snapshot nunca puede desincronizarse porque se recalcula cada vez.
+          El <code>CentroDistribucionComposite</code> del dominio es un <em>Composite abstracto</em> cuyos atributos <code>capacidad</code> y <code>ocupacion</code> se calculan sumando los hijos. No puede ser una fila de tabla. <strong>Solucion</strong>: entidad de persistencia plana <code>CentroDistribucionEntity</code> + <code>CentroAssembler</code> que la genera como proyeccion del Composite al momento de guardar. El Composite es la unica fuente de verdad &mdash; el snapshot nunca puede desincronizarse porque se recalcula cada vez.
         </div>
         <pre>// CentroAssembler — proyeccion Composite -> entidad plana
-public static CentroDistribucion aPersistencia(
+public static CentroDistribucionEntity aPersistencia(
         String id,
-        composite.centro.CentroDistribucion c) {
-    return new CentroDistribucion(
+        composite.centro.CentroDistribucionComposite c) {
+    return new CentroDistribucionEntity(
             id, c.getNombre(), c.getUbicacion(), c.getCodigo(),
             c.obtenerCapacidad(),   // calculado por el Composite
             c.obtenerOcupacion()    // calculado por el Composite
@@ -403,7 +403,7 @@ public static CentroDistribucion aPersistencia(
         <table>
           <thead><tr><th>Bloque</th><th>Clases</th><th>#</th></tr></thead>
           <tbody>
-            <tr><td>Entidades persistencia</td><td><code>CentroDistribucion</code>, <code>CentroAssembler</code></td><td>2</td></tr>
+            <tr><td>Entidades persistencia</td><td><code>CentroDistribucionEntity</code>, <code>CentroAssembler</code></td><td>2</td></tr>
             <tr><td>Data Mapper (interfaces)</td><td><code>EnvioMapper</code>, <code>ClienteMapper</code>, <code>CentroDistribucionMapper</code>, <code>CobroMapper</code></td><td>4</td></tr>
             <tr><td>Data Mapper SQL</td><td><code>EnvioMapperSQL</code>, <code>ClienteMapperSQL</code>, <code>CentroDistribucionMapperSQL</code>, <code>CobroMapperSQL</code></td><td>4</td></tr>
             <tr><td>Repository (interfaces)</td><td><code>Repositorio&lt;T&gt;</code>, <code>RepositorioEnvio</code>, <code>RepositorioCliente</code>, <code>RepositorioCentro</code>, <code>RepositorioPago</code></td><td>5</td></tr>
@@ -477,9 +477,9 @@ classDiagram
         +estaCargado() bool
     }
     class CentroAssembler {
-        +aPersistencia(id, Composite) CentroDistribucion
+        +aPersistencia(id, Composite) CentroDistribucionEntity
     }
-    class CentroDistribucion {
+    class CentroDistribucionEntity {
         +id String
         +nombre String
         +capacidad int
@@ -496,7 +496,7 @@ classDiagram
     LogisticaFacade --> UnitOfWork
     LogisticaFacade --> ServicioEnvios
     ClienteLazyProxy --> RepositorioEnvioMemoria
-    CentroAssembler ..> CentroDistribucion : crea
+    CentroAssembler ..> CentroDistribucionEntity : crea
         </pre>
       </section>
 
@@ -531,7 +531,7 @@ classDiagram
           </div>
         </div>
         <div class="tech-note">
-          <strong>Desfasaje Composite &harr; persistencia:</strong> el <code>CentroDistribucion</code> del dominio es abstracto y jerarquico; su modelo de persistencia es plano. El riesgo de divergencia se mitiga haciendo que la entidad plana sea generada como proyeccion (snapshot) por <code>CentroAssembler</code> al momento de guardar &mdash; nunca se edita directamente. Por construccion, el snapshot siempre refleja el estado actual del Composite.
+          <strong>Desfasaje Composite &harr; persistencia:</strong> el <code>CentroDistribucionComposite</code> del dominio es abstracto y jerarquico; su modelo de persistencia (<code>CentroDistribucionEntity</code>) es plano. El riesgo de divergencia se mitiga haciendo que la entidad plana sea generada como proyeccion (snapshot) por <code>CentroAssembler</code> al momento de guardar &mdash; nunca se edita directamente. Por construccion, el snapshot siempre refleja el estado actual del Composite.
         </div>
       </section>
 

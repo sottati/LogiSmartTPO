@@ -43,6 +43,7 @@ public class CobroMapperSQL implements CobroMapper {
         } catch (SQLException e) {
             throw new RuntimeException("Error al insertar cobro: " + cobro.getId(), e);
         }
+        denormalizarMetodoPago(cobro);
     }
 
     @Override
@@ -59,6 +60,26 @@ public class CobroMapperSQL implements CobroMapper {
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error al actualizar cobro: " + cobro.getId(), e);
+        }
+        denormalizarMetodoPago(cobro);
+    }
+
+    /**
+     * Desnormalización controlada: propaga metodo_pago al envío asociado.
+     * El Cobro es el dueño del dato; EnvioMapperSQL solo tiene NULL porque
+     * Envio no conoce su propio pago. Este mapper actúa como única fuente
+     * de verdad para esa columna.
+     */
+    private void denormalizarMetodoPago(Cobro cobro) {
+        if (cobro.getEnvioId() == null) return;
+        String sql = "UPDATE envios SET metodo_pago=? WHERE id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, cobro.getMedioPago());
+            ps.setString(2, cobro.getEnvioId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                "Error al denormalizar metodo_pago en envio: " + cobro.getEnvioId(), e);
         }
     }
 

@@ -441,7 +441,7 @@
     private final ValidadorDeEnvios validador;
     private final CalculadorDeRutas calculadorRutas;
     private final AsignadorDeVehiculos asignadorVehiculos;
-    private final CalculadorDeCosto calculadorCosto;
+    private final EstrategiaCalculoCosto calculadorCosto;
     private final CalculadorDeTiempo calculadorTiempo;
 
     // CU-01: Crear envio
@@ -789,9 +789,9 @@ public class CalculadorDeRutas {
           </thead>
           <tbody>
             <tr>
-              <td><strong>CalculadorDeCosto</strong></td>
+              <td><strong>EstrategiaCalculoCosto</strong></td>
               <td>Política de tarifa del envío</td>
-              <td><code>CalculadorDeCostoFijo</code>, <code>CalculadorDeCostoPorPeso</code>, <code>CalculadorDeCostoPorDistancia</code></td>
+              <td><code>EstrategiaFijo</code>, <code>EstrategiaPorBulto</code>, <code>EstrategiaDistanciaReal</code></td>
               <td>Tarifa fija → por peso → por distancia → combinada (negocio cambia cada temporada)</td>
             </tr>
             <tr>
@@ -815,18 +815,18 @@ public class CalculadorDeRutas {
           </tbody>
         </table>
 
-        <h3>5.2 CalculadorDeCosto - Ejemplo completo</h3>
+        <h3>5.2 EstrategiaCalculoCosto - Ejemplo completo</h3>
         <pre class="code-block">// Protected Variations: la politica de costo es un punto de variacion
-interface CalculadorDeCosto {
+interface EstrategiaCalculoCosto {
     double calcular(Envio envio);
 }
 
-class CalculadorDeCostoFijo implements CalculadorDeCosto {
+class EstrategiaFijo implements EstrategiaCalculoCosto {
     private final double tarifaFija;
     public double calcular(Envio envio) { return tarifaFija; }
 }
 
-class CalculadorDeCostoPorPeso implements CalculadorDeCosto {
+class EstrategiaPorBulto implements EstrategiaCalculoCosto {
     private final double costoPorBulto;
     public double calcular(Envio envio) {
         int bultos = envio.getOrdenes().stream().mapToInt(Orden::getTotalBultos).sum();
@@ -834,7 +834,7 @@ class CalculadorDeCostoPorPeso implements CalculadorDeCosto {
     }
 }
 
-class CalculadorDeCostoPorDistancia implements CalculadorDeCosto {
+class EstrategiaDistanciaReal implements EstrategiaCalculoCosto {
     private final double costoPorKm;
     public double calcular(Envio envio) { return ruta.calcularDistanciaTotal() * costoPorKm; }
 }
@@ -1083,7 +1083,7 @@ double costo = calculadorCosto.calcular(envio);  // OCP: abierto a extension, ce
               <td>
                 En cuatro puntos de variación de la capa <code>com.logismart.infraestructura</code>:
                 <ul class="note-list" style="margin-top:0.4rem">
-                  <li><strong>Política de tarifa:</strong> interfaz <code>CalculadorDeCosto</code> (paquete <code>costo</code>).</li>
+                  <li><strong>Política de tarifa:</strong> interfaz <code>EstrategiaCalculoCosto</code> (paquete <code>costo</code>).</li>
                   <li><strong>Asignación de vehículo:</strong> interfaz <code>AsignadorDeVehiculos</code> (paquete <code>vehiculo</code>).</li>
                   <li><strong>Estimación de tiempo de entrega:</strong> interfaz <code>CalculadorDeTiempo</code> (paquete <code>tiempo</code>).</li>
                   <li><strong>Formato de exportación de reportes:</strong> interfaz <code>GeneradorDeReportes</code> (paquete <code>reporte</code>).</li>
@@ -1115,11 +1115,11 @@ double costo = calculadorCosto.calcular(envio);  // OCP: abierto a extension, ce
               <td><strong>¿Qué interfaces o clases creaste?</strong></td>
               <td>
                 <span class="badge badge-ok">4 interfaces nuevas</span>
-                <code>CalculadorDeCosto</code> · <code>AsignadorDeVehiculos</code> ·
+                <code>EstrategiaCalculoCosto</code> · <code>AsignadorDeVehiculos</code> ·
                 <code>CalculadorDeTiempo</code> · <code>GeneradorDeReportes</code><br><br>
                 <span class="badge badge-obs">10 implementaciones nuevas</span>
-                <code>CalculadorDeCostoFijo</code> · <code>CalculadorDeCostoPorPeso</code> ·
-                <code>CalculadorDeCostoPorDistancia</code> ·
+                <code>EstrategiaFijo</code> · <code>EstrategiaPorBulto</code> ·
+                <code>EstrategiaDistanciaReal</code> ·
                 <code>AsignadorPorDisponibilidad</code> · <code>AsignadorPorCapacidad</code> ·
                 <code>CalculadorDeTiempoSimple</code> · <code>CalculadorDeTiempoConTrafico</code> ·
                 <code>GeneradorDeReportesPDF</code> · <code>GeneradorDeReportesJSON</code> ·
@@ -1221,16 +1221,16 @@ RutaMenosCongestionada ..|> CalculadorDeRuta
 RutaMasBarata ..|> CalculadorDeRuta
 
 %% ---- PROTECTED VARIATIONS ----
-class CalculadorDeCosto {
+class EstrategiaCalculoCosto {
   &lt;&lt;interface&gt;&gt;
   +calcular(envio) double
 }
-class CalculadorDeCostoFijo
-class CalculadorDeCostoPorPeso
-class CalculadorDeCostoPorDistancia
-CalculadorDeCostoFijo ..|> CalculadorDeCosto
-CalculadorDeCostoPorPeso ..|> CalculadorDeCosto
-CalculadorDeCostoPorDistancia ..|> CalculadorDeCosto
+class EstrategiaFijo
+class EstrategiaPorBulto
+class EstrategiaDistanciaReal
+EstrategiaFijo ..|> EstrategiaCalculoCosto
+EstrategiaPorBulto ..|> EstrategiaCalculoCosto
+EstrategiaDistanciaReal ..|> EstrategiaCalculoCosto
 
 class AsignadorDeVehiculos {
   &lt;&lt;interface&gt;&gt;
@@ -1267,7 +1267,7 @@ LogiSmartController --> ValidadorDeEnvios : valida
 LogiSmartController --> ServicioDeNotificaciones : notifica
 LogiSmartController --> CalculadorDeRutas : selecciona ruta
 LogiSmartController --> AsignadorDeVehiculos : asigna vehiculo
-LogiSmartController --> CalculadorDeCosto : calcula costo
+LogiSmartController --> EstrategiaCalculoCosto : calcula costo
 LogiSmartController --> CalculadorDeTiempo : estima ETA
 
 %% ---- RELACIONES SERVICIOS ----
@@ -1416,7 +1416,7 @@ sequenceDiagram
             </tr>
             <tr>
               <td><strong>Protected Variations</strong></td>
-              <td><code>CalculadorDeCosto</code>, <code>AsignadorDeVehiculos</code>, <code>CalculadorDeTiempo</code>, <code>GeneradorDeReportes</code></td>
+              <td><code>EstrategiaCalculoCosto</code>, <code>AsignadorDeVehiculos</code>, <code>CalculadorDeTiempo</code>, <code>GeneradorDeReportes</code></td>
               <td>Algoritmos y políticas codificados en el Controller o en entidades del dominio</td>
               <td>Cambiar una política = nueva implementación de la interfaz, sin tocar el Controller</td>
             </tr>
@@ -1455,7 +1455,7 @@ sequenceDiagram
             <li>El Controller verifica permisos usando <strong>Polymorphism</strong> (<code>IPermisos</code>), sin <code>instanceof</code>.</li>
             <li>El Controller delega en <strong>Pure Fabrications</strong> (validar, persistir, notificar, seleccionar ruta).</li>
             <li>Las Pure Fabrications usan <strong>Indirection</strong> para hablar con implementaciones concretas a través de interfaces.</li>
-            <li>Los algoritmos variables se protegen con <strong>Protected Variations</strong>: el Controller invoca interfaces, no clases concretas.</li>
+            <li>Los algoritmos variables se protegen con <strong>Protected Variations</strong> (<code>EstrategiaCalculoCosto</code>, etc.): el Controller invoca interfaces, no clases concretas.</li>
           </ol>
         </div>
 

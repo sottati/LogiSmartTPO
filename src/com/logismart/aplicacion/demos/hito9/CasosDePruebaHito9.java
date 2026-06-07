@@ -1,4 +1,4 @@
-﻿package com.logismart.aplicacion.hito9;
+package com.logismart.aplicacion.demos.hito9;
 
 import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.decorator.envio.DecoradorNotificacionesSMS;
@@ -23,9 +23,9 @@ public final class CasosDePruebaHito9 {
         total = 0;
         ok = 0;
 
-        System.out.println("\n══════════════════════════════════════════════");
+        System.out.println("\n----------------------------------------------");
         System.out.println("  7. GOF - HITO 9");
-        System.out.println("══════════════════════════════════════════════");
+        System.out.println("----------------------------------------------");
 
         probarDecorator();
         probarFacade();
