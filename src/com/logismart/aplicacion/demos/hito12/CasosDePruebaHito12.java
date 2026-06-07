@@ -29,9 +29,9 @@ public final class CasosDePruebaHito12 {
         total = 0;
         ok = 0;
 
-        System.out.println("\n----------------------------------------------");
+        System.out.println("\n══════════════════════════════════════════════");
         System.out.println("  GOF - HITO 12: Comportamiento III");
-        System.out.println("----------------------------------------------");
+        System.out.println("══════════════════════════════════════════════");
 
         probarState();
         probarStrategy();
@@ -230,4 +230,3 @@ public final class CasosDePruebaHito12 {
         }
     }
 }
-

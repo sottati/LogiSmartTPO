@@ -19,16 +19,16 @@ import com.logismart.infraestructura.comportamiento.observer.SistemaNotificacion
 import java.util.List;
 
 /**
- * Integraci�n de los 4 patrones de comportamiento II en una arquitectura event-driven.
+ * Integración de los 4 patrones de comportamiento II en una arquitectura event-driven.
  *
  * Los 4 patrones colaboran:
- *   - ITERATOR: los env�os se almacenan en ColeccionArray y se recorren con IteradorEnvios
- *   - MEDIATOR: el pipeline Centro?Validador?Pago?Notificador?Auditoria se orquesta
+ *   - ITERATOR: los envíos se almacenan en ColeccionArray y se recorren con IteradorEnvios
+ *   - MEDIATOR: el pipeline Centro→Validador→Pago→Notificador→Auditoria se orquesta
  *               sin acoplamiento directo entre componentes
- *   - MEMENTO:  cada env�o snapshottea su estado antes y despu�s del pipeline
- *   - OBSERVER: los observadores reaccionan autom�ticamente a cada cambio de estado
+ *   - MEMENTO:  cada envío snapshottea su estado antes y después del pipeline
+ *   - OBSERVER: los observadores reaccionan automáticamente a cada cambio de estado
  *
- * Patr�n: Integraci�n Event-Driven - Hito 11
+ * Patrón: Integración Event-Driven - Hito 11
  */
 public class SistemaLogisticaEventDriven {
 
@@ -39,7 +39,7 @@ public class SistemaLogisticaEventDriven {
     private final SistemaAuditoria   auditoria;
 
     public SistemaLogisticaEventDriven() {
-        // -- Mediator: construir y registrar todos los componentes ------------
+        // ── Mediator: construir y registrar todos los componentes ────────────
         this.mediador   = new MediadorEnviosConcreto();
         this.centro     = new CentroDistribucionMediator(mediador);
         ValidadorEnvioMediator validador = new ValidadorEnvioMediator(mediador);
@@ -53,17 +53,17 @@ public class SistemaLogisticaEventDriven {
         mediador.registrarNotificador(notificador);
         mediador.registrarAuditoria(auditoria);
 
-        // -- Iterator: colecci�n principal ------------------------------------
+        // ── Iterator: colección principal ────────────────────────────────────
         this.coleccion = new ColeccionArray();
 
-        // -- Memento: historial de estados ------------------------------------
+        // ── Memento: historial de estados ────────────────────────────────────
         this.historial = new HistorialEnvios();
     }
 
     /**
-     * Procesa una lista de env�os activando los 4 patrones en secuencia:
+     * Procesa una lista de envíos activando los 4 patrones en secuencia:
      * 1. MEMENTO  - snapshot del estado inicial
-     * 2. ITERATOR - se agrega a la colecci�n
+     * 2. ITERATOR - se agrega a la colección
      * 3. OBSERVER - se suscriben los observadores reactivos
      * 4. MEDIATOR - se lanza el pipeline completo
      */
@@ -72,13 +72,13 @@ public class SistemaLogisticaEventDriven {
         ObservadorEnvio notifObs  = new SistemaNotificacionObservador();
 
         for (Envio envio : envios) {
-            System.out.println("\n------------------------------------------");
+            System.out.println("\n──────────────────────────────────────────");
             System.out.println("Procesando: " + envio.getId());
 
             // 1. Memento - guardar estado inicial
             historial.guardarEstado(envio);
 
-            // 2. Iterator - incorporar a la colecci�n
+            // 2. Iterator - incorporar a la colección
             coleccion.agregar(envio);
 
             // 3. Observer - suscribir observadores (auditoria cubre ambos roles)
@@ -94,9 +94,9 @@ public class SistemaLogisticaEventDriven {
         }
     }
 
-    /** Recorre todos los env�os procesados usando el Iterator. */
+    /** Recorre todos los envíos procesados usando el Iterator. */
     public void mostrarEnviosProcesados() {
-        System.out.println("\n=== Env�os en colecci�n ===");
+        System.out.println("\n=== Envíos en colección ===");
         IteradorEnvios it = coleccion.crearIterador();
         int i = 1;
         while (it.tieneSiguiente()) {
@@ -112,4 +112,3 @@ public class SistemaLogisticaEventDriven {
     public MediadorEnvios  getMediador()   { return mediador;   }
     public SistemaAuditoria getAuditoria() { return auditoria;  }
 }
-

@@ -21,9 +21,9 @@ import java.util.Map;
 
 /**
  * Integra los tres patrones de comportamiento:
- * 1. Chain of Responsibility - valida el envío antes de procesarlo.
- * 2. Command - encapsula la creación en un comando reversible con historial.
- * 3. Interpreter - evalúa reglas de negocio sobre el envío.
+ * 1. Chain of Responsibility - valida el envÃ­o antes de procesarlo.
+ * 2. Command - encapsula la creaciÃ³n en un comando reversible con historial.
+ * 3. Interpreter - evalÃºa reglas de negocio sobre el envÃ­o.
  */
 public class SistemaLogisticaCompleto {
 
@@ -43,12 +43,12 @@ public class SistemaLogisticaCompleto {
     }
 
     private void inicializarReglas() {
-        // REGLA 1: destino Córdoba con peso liviano
+        // REGLA 1: destino CÃ³rdoba con peso liviano
         reglas.put("REGLA_CORDOBA_LIVIANO", new ExpresionAND(
-                new ExpresionDestino("Córdoba"),
+                new ExpresionDestino("CÃ³rdoba"),
                 new ExpresionPeso(10, "<")));
 
-        // REGLA 2: envío costoso
+        // REGLA 2: envÃ­o costoso
         reglas.put("REGLA_ENVIO_COSTOSO", new ExpresionCosto(100, ">"));
 
         // REGLA 3: destino no restringido
@@ -56,16 +56,16 @@ public class SistemaLogisticaCompleto {
     }
 
     /**
-     * Procesa un envío pasándolo por los tres patrones integrados.
-     * Devuelve el número de seguimiento, o null si fue rechazado.
+     * Procesa un envÃ­o pasÃ¡ndolo por los tres patrones integrados.
+     * Devuelve el nÃºmero de seguimiento, o null si fue rechazado.
      */
     public String procesarEnvio(ContextoValidacion ctx) {
-        System.out.println("\n=== Procesando Envío ===");
+        System.out.println("\n=== Procesando EnvÃ­o ===");
         Envio envio = ctx.getEnvio();
 
         // 1. Chain: validar
         if (!validadores.validarEnvio(ctx)) {
-            System.out.println("Envío rechazado en validación");
+            System.out.println("EnvÃ­o rechazado en validaciÃ³n");
             return null;
         }
 
@@ -77,7 +77,7 @@ public class SistemaLogisticaCompleto {
         // 3. Interpreter: evaluar reglas de negocio
         System.out.println("\n--- Reglas de Negocio ---");
         for (Map.Entry<String, Expresion> entry : reglas.entrySet()) {
-            String resultado = entry.getValue().evaluar(envio) ? "? Cumple" : "  No cumple";
+            String resultado = entry.getValue().evaluar(envio) ? "âœ“ Cumple" : "  No cumple";
             System.out.println("  " + resultado + " " + entry.getKey());
         }
 
@@ -88,4 +88,3 @@ public class SistemaLogisticaCompleto {
     public ServicioEnvios getServicio()    { return servicio; }
     public CadenaValidadores getValidadores() { return validadores; }
 }
-

@@ -6,7 +6,7 @@ import com.logismart.infraestructura.persistencia.unitofwork.UnitOfWork;
 
 /**
  * Facade de la capa logistica de persistencia.
- * Patron: Facade (GoF) — simplifica el acceso a los 4 servicios + UnitOfWork.
+ * Patron: Facade (GoF) â€” simplifica el acceso a los 4 servicios + UnitOfWork.
  *
  * procesarEnvioCompleto: registra el envio y el cobro en el UnitOfWork,
  * hace commit (transaccion atomica simulada) y luego persiste ambos en sus
@@ -58,4 +58,3 @@ public class LogisticaFacade {
     public ServicioPagos    getServicioPagos()     { return servicioPagos; }
     public UnitOfWork       getUnitOfWork()        { return unitOfWork; }
 }
-

@@ -65,4 +65,3 @@ public class ServicioLogisticaCompleto {
         return FabricaUbicaciones.totalUbicaciones();
     }
 }
-

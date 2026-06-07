@@ -36,9 +36,9 @@ public final class CasosDePruebaHito10 {
         total = 0;
         ok = 0;
 
-        System.out.println("\n----------------------------------------------");
+        System.out.println("\n══════════════════════════════════════════════");
         System.out.println("  8. GOF - HITO 10");
-        System.out.println("----------------------------------------------");
+        System.out.println("══════════════════════════════════════════════");
 
         probarChain();
         probarCommand();
@@ -51,9 +51,9 @@ public final class CasosDePruebaHito10 {
         }
     }
 
-    // -------------------------------------------------------------------------
+    // ─────────────────────────────────────────────────────────────────────────
     // CHAIN OF RESPONSIBILITY (6 casos)
-    // -------------------------------------------------------------------------
+    // ─────────────────────────────────────────────────────────────────────────
     private static void probarChain() {
         System.out.println("\n--- Chain of Responsibility ---");
 
@@ -64,24 +64,24 @@ public final class CasosDePruebaHito10 {
         // Cobro reutilizable para casos donde el pago no es el punto de fallo
         Cobro cobroValido = new Cobro("C-TEST", 150.0, "PENDIENTE", LocalDateTime.now(), "TARJETA");
 
-        // Caso 1: env�o v�lido con Orden y Cobro correctos pasa la cadena completa
-        Envio e1 = new Envio.EnvioBuilder("H10-001", "Buenos Aires", "C�rdoba").peso(5.0).costo(150.0).build();
+        // Caso 1: envío válido con Orden y Cobro correctos pasa la cadena completa
+        Envio e1 = new Envio.EnvioBuilder("H10-001", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
         agregarOrden(e1, "O-001", "PROD-001");
-        verificar(cadena.validarEnvio(new ContextoValidacion(e1, cobroValido)), "Caso 1: env�o v�lido aprobado");
+        verificar(cadena.validarEnvio(new ContextoValidacion(e1, cobroValido)), "Caso 1: envío válido aprobado");
 
-        // Caso 2: origen vac�o - falla en ValidadorDatos
-        Envio e2 = new Envio.EnvioBuilder("H10-002", "", "C�rdoba").peso(5.0).costo(150.0).build();
-        verificar(!cadena.validarEnvio(new ContextoValidacion(e2, cobroValido)), "Caso 2: origen vac�o rechazado");
+        // Caso 2: origen vacío - falla en ValidadorDatos
+        Envio e2 = new Envio.EnvioBuilder("H10-002", "", "Córdoba").peso(5.0).costo(150.0).build();
+        verificar(!cadena.validarEnvio(new ContextoValidacion(e2, cobroValido)), "Caso 2: origen vacío rechazado");
 
         // Caso 3: peso cero - falla en ValidadorDatos
-        Envio e3 = new Envio.EnvioBuilder("H10-003", "Buenos Aires", "C�rdoba").costo(150.0).build();
-        verificar(!cadena.validarEnvio(new ContextoValidacion(e3, cobroValido)), "Caso 3: peso inv�lido rechazado");
+        Envio e3 = new Envio.EnvioBuilder("H10-003", "Buenos Aires", "Córdoba").costo(150.0).build();
+        verificar(!cadena.validarEnvio(new ContextoValidacion(e3, cobroValido)), "Caso 3: peso inválido rechazado");
 
         // Caso 4: costo cero - falla en ValidadorPago
-        Envio e4 = new Envio.EnvioBuilder("H10-004", "Buenos Aires", "C�rdoba").peso(5.0).build();
+        Envio e4 = new Envio.EnvioBuilder("H10-004", "Buenos Aires", "Córdoba").peso(5.0).build();
         agregarOrden(e4, "O-004", "PROD-001");
         Cobro cobroCostoInvalido = new Cobro("C-004", 0.0, "PENDIENTE", LocalDateTime.now(), "TARJETA");
-        verificar(!cadena.validarEnvio(new ContextoValidacion(e4, cobroCostoInvalido)), "Caso 4: costo inv�lido rechazado");
+        verificar(!cadena.validarEnvio(new ContextoValidacion(e4, cobroCostoInvalido)), "Caso 4: costo inválido rechazado");
 
         // Caso 5: destino restringido - falla en ValidadorSeguridad
         Envio e5 = new Envio.EnvioBuilder("H10-005", "Buenos Aires", "Zona Restringido").peso(5.0).costo(150.0).build();
@@ -89,7 +89,7 @@ public final class CasosDePruebaHito10 {
         verificar(!cadena.validarEnvio(new ContextoValidacion(e5, cobroValido)), "Caso 5: destino restringido rechazado");
 
         // Caso 6: producto sin stock - falla en ValidadorInventario
-        Envio e6 = new Envio.EnvioBuilder("H10-006", "Buenos Aires", "C�rdoba").peso(5.0).costo(150.0).build();
+        Envio e6 = new Envio.EnvioBuilder("H10-006", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
         agregarOrden(e6, "O-006", "PROD-SIN-STOCK");
         verificar(!cadena.validarEnvio(new ContextoValidacion(e6, cobroValido)), "Caso 6: sin stock rechazado");
     }
@@ -100,30 +100,30 @@ public final class CasosDePruebaHito10 {
         envio.agregarOrden(orden);
     }
 
-    // -------------------------------------------------------------------------
+    // ─────────────────────────────────────────────────────────────────────────
     // COMMAND (10 casos)
-    // -------------------------------------------------------------------------
+    // ─────────────────────────────────────────────────────────────────────────
     private static void probarCommand() {
         System.out.println("\n--- Command ---");
 
         ServicioEnvios servicio = new ServicioEnvios();
         ColaComandos   cola     = new ColaComandos();
 
-        Envio envio = new Envio.EnvioBuilder("H10-007", "Buenos Aires", "C�rdoba").peso(5.0).costo(150.0).build();
+        Envio envio = new Envio.EnvioBuilder("H10-007", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
 
-        // Caso 1: crear env�o
+        // Caso 1: crear envío
         ComandoCrearEnvio cmdCrear = new ComandoCrearEnvio(servicio, envio);
         cola.ejecutar(cmdCrear);
         String numero = cmdCrear.getNumeroSeguimiento();
-        verificar(numero != null, "Caso 1: crear env�o genera n�mero de seguimiento");
+        verificar(numero != null, "Caso 1: crear envío genera número de seguimiento");
 
-        // Caso 2: actualizar estado a EN TR�NSITO
-        cola.ejecutar(new ComandoActualizarEstado(servicio, numero, "EN TR�NSITO"));
-        verificar("EN TR�NSITO".equals(servicio.obtenerEstado(numero)), "Caso 2: estado actualizado a EN TR�NSITO");
+        // Caso 2: actualizar estado a EN TRÁNSITO
+        cola.ejecutar(new ComandoActualizarEstado(servicio, numero, "EN TRÁNSITO"));
+        verificar("EN TRÁNSITO".equals(servicio.obtenerEstado(numero)), "Caso 2: estado actualizado a EN TRÁNSITO");
 
-        // Caso 3: cambiar m�todo de pago
+        // Caso 3: cambiar método de pago
         cola.ejecutar(new ComandoCambiarMetodoPago(servicio, numero, "EFECTIVO"));
-        verificar("EFECTIVO".equals(servicio.obtenerMetodoPago(numero)), "Caso 3: m�todo de pago cambiado a EFECTIVO");
+        verificar("EFECTIVO".equals(servicio.obtenerMetodoPago(numero)), "Caso 3: método de pago cambiado a EFECTIVO");
 
         // Caso 4: agregar servicio Seguro
         cola.ejecutar(new ComandoAgregarServicio(servicio, numero, "Seguro"));
@@ -139,97 +139,97 @@ public final class CasosDePruebaHito10 {
 
         // Caso 7: deshacer - vuelve a TARJETA
         cola.deshacer();
-        verificar("".equals(servicio.obtenerMetodoPago(numero)), "Caso 7: deshacer restaura m�todo de pago original");
+        verificar("".equals(servicio.obtenerMetodoPago(numero)), "Caso 7: deshacer restaura método de pago original");
 
         // Caso 8: rehacer - vuelve a EFECTIVO
         cola.rehacer();
-        verificar("EFECTIVO".equals(servicio.obtenerMetodoPago(numero)), "Caso 8: rehacer restaura m�todo EFECTIVO");
+        verificar("EFECTIVO".equals(servicio.obtenerMetodoPago(numero)), "Caso 8: rehacer restaura método EFECTIVO");
 
-        // Caso 9: cancelar env�o y deshacer (reactivar)
+        // Caso 9: cancelar envío y deshacer (reactivar)
         ColaComandos cola2 = new ColaComandos();
         ServicioEnvios srv2 = new ServicioEnvios();
         ComandoCrearEnvio cmdCrear2 = new ComandoCrearEnvio(srv2, envio);
         cola2.ejecutar(cmdCrear2);
         String num2 = cmdCrear2.getNumeroSeguimiento();
         cola2.ejecutar(new ComandoCancelarEnvio(srv2, num2));
-        verificar("CANCELADO".equals(srv2.obtenerEstado(num2)), "Caso 9a: cancelar env�o");
+        verificar("CANCELADO".equals(srv2.obtenerEstado(num2)), "Caso 9a: cancelar envío");
         cola2.deshacer();
-        verificar("CONFIRMADO".equals(srv2.obtenerEstado(num2)), "Caso 9b: deshacer cancelaci�n reactiva env�o");
+        verificar("CONFIRMADO".equals(srv2.obtenerEstado(num2)), "Caso 9b: deshacer cancelación reactiva envío");
     }
 
-    // -------------------------------------------------------------------------
+    // ─────────────────────────────────────────────────────────────────────────
     // INTERPRETER (7 casos)
-    // -------------------------------------------------------------------------
+    // ─────────────────────────────────────────────────────────────────────────
     private static void probarInterpreter() {
         System.out.println("\n--- Interpreter ---");
 
-        Envio envio1 = new Envio.EnvioBuilder("H10-008", "Buenos Aires", "C�rdoba").peso(5.0).costo(150.0).build();
-        Envio envio2 = new Envio.EnvioBuilder("H10-009", "Rosario", "C�rdoba").peso(15.0).costo(200.0).build();
+        Envio envio1 = new Envio.EnvioBuilder("H10-008", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
+        Envio envio2 = new Envio.EnvioBuilder("H10-009", "Rosario", "Córdoba").peso(15.0).costo(200.0).build();
         Envio envio3 = new Envio.EnvioBuilder("H10-010", "Buenos Aires", "Zona Restringido").peso(5.0).costo(150.0).build();
 
-        // Caso 1: expresi�n simple - ORIGEN = "Buenos Aires"
+        // Caso 1: expresión simple - ORIGEN = "Buenos Aires"
         Expresion regla1 = new ExpresionOrigen("Buenos Aires");
-        verificar(regla1.evaluar(envio1), "Caso 1: origen correcto ? true");
-        verificar(!regla1.evaluar(envio2), "Caso 1b: origen incorrecto ? false");
+        verificar(regla1.evaluar(envio1), "Caso 1: origen correcto → true");
+        verificar(!regla1.evaluar(envio2), "Caso 1b: origen incorrecto → false");
 
         // Caso 2: AND - ORIGEN = "Buenos Aires" AND PESO < 10
         Expresion regla2 = new ExpresionAND(
                 new ExpresionOrigen("Buenos Aires"),
                 new ExpresionPeso(10, "<"));
-        verificar(regla2.evaluar(envio1), "Caso 2: AND cumplido ? true");
-        verificar(!regla2.evaluar(envio2), "Caso 2b: AND fallido (origen y peso) ? false");
+        verificar(regla2.evaluar(envio1), "Caso 2: AND cumplido → true");
+        verificar(!regla2.evaluar(envio2), "Caso 2b: AND fallido (origen y peso) → false");
 
-        // Caso 3: OR - DESTINO = "C�rdoba" OR DESTINO = "Mendoza"
+        // Caso 3: OR - DESTINO = "Córdoba" OR DESTINO = "Mendoza"
         Expresion regla3 = new ExpresionOR(
-                new ExpresionDestino("C�rdoba"),
+                new ExpresionDestino("Córdoba"),
                 new ExpresionDestino("Mendoza"));
-        verificar(regla3.evaluar(envio1), "Caso 3: OR cumplido ? true");
+        verificar(regla3.evaluar(envio1), "Caso 3: OR cumplido → true");
 
         // Caso 4: NOT RESTRINGIDO
         Expresion regla4 = new ExpresionNOT(new ExpresionRestringido());
-        verificar(regla4.evaluar(envio1), "Caso 4: NOT restringido ? true");
-        verificar(!regla4.evaluar(envio3), "Caso 4b: destino restringido ? false");
+        verificar(regla4.evaluar(envio1), "Caso 4: NOT restringido → true");
+        verificar(!regla4.evaluar(envio3), "Caso 4b: destino restringido → false");
 
-        // Caso 5: expresi�n compleja - ORIGEN AND COSTO > 100 AND NOT RESTRINGIDO
+        // Caso 5: expresión compleja - ORIGEN AND COSTO > 100 AND NOT RESTRINGIDO
         Expresion regla5 = new ExpresionAND(
                 new ExpresionAND(
                         new ExpresionOrigen("Buenos Aires"),
                         new ExpresionCosto(100, ">")),
                 new ExpresionNOT(new ExpresionRestringido()));
-        verificar(regla5.evaluar(envio1), "Caso 5: regla compleja cumplida ? true");
-        verificar(!regla5.evaluar(envio3), "Caso 5b: regla compleja con restringido ? false");
+        verificar(regla5.evaluar(envio1), "Caso 5: regla compleja cumplida → true");
+        verificar(!regla5.evaluar(envio3), "Caso 5b: regla compleja con restringido → false");
 
         // Caso 6: COSTO con operador "="
         Expresion reglaCostoExacto = new ExpresionCosto(150.0, "=");
-        verificar(reglaCostoExacto.evaluar(envio1), "Caso 6: costo exacto ? true");
+        verificar(reglaCostoExacto.evaluar(envio1), "Caso 6: costo exacto → true");
     }
 
-    // -------------------------------------------------------------------------
-    // INTEGRACI�N (3 casos)
-    // -------------------------------------------------------------------------
+    // ─────────────────────────────────────────────────────────────────────────
+    // INTEGRACIÓN (3 casos)
+    // ─────────────────────────────────────────────────────────────────────────
     private static void probarIntegracion() {
-        System.out.println("\n--- Integraci�n ---");
+        System.out.println("\n--- Integración ---");
 
         SistemaLogisticaCompleto sistema = new SistemaLogisticaCompleto();
 
-        // Caso 1: env�o v�lido se procesa y genera n�mero de seguimiento
-        Envio envioValido = new Envio.EnvioBuilder("H10-011", "Buenos Aires", "C�rdoba").peso(5.0).costo(150.0).build();
+        // Caso 1: envío válido se procesa y genera número de seguimiento
+        Envio envioValido = new Envio.EnvioBuilder("H10-011", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
         agregarOrden(envioValido, "O-011", "PROD-001");
         Cobro cobroInt = new Cobro("C-011", 150.0, "PENDIENTE", LocalDateTime.now(), "TARJETA");
         String numero = sistema.procesarEnvio(new ContextoValidacion(envioValido, cobroInt));
-        verificar(numero != null, "Caso 1: integraci�n - env�o v�lido genera n�mero");
+        verificar(numero != null, "Caso 1: integración - envío válido genera número");
 
-        // Caso 2: el estado del env�o creado es CONFIRMADO
+        // Caso 2: el estado del envío creado es CONFIRMADO
         verificar("CONFIRMADO".equals(sistema.getServicio().obtenerEstado(numero)),
-                "Caso 2: integraci�n - estado inicial CONFIRMADO");
+                "Caso 2: integración - estado inicial CONFIRMADO");
 
-        // Caso 3: env�o inv�lido (origen vac�o) es rechazado por la cadena
-        Envio invalido = new Envio.EnvioBuilder("H10-012", "", "C�rdoba").peso(5.0).costo(150.0).build();
+        // Caso 3: envío inválido (origen vacío) es rechazado por la cadena
+        Envio invalido = new Envio.EnvioBuilder("H10-012", "", "Córdoba").peso(5.0).costo(150.0).build();
         String numeroInvalido = sistema.procesarEnvio(new ContextoValidacion(invalido, cobroInt));
-        verificar(numeroInvalido == null, "Caso 3: integraci�n - env�o inv�lido rechazado");
+        verificar(numeroInvalido == null, "Caso 3: integración - envío inválido rechazado");
     }
 
-    // -------------------------------------------------------------------------
+    // ─────────────────────────────────────────────────────────────────────────
 
     private static void verificar(boolean condicion, String descripcion) {
         total++;
@@ -240,4 +240,3 @@ public final class CasosDePruebaHito10 {
         System.out.println("[OK] " + descripcion);
     }
 }
-

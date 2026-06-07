@@ -23,9 +23,9 @@ public final class CasosDePruebaHito9 {
         total = 0;
         ok = 0;
 
-        System.out.println("\n----------------------------------------------");
+        System.out.println("\n══════════════════════════════════════════════");
         System.out.println("  7. GOF - HITO 9");
-        System.out.println("----------------------------------------------");
+        System.out.println("══════════════════════════════════════════════");
 
         probarDecorator();
         probarFacade();
@@ -179,4 +179,3 @@ public final class CasosDePruebaHito9 {
         System.out.println("[OK] " + descripcion);
     }
 }
-
