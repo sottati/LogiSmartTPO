@@ -1,12 +1,11 @@
 ﻿package com.logismart.infraestructura.comportamiento.chain;
 
-import com.logismart.dominio.envio.Envio;
-
 public class ValidadorDatos extends ValidadorEnvio {
 
     @Override
-    public boolean validar(Envio envio) {
+    public boolean validar(ContextoValidacion ctx) {
         System.out.println("[" + obtenerNombre() + "] Validando...");
+        var envio = ctx.getEnvio();
 
         if (envio.getOrigen() == null || envio.getOrigen().isEmpty()) {
             System.err.println("  ✗ Origen inválido");
@@ -22,7 +21,7 @@ public class ValidadorDatos extends ValidadorEnvio {
         }
 
         System.out.println("  ✓ Datos válidos");
-        return siguiente == null || siguiente.validar(envio);
+        return siguiente == null || siguiente.validar(ctx);
     }
 
     @Override

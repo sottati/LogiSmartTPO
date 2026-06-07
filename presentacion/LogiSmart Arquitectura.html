@@ -781,47 +781,59 @@ Envio envio = new Envio.EnvioBuilder(row.id)
   </div>
 </section>
 
-<!-- ════════ 19 · CIERRE · PEDISTE → CUMPLIMOS ════════ -->
-<section class="closing" data-label="Cierre" data-screen-label="19 Cierre">
-  <div class="grid-tex"></div>
+<!-- ════════ 19 · EL HILO CONDUCTOR ════════ -->
+<section data-label="El hilo conductor" data-screen-label="19 Alta cohesión · Bajo acoplamiento">
   <div class="frame">
-    <div class="close-grid">
-      <div>
-        <div class="logo" style="font-size:30px;margin-bottom:38px"><span class="glyph"></span>Logi<b>Smart</b></div>
-        <h2 class="close-title">Esto pediste.<br/><span class="accent">Así lo cumplimos.</span></h2>
-        <p class="close-sub">35 patrones · 200 clases · 148 tests en verde · Hito 13 · UADE 2026</p>
+    <div class="head" style="margin-bottom:22px">
+      <div class="eyebrow">El principio que unifica todo</div>
+      <h2 class="title">Alta cohesión &amp; bajo acoplamiento — el hilo de los 13 hitos</h2>
+    </div>
+    <div class="cols c2" style="flex:1;gap:26px;align-items:stretch">
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:1.15em;font-weight:700;color:var(--accent-strong);letter-spacing:.02em">Alta Cohesión — una clase, una razón</div>
+        <ul class="kvs" style="flex:1">
+          <li><code>Envio</code> — gestiona solo el ciclo de vida de un envío</li>
+          <li><code>Cobro</code> — solo transacciones financieras</li>
+          <li><code>CalculadorDeTiempo</code> — solo estima minutos</li>
+          <li><code>Rol</code> — solo la matriz de permisos 5×5</li>
+          <li><strong>Strategy</strong> — cada algoritmo de costo en su propia clase</li>
+          <li><strong>State</strong> — cada estado conoce solo sus transiciones</li>
+          <li><strong>Command</strong> — cada operación encapsula una responsabilidad</li>
+        </ul>
+        <div style="font-size:.78em;opacity:.5;border-top:1px solid oklch(0.6 0 0/.15);padding-top:8px">GRASP Information Expert · Single Responsibility</div>
       </div>
-      <div class="deliver">
-        <div class="deliver-row">
-          <div class="deliver-ask"><b>Logística sin Excel ni WhatsApp</b></div>
-          <div class="deliver-arr">→</div>
-          <div class="deliver-got">SaaS multitenant, una sola plataforma</div>
-        </div>
-        <div class="deliver-row">
-          <div class="deliver-ask"><b>Importar pedidos solos</b> · CU-01</div>
-          <div class="deliver-arr">→</div>
-          <div class="deliver-got">Adapter · e-commerce + pagos</div>
-        </div>
-        <div class="deliver-row">
-          <div class="deliver-ask"><b>Rutas óptimas</b> · CU-03</div>
-          <div class="deliver-arr">→</div>
-          <div class="deliver-got">Strategy + Composite · regional</div>
-        </div>
-        <div class="deliver-row">
-          <div class="deliver-ask"><b>Seguir el paquete en vivo</b> · CU-07</div>
-          <div class="deliver-arr">→</div>
-          <div class="deliver-got">State + Observer · tiempo real</div>
-        </div>
-        <div class="deliver-row">
-          <div class="deliver-ask"><b>Que no se caiga ni se filtre</b></div>
-          <div class="deliver-arr">→</div>
-          <div class="deliver-got">Alta disponibilidad + aislamiento</div>
-        </div>
-        <div class="deliver-row" style="border-color:oklch(0.7 0.18 276 / .4)">
-          <div class="deliver-ask" style="color:oklch(0.8 0.13 276)">Equipo</div>
-          <div class="deliver-arr">·</div>
-          <div class="deliver-got">Rosario Presedo &nbsp;·&nbsp; Simón Ottati</div>
-        </div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:12px;background:var(--cat-estr-tint)">
+        <div style="font-size:1.15em;font-weight:700;color:var(--cat-estr);letter-spacing:.02em">Bajo Acoplamiento — clases independientes</div>
+        <ul class="kvs" style="flex:1">
+          <li><strong>Observer</strong> — <code>Envio</code> no conoce a sus suscriptores</li>
+          <li><strong>Repository</strong> — el dominio nunca importa SQL ni JPA</li>
+          <li><strong>Adapter</strong> — DHL/FedEx son intercambiables sin tocar el dominio</li>
+          <li><strong>Abstract Factory</strong> — AR/BR coherentes sin que el dominio lo sepa</li>
+          <li><code>IPermisos</code> — el Controller depende de la interfaz, no de los roles</li>
+          <li><strong>State</strong> — agregar un estado nuevo es una clase, no un <code>switch</code></li>
+          <li><strong>Facade</strong> — la app habla con una sola puerta, no con 20 servicios</li>
+        </ul>
+        <div style="font-size:.78em;opacity:.5;border-top:1px solid oklch(0.6 0 0/.15);padding-top:8px">GRASP Low Coupling · Protected Variations · Open/Closed</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════ 20 · CIERRE ════════ -->
+<section class="closing" data-label="Cierre" data-screen-label="20 Cierre">
+  <div class="grid-tex"></div>
+  <div class="frame" style="display:flex;align-items:center;justify-content:center">
+    <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:40px">
+      <div class="logo" style="font-size:38px"><span class="glyph"></span>Logi<b>Smart</b></div>
+      <h2 class="close-title" style="text-align:center">Gracias.</h2>
+      <p class="close-sub" style="text-align:center">36 patrones &nbsp;·&nbsp; 200 clases &nbsp;·&nbsp; 148 tests en verde &nbsp;·&nbsp; Hito 13 &nbsp;·&nbsp; UADE 2026</p>
+      <div class="cover-meta" style="justify-content:center;gap:40px">
+        <div class="m"><strong>Rosario Presedo</strong><span>LU 1146894</span></div>
+        <div class="m"><strong>Simón Ottati</strong><span>LU 1155931</span></div>
+        <div class="m"><strong>Comisión Belgrano</strong><span>UADE · 2026</span></div>
       </div>
     </div>
   </div>

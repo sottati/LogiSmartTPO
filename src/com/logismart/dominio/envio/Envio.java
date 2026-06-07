@@ -43,8 +43,6 @@ public class Envio implements Cloneable {
 
 	// ─── Campos Hito 10 (Chain / Command / Interpreter) ──────────────────────
 	private double costo;
-	private String metodoPago;
-	private String productoId;
 
 	// ─── Campos Hito 11 (Observer) ───────────────────────────────────────────
 	private final java.util.List<ObservadorEnvio> observadores = new java.util.ArrayList<>();
@@ -81,8 +79,6 @@ public class Envio implements Cloneable {
 		this.descripcion = builder.descripcion;
 		this.peso = builder.peso;
 		this.costo = builder.costo;
-		this.metodoPago = builder.metodoPago;
-		this.productoId = builder.productoId;
 		this.tipo = builder.tipo;
 		this.fragil = builder.fragil;
 		this.requiereSignatura = builder.requiereSignatura;
@@ -121,8 +117,6 @@ public class Envio implements Cloneable {
 		private String descripcion = "";
 		private double peso = 0.0;
 		private double costo = 0.0;
-		private String metodoPago = null;
-		private String productoId = null;
 		private String tipo = null;
 		private boolean fragil = false;
 		private boolean requiereSignatura = false;
@@ -148,8 +142,6 @@ public class Envio implements Cloneable {
 		public EnvioBuilder descripcion(String descripcion)   { this.descripcion = descripcion; return this; }
 		public EnvioBuilder peso(double peso)                 { this.peso = peso; return this; }
 		public EnvioBuilder costo(double costo)               { this.costo = costo; return this; }
-		public EnvioBuilder metodoPago(String metodoPago)     { this.metodoPago = metodoPago; return this; }
-		public EnvioBuilder productoId(String productoId)     { this.productoId = productoId; return this; }
 		public EnvioBuilder tipo(String tipo)                 { this.tipo = tipo; return this; }
 		public EnvioBuilder fragil(boolean fragil)            { this.fragil = fragil; return this; }
 		public EnvioBuilder requiereSignatura(boolean r)      { this.requiereSignatura = r; return this; }
@@ -238,9 +230,6 @@ public class Envio implements Cloneable {
 
 	public double  getCosto()                     { return costo; }
 	public void    setCosto(double costo)          { this.costo = costo; }
-	public String  getMetodoPago()                { return metodoPago; }
-	public void    setMetodoPago(String m)         { this.metodoPago = m; }
-	public String  getProductoId()                { return productoId; }
 
 	// ─── Hito 11: Memento - Originador ───────────────────────────────────────
 

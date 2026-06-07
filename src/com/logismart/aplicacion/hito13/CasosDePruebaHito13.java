@@ -71,7 +71,7 @@ public class CasosDePruebaHito13 {
 
         // 1. Insertar Envio via mapper (repositorio en memoria simula el mapper)
         Envio e1 = new Envio.EnvioBuilder("DM-ENV-001", "BA", "Cordoba")
-                .peso(2.0).estado("PENDIENTE").costo(500.0).metodoPago("EFECTIVO").tipo("ESTANDAR").build();
+                .peso(2.0).estado("PENDIENTE").costo(500.0).tipo("ESTANDAR").build();
         repoE.guardar(e1);
         verificar("DM-01: insertar Envio", repoE.obtener("DM-ENV-001") != null);
 
@@ -330,7 +330,7 @@ public class CasosDePruebaHito13 {
 
         // 40. LogisticaFacade.procesarEnvioCompleto persiste envio y pago
         Envio envio = new Envio.EnvioBuilder("ARQ-ENV-001", "Cordoba", "Rosario")
-                .peso(5.0).costo(2000.0).metodoPago("TARJETA").tipo("EXPRESS").build();
+                .peso(5.0).costo(2000.0).tipo("EXPRESS").build();
         Cobro pago = new Cobro("ARQ-COB-001", 2000.0, "PENDIENTE", LocalDateTime.now(), "TARJETA");
         facade.procesarEnvioCompleto(envio, pago);
         verificar("ARQ-40: facade persiste envio", svcE.obtenerEnvio("ARQ-ENV-001") != null);

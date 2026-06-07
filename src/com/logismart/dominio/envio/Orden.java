@@ -8,6 +8,7 @@ public class Orden {
 	private String estado;
 	private LocalDateTime fechaCreacion;
 	private int totalBultos;
+	private String productoId;
 	private Envio envio;
 
 	public Orden(String id, String canalOrigen, String estado, LocalDateTime fechaCreacion, int totalBultos) {
@@ -37,6 +38,9 @@ public class Orden {
 	public int getTotalBultos() {
 		return totalBultos;
 	}
+
+	public String getProductoId()              { return productoId; }
+	public void setProductoId(String productoId) { this.productoId = productoId; }
 
 	public Envio getEnvio() {
 		return envio;

@@ -2,6 +2,7 @@
 
 import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.comportamiento.chain.CadenaValidadores;
+import com.logismart.infraestructura.comportamiento.chain.ContextoValidacion;
 import com.logismart.infraestructura.comportamiento.chain.SistemaCapacidad;
 import com.logismart.infraestructura.comportamiento.chain.SistemaInventario;
 import com.logismart.infraestructura.comportamiento.command.ColaComandos;
@@ -58,11 +59,12 @@ public class SistemaLogisticaCompleto {
      * Procesa un envío pasándolo por los tres patrones integrados.
      * Devuelve el número de seguimiento, o null si fue rechazado.
      */
-    public String procesarEnvio(Envio envio) {
+    public String procesarEnvio(ContextoValidacion ctx) {
         System.out.println("\n=== Procesando Envío ===");
+        Envio envio = ctx.getEnvio();
 
         // 1. Chain: validar
-        if (!validadores.validarEnvio(envio)) {
+        if (!validadores.validarEnvio(ctx)) {
             System.out.println("Envío rechazado en validación");
             return null;
         }

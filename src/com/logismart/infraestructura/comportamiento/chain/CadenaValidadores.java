@@ -1,7 +1,5 @@
 ﻿package com.logismart.infraestructura.comportamiento.chain;
 
-import com.logismart.dominio.envio.Envio;
-
 public class CadenaValidadores {
     private final ValidadorEnvio primerValidador;
 
@@ -20,9 +18,9 @@ public class CadenaValidadores {
         this.primerValidador = v1;
     }
 
-    public boolean validarEnvio(Envio envio) {
+    public boolean validarEnvio(ContextoValidacion ctx) {
         System.out.println("\n=== Validando Envío ===");
-        return primerValidador.validar(envio);
+        return primerValidador.validar(ctx);
     }
 }
 

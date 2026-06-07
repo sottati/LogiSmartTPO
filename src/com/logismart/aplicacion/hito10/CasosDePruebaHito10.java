@@ -1,9 +1,13 @@
 ﻿package com.logismart.aplicacion.hito10;
 
+import com.logismart.dominio.empresa.Cobro;
 import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.envio.Orden;
 import com.logismart.infraestructura.comportamiento.chain.CadenaValidadores;
+import com.logismart.infraestructura.comportamiento.chain.ContextoValidacion;
 import com.logismart.infraestructura.comportamiento.chain.SistemaCapacidad;
 import com.logismart.infraestructura.comportamiento.chain.SistemaInventario;
+import java.time.LocalDateTime;
 import com.logismart.infraestructura.comportamiento.command.ColaComandos;
 import com.logismart.infraestructura.comportamiento.command.ComandoActualizarEstado;
 import com.logismart.infraestructura.comportamiento.command.ComandoAgregarServicio;
@@ -57,29 +61,43 @@ public final class CasosDePruebaHito10 {
         SistemaCapacidad  cap = new SistemaCapacidad(100.0);
         CadenaValidadores cadena = new CadenaValidadores(inv, cap);
 
-        // Caso 1: envío con todos los datos válidos pasa la cadena completa
-        Envio valido = new Envio.EnvioBuilder("H10-001", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).metodoPago("TARJETA").productoId("PROD-001").build();
-        verificar(cadena.validarEnvio(valido), "Caso 1: envío válido aprobado");
+        // Cobro reutilizable para casos donde el pago no es el punto de fallo
+        Cobro cobroValido = new Cobro("C-TEST", 150.0, "PENDIENTE", LocalDateTime.now(), "TARJETA");
+
+        // Caso 1: envío válido con Orden y Cobro correctos pasa la cadena completa
+        Envio e1 = new Envio.EnvioBuilder("H10-001", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
+        agregarOrden(e1, "O-001", "PROD-001");
+        verificar(cadena.validarEnvio(new ContextoValidacion(e1, cobroValido)), "Caso 1: envío válido aprobado");
 
         // Caso 2: origen vacío - falla en ValidadorDatos
-        Envio origenVacio = new Envio.EnvioBuilder("H10-002", "", "Córdoba").peso(5.0).costo(150.0).metodoPago("TARJETA").productoId("PROD-001").build();
-        verificar(!cadena.validarEnvio(origenVacio), "Caso 2: origen vacío rechazado");
+        Envio e2 = new Envio.EnvioBuilder("H10-002", "", "Córdoba").peso(5.0).costo(150.0).build();
+        verificar(!cadena.validarEnvio(new ContextoValidacion(e2, cobroValido)), "Caso 2: origen vacío rechazado");
 
         // Caso 3: peso cero - falla en ValidadorDatos
-        Envio pesoInvalido = new Envio.EnvioBuilder("H10-003", "Buenos Aires", "Córdoba").costo(150.0).metodoPago("TARJETA").productoId("PROD-001").build();
-        verificar(!cadena.validarEnvio(pesoInvalido), "Caso 3: peso inválido rechazado");
+        Envio e3 = new Envio.EnvioBuilder("H10-003", "Buenos Aires", "Córdoba").costo(150.0).build();
+        verificar(!cadena.validarEnvio(new ContextoValidacion(e3, cobroValido)), "Caso 3: peso inválido rechazado");
 
         // Caso 4: costo cero - falla en ValidadorPago
-        Envio costoInvalido = new Envio.EnvioBuilder("H10-004", "Buenos Aires", "Córdoba").peso(5.0).metodoPago("TARJETA").productoId("PROD-001").build();
-        verificar(!cadena.validarEnvio(costoInvalido), "Caso 4: costo inválido rechazado");
+        Envio e4 = new Envio.EnvioBuilder("H10-004", "Buenos Aires", "Córdoba").peso(5.0).build();
+        agregarOrden(e4, "O-004", "PROD-001");
+        Cobro cobroCostoInvalido = new Cobro("C-004", 0.0, "PENDIENTE", LocalDateTime.now(), "TARJETA");
+        verificar(!cadena.validarEnvio(new ContextoValidacion(e4, cobroCostoInvalido)), "Caso 4: costo inválido rechazado");
 
         // Caso 5: destino restringido - falla en ValidadorSeguridad
-        Envio restringido = new Envio.EnvioBuilder("H10-005", "Buenos Aires", "Zona Restringido").peso(5.0).costo(150.0).metodoPago("TARJETA").productoId("PROD-001").build();
-        verificar(!cadena.validarEnvio(restringido), "Caso 5: destino restringido rechazado");
+        Envio e5 = new Envio.EnvioBuilder("H10-005", "Buenos Aires", "Zona Restringido").peso(5.0).costo(150.0).build();
+        agregarOrden(e5, "O-005", "PROD-001");
+        verificar(!cadena.validarEnvio(new ContextoValidacion(e5, cobroValido)), "Caso 5: destino restringido rechazado");
 
         // Caso 6: producto sin stock - falla en ValidadorInventario
-        Envio sinStock = new Envio.EnvioBuilder("H10-006", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).metodoPago("TARJETA").productoId("PROD-SIN-STOCK").build();
-        verificar(!cadena.validarEnvio(sinStock), "Caso 6: sin stock rechazado");
+        Envio e6 = new Envio.EnvioBuilder("H10-006", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
+        agregarOrden(e6, "O-006", "PROD-SIN-STOCK");
+        verificar(!cadena.validarEnvio(new ContextoValidacion(e6, cobroValido)), "Caso 6: sin stock rechazado");
+    }
+
+    private static void agregarOrden(Envio envio, String ordenId, String productoId) {
+        Orden orden = new Orden(ordenId, "TEST", "PENDIENTE", LocalDateTime.now(), 1);
+        orden.setProductoId(productoId);
+        envio.agregarOrden(orden);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -91,7 +109,7 @@ public final class CasosDePruebaHito10 {
         ServicioEnvios servicio = new ServicioEnvios();
         ColaComandos   cola     = new ColaComandos();
 
-        Envio envio = new Envio.EnvioBuilder("H10-007", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).metodoPago("TARJETA").productoId("PROD-001").build();
+        Envio envio = new Envio.EnvioBuilder("H10-007", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
 
         // Caso 1: crear envío
         ComandoCrearEnvio cmdCrear = new ComandoCrearEnvio(servicio, envio);
@@ -121,7 +139,7 @@ public final class CasosDePruebaHito10 {
 
         // Caso 7: deshacer - vuelve a TARJETA
         cola.deshacer();
-        verificar("TARJETA".equals(servicio.obtenerMetodoPago(numero)), "Caso 7: deshacer restaura método TARJETA");
+        verificar("".equals(servicio.obtenerMetodoPago(numero)), "Caso 7: deshacer restaura método de pago original");
 
         // Caso 8: rehacer - vuelve a EFECTIVO
         cola.rehacer();
@@ -145,9 +163,9 @@ public final class CasosDePruebaHito10 {
     private static void probarInterpreter() {
         System.out.println("\n--- Interpreter ---");
 
-        Envio envio1 = new Envio.EnvioBuilder("H10-008", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).metodoPago("TARJETA").productoId("PROD-001").build();
-        Envio envio2 = new Envio.EnvioBuilder("H10-009", "Rosario", "Córdoba").peso(15.0).costo(200.0).metodoPago("EFECTIVO").productoId("PROD-002").build();
-        Envio envio3 = new Envio.EnvioBuilder("H10-010", "Buenos Aires", "Zona Restringido").peso(5.0).costo(150.0).metodoPago("TARJETA").productoId("PROD-001").build();
+        Envio envio1 = new Envio.EnvioBuilder("H10-008", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
+        Envio envio2 = new Envio.EnvioBuilder("H10-009", "Rosario", "Córdoba").peso(15.0).costo(200.0).build();
+        Envio envio3 = new Envio.EnvioBuilder("H10-010", "Buenos Aires", "Zona Restringido").peso(5.0).costo(150.0).build();
 
         // Caso 1: expresión simple - ORIGEN = "Buenos Aires"
         Expresion regla1 = new ExpresionOrigen("Buenos Aires");
@@ -195,8 +213,10 @@ public final class CasosDePruebaHito10 {
         SistemaLogisticaCompleto sistema = new SistemaLogisticaCompleto();
 
         // Caso 1: envío válido se procesa y genera número de seguimiento
-        Envio envioValido = new Envio.EnvioBuilder("H10-011", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).metodoPago("TARJETA").productoId("PROD-001").build();
-        String numero = sistema.procesarEnvio(envioValido);
+        Envio envioValido = new Envio.EnvioBuilder("H10-011", "Buenos Aires", "Córdoba").peso(5.0).costo(150.0).build();
+        agregarOrden(envioValido, "O-011", "PROD-001");
+        Cobro cobroInt = new Cobro("C-011", 150.0, "PENDIENTE", LocalDateTime.now(), "TARJETA");
+        String numero = sistema.procesarEnvio(new ContextoValidacion(envioValido, cobroInt));
         verificar(numero != null, "Caso 1: integración - envío válido genera número");
 
         // Caso 2: el estado del envío creado es CONFIRMADO
@@ -204,8 +224,8 @@ public final class CasosDePruebaHito10 {
                 "Caso 2: integración - estado inicial CONFIRMADO");
 
         // Caso 3: envío inválido (origen vacío) es rechazado por la cadena
-        Envio invalido = new Envio.EnvioBuilder("H10-012", "", "Córdoba").peso(5.0).costo(150.0).metodoPago("TARJETA").productoId("PROD-001").build();
-        String numeroInvalido = sistema.procesarEnvio(invalido);
+        Envio invalido = new Envio.EnvioBuilder("H10-012", "", "Córdoba").peso(5.0).costo(150.0).build();
+        String numeroInvalido = sistema.procesarEnvio(new ContextoValidacion(invalido, cobroInt));
         verificar(numeroInvalido == null, "Caso 3: integración - envío inválido rechazado");
     }
 

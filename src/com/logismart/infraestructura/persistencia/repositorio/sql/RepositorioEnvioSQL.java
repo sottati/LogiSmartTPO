@@ -57,7 +57,6 @@ public class RepositorioEnvioSQL implements RepositorioEnvio {
                     .peso(rs.getDouble("peso"))
                     .estado(rs.getString("estado"))
                     .costo(rs.getDouble("costo"))
-                    .metodoPago(rs.getString("metodo_pago"))
                     .tipo(rs.getString("tipo"))
                     .build());
             }
@@ -88,8 +87,7 @@ public class RepositorioEnvioSQL implements RepositorioEnvio {
                         .peso(rs.getDouble("peso"))
                         .estado(rs.getString("estado"))
                         .costo(rs.getDouble("costo"))
-                        .metodoPago(rs.getString("metodo_pago"))
-                        .tipo(rs.getString("tipo"))
+                            .tipo(rs.getString("tipo"))
                         .build());
                 }
             }

@@ -41,7 +41,7 @@ public class EnvioMapperSQL implements EnvioMapper {
             ps.setDouble(4, envio.getPeso());
             ps.setString(5, envio.getEstado());
             ps.setDouble(6, envio.getCosto());
-            ps.setString(7, envio.getMetodoPago());
+            ps.setNull(7, java.sql.Types.VARCHAR);
             ps.setString(8, envio.getTipo());
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -59,7 +59,7 @@ public class EnvioMapperSQL implements EnvioMapper {
             ps.setDouble(3, envio.getPeso());
             ps.setString(4, envio.getEstado());
             ps.setDouble(5, envio.getCosto());
-            ps.setString(6, envio.getMetodoPago());
+            ps.setNull(6, java.sql.Types.VARCHAR);
             ps.setString(7, envio.getTipo());
             ps.setString(8, envio.getId());
             ps.executeUpdate();
@@ -98,7 +98,6 @@ public class EnvioMapperSQL implements EnvioMapper {
                         .peso(rs.getDouble("peso"))
                         .estado(rs.getString("estado"))
                         .costo(rs.getDouble("costo"))
-                        .metodoPago(rs.getString("metodo_pago"))
                         .tipo(rs.getString("tipo"))
                         .build();
                 }

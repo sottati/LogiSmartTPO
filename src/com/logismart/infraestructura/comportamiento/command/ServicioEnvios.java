@@ -17,7 +17,7 @@ public class ServicioEnvios {
     public String crearEnvio(Envio envio) {
         String numero = "ENV-" + String.format("%03d", contador.getAndIncrement());
         estados.put(numero, "CONFIRMADO");
-        metodosPago.put(numero, envio.getMetodoPago() != null ? envio.getMetodoPago() : "");
+        metodosPago.put(numero, "");
         servicios.put(numero, new HashSet<>());
         System.out.println("[ServicioEnvios] Envío creado: " + numero
                 + " de " + envio.getOrigen() + " a " + envio.getDestino());

@@ -1,7 +1,5 @@
 ﻿package com.logismart.infraestructura.comportamiento.chain;
 
-import com.logismart.dominio.envio.Envio;
-
 public abstract class ValidadorEnvio {
     protected ValidadorEnvio siguiente;
 
@@ -9,7 +7,7 @@ public abstract class ValidadorEnvio {
         this.siguiente = siguiente;
     }
 
-    public abstract boolean validar(Envio envio);
+    public abstract boolean validar(ContextoValidacion ctx);
     public abstract String obtenerNombre();
 }
 

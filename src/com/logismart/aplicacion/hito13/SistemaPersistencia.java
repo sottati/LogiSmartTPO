@@ -55,7 +55,7 @@ public class SistemaPersistencia {
         // ── Facade: procesarEnvioCompleto ─────────────────────────────────────
         System.out.println("\n[2] LogisticaFacade.procesarEnvioCompleto");
         Envio envio = new Envio.EnvioBuilder("ENV-H13-001", "Buenos Aires", "Cordoba")
-                .peso(3.5).estado("PENDIENTE").costo(1500.0).metodoPago("TARJETA").tipo("ESTANDAR")
+                .peso(3.5).estado("PENDIENTE").costo(1500.0).tipo("ESTANDAR")
                 .build();
         Cobro pago = new Cobro("COB-H13-001", 1500.0, "PENDIENTE",
                 LocalDateTime.now(), "TARJETA");

@@ -647,4 +647,327 @@ El diseño distingue dos conceptos:
 
 ---
 
+---
+
+## 14. Auditoría de cohesión — preguntas de defensa
+
+### ¿Hay clases que hacen demasiadas cosas no relacionadas?
+
+**La única candidata real es `Envio`** — y tiene una explicación defendible.
+
+`Envio` acumula campos de múltiples hitos (los comentarios en el propio archivo dicen "Hito 10", "Hito 11", "Hito 12"). En total tiene ~20 campos y soporta 6 patrones: Builder, Prototype, Observer, State, Strategy, Memento. 
+
+Sin embargo, todas esas responsabilidades giran alrededor de **un solo concepto**: el ciclo de vida de un envío. Builder construye el envío, State gestiona sus transiciones, Observer notifica los cambios, Memento permite deshacer, Strategy calcula su costo. No hay nada "no relacionado" en sentido estricto.
+
+**Los campos `metodoPago` y `productoId` en `Envio` son un design smell real.**
+
+Semánticamente `productoId` pertenece a `Orden` (un envío tiene una lista de órdenes, y cada orden tiene un producto), y `metodoPago` pertenece a `Cobro`. El diseño correcto sería que los validadores del Chain naveguen al objeto que realmente tiene el dato:
+
+```java
+// ValidadorInventario — diseño correcto:
+for (Orden orden : envio.getOrdenes()) {
+    if (!inventario.verificarStock(orden.getProductoId())) { ... }
+}
+
+// ValidadorPago — diseño correcto: recibir el Cobro explícitamente
+// o trabajar con un ContextoValidacion que agrupe Envio + Cobro
+```
+
+**Lo que pasó en Hito 10:** para que el Chain tuviera una firma simple y uniforme (`validar(Envio envio)`), se desnormalizaron esos datos directamente en `Envio`. Es un shortcut — el validador puede leer todo desde un solo objeto sin navegar relaciones. Funciona, pero crea una abstracción con fugas: `Envio` termina cargando datos que no le corresponden por identidad de dominio.
+
+El razonamiento "el Chain los usa, por eso está bien que estén en `Envio`" es circular — el Chain los usa desde `Envio` precisamente porque alguien los puso ahí, pero no deberían estar ahí.
+
+**Cómo se corrigió:** se introdujo `ContextoValidacion(Envio envio, Cobro cobro)` como Value Object de transporte del Chain. `productoId` se movió a `Orden` (con getter/setter). `ValidadorInventario` ahora itera `envio.getOrdenes()`. `ValidadorPago` lee `ctx.getCobro().getMedioPago()`. Los campos fueron eliminados de `Envio` y su Builder.
+
+**Cómo responderlo en la defensa:**
+> "En Hito 10 pusimos `metodoPago` y `productoId` en `Envio` para simplificar la firma del Chain — un shortcut pragmático que generó una fuga de diseño. Lo identificamos y lo corregimos: `productoId` vive ahora en `Orden`, `metodoPago` en `Cobro`, y el Chain recibe un `ContextoValidacion` que agrupa los dos objetos. `Envio` volvió a tener solo su responsabilidad."
+
+**¿Este refactoring representa algún patrón conocido?**
+
+Sí, varios a la vez:
+
+- **Introduce Parameter Object (Fowler, "Refactoring"):** cuando varios parámetros siempre viajan juntos, se los agrupa en un objeto. Aquí `Envio` y `Cobro` siempre se necesitan juntos para validar — la firma `validar(Envio, Cobro)` habría sido el paso previo; `ContextoValidacion` es exactamente ese objeto.
+- **Value Object (DDD / Fowler PoEAA):** `ContextoValidacion` es inmutable (ambos campos `final`), sin identidad propia — su significado es el conjunto de sus atributos. Es el patrón más preciso para describirlo.
+- **Protected Variations (GRASP):** al encapsular el contexto de validación en un único punto, si mañana hay que agregar un `Cliente` o una `Politica` al contexto, solo se toca `ContextoValidacion` — ninguno de los cinco validadores cambia su firma. El punto de variación queda protegido.
+- **Pure Fabrication (GRASP):** `ContextoValidacion` no existe en el dominio del negocio (no hay un concepto de negocio llamado "contexto de validación") — es una clase inventada exclusivamente para mejorar el diseño técnico del Chain.
+
+**Cómo responderlo en la defensa:**
+> "El refactoring aplica *Introduce Parameter Object* de Fowler — `Envio` y `Cobro` siempre viajan juntos en la cadena, así que los agrupamos. El objeto resultante es un *Value Object* inmutable y también encarna *Protected Variations* de GRASP: si el contexto de validación crece, solo cambia `ContextoValidacion` y los validadores concretos quedan intactos."
+
+---
+
+### ¿Hay responsabilidades que no tienen sentido en esa clase?
+
+**`OperadorLogistico` instancia objetos de dominio directamente.**
+
+```java
+public Envio crearEnvio(String prioridad, LocalDateTime fechaProgramada) {
+    return new Envio(UUID.randomUUID().toString(), empresa, prioridad, fechaProgramada);
+}
+public Ruta planificarRuta(Vehiculo vehiculo, Transportista transportista) {
+    Ruta ruta = new Ruta(UUID.randomUUID().toString(), 0.0, 0, "PLANIFICADA");
+    ruta.asignarVehiculo(vehiculo);
+    ruta.asignarTransportista(transportista);
+    return ruta;
+}
+```
+
+**GRASP Creator** define con precisión cuándo una clase B puede (y debe) crear instancias de A. Son 4 condiciones — con que se cumpla una alcanza:
+
+1. B **contiene o agrega** objetos de tipo A
+2. B **registra/almacena** objetos de tipo A
+3. B **usa directamente** y de forma cercana a A
+4. B **tiene los datos de inicialización** necesarios para crear A
+
+Para `OperadorLogistico.crearEnvio()`:
+- Condición 3: el operador trabaja directamente con envíos — los crea, les asigna rutas, los gestiona
+- Condición 4: `OperadorLogistico` tiene `this.empresa` (campo de instancia, necesario para el constructor de `Envio`). Los demás parámetros (`prioridad`, `fechaProgramada`) llegan como argumentos del método — el operador es quien los conoce en el flujo de negocio
+
+Para `OperadorLogistico.planificarRuta()`:
+- Condición 4: recibe `Vehiculo` y `Transportista` como parámetros — tiene todo lo que necesita para inicializar `Ruta`
+- Condición 3: el operador es quien planifica rutas en el dominio del negocio
+
+**¿Por qué no un Factory?** En el sistema también existe `FabricaDeEnvios` y sus subclases para los casos donde la lógica de creación es suficientemente compleja (herencia, variantes, múltiples configuraciones). GRASP Creator y Factory coexisten: cuando la creación es directa y el creador ya tiene los datos, Creator; cuando la lógica de construcción es compleja o variable, Factory.
+
+**¿Por qué no un servicio de aplicación?** Los servicios de aplicación coordinan múltiples clases de dominio. `crearEnvio()` es una operación atómica dentro del dominio — no necesita un orquestador. Un servicio de aplicación lo invocaría si luego necesitara guardar, notificar o coordinar con otros dominios.
+
+**Cómo responderlo en la defensa:**
+> "GRASP Creator dice que la clase que tiene los datos de inicialización es la responsable de crear el objeto. `OperadorLogistico` tiene `empresa` como campo propio y es quien recibe `prioridad` y `fechaProgramada` en el flujo de negocio. Eso lo convierte en el Creator natural. Para casos de construcción más compleja usamos `FabricaDeEnvios` — ambas técnicas coexisten según la complejidad de la creación."
+
+---
+
+### ¿Hay clases que mezclan lógica de negocio con persistencia o notificaciones?
+
+**No — esta es una fortaleza del diseño.**
+
+**Persistencia:** el paquete `dominio` nunca importa SQL, JPA, ni ninguna clase de infraestructura de base de datos. Toda la persistencia está en `infraestructura/persistencia/repositorios/`. Los 148 tests del dominio corren sin ninguna base de datos — eso es la prueba empírica de que el dominio está limpio.
+
+**Notificaciones:** `Envio` tiene el Observer integrado, pero `notificarObservadores()` es `private`. `Envio` no sabe *qué* notifica ni *a quién* — solo invoca el contrato `ObservadorEnvio.actualizar(this)`. Las notificaciones reales (email, push, log) están en las implementaciones concretas de `ObservadorEnvio` en infraestructura.
+
+**Un matiz menor a conocer: `new EstadoConfirmado()` en `Envio`.**
+
+```java
+// Envio.java — com.logismart.dominio.envio
+import com.logismart.infraestructura.comportamiento.state.EstadoConfirmado;  // ← esta línea
+import com.logismart.infraestructura.comportamiento.state.EstadoEnvio;       // ← y esta
+
+private EstadoEnvio estadoGoF = new EstadoConfirmado();
+```
+
+Para entender por qué esto es un problema, hace falta entender la regla de dependencia de Clean Architecture:
+
+```
+Dominio (círculo interno) ← puede ser usado por → Infraestructura (círculo externo)
+Dominio (círculo interno) → NO puede depender de → Infraestructura (círculo externo)
+```
+
+Las flechas van hacia adentro: la infraestructura conoce al dominio, pero no al revés. Es como una cebolla — las capas externas conocen a las internas, nunca al revés.
+
+`Envio` vive en `com.logismart.dominio.envio` (círculo interno). `EstadoConfirmado` y la interfaz `EstadoEnvio` viven en `com.logismart.infraestructura.comportamiento.state` (círculo externo). Al importarlos, `Envio` viola la regla: el círculo interno está dependiendo del externo.
+
+**¿Por qué pasó?** El patrón State fue implementado en Hito 12 con la interfaz y sus implementaciones en el paquete `infraestructura`. Cuando se agregó State a `Envio`, se importó directamente en lugar de mover la interfaz al dominio.
+
+**¿Cuál sería el fix correcto?** Mover `EstadoEnvio` (la interfaz) al paquete `dominio.envio` — ahí sí pertenece, porque define comportamiento de dominio. Las implementaciones concretas (`EstadoConfirmado`, `EstadoEnTransito`, etc.) pueden quedarse en infraestructura. Solo la interfaz tiene que estar en el dominio.
+
+**¿Por qué es "menor"?** Porque `EstadoConfirmado` no trae ninguna preocupación de infraestructura real — no hay SQL, no hay HTTP, no hay email. Es puro Java con lógica de negocio. El impacto práctico es cero: los tests corren igual, el comportamiento es correcto. Es un problema de organización de paquetes, no de diseño de comportamiento.
+
+**Cómo responderlo en la defensa:**
+> "La interfaz `EstadoEnvio` debería vivir en el paquete `dominio.envio` porque define comportamiento del dominio, no de la infraestructura. Las implementaciones concretas sí corresponden a infraestructura. En Hito 12 colocamos todo el State en infraestructura por practicidad — es una deuda técnica de packaging que no afecta el comportamiento ni la testabilidad."
+
+---
+
+---
+
+## 15. GRASP — cómo quedó aplicado en LogiSmart
+
+GRASP (General Responsibility Assignment Software Patterns) tiene 9 patrones. Responden una pregunta fundamental: **¿a qué clase le asignamos esta responsabilidad?**
+
+### 1. Information Expert
+Principio: la clase que tiene los datos necesarios es quien debe realizar la tarea.
+
+- `Ruta.calcularDistanciaTotal()` — Ruta tiene las paradas, ella recorre la lista y suma usando `PosicionGPS.haversineKm()`
+- `Ruta.calcularCostoEstimado()` — Ruta conoce la distancia; le pregunta a `Vehiculo.getCostoBaseKm()` porque el vehículo es el experto en su propio costo operativo
+- `Rol.puedeCrearEnvio()` / `puedeAsignarRuta()` / etc. — Rol tiene la tabla de permisos 5×5, él evalúa
+- `Envio.crearMemento()` — Envio tiene su propio estado, él lo encapsula en el snapshot
+
+### 2. Creator
+Principio: B debe crear A si B tiene los datos de inicialización, usa A directamente, o agrega/contiene A.
+
+- `OperadorLogistico.crearEnvio()` — tiene `empresa` como campo propio; recibe `prioridad` y `fechaProgramada`
+- `OperadorLogistico.planificarRuta()` — recibe `Vehiculo` y `Transportista`, tiene todo lo necesario
+- `FabricaDeEnvios` y subclases — para casos donde la creación tiene variantes (Factory Method sobre Creator simple)
+- `FabricaRegionalAbstracta` — familias de objetos coherentes por región (Abstract Factory)
+
+### 3. Controller
+Principio: primer objeto detrás de la UI que recibe y coordina una operación del sistema; no tiene lógica de dominio.
+
+- `ServicioLogisticaCompleto` — coordina repositorios y servicios para operaciones de alto nivel
+- `LogisticaFacade` — punto de entrada único para la capa de aplicación (Facade + Controller)
+
+### 4. Low Coupling
+Principio: minimizar dependencias entre clases para que cambiar una no obligue a cambiar otras.
+
+- `IPermisos` interface — el Controller valida permisos sin saber si el usuario es `AdminEmpresa`, `OperadorLogistico` o `Transportista`
+- `ObservadorEnvio` interface — `Envio` notifica sin saber si el suscriptor es un logger, un emailer o un push notifier
+- `RepositorioEnvio` interface — la aplicación persiste sin saber si hay SQL, en memoria o un mock
+- `EstrategiaCalculoCosto` interface — `Envio` calcula el costo sin saber qué algoritmo está activo (por peso, distancia o fija)
+- `EstadoEnvio` interface — `Envio` transiciona sin conocer las clases concretas de estado
+
+### 5. High Cohesion
+Principio: cada clase tiene responsabilidades relacionadas y bien definidas.
+
+- `Cobro` — solo gestiona el ciclo de una transacción financiera (autorizar, registrar pago, marcar fallido)
+- `CalculadorDeTiempo` — solo estima tiempos de entrega (ver Pure Fabrication)
+- `Rol` — solo evalúa la matriz de permisos 5×5
+- `ETA` — solo calcula tiempos de llegada estimados
+- `MementoEnvio` — solo almacena un snapshot inmutable del estado de un envío
+
+### 6. Polymorphism
+Principio: usar polimorfismo para manejar variaciones de comportamiento en lugar de `if/switch` sobre tipos.
+
+- Jerarquía `Usuario` → `AdminEmpresa`, `AdminPlataforma`, `OperadorLogistico`, `Transportista`, `ClienteFinal` — cada uno implementa `IPermisos` con su propia lógica de permisos
+- Jerarquía `Vehiculo` → `Auto`, `Camion`, `Moto` — cada uno con su `getCostoBaseKm()`, capacidad, disponibilidad
+- `EstadoEnvio` y sus 6 implementaciones — `EstadoConfirmado.validar()` hace algo diferente que `EstadoEnTransito.validar()`; sin `if (estado.equals("CONFIRMADO"))`
+
+### 7. Pure Fabrication
+Principio: crear una clase que no existe en el dominio real, para asignar responsabilidades que no pertenecen a ninguna entidad de negocio.
+
+- `CalculadorDeTiempo` — no existe una "calculadora de tiempos" en la logística real; es una abstracción computacional pura
+- `ServicioLogisticaCompleto` — coordinador que no tiene equivalente en el mundo real
+- `RepositorioEnvio` — abstracción de acceso a datos; no es una entidad de negocio
+
+### 8. Indirection
+Principio: introducir un objeto intermediario para que dos clases no dependan directamente una de la otra.
+
+- `IPermisos` entre Controller y los roles concretos — el Controller no necesita saber qué tipo de usuario es
+- `ObservadorEnvio` entre `Envio` y sus suscriptores — `Envio` no necesita saber qué notifica ni a quién
+- `RepositorioEnvio` entre la aplicación y la base de datos — la aplicación no necesita saber cómo se almacena
+
+### 9. Protected Variations
+Principio: identificar dónde el diseño va a cambiar y encapsular esa variación detrás de una interfaz estable.
+
+- `EstrategiaCalculoCosto` — el algoritmo de pricing puede cambiar sin tocar `Envio`; agregar "tarifa nocturna" es una clase nueva
+- `EstadoEnvio` — agregar un nuevo estado del ciclo de vida es una clase nueva; `Envio` no cambia
+- `FabricaRegionalAbstracta` — soporte para Argentina, Brasil, etc. sin modificar el código existente
+- Adapters (`AdaptadorDHL`, `AdaptadorFedEx`) — integrar un nuevo carrier es implementar la interfaz; el dominio no se toca
+- `RepositorioEnvio` interface — cambiar de SQL a NoSQL es cambiar la implementación; la capa de aplicación no se entera
+
+---
+
+## 16. RUP — metodología aplicada a lo largo de los 13 hitos
+
+RUP (Rational Unified Process) tiene 4 fases que no son períodos de tiempo estrictos sino estadios de madurez del proyecto. La clave de RUP: **cada iteración agrega valor concreto** (un CU funcional o una mejora arquitectural) sin romper lo construido antes.
+
+### Fase 1 — Inception (Concepción) · Hitos 1-2
+
+**Objetivo:** entender el problema, establecer viabilidad, identificar actores y CUs críticos.
+
+**Hito 1:**
+- Caso de negocio: PyME gestiona logística a mano (planillas, WhatsApp) → LogiSmart como SaaS multitenant
+- Modelo de negocio: fee mensual por tenant → viabilidad económica demostrada
+- Stakeholders: inversora (Consultora Logística), equipo IT, PyMEs como tenants, usuarios finales
+- Primer modelo de dominio con entidades clave identificadas
+
+**Hito 2:**
+- 28 clases de dominio: `Envio`, `Ruta`, `Vehiculo`, `Usuario`, `Empresa`, etc.
+- 3 CUs núcleo: CU-01 (importar pedidos), CU-03 (planificar rutas óptimas), CU-07 (seguimiento en vivo)
+- Jerarquía de usuarios con roles y permisos
+
+Al terminar Inception sabíamos **qué** construir y **por qué**.
+
+---
+
+### Fase 2 — Elaboration (Elaboración) · Hitos 3-6
+
+**Objetivo:** estabilizar la arquitectura de referencia, mitigar riesgos técnicos mayores.
+
+**Hito 3:**
+- Arquitectura en 5 capas: Presentación → Aplicación → Dominio → Persistencia → Infraestructura
+- Regla fundamental: el dominio no conoce la infraestructura (Clean Architecture)
+- Esta decisión arquitectural fue el "esqueleto" que no cambió en los 10 hitos siguientes
+
+**Hito 4-5 — Patrones creacionales:**
+- `Singleton`: conexión a base de datos, una sola instancia por tenant
+- `Factory Method`: `FabricaDeEnvios` con subclases para tipos de envío
+- `Abstract Factory`: fábricas por región (AR/BR) que crean familias de objetos coherentes
+- `Prototype`: clonación de `Envio` para pedidos similares sin reconstruir desde cero
+
+**Hito 6 — Patrones estructurales iniciales:**
+- `Adapter`: integración con TiendaNube/MercadoShops → **CU-01 habilitado completamente**
+- `Facade`: punto de entrada único (`LogisticaFacade`)
+- `Composite`: `Ruta` como colección de `PuntoEntrega` con comportamiento uniforme
+
+Al terminar Elaboration: arquitectura estable, CU-01 funcional, riesgos mitigados.
+
+---
+
+### Fase 3 — Construction (Construcción) · Hitos 7-12
+
+**Objetivo:** construir el sistema completo de forma iterativa; cada iteración habilita más funcionalidad.
+
+**Hito 7-8:**
+- `Builder`: construcción de `Envio` con muchos atributos opcionales (peso, fragil, requiereSignatura, etc.)
+- `Bridge`: separar abstracción de vehículo de su implementación (tipos de servicio independientes de tipos de vehículo)
+- `Proxy`: acceso controlado a recursos costosos
+- `Decorator`: agregar comportamiento (seguro, refrigeración) sin cambiar la clase base
+
+**Hito 9:**
+- `Flyweight`: compartir objetos `PosicionGPS` inmutables para eficiencia en memoria
+- `Facade` completo: `ServicioLogisticaFacade` con inventario, pagos, notificaciones integrados
+
+**Hito 10 — Chain of Responsibility + Command + Interpreter:**
+- `Chain of Responsibility`: validación de envíos en cadena secuencial (ValidadorDatos → ValidadorPago → ValidadorSeguridad → ValidadorInventario)
+- `Command`: operaciones encapsuladas como objetos (crear, cancelar, reprogramar)
+- `Interpreter`: expresiones de búsqueda y filtrado de envíos
+
+**Hito 11 — Observer + Mediator + Iterator + Memento:**
+- `Observer`: `Envio` notifica cambios de estado a suscriptores → **CU-07 habilitado completamente** (seguimiento en vivo)
+- `Memento`: snapshots inmutables del estado de `Envio` para historial y undo
+
+**Hito 12 — State + Strategy + Template Method + Visitor:**
+- `State`: ciclo de vida completo de `Envio` (Confirmado → EnTransito → EnReparto → Entregado) sin `if/switch`
+- `Strategy`: algoritmos de costo intercambiables (por peso, por distancia, fija) → **CU-03 completado**
+- `Template Method`: flujo genérico con pasos especializables por tipo de servicio
+- `Visitor`: operaciones sobre la jerarquía de clases sin modificarlas
+
+Al terminar Construction: 35+ patrones, 148 tests, los 3 CUs núcleo completamente funcionales.
+
+---
+
+### Fase 4 — Transition (Transición) · Hito 13
+
+**Objetivo:** preparar para producción, integrar persistencia real, pruebas de integración completas.
+
+**Hito 13 — PoEAA (Patterns of Enterprise Application Architecture):**
+- `Repository`: interfaz de dominio para acceso a datos — el dominio pide "dame el envío con ID X" sin saber cómo se busca
+- `Data Mapper`: transforma entre objetos de dominio (`Envio`) y tablas relacionales (`envios`) sin que el dominio lo sepa
+- `Unit of Work`: agrupa operaciones (guardar envío + guardar cobro) en una transacción atómica
+- `Lazy Load`: carga diferida — si no se necesitan las paradas de la ruta, no se cargan hasta que se pidan
+
+**El resultado:** 148 tests del dominio que corren sin base de datos real. Eso es la evidencia concreta de que la separación dominio/infraestructura funcionó durante 13 hitos de desarrollo iterativo.
+
+---
+
+### Lo que el código mismo muestra sobre RUP
+
+Los comentarios en `Envio.java` dicen literalmente "Hito 10", "Hito 11", "Hito 12". No es documentación — es la arqueología del proceso iterativo:
+
+```java
+// ─── Campos Hito 10 (Chain / Command / Interpreter) ──────────────────────
+private double costo;
+private String metodoPago;
+private String productoId;
+
+// ─── Campos Hito 11 (Observer) ───────────────────────────────────────────
+private final List<ObservadorEnvio> observadores = new ArrayList<>();
+
+// ─── Campos Hito 12 (State / Strategy) ───────────────────────────────────
+private EstadoEnvio estadoGoF = new EstadoConfirmado();
+private EstrategiaCalculoCosto estrategia;
+```
+
+Cada iteración agregó campos, implementaciones y comportamiento **sin romper lo anterior**. En Hito 10 `Envio` no sabía nada de estados ni estrategias — en Hito 12 ya tenía los dos. Eso es exactamente lo que RUP llama "arquitectura evolutiva": el sistema crece en capas, y cada capa habilita algo nuevo.
+
+---
+
 *Última actualización: junio 2026*

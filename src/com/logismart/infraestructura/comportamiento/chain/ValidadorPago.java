@@ -1,24 +1,23 @@
 ﻿package com.logismart.infraestructura.comportamiento.chain;
 
-import com.logismart.dominio.envio.Envio;
-
 public class ValidadorPago extends ValidadorEnvio {
 
     @Override
-    public boolean validar(Envio envio) {
+    public boolean validar(ContextoValidacion ctx) {
         System.out.println("[" + obtenerNombre() + "] Verificando pago...");
+        var cobro = ctx.getCobro();
 
-        if (envio.getCosto() <= 0) {
+        if (ctx.getEnvio().getCosto() <= 0) {
             System.err.println("  ✗ Costo inválido");
             return false;
         }
-        if (envio.getMetodoPago() == null || envio.getMetodoPago().isEmpty()) {
+        if (cobro == null || cobro.getMedioPago() == null || cobro.getMedioPago().isEmpty()) {
             System.err.println("  ✗ Método de pago no especificado");
             return false;
         }
 
         System.out.println("  ✓ Pago válido");
-        return siguiente == null || siguiente.validar(envio);
+        return siguiente == null || siguiente.validar(ctx);
     }
 
     @Override
