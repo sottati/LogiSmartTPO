@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.composite.centro;
+﻿package com.logismart.infraestructura.composite.centro;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,3 +39,4 @@ public class PuntoEntrega extends CentroDistribucion {
         System.out.println(" ".repeat(profundidad) + nombre + " (" + obtenerOcupacion() + "/" + capacidad + ")");
     }
 }
+

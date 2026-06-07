@@ -1,7 +1,7 @@
-package com.logismart.infraestructura.fabrica;
+﻿package com.logismart.infraestructura.fabrica;
 
-import com.logismart.dominio.Empresa;
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.empresa.Empresa;
+import com.logismart.dominio.envio.Envio;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -89,3 +89,4 @@ final class EnvioEconomico extends EnvioCreacionalBase {
         super(id, empresa, fechaProgramada, TipoEnvio.ECONOMICO);
     }
 }
+

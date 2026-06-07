@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.reporte;
+﻿package com.logismart.infraestructura.reporte;
 
-import com.logismart.dominio.Reporte;
+import com.logismart.dominio.empresa.Reporte;
 
 /**
  * GRASP Protected Variations: Exporta reportes en formato JSON.
@@ -29,3 +29,4 @@ public class GeneradorDeReportesJSON implements GeneradorDeReportes {
         return "json";
     }
 }
+

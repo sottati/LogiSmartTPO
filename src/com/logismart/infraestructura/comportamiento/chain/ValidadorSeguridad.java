@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.chain;
+﻿package com.logismart.infraestructura.comportamiento.chain;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class ValidadorSeguridad extends ValidadorEnvio {
 
@@ -20,3 +20,4 @@ public class ValidadorSeguridad extends ValidadorEnvio {
     @Override
     public String obtenerNombre() { return "ValidadorSeguridad"; }
 }
+

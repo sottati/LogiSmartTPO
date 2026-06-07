@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.chain;
+﻿package com.logismart.infraestructura.comportamiento.chain;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class ValidadorInventario extends ValidadorEnvio {
     private final SistemaInventario inventario;
@@ -25,3 +25,4 @@ public class ValidadorInventario extends ValidadorEnvio {
     @Override
     public String obtenerNombre() { return "ValidadorInventario"; }
 }
+

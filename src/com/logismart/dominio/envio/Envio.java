@@ -1,5 +1,6 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.envio;
 
+import com.logismart.dominio.empresa.Empresa;
 import com.logismart.infraestructura.comportamiento.state.EstadoConfirmado;
 import com.logismart.infraestructura.comportamiento.state.EstadoEnvio;
 import com.logismart.infraestructura.comportamiento.strategy.EstrategiaCalculoCosto;
@@ -338,3 +339,4 @@ public class Envio implements Cloneable {
 			 + "', peso=" + peso + ", fragil=" + fragil + "}";
 	}
 }
+

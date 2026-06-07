@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.template;
+﻿package com.logismart.infraestructura.comportamiento.template;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public abstract class ProcesoEnvio {
     public final void procesarEnvio(Envio envio) {
@@ -15,3 +15,4 @@ public abstract class ProcesoEnvio {
     protected abstract void procesarPago(Envio envio);
     protected abstract void notificar(Envio envio);
 }
+

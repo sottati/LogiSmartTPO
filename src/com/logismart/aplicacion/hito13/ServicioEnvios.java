@@ -1,6 +1,6 @@
-package com.logismart.aplicacion.hito13;
+﻿package com.logismart.aplicacion.hito13;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.persistencia.repositorio.memoria.RepositorioEnvioMemoria;
 
 import java.util.List;
@@ -36,3 +36,4 @@ public class ServicioEnvios {
         return repositorio.obtenerTodos();
     }
 }
+

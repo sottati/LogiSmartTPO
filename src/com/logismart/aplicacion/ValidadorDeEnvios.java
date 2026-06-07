@@ -1,8 +1,8 @@
-package com.logismart.aplicacion;
+﻿package com.logismart.aplicacion;
 
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.Ruta;
-import com.logismart.dominio.Vehiculo;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.ruta.Ruta;
+import com.logismart.dominio.vehiculo.Vehiculo;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -76,3 +76,4 @@ public class ValidadorDeEnvios {
         return new ResultadoValidacion(errores.isEmpty(), errores);
     }
 }
+

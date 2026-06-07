@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.interpreter;
+﻿package com.logismart.infraestructura.comportamiento.interpreter;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class ExpresionRestringido implements Expresion {
     @Override
@@ -8,3 +8,4 @@ public class ExpresionRestringido implements Expresion {
         return envio.getDestino() != null && envio.getDestino().contains("Restringido");
     }
 }
+

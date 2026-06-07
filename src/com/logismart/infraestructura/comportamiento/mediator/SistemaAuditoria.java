@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.mediator;
+﻿package com.logismart.infraestructura.comportamiento.mediator;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,3 +37,4 @@ public class SistemaAuditoria {
         return (int) logs.stream().filter(l -> l.contains(evento)).count();
     }
 }
+

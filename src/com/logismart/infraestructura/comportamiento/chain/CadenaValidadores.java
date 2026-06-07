@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.chain;
+﻿package com.logismart.infraestructura.comportamiento.chain;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class CadenaValidadores {
     private final ValidadorEnvio primerValidador;
@@ -25,3 +25,4 @@ public class CadenaValidadores {
         return primerValidador.validar(envio);
     }
 }
+

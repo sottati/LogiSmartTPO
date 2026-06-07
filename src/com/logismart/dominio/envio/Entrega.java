@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.envio;
 
 import java.time.LocalDateTime;
 
@@ -65,3 +65,4 @@ public class Entrega {
 		this.pruebaAdjunta = pruebaAdjunta;
 	}
 }
+

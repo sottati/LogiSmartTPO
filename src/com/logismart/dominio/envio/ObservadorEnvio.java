@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.envio;
 
 /**
  * Puerto de salida del dominio - contrato Observer.
@@ -20,3 +20,4 @@ public interface ObservadorEnvio {
      */
     void actualizar(Envio envio);
 }
+

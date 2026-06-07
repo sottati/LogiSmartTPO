@@ -1,6 +1,6 @@
-package com.logismart.aplicacion;
+﻿package com.logismart.aplicacion;
 
-import com.logismart.dominio.SeguimientoEnvio;
+import com.logismart.dominio.envio.SeguimientoEnvio;
 
 public class TrackingService {
 	public void publicarTracking(SeguimientoEnvio seguimiento) {
@@ -9,3 +9,4 @@ public class TrackingService {
 		}
 	}
 }
+

@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.repositorio.sql;
+﻿package com.logismart.infraestructura.persistencia.repositorio.sql;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.persistencia.mapper.sql.EnvioMapperSQL;
 import com.logismart.infraestructura.persistencia.repositorio.RepositorioEnvio;
 
@@ -99,3 +99,4 @@ public class RepositorioEnvioSQL implements RepositorioEnvio {
         return lista;
     }
 }
+

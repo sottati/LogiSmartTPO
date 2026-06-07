@@ -1,13 +1,13 @@
-package com.logismart.aplicacion;
+﻿package com.logismart.aplicacion;
 
-import com.logismart.dominio.ClienteFinal;
-import com.logismart.dominio.Empresa;
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.Flota;
-import com.logismart.dominio.IPermisos;
-import com.logismart.dominio.Orden;
-import com.logismart.dominio.Ruta;
-import com.logismart.dominio.Vehiculo;
+import com.logismart.dominio.usuario.ClienteFinal;
+import com.logismart.dominio.empresa.Empresa;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.vehiculo.Flota;
+import com.logismart.dominio.usuario.IPermisos;
+import com.logismart.dominio.envio.Orden;
+import com.logismart.dominio.ruta.Ruta;
+import com.logismart.dominio.vehiculo.Vehiculo;
 import com.logismart.infraestructura.fabrica.FabricaDeEnvios;
 import com.logismart.infraestructura.fabrica.FabricaDeNotificadores;
 import com.logismart.infraestructura.fabrica.FabricaDeVehiculos;
@@ -276,3 +276,4 @@ public class LogiSmartController {
         return new ServicioDeNotificaciones(FabricaDeNotificadores.crearNotificador(tipoNotificador));
     }
 }
+

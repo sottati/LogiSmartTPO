@@ -1,7 +1,7 @@
-package com.logismart.infraestructura.comportamiento.memento;
+﻿package com.logismart.infraestructura.comportamiento.memento;
 
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.MementoEnvio;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.envio.MementoEnvio;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,3 +91,4 @@ public class HistorialEnvios {
     public int obtenerTamaño()      { return historial.size(); }
     public int obtenerIndiceActual() { return indiceActual;     }
 }
+

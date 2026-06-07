@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.proxy.envio;
+﻿package com.logismart.infraestructura.proxy.envio;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import java.util.List;
 
 public interface RepositorioEnvios {
@@ -9,3 +9,4 @@ public interface RepositorioEnvios {
     void guardarEnvio(Envio envio);
     void eliminarEnvio(String id);
 }
+

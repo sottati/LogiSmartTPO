@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.usuario;
 
 public class Usuario {
 	private String id;
@@ -79,3 +79,4 @@ public class Usuario {
 		System.out.println("[" + rol + "] Hola, soy " + username + ".");
 	}
 }
+

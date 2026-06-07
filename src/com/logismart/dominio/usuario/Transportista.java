@@ -1,4 +1,6 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.usuario;
+
+import com.logismart.dominio.vehiculo.Vehiculo;
 
 public class Transportista extends Usuario implements IPermisos {
 	private static final Rol ROL = Rol.TRANSPORTISTA;
@@ -59,3 +61,4 @@ public class Transportista extends Usuario implements IPermisos {
 	@Override public boolean puedeGestionarFlota()      { return ROL.puedeGestionarFlota(); }
 	@Override public boolean puedeAdministrarEmpresas() { return ROL.puedeAdministrarEmpresas(); }
 }
+

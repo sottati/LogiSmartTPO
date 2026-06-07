@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.reporte;
+﻿package com.logismart.infraestructura.reporte;
 
-import com.logismart.dominio.Reporte;
+import com.logismart.dominio.empresa.Reporte;
 
 /**
  * GRASP Protected Variations: Abstrae el formato de exportacion de reportes.
@@ -22,3 +22,4 @@ public interface GeneradorDeReportes {
      */
     String getFormato();
 }
+

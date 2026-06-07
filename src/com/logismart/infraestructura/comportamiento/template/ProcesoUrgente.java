@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.template;
+﻿package com.logismart.infraestructura.comportamiento.template;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class ProcesoUrgente extends ProcesoEnvio {
     @Override
@@ -24,3 +24,4 @@ public class ProcesoUrgente extends ProcesoEnvio {
         System.out.println("Notificacion urgente enviada para: " + envio.getId());
     }
 }
+

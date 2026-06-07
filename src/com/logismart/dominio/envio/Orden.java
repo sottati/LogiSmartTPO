@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.envio;
 
 import java.time.LocalDateTime;
 
@@ -54,3 +54,4 @@ public class Orden {
 		estado = nuevoEstado;
 	}
 }
+

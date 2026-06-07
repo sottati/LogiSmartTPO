@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.usuario;
 
 public class ClienteFinal extends Usuario implements IPermisos {
 	private static final Rol ROL = Rol.CLIENTE;
@@ -53,3 +53,4 @@ public class ClienteFinal extends Usuario implements IPermisos {
 	@Override public boolean puedeGestionarFlota()      { return ROL.puedeGestionarFlota(); }
 	@Override public boolean puedeAdministrarEmpresas() { return ROL.puedeAdministrarEmpresas(); }
 }
+

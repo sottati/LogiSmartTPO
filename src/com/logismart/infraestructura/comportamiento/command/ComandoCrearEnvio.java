@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.command;
+﻿package com.logismart.infraestructura.comportamiento.command;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class ComandoCrearEnvio implements Comando {
     private final ServicioEnvios servicio;
@@ -33,3 +33,4 @@ public class ComandoCrearEnvio implements Comando {
 
     public String getNumeroSeguimiento() { return numeroSeguimiento; }
 }
+

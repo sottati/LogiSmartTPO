@@ -1,6 +1,6 @@
-package com.logismart.aplicacion;
+﻿package com.logismart.aplicacion;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,3 +58,4 @@ public class RepositorioDeEnvios {
         return store.size();
     }
 }
+

@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.iterator;
+﻿package com.logismart.infraestructura.comportamiento.iterator;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 /**
  * Colección basada en lista enlazada simple.
@@ -83,3 +83,4 @@ public class ColeccionLista implements ColeccionEnvios {
         public void reiniciar() { actual = cabeza; }
     }
 }
+

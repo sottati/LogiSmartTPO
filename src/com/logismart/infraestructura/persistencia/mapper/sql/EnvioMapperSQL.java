@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.mapper.sql;
+﻿package com.logismart.infraestructura.persistencia.mapper.sql;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.persistencia.mapper.EnvioMapper;
 
 import java.sql.Connection;
@@ -109,3 +109,4 @@ public class EnvioMapperSQL implements EnvioMapper {
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.ruta;
 
 import java.time.LocalDateTime;
 
@@ -38,3 +38,4 @@ public class PosicionGPS {
 		return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 	}
 }
+

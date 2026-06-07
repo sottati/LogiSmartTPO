@@ -1,7 +1,7 @@
-package com.logismart.aplicacion.hito13;
+﻿package com.logismart.aplicacion.hito13;
 
-import com.logismart.dominio.Cobro;
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.empresa.Cobro;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.persistencia.unitofwork.UnitOfWork;
 
 /**
@@ -58,3 +58,4 @@ public class LogisticaFacade {
     public ServicioPagos    getServicioPagos()     { return servicioPagos; }
     public UnitOfWork       getUnitOfWork()        { return unitOfWork; }
 }
+

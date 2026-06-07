@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.repositorio;
+﻿package com.logismart.infraestructura.persistencia.repositorio;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 import java.util.List;
 
@@ -15,3 +15,4 @@ public interface RepositorioEnvio extends Repositorio<Envio> {
     Envio obtener(String id);
     List<Envio> buscarPorEstado(String estado);
 }
+

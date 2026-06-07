@@ -1,6 +1,6 @@
-package com.logismart.aplicacion.hito9;
+﻿package com.logismart.aplicacion.hito9;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.decorator.envio.DecoradorNotificacionesSMS;
 import com.logismart.infraestructura.decorator.envio.DecoradorPrioritario;
 import com.logismart.infraestructura.decorator.envio.DecoradorRastreoGPS;
@@ -65,3 +65,4 @@ public class ServicioLogisticaCompleto {
         return FabricaUbicaciones.totalUbicaciones();
     }
 }
+

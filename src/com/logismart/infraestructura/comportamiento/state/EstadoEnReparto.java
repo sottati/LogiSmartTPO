@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.state;
+﻿package com.logismart.infraestructura.comportamiento.state;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class EstadoEnReparto implements EstadoEnvio {
     @Override
@@ -38,3 +38,4 @@ public class EstadoEnReparto implements EstadoEnvio {
         return "EN_REPARTO";
     }
 }
+

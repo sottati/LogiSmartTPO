@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.repositorio.sql;
+﻿package com.logismart.infraestructura.persistencia.repositorio.sql;
 
-import com.logismart.dominio.ClienteFinal;
+import com.logismart.dominio.usuario.ClienteFinal;
 import com.logismart.infraestructura.persistencia.mapper.sql.ClienteMapperSQL;
 import com.logismart.infraestructura.persistencia.repositorio.RepositorioCliente;
 
@@ -92,3 +92,4 @@ public class RepositorioClienteSQL implements RepositorioCliente {
         return lista;
     }
 }
+

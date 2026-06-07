@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.iterator;
+﻿package com.logismart.infraestructura.comportamiento.iterator;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 /**
  * Interfaz Iterator - contrato de recorrido uniforme sobre cualquier
@@ -19,3 +19,4 @@ public interface IteradorEnvios {
     /** Reinicia el cursor al primer elemento */
     void reiniciar();
 }
+

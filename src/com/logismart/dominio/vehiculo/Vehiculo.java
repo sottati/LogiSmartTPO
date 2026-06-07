@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.vehiculo;
 
 public class Vehiculo {
 	private String id;
@@ -85,3 +85,4 @@ public class Vehiculo {
 		return 1.0;
 	}
 }
+

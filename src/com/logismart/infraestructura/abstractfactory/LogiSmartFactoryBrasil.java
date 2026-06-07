@@ -1,7 +1,7 @@
-package com.logismart.infraestructura.abstractfactory;
+﻿package com.logismart.infraestructura.abstractfactory;
 
-import com.logismart.dominio.Moto;
-import com.logismart.dominio.Vehiculo;
+import com.logismart.dominio.vehiculo.Moto;
+import com.logismart.dominio.vehiculo.Vehiculo;
 
 /** Concrete Factory Brasil: Moto + ICMS 12% + HERE Maps. */
 public class LogiSmartFactoryBrasil implements LogiSmartFactory {
@@ -21,3 +21,4 @@ public class LogiSmartFactoryBrasil implements LogiSmartFactory {
         return new HereMaps();
     }
 }
+

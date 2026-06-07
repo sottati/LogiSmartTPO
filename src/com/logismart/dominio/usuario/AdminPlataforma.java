@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.usuario;
 
 public class AdminPlataforma extends Usuario implements IPermisos {
 	private static final Rol ROL = Rol.ADMIN_PLATAFORMA;
@@ -57,3 +57,4 @@ public class AdminPlataforma extends Usuario implements IPermisos {
 	@Override public boolean puedeGestionarFlota()      { return ROL.puedeGestionarFlota(); }
 	@Override public boolean puedeAdministrarEmpresas() { return ROL.puedeAdministrarEmpresas(); }
 }
+

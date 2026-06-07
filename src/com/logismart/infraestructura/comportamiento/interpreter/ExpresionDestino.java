@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.interpreter;
+﻿package com.logismart.infraestructura.comportamiento.interpreter;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class ExpresionDestino implements Expresion {
     private final String valor;
@@ -12,3 +12,4 @@ public class ExpresionDestino implements Expresion {
         return valor.equals(envio.getDestino());
     }
 }
+

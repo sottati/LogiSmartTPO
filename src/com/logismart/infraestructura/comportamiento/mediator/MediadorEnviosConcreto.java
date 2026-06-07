@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.mediator;
+﻿package com.logismart.infraestructura.comportamiento.mediator;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 /**
  * Mediator concreto - orquesta el pipeline completo de un envío.
@@ -75,3 +75,4 @@ public class MediadorEnviosConcreto implements MediadorEnvios {
         }
     }
 }
+

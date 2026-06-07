@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.mapper.sql;
+﻿package com.logismart.infraestructura.persistencia.mapper.sql;
 
-import com.logismart.dominio.Cobro;
+import com.logismart.dominio.empresa.Cobro;
 import com.logismart.infraestructura.persistencia.mapper.CobroMapper;
 
 import java.sql.Connection;
@@ -99,3 +99,4 @@ public class CobroMapperSQL implements CobroMapper {
         }
     }
 }
+

@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.chain;
+﻿package com.logismart.infraestructura.comportamiento.chain;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class ValidadorCapacidad extends ValidadorEnvio {
     private final SistemaCapacidad sistemaCapacidad;
@@ -25,3 +25,4 @@ public class ValidadorCapacidad extends ValidadorEnvio {
     @Override
     public String obtenerNombre() { return "ValidadorCapacidad"; }
 }
+

@@ -1,6 +1,6 @@
-package com.logismart.aplicacion.hito10;
+﻿package com.logismart.aplicacion.hito10;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.comportamiento.chain.CadenaValidadores;
 import com.logismart.infraestructura.comportamiento.chain.SistemaCapacidad;
 import com.logismart.infraestructura.comportamiento.chain.SistemaInventario;
@@ -86,3 +86,4 @@ public class SistemaLogisticaCompleto {
     public ServicioEnvios getServicio()    { return servicio; }
     public CadenaValidadores getValidadores() { return validadores; }
 }
+

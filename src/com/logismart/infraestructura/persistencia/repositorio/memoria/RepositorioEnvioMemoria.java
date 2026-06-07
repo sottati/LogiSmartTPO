@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.repositorio.memoria;
+﻿package com.logismart.infraestructura.persistencia.repositorio.memoria;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.persistencia.repositorio.RepositorioEnvio;
 
 import java.util.ArrayList;
@@ -73,3 +73,4 @@ public class RepositorioEnvioMemoria implements RepositorioEnvio {
         return almacen.size();
     }
 }
+

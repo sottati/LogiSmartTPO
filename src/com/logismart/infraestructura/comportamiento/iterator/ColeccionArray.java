@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.iterator;
+﻿package com.logismart.infraestructura.comportamiento.iterator;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 /**
  * Colección basada en array de tamaño fijo.
@@ -58,3 +58,4 @@ public class ColeccionArray implements ColeccionEnvios {
         public void reiniciar() { indice = 0; }
     }
 }
+

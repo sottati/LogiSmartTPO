@@ -1,8 +1,8 @@
-package com.logismart.infraestructura.vehiculo;
+﻿package com.logismart.infraestructura.vehiculo;
 
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.Flota;
-import com.logismart.dominio.Vehiculo;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.vehiculo.Flota;
+import com.logismart.dominio.vehiculo.Vehiculo;
 
 import java.util.Optional;
 
@@ -22,3 +22,4 @@ public class AsignadorPorDisponibilidad implements AsignadorDeVehiculos {
         return "Primer vehiculo disponible en la flota";
     }
 }
+

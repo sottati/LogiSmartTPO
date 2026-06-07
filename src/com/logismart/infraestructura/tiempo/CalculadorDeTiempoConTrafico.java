@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.tiempo;
+﻿package com.logismart.infraestructura.tiempo;
 
-import com.logismart.dominio.Ruta;
+import com.logismart.dominio.ruta.Ruta;
 
 import java.time.LocalTime;
 
@@ -43,3 +43,4 @@ public class CalculadorDeTiempoConTrafico implements CalculadorDeTiempo {
         return "Modelo con trafico: velocidad ajustada segun franja horaria";
     }
 }
+

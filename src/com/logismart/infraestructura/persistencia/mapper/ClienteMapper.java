@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.mapper;
+﻿package com.logismart.infraestructura.persistencia.mapper;
 
-import com.logismart.dominio.ClienteFinal;
+import com.logismart.dominio.usuario.ClienteFinal;
 
 /**
  * Data Mapper para ClienteFinal.
@@ -14,3 +14,4 @@ public interface ClienteMapper {
     void eliminar(String id);
     ClienteFinal buscarPorId(String id);
 }
+

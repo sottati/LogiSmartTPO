@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.tiempo;
+﻿package com.logismart.infraestructura.tiempo;
 
-import com.logismart.dominio.Ruta;
+import com.logismart.dominio.ruta.Ruta;
 
 /**
  * GRASP Protected Variations: Calcula el tiempo de entrega solo en base a distancia y velocidad promedio.
@@ -25,3 +25,4 @@ public class CalculadorDeTiempoSimple implements CalculadorDeTiempo {
                 VELOCIDAD_PROMEDIO_KMH, TIEMPO_PARADA_MIN);
     }
 }
+

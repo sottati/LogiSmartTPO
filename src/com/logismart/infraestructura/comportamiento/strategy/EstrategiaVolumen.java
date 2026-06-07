@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.strategy;
+﻿package com.logismart.infraestructura.comportamiento.strategy;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class EstrategiaVolumen implements EstrategiaCalculoCosto {
     @Override
@@ -13,3 +13,4 @@ public class EstrategiaVolumen implements EstrategiaCalculoCosto {
         return "VOLUMEN";
     }
 }
+

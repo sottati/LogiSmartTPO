@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.usuario;
 
 public enum Rol {
     OPERADOR         (true,  true,  true,  true,  false),
@@ -28,3 +28,4 @@ public enum Rol {
     public boolean puedeGestionarFlota()      { return gestionarFlota; }
     public boolean puedeAdministrarEmpresas() { return administrarEmpresas; }
 }
+

@@ -1,9 +1,9 @@
-package com.logismart.infraestructura.fabrica;
+﻿package com.logismart.infraestructura.fabrica;
 
-import com.logismart.dominio.Auto;
-import com.logismart.dominio.Camion;
-import com.logismart.dominio.Moto;
-import com.logismart.dominio.Vehiculo;
+import com.logismart.dominio.vehiculo.Auto;
+import com.logismart.dominio.vehiculo.Camion;
+import com.logismart.dominio.vehiculo.Moto;
+import com.logismart.dominio.vehiculo.Vehiculo;
 
 /**
  * Factory Method para vehículos - API basada en String.
@@ -24,3 +24,4 @@ public final class VehiculoFactory {
         }
     }
 }
+

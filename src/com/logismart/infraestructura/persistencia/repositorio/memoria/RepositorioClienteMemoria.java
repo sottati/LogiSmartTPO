@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.repositorio.memoria;
+﻿package com.logismart.infraestructura.persistencia.repositorio.memoria;
 
-import com.logismart.dominio.ClienteFinal;
+import com.logismart.dominio.usuario.ClienteFinal;
 import com.logismart.infraestructura.persistencia.repositorio.RepositorioCliente;
 
 import java.util.ArrayList;
@@ -66,3 +66,4 @@ public class RepositorioClienteMemoria implements RepositorioCliente {
         return almacen.size();
     }
 }
+

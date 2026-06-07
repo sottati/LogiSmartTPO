@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.usuario;
 
 /**
  * GRASP Polymorphism: Define el contrato de permisos para todos los tipos de usuario.
@@ -17,3 +17,4 @@ public interface IPermisos {
 
     boolean puedeAdministrarEmpresas();
 }
+

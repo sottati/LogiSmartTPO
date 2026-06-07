@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.lazy;
+﻿package com.logismart.infraestructura.persistencia.lazy;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.persistencia.repositorio.memoria.RepositorioEnvioMemoria;
 
 import java.util.List;
@@ -59,3 +59,4 @@ public class HistorialEnviosLazyProxy {
         return clienteId;
     }
 }
+

@@ -1,6 +1,6 @@
-package com.logismart.aplicacion;
+﻿package com.logismart.aplicacion;
 
-import com.logismart.dominio.Reporte;
+import com.logismart.dominio.empresa.Reporte;
 
 public class ReporteService {
 	public String exportar(Reporte reporte) {
@@ -19,3 +19,4 @@ public class ReporteService {
 		}
 	}
 }
+

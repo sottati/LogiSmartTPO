@@ -1,7 +1,7 @@
-package com.logismart.aplicacion.hito8;
+﻿package com.logismart.aplicacion.hito8;
 
 import com.logismart.aplicacion.ServicioLogisticaUnificado;
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.adapter.envio.AdapterDHL;
 import com.logismart.infraestructura.adapter.envio.AdapterFedEx;
 import com.logismart.infraestructura.adapter.envio.AdapterUPS;
@@ -144,3 +144,4 @@ public final class CasosDePruebaHito8 {
         System.out.println("[OK] " + descripcion);
     }
 }
+

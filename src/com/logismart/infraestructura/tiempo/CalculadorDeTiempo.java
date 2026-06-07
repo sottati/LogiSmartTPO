@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.tiempo;
+﻿package com.logismart.infraestructura.tiempo;
 
-import com.logismart.dominio.Ruta;
+import com.logismart.dominio.ruta.Ruta;
 
 /**
  * GRASP Protected Variations: Abstrae el calculo de tiempo estimado de entrega.
@@ -22,3 +22,4 @@ public interface CalculadorDeTiempo {
      */
     String getModelo();
 }
+

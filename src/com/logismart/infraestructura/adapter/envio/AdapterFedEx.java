@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.adapter.envio;
+﻿package com.logismart.infraestructura.adapter.envio;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class AdapterFedEx implements ProveedorEnvio {
     private final FedExAPI fedexAPI = new FedExAPI();
@@ -28,3 +28,4 @@ public class AdapterFedEx implements ProveedorEnvio {
         return "FedEx";
     }
 }
+

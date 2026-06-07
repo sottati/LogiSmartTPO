@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.lazy;
+﻿package com.logismart.infraestructura.persistencia.lazy;
 
-import com.logismart.dominio.ClienteFinal;
+import com.logismart.dominio.usuario.ClienteFinal;
 import com.logismart.infraestructura.persistencia.repositorio.memoria.RepositorioClienteMemoria;
 
 /**
@@ -47,3 +47,4 @@ public class ClienteLazyProxy {
         return clienteId;
     }
 }
+

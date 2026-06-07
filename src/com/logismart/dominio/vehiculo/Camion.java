@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.vehiculo;
 
 import java.util.UUID;
 
@@ -14,3 +14,4 @@ public class Camion extends Vehiculo {
         System.out.println("[Camion] Conduciendo camión por la ruta.");
     }
 }
+

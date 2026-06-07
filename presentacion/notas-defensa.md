@@ -459,4 +459,192 @@ Esas dos cosas no son lo mismo:
 
 ---
 
+## 11. Preguntas del Hito 2 — con el diario del lunes
+
+### ¿Debería haber una clase `Usuario` base de la que hereden `Cliente` y `Operador`? ¿Por qué?
+
+**Sí, y así quedó implementado.**
+
+`Usuario.java` es la clase base. De ella heredan (y todas implementan `IPermisos`):
+
+| Subclase | Rol enum |
+|---|---|
+| `OperadorLogistico` | `OPERADOR` |
+| `AdminEmpresa` | `ADMIN_EMPRESA` |
+| `AdminPlataforma` | `ADMIN_PLATAFORMA` |
+| `Transportista` | `TRANSPORTISTA` |
+| `ClienteFinal` | `CLIENTE` |
+
+**Por qué es correcto:**
+- `Usuario` concentra lo que *todos* los actores comparten: `id`, `username`, `email`, `passwordHash`, `estado`, y los métodos de sesión (`iniciarSesion`, `cambiarPassword`, `cerrarSesion`). Eso es GRASP Creator e Information Expert en acción.
+- Los permisos **no** viven en `Usuario` — viven en `IPermisos`. Esto es clave: la herencia da atributos comunes, el polimorfismo por interfaz da el comportamiento diferenciado de permisos. Si los permisos estuvieran en la base, agregar un rol nuevo obligaría a tocar `Usuario`.
+- El `LogiSmartController` recibe `IPermisos` — no sabe si es `OperadorLogistico` o `AdminEmpresa`. Ese es el bajo acoplamiento que habilita la herencia correctamente planteada.
+
+**Trade-off a mencionar:** el riesgo de herencia es la rigidez. Lo mitigamos con `IPermisos` como segunda "columna vertebral" — si mañana un rol no puede heredar de `Usuario` (ej. un sistema externo), solo necesita implementar `IPermisos`.
+
+---
+
+### ¿Es `Vehículo` una clase o un atributo de `Operador`? Justifiquen.
+
+**Es una clase, con asociación hacia `Transportista` (no hacia `Operador` directamente).**
+
+`Vehiculo.java` tiene identidad propia: `id`, `patente`, `capacidadKg`, `tipo`, `disponibilidad`. Tiene comportamiento propio: `puedeCargar()`, `estaOperativo()`, `asignarRuta()`, `liberar()`, `getCostoBaseKm()`. Tiene jerarquía propia: `Auto`, `Camion`, `Moto` extienden `Vehiculo`.
+
+Nada de eso puede existir en un atributo. Un atributo es un dato (`String patente`), no una entidad con ciclo de vida y jerarquía.
+
+En el código final la relación es:
+```
+Transportista → vehiculoAsignado : Vehiculo   (asociación, no herencia ni atributo primitivo)
+Flota          → List<Vehiculo>               (composición)
+```
+
+`Transportista` *tiene* un `Vehiculo` asignado — la referencia puede ser `null` si está sin asignar, puede cambiar durante la operación. Eso confirma que `Vehiculo` tiene su propio ciclo de vida independiente del `Transportista`.
+
+**Argumento de negocio:** un vehículo puede estar en la flota sin estar asignado a ningún transportista. Un transportista puede cambiar de vehículo entre rutas. Esa independencia de ciclos de vida exige que sean dos clases.
+
+---
+
+### ¿Debería haber una clase `Pago` separada o es un atributo de `Envío`?
+
+**Clase separada — en la implementación se llama `Cobro`.**
+
+En `Envio.java` solo viven `metodoPago` (String) y `costo` (double) — el medio y el monto, datos que el envío necesita conocer para su propio cálculo. No hay un objeto `Cobro` dentro de `Envio`.
+
+`Cobro.java` es una clase independiente con:
+- Su propio estado: `PENDIENTE → AUTORIZADO → PAGADO / FALLIDO`
+- Su propio comportamiento: `autorizar()`, `registrarPago()`, `marcarFallido()`, `emitirComprobante()`
+- Su propia referencia al envío: `envioId` (apunta hacia arriba, no al revés)
+
+**Por qué es correcto tenerla separada:**
+1. **Ciclos de vida distintos.** Un envío puede crearse sin pago (pago diferido, crédito). Un cobro puede existir sin un envío puntual (fee mensual sobre volumen de envíos → `Cobro` sin `envioId`).
+2. **Responsabilidades distintas.** `Envio` gestiona la logística de un paquete. `Cobro` gestiona la transacción financiera. Mezclarlas viola Single Responsibility.
+3. **Los adapters de pago (`AdapterPayPal`, `AdapterStripe`) trabajan contra `ProveedorPago`, no contra `Envio`.** El dominio de pago es lo suficientemente complejo como para merecer su propia jerarquía.
+
+**Trade-off:** si solo existiera un modelo simple donde cada envío tiene exactamente un pago inmediato, podría justificarse como atributo. En LogiSmart el fee es mensual y agregado → la separación es obligatoria.
+
+---
+
+## 12. Encapsulación y GRASP en la implementación real
+
+### ¿Cómo aplicamos encapsulación (visibilidad)?
+
+**Regla general:** todos los campos de todas las clases son `private`. El estado solo cambia a través de métodos con semántica de negocio.
+
+Ejemplos concretos del código:
+
+| Clase | Campo privado | Cómo se expone |
+|---|---|---|
+| `Envio` | `estado` | `cambiarEstado()` · `iniciar()` · `cancelar()` — nunca setter directo |
+| `Envio` | `ordenes` (lista) | `getOrdenes()` devuelve `Collections.unmodifiableList()` — no se puede mutar desde afuera |
+| `Envio` | `observadores` (lista) | `private final` — solo `adjuntarObservador()` / `desadjuntarObservador()` |
+| `Envio` | `notificarObservadores()` | Método `private` — detalle interno, no es API pública |
+| `Vehiculo` | `disponibilidad` | Solo cambia vía `asignarRuta()` y `liberar()` — sin setter |
+| `Rol` (enum) | Matriz de permisos 5×5 | Expuesta solo a través de `puedeCrearEnvio()`, `puedeAsignarRuta()`, etc. |
+| `Envio.EnvioBuilder` | Constructor de `Envio` con Builder | `private Envio(EnvioBuilder)` — nadie puede construir un Envio por ese camino sin pasar por el Builder |
+
+La `IPermisos` es la "ventana pública" de los permisos — el `Controller` ve solo los métodos booleanos, nunca el enum `Rol` directamente.
+
+---
+
+### ¿Cómo aseguramos alta cohesión y bajo acoplamiento?
+
+**Alta cohesión — cada clase tiene una sola razón para cambiar:**
+
+| Clase | Su única responsabilidad |
+|---|---|
+| `Envio` | Ciclo de vida de un envío logístico |
+| `Cobro` | Transacción financiera |
+| `Vehiculo` | Capacidad y disponibilidad del vehículo |
+| `Usuario` | Datos de autenticación y sesión |
+| `Rol` | Matriz de permisos por tipo de usuario |
+| `CadenaValidadores` | Orquestación del fail-fast antes de crear un envío |
+
+**Bajo acoplamiento — las dependencias son hacia abstracciones, no hacia concretos:**
+
+- `LogiSmartController` depende de `IPermisos` → no sabe si hay un `Operador` o un `AdminEmpresa`. Agregar un rol nuevo no toca el Controller.
+- `Envio` depende de `EstrategiaCalculoCosto` (interfaz) → no sabe si calcula por peso, distancia o tarifa fija.
+- `Envio` depende de `EstadoEnvio` (interfaz) → no tiene `switch` sobre estados; cada estado sabe sus transiciones válidas.
+- `Envio` depende de `ObservadorEnvio` (interfaz) → no sabe si hay un Dashboard, una Auditoría o un Notificador escuchando.
+- El dominio entero no tiene ningún `import` de paquetes de persistencia o infraestructura — la inversión de dependencias es total.
+
+**La evidencia empírica:** 148 tests sobre el dominio puro, sin mocks de base de datos ni de seguridad. Si el acoplamiento fuera alto, esos tests serían imposibles.
+
+---
+
+## 13. Responsabilidades de Ruta y Envío — diseño con diario del lunes
+
+### ¿La clase `Ruta` debería calcular distancias? ¿Debería validar puntos de entrega?
+
+**Calcular distancias: sí, y así está implementado — con matices.**
+
+`Ruta` tiene `calcularDistanciaTotal()`. Itera sobre sus propias `PuntoEntrega` y llama a `PosicionGPS.haversineKm()`. Esto es GRASP Information Expert: `Ruta` tiene la colección de paradas con sus coordenadas — es el experto natural en su propio recorrido espacial. No sabe *cómo* funciona Haversine (eso vive en `PosicionGPS`, que es la experta en operaciones geográficas), pero sí sabe *cuál es la secuencia* de paradas. La responsabilidad está bien distribuida.
+
+La alternativa — delegarlo a un `CalculadorDeDistancia` externo — agregaría indirección sin beneficio real, porque la distancia total de una ruta no varía según estrategia: siempre es la suma de las distancias entre paradas consecutivas.
+
+**Validar puntos de entrega: la responsabilidad está en `PuntoEntrega`, no en `Ruta`.**
+
+`PuntoEntrega.validarVentana()` valida si tiene ventana horaria asignada. `Ruta` delega: no duplica la validación, simplemente confía en que cada parada se valida a sí misma. Eso es Information Expert llevado al nivel correcto de granularidad.
+
+---
+
+### ¿`Envío` debería tener `calcularTiempoEstimado()`? ¿O es responsabilidad de otra clase?
+
+**No. Y así quedó implementado — `CalculadorDeTiempo` es quien calcula, no `Envio`.**
+
+El tiempo estimado de entrega depende de:
+- La **ruta** y su secuencia de paradas (distancia)
+- El **vehículo** y su velocidad promedio
+- El **tráfico** en tiempo real (variable externa)
+
+`Envio` no tiene acceso a ninguna de esas tres variables directamente. Ponerle `calcularTiempoEstimado()` violaría Low Coupling: `Envio` tendría que conocer `Ruta`, `Vehiculo` y APIs de tráfico — tres dependencias externas que no le corresponden.
+
+En la implementación, `CalculadorDeTiempo` es una interfaz en infraestructura (`estimarMinutos(Ruta ruta)`) con dos implementaciones:
+- `CalculadorDeTiempoSimple` — solo usa distancia
+- `CalculadorDeTiempoConTrafico` — incorpora datos de tráfico real
+
+Esto es GRASP Protected Variations: el algoritmo de tiempo puede cambiar sin tocar `Envio`. Si el cálculo estuviera en `Envio`, cambiar de simple a tráfico requeriría modificar la entidad central del dominio.
+
+---
+
+### ¿`Envío` debería tener `guardarEnBaseDatos()`? ¿Por qué no?
+
+**No. Nunca. Es la violación más grave que se puede cometer en un diseño por capas.**
+
+Razones desde el código:
+
+1. **Single Responsibility:** `Envio` tiene una sola razón para cambiar: las reglas del negocio logístico. Agregar persistencia le da una segunda razón: el esquema de la base de datos.
+
+2. **Clean Architecture / Dependency Inversion:** si `Envio` tuviera `guardarEnBaseDatos()`, el paquete `dominio` tendría que importar `java.sql` o alguna librería ORM. Eso invierte la dependencia: el núcleo del sistema dependería de un detalle de infraestructura. En la implementación, `Envio.java` no tiene ni un solo import de persistencia.
+
+3. **El Repository pattern resuelve exactamente esto:** `RepositorioEnvio` (interfaz en infraestructura) define el contrato. `RepositorioEnvioMemoria` y `RepositorioEnvioSQL` lo implementan. El dominio nunca sabe qué backend usa. Si mañana cambiamos de SQL a MongoDB, `Envio.java` no se toca.
+
+4. **Evidencia empírica:** los 148 tests de dominio puro pasan sin ninguna base de datos. Eso solo es posible porque `Envio` es una POJO — sin efectos colaterales de persistencia.
+
+**Cómo responderlo en la defensa:**
+> "Si `Envio` tuviera `guardarEnBaseDatos()`, no podríamos testear el dominio sin una base de datos real. El Repository hace exactamente lo contrario: permite que el dominio sea completamente ignorante de cómo se persiste, y que los tests sean rápidos y deterministas."
+
+---
+
+### ¿`Ruta` debería conocer cómo se calcula el costo? ¿O delegar?
+
+**Delegar — y así está implementado en dos niveles.**
+
+`Ruta.calcularCostoEstimado()` hace esto:
+```java
+double costoBaseKm = vehiculoAsignado != null ? vehiculoAsignado.getCostoBaseKm() : 1.0;
+return calcularDistanciaTotal() * costoBaseKm;
+```
+
+`Ruta` sabe dos cosas: su propia distancia (Information Expert) y que el costo por km depende del vehículo (delega a `Vehiculo.getCostoBaseKm()`, que sí es el experto en su propio costo operativo). `Ruta` **no sabe** qué tipo de vehículo es ni cuál es la tarifa — solo le pregunta al objeto que sí sabe.
+
+Para los cálculos de negocio completos (con impuestos, seguro, volumen), la responsabilidad sube a `Envio.calcularCostoConEstrategia()` vía el patrón Strategy (`EstrategiaCalculoCosto`). Hay tres implementaciones: por peso, por distancia, fija.
+
+El diseño distingue dos conceptos:
+- `Ruta.calcularCostoEstimado()` = estimación operativa para planificar (distancia × tarifa base del vehículo)
+- `Envio.calcularCostoConEstrategia()` = cálculo de negocio con reglas configurables
+
+`Ruta` no conoce las reglas de negocio de pricing — solo delega al experto real (`Vehiculo`) el único dato que necesita.
+
+---
+
 *Última actualización: junio 2026*

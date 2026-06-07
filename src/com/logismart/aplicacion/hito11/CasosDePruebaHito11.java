@@ -1,7 +1,7 @@
-package com.logismart.aplicacion.hito11;
+﻿package com.logismart.aplicacion.hito11;
 
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.ObservadorEnvio;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.envio.ObservadorEnvio;
 import com.logismart.infraestructura.comportamiento.iterator.ColeccionArray;
 import com.logismart.infraestructura.comportamiento.iterator.ColeccionEnvios;
 import com.logismart.infraestructura.comportamiento.iterator.ColeccionHash;
@@ -324,3 +324,4 @@ public final class CasosDePruebaHito11 {
         System.out.println("[OK] " + descripcion);
     }
 }
+

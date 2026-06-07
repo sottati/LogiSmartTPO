@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.costo;
+﻿package com.logismart.infraestructura.costo;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 /**
  * GRASP Protected Variations: Abstrae el algoritmo de calculo de costo de envio.
@@ -22,3 +22,4 @@ public interface CalculadorDeCosto {
      */
     String getDescripcion();
 }
+

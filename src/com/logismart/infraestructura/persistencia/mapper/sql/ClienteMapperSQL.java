@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.mapper.sql;
+﻿package com.logismart.infraestructura.persistencia.mapper.sql;
 
-import com.logismart.dominio.ClienteFinal;
+import com.logismart.dominio.usuario.ClienteFinal;
 import com.logismart.infraestructura.persistencia.mapper.ClienteMapper;
 
 import java.sql.Connection;
@@ -90,3 +90,4 @@ public class ClienteMapperSQL implements ClienteMapper {
         }
     }
 }
+

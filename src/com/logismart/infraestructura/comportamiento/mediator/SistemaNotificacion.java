@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.mediator;
+﻿package com.logismart.infraestructura.comportamiento.mediator;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 /**
  * Componente Mediator - Sistema de Notificación al cliente.
@@ -23,3 +23,4 @@ public class SistemaNotificacion {
         mediador.notificar("NOTIFICACION_ENVIADA", envio);
     }
 }
+

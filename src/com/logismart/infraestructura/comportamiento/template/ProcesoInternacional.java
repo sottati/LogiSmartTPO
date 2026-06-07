@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.template;
+﻿package com.logismart.infraestructura.comportamiento.template;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class ProcesoInternacional extends ProcesoEnvio {
     @Override
@@ -24,3 +24,4 @@ public class ProcesoInternacional extends ProcesoEnvio {
         System.out.println("Notificacion internacional enviada para: " + envio.getId());
     }
 }
+

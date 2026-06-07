@@ -1,6 +1,6 @@
-package com.logismart.aplicacion.hito12;
+﻿package com.logismart.aplicacion.hito12;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.comportamiento.state.EstadoConfirmado;
 import com.logismart.infraestructura.comportamiento.strategy.EstrategiaCalculoCosto;
 import com.logismart.infraestructura.comportamiento.template.ProcesoEnvio;
@@ -42,3 +42,4 @@ public class SistemaLogisticaAvanzada {
         return redDistribucion;
     }
 }
+

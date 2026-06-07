@@ -1,6 +1,6 @@
-package com.logismart.aplicacion;
+﻿package com.logismart.aplicacion;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.adapter.envio.AdapterDHL;
 import com.logismart.infraestructura.adapter.envio.AdapterFedEx;
 import com.logismart.infraestructura.adapter.envio.AdapterUPS;
@@ -99,3 +99,4 @@ public class ServicioLogisticaUnificado {
         }
     }
 }
+

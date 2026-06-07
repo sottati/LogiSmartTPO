@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.mediator;
+﻿package com.logismart.infraestructura.comportamiento.mediator;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 /**
  * Componente Mediator - Centro de Distribución.
@@ -27,3 +27,4 @@ public class CentroDistribucion {
         mediador.notificar("ENVIO_REGISTRADO", envio);
     }
 }
+

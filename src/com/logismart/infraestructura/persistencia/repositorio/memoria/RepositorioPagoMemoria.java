@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.repositorio.memoria;
+﻿package com.logismart.infraestructura.persistencia.repositorio.memoria;
 
-import com.logismart.dominio.Cobro;
+import com.logismart.dominio.empresa.Cobro;
 import com.logismart.infraestructura.persistencia.repositorio.RepositorioPago;
 
 import java.util.ArrayList;
@@ -66,3 +66,4 @@ public class RepositorioPagoMemoria implements RepositorioPago {
         return almacen.size();
     }
 }
+

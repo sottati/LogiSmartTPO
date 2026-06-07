@@ -1,9 +1,9 @@
-package com.logismart.infraestructura.fabrica;
+﻿package com.logismart.infraestructura.fabrica;
 
-import com.logismart.dominio.AdminEmpresa;
-import com.logismart.dominio.ClienteFinal;
-import com.logismart.dominio.OperadorLogistico;
-import com.logismart.dominio.Usuario;
+import com.logismart.dominio.usuario.AdminEmpresa;
+import com.logismart.dominio.usuario.ClienteFinal;
+import com.logismart.dominio.usuario.OperadorLogistico;
+import com.logismart.dominio.usuario.Usuario;
 
 import java.util.UUID;
 
@@ -32,3 +32,4 @@ public final class UsuarioFactory {
         }
     }
 }
+

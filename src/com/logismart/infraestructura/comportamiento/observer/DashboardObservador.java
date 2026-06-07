@@ -1,7 +1,7 @@
-package com.logismart.infraestructura.comportamiento.observer;
+﻿package com.logismart.infraestructura.comportamiento.observer;
 
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.ObservadorEnvio;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.envio.ObservadorEnvio;
 
 /**
  * Observador - Dashboard en tiempo real.
@@ -18,3 +18,4 @@ public class DashboardObservador implements ObservadorEnvio {
                 + envio.getId() + ": " + envio.obtenerEstado());
     }
 }
+

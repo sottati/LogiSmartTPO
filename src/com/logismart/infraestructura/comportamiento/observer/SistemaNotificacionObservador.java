@@ -1,7 +1,7 @@
-package com.logismart.infraestructura.comportamiento.observer;
+﻿package com.logismart.infraestructura.comportamiento.observer;
 
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.ObservadorEnvio;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.envio.ObservadorEnvio;
 
 /**
  * Observador - Sistema de Notificación al cliente.
@@ -17,3 +17,4 @@ public class SistemaNotificacionObservador implements ObservadorEnvio {
                 + envio.getId() + " ahora en estado: " + envio.obtenerEstado());
     }
 }
+

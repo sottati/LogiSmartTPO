@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.ruta;
 
 import java.time.LocalDateTime;
 
@@ -35,3 +35,4 @@ public class ETA {
 		return actualizadoEn.isBefore(LocalDateTime.now().minusMinutes(30));
 	}
 }
+

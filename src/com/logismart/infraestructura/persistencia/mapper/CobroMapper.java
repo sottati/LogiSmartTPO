@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.mapper;
+﻿package com.logismart.infraestructura.persistencia.mapper;
 
-import com.logismart.dominio.Cobro;
+import com.logismart.dominio.empresa.Cobro;
 
 /**
  * Data Mapper para Cobro (concepto Pago del sistema).
@@ -14,3 +14,4 @@ public interface CobroMapper {
     void eliminar(String id);
     Cobro buscarPorId(String id);
 }
+

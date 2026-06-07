@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.adapter.envio;
+﻿package com.logismart.infraestructura.adapter.envio;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class AdapterUPS implements ProveedorEnvio {
     private final UPSConnector upsConnector = new UPSConnector();
@@ -29,3 +29,4 @@ public class AdapterUPS implements ProveedorEnvio {
         return "UPS";
     }
 }
+

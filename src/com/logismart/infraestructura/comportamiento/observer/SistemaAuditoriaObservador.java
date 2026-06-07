@@ -1,7 +1,7 @@
-package com.logismart.infraestructura.comportamiento.observer;
+﻿package com.logismart.infraestructura.comportamiento.observer;
 
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.ObservadorEnvio;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.envio.ObservadorEnvio;
 
 /**
  * Observador - Sistema de Auditoría.
@@ -18,3 +18,4 @@ public class SistemaAuditoriaObservador implements ObservadorEnvio {
                 + " | ts=" + System.currentTimeMillis());
     }
 }
+

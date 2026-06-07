@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.empresa;
 
 import java.time.LocalDateTime;
 
@@ -60,3 +60,4 @@ public class Cobro {
 		return "COMP-" + id;
 	}
 }
+

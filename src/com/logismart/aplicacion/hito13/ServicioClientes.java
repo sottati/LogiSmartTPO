@@ -1,6 +1,6 @@
-package com.logismart.aplicacion.hito13;
+﻿package com.logismart.aplicacion.hito13;
 
-import com.logismart.dominio.ClienteFinal;
+import com.logismart.dominio.usuario.ClienteFinal;
 import com.logismart.infraestructura.persistencia.repositorio.memoria.RepositorioClienteMemoria;
 
 import java.util.List;
@@ -35,3 +35,4 @@ public class ServicioClientes {
         return repositorio.obtenerTodos();
     }
 }
+

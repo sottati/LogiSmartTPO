@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.abstractfactory;
+﻿package com.logismart.infraestructura.abstractfactory;
 
-import com.logismart.dominio.Vehiculo;
+import com.logismart.dominio.vehiculo.Vehiculo;
 
 /**
  * Abstract Factory - define la familia de objetos que varía por región.
@@ -14,3 +14,4 @@ public interface LogiSmartFactory {
     CalculadorCostos crearCalculadorCostos();
     ProveedorMapas crearProveedorMapas();
 }
+

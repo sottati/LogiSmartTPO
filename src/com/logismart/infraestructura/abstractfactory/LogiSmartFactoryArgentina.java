@@ -1,7 +1,7 @@
-package com.logismart.infraestructura.abstractfactory;
+﻿package com.logismart.infraestructura.abstractfactory;
 
-import com.logismart.dominio.Auto;
-import com.logismart.dominio.Vehiculo;
+import com.logismart.dominio.vehiculo.Auto;
+import com.logismart.dominio.vehiculo.Vehiculo;
 
 /** Concrete Factory Argentina: Auto + IVA 21% + Google Maps. */
 public class LogiSmartFactoryArgentina implements LogiSmartFactory {
@@ -21,3 +21,4 @@ public class LogiSmartFactoryArgentina implements LogiSmartFactory {
         return new GoogleMapsArgentina();
     }
 }
+

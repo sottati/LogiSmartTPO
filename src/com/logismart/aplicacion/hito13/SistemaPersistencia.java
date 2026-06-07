@@ -1,8 +1,8 @@
-package com.logismart.aplicacion.hito13;
+﻿package com.logismart.aplicacion.hito13;
 
-import com.logismart.dominio.ClienteFinal;
-import com.logismart.dominio.Cobro;
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.usuario.ClienteFinal;
+import com.logismart.dominio.empresa.Cobro;
+import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.composite.centro.PuntoEntrega;
 import com.logismart.infraestructura.persistencia.entidad.CentroAssembler;
 import com.logismart.infraestructura.persistencia.entidad.CentroDistribucion;
@@ -97,3 +97,4 @@ public class SistemaPersistencia {
         System.out.println("\n[SistemaPersistencia] Demostracion completada.");
     }
 }
+

@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.iterator;
+﻿package com.logismart.infraestructura.comportamiento.iterator;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,3 +53,4 @@ public class ColeccionHash implements ColeccionEnvios {
         public void reiniciar() { cursor = envios.values().iterator(); }
     }
 }
+

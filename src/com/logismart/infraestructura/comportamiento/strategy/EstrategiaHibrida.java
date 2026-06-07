@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.strategy;
+﻿package com.logismart.infraestructura.comportamiento.strategy;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class EstrategiaHibrida implements EstrategiaCalculoCosto {
     private final EstrategiaCalculoCosto distancia = new EstrategiaDistancia();
@@ -19,3 +19,4 @@ public class EstrategiaHibrida implements EstrategiaCalculoCosto {
         return "HIBRIDA";
     }
 }
+

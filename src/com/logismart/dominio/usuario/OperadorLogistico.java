@@ -1,7 +1,12 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.usuario;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.logismart.dominio.empresa.Empresa;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.ruta.Ruta;
+import com.logismart.dominio.vehiculo.Vehiculo;
 
 public class OperadorLogistico extends Usuario implements IPermisos {
 	private static final Rol ROL = Rol.OPERADOR;
@@ -76,3 +81,4 @@ public class OperadorLogistico extends Usuario implements IPermisos {
 	@Override public boolean puedeGestionarFlota()      { return ROL.puedeGestionarFlota(); }
 	@Override public boolean puedeAdministrarEmpresas() { return ROL.puedeAdministrarEmpresas(); }
 }
+

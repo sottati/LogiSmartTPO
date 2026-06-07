@@ -1,8 +1,8 @@
-package com.logismart.app;
+﻿package com.logismart.app;
 
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.Usuario;
-import com.logismart.dominio.Vehiculo;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.usuario.Usuario;
+import com.logismart.dominio.vehiculo.Vehiculo;
 import com.logismart.infraestructura.abstractfactory.CalculadorCostos;
 import com.logismart.infraestructura.abstractfactory.LogiSmartFactory;
 import com.logismart.infraestructura.abstractfactory.LogiSmartFactoryArgentina;
@@ -100,3 +100,4 @@ public class LogiSmartApp {
     public int totalEnvios()   { return envios.size(); }
     public int totalUsuarios() { return usuarios.size(); }
 }
+

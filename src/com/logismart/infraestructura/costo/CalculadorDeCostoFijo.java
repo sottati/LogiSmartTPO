@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.costo;
+﻿package com.logismart.infraestructura.costo;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 /**
  * GRASP Protected Variations: Politica de costo con tarifa fija independiente del peso/distancia.
@@ -26,3 +26,4 @@ public class CalculadorDeCostoFijo implements CalculadorDeCosto {
         return String.format("Tarifa fija: $%.2f por envio", tarifaFija);
     }
 }
+

@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.adapter.envio;
+﻿package com.logismart.infraestructura.adapter.envio;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public interface ProveedorEnvio {
     boolean crearEnvio(Envio envio);
@@ -8,3 +8,4 @@ public interface ProveedorEnvio {
     double calcularCosto(Envio envio);
     String obtenerNombre();
 }
+

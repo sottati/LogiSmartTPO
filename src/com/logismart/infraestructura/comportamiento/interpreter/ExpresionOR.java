@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.interpreter;
+﻿package com.logismart.infraestructura.comportamiento.interpreter;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 public class ExpresionOR implements Expresion {
     private final Expresion izquierda;
@@ -16,3 +16,4 @@ public class ExpresionOR implements Expresion {
         return izquierda.evaluar(envio) || derecha.evaluar(envio);
     }
 }
+

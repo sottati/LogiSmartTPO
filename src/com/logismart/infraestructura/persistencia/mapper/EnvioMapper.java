@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.mapper;
+﻿package com.logismart.infraestructura.persistencia.mapper;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 /**
  * Data Mapper para Envio.
@@ -13,3 +13,4 @@ public interface EnvioMapper {
     void eliminar(String id);
     Envio buscarPorId(String id);
 }
+

@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.envio;
 
 /**
  * Snapshot inmutable del estado de un Envío en un momento dado.
@@ -47,3 +47,4 @@ public class MementoEnvio {
              + ", costo=" + costo + "}";
     }
 }
+

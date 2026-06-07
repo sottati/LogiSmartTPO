@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.bridge.reporte;
+﻿package com.logismart.infraestructura.bridge.reporte;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 import java.util.List;
 
 public class ReporteEnvios extends Reporte {
@@ -27,3 +27,4 @@ public class ReporteEnvios extends Reporte {
         return sb.toString();
     }
 }
+

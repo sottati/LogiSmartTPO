@@ -1,6 +1,6 @@
-package com.logismart.aplicacion.hito13;
+﻿package com.logismart.aplicacion.hito13;
 
-import com.logismart.dominio.Cobro;
+import com.logismart.dominio.empresa.Cobro;
 import com.logismart.infraestructura.persistencia.repositorio.memoria.RepositorioPagoMemoria;
 
 import java.util.List;
@@ -39,3 +39,4 @@ public class ServicioPagos {
         return repositorio.buscarPorEnvio(envioId);
     }
 }
+

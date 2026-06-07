@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.mediator;
+﻿package com.logismart.infraestructura.comportamiento.mediator;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 /**
  * Componente Mediator - Sistema de Pago.
@@ -23,3 +23,4 @@ public class SistemaPago {
         mediador.notificar("PAGO_CONFIRMADO", envio);
     }
 }
+

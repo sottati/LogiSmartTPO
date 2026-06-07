@@ -1,7 +1,7 @@
-package com.logismart.infraestructura.comportamiento.observer;
+﻿package com.logismart.infraestructura.comportamiento.observer;
 
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.ObservadorEnvio;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.envio.ObservadorEnvio;
 
 /**
  * Observador - Centro de Distribución.
@@ -17,3 +17,4 @@ public class CentroDistribucionObservador implements ObservadorEnvio {
                 + " → estado: " + envio.obtenerEstado());
     }
 }
+

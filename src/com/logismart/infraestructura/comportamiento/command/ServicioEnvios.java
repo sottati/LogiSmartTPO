@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.comportamiento.command;
+﻿package com.logismart.infraestructura.comportamiento.command;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,3 +68,4 @@ public class ServicioEnvios {
         return servicios.getOrDefault(numero, new HashSet<>());
     }
 }
+

@@ -1,7 +1,7 @@
-package com.logismart.infraestructura.ruta;
+﻿package com.logismart.infraestructura.ruta;
 
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.Ruta;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.ruta.Ruta;
 
 import java.util.List;
 
@@ -26,3 +26,4 @@ public class RutaMasCercana implements CalculadorDeRuta {
         return "Ruta de menor distancia total (km)";
     }
 }
+

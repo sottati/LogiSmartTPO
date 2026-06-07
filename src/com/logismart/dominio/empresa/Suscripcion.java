@@ -1,4 +1,4 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.empresa;
 
 import java.time.LocalDate;
 
@@ -55,3 +55,4 @@ public class Suscripcion {
 		montoMensual = nuevoMontoMensual;
 	}
 }
+

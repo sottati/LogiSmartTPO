@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.repositorio;
+﻿package com.logismart.infraestructura.persistencia.repositorio;
 
-import com.logismart.dominio.Cobro;
+import com.logismart.dominio.empresa.Cobro;
 
 import java.util.List;
 
@@ -14,3 +14,4 @@ public interface RepositorioPago extends Repositorio<Cobro> {
     Cobro obtener(String id);
     List<Cobro> buscarPorEnvio(String envioId);
 }
+

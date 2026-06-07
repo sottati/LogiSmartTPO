@@ -1,9 +1,12 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.envio;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import com.logismart.dominio.ruta.ETA;
+import com.logismart.dominio.ruta.PosicionGPS;
 
 public class SeguimientoEnvio {
 	private String id;
@@ -78,3 +81,4 @@ public class SeguimientoEnvio {
 		ultimaActualizacion = LocalDateTime.now();
 	}
 }
+

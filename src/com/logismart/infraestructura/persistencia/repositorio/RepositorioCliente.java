@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.persistencia.repositorio;
+﻿package com.logismart.infraestructura.persistencia.repositorio;
 
-import com.logismart.dominio.ClienteFinal;
+import com.logismart.dominio.usuario.ClienteFinal;
 
 import java.util.List;
 
@@ -12,3 +12,4 @@ public interface RepositorioCliente extends Repositorio<ClienteFinal> {
     ClienteFinal obtener(String id);
     List<ClienteFinal> buscarPorNombre(String nombre);
 }
+

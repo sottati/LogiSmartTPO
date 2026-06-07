@@ -1,7 +1,7 @@
-package com.logismart.infraestructura.costo;
+﻿package com.logismart.infraestructura.costo;
 
-import com.logismart.dominio.Envio;
-import com.logismart.dominio.Orden;
+import com.logismart.dominio.envio.Envio;
+import com.logismart.dominio.envio.Orden;
 
 /**
  * GRASP Protected Variations: Politica de costo proporcional al total de bultos de las ordenes.
@@ -31,3 +31,4 @@ public class CalculadorDeCostoPorPeso implements CalculadorDeCosto {
         return String.format("Tarifa por bulto: $%.2f / bulto", costoPorBulto);
     }
 }
+

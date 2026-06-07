@@ -1,5 +1,6 @@
-package com.logismart.dominio;
+﻿package com.logismart.dominio.vehiculo;
 
+import com.logismart.dominio.empresa.Empresa;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,3 +50,4 @@ public class Flota {
 		return vehiculos.stream().filter(Vehiculo::isDisponible).collect(Collectors.toSet());
 	}
 }
+

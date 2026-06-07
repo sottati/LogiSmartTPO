@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.costo;
+﻿package com.logismart.infraestructura.costo;
 
-import com.logismart.dominio.Envio;
+import com.logismart.dominio.envio.Envio;
 
 /**
  * GRASP Protected Variations: Politica de costo proporcional a la distancia de la ruta.
@@ -33,3 +33,4 @@ public class CalculadorDeCostoPorDistancia implements CalculadorDeCosto {
         return String.format("Tarifa por distancia: $%.2f / km", costoPorKm);
     }
 }
+

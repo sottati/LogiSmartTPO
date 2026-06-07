@@ -1,6 +1,6 @@
-package com.logismart.infraestructura.fabrica;
+﻿package com.logismart.infraestructura.fabrica;
 
-import com.logismart.dominio.Vehiculo;
+import com.logismart.dominio.vehiculo.Vehiculo;
 
 import java.util.UUID;
 
@@ -33,3 +33,4 @@ public final class FabricaDeVehiculos {
         );
     }
 }
+
