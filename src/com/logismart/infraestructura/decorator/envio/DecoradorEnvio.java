@@ -1,9 +1,9 @@
 package com.logismart.infraestructura.decorator.envio;
 
-public abstract class DecoradorEnvio implements Envio {
-    protected final Envio envioDecorado;
+public abstract class DecoradorEnvio implements ComponenteEnvio {
+    protected final ComponenteEnvio envioDecorado;
 
-    protected DecoradorEnvio(Envio envio) {
+    protected DecoradorEnvio(ComponenteEnvio envio) {
         this.envioDecorado = envio;
     }
 

@@ -1,11 +1,11 @@
 package com.logismart.infraestructura.composite.centro;
 
-public abstract class CentroDistribucion {
+public abstract class CentroDistribucionComposite {
     protected String nombre;
     protected String ubicacion;
     protected String codigo;
 
-    protected CentroDistribucion(String nombre, String ubicacion, String codigo) {
+    protected CentroDistribucionComposite(String nombre, String ubicacion, String codigo) {
         this.nombre = nombre;
         this.ubicacion = ubicacion;
         this.codigo = codigo;

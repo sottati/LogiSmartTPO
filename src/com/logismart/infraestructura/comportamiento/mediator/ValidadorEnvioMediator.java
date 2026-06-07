@@ -1,4 +1,4 @@
-﻿package com.logismart.infraestructura.comportamiento.mediator;
+package com.logismart.infraestructura.comportamiento.mediator;
 
 import com.logismart.dominio.envio.Envio;
 
@@ -8,11 +8,11 @@ import com.logismart.dominio.envio.Envio;
  *
  * Patrón: Mediator (GoF) - Hito 11
  */
-public class ValidadorEnvio {
+public class ValidadorEnvioMediator {
 
     private final MediadorEnvios mediador;
 
-    public ValidadorEnvio(MediadorEnvios mediador) {
+    public ValidadorEnvioMediator(MediadorEnvios mediador) {
         this.mediador = mediador;
     }
 
@@ -28,4 +28,3 @@ public class ValidadorEnvio {
         }
     }
 }
-

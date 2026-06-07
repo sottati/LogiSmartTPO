@@ -7,17 +7,16 @@ import com.logismart.infraestructura.comportamiento.iterator.ColeccionEnvios;
 import com.logismart.infraestructura.comportamiento.iterator.ColeccionHash;
 import com.logismart.infraestructura.comportamiento.iterator.ColeccionLista;
 import com.logismart.infraestructura.comportamiento.iterator.IteradorEnvios;
-import com.logismart.infraestructura.comportamiento.mediator.CentroDistribucion;
+import com.logismart.infraestructura.comportamiento.mediator.CentroDistribucionMediator;
 import com.logismart.infraestructura.comportamiento.mediator.MediadorEnvios;
 import com.logismart.infraestructura.comportamiento.mediator.MediadorEnviosConcreto;
 import com.logismart.infraestructura.comportamiento.mediator.SistemaAuditoria;
 import com.logismart.infraestructura.comportamiento.mediator.SistemaNotificacion;
 import com.logismart.infraestructura.comportamiento.mediator.SistemaPago;
-import com.logismart.infraestructura.comportamiento.mediator.ValidadorEnvio;
+import com.logismart.infraestructura.comportamiento.mediator.ValidadorEnvioMediator;
 import com.logismart.infraestructura.comportamiento.memento.HistorialEnvios;
 import com.logismart.infraestructura.comportamiento.observer.CentroDistribucionObservador;
 import com.logismart.infraestructura.comportamiento.observer.DashboardObservador;
-import com.logismart.infraestructura.comportamiento.observer.SistemaAuditoriaObservador;
 import com.logismart.infraestructura.comportamiento.observer.SistemaNotificacionObservador;
 
 import java.util.Arrays;
@@ -114,8 +113,8 @@ public final class CasosDePruebaHito11 {
         System.out.println("\n--- Mediator ---");
 
         MediadorEnvios      med  = new MediadorEnviosConcreto();
-        CentroDistribucion  cen  = new CentroDistribucion(med);
-        ValidadorEnvio      val  = new ValidadorEnvio(med);
+        CentroDistribucionMediator  cen  = new CentroDistribucionMediator(med);
+        ValidadorEnvioMediator      val  = new ValidadorEnvioMediator(med);
         SistemaPago         pag  = new SistemaPago(med);
         SistemaNotificacion not  = new SistemaNotificacion(med);
         SistemaAuditoria    aud  = new SistemaAuditoria();
@@ -218,7 +217,7 @@ public final class CasosDePruebaHito11 {
 
         envio.adjuntarObservador(new CentroDistribucionObservador());
         envio.adjuntarObservador(new SistemaNotificacionObservador());
-        envio.adjuntarObservador(new SistemaAuditoriaObservador());
+        envio.adjuntarObservador(new SistemaAuditoria());
         envio.adjuntarObservador(new DashboardObservador());
         envio.adjuntarObservador(contador);
 

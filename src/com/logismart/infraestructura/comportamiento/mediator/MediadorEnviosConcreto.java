@@ -19,14 +19,14 @@ import com.logismart.dominio.envio.Envio;
  */
 public class MediadorEnviosConcreto implements MediadorEnvios {
 
-    private CentroDistribucion  centro;
-    private ValidadorEnvio      validador;
+    private CentroDistribucionMediator  centro;
+    private ValidadorEnvioMediator      validador;
     private SistemaPago         pago;
     private SistemaNotificacion notificador;
     private SistemaAuditoria    auditoria;
 
-    @Override public void registrarCentro(CentroDistribucion c)       { this.centro       = c; }
-    @Override public void registrarValidador(ValidadorEnvio v)        { this.validador    = v; }
+    @Override public void registrarCentro(CentroDistribucionMediator c)    { this.centro    = c; }
+    @Override public void registrarValidador(ValidadorEnvioMediator v)    { this.validador = v; }
     @Override public void registrarPago(SistemaPago p)                { this.pago         = p; }
     @Override public void registrarNotificador(SistemaNotificacion n) { this.notificador  = n; }
     @Override public void registrarAuditoria(SistemaAuditoria a)      { this.auditoria    = a; }

@@ -5,16 +5,15 @@ import com.logismart.dominio.envio.ObservadorEnvio;
 import com.logismart.infraestructura.comportamiento.iterator.ColeccionArray;
 import com.logismart.infraestructura.comportamiento.iterator.ColeccionEnvios;
 import com.logismart.infraestructura.comportamiento.iterator.IteradorEnvios;
-import com.logismart.infraestructura.comportamiento.mediator.CentroDistribucion;
+import com.logismart.infraestructura.comportamiento.mediator.CentroDistribucionMediator;
 import com.logismart.infraestructura.comportamiento.mediator.MediadorEnvios;
 import com.logismart.infraestructura.comportamiento.mediator.MediadorEnviosConcreto;
 import com.logismart.infraestructura.comportamiento.mediator.SistemaAuditoria;
 import com.logismart.infraestructura.comportamiento.mediator.SistemaNotificacion;
 import com.logismart.infraestructura.comportamiento.mediator.SistemaPago;
-import com.logismart.infraestructura.comportamiento.mediator.ValidadorEnvio;
+import com.logismart.infraestructura.comportamiento.mediator.ValidadorEnvioMediator;
 import com.logismart.infraestructura.comportamiento.memento.HistorialEnvios;
 import com.logismart.infraestructura.comportamiento.observer.CentroDistribucionObservador;
-import com.logismart.infraestructura.comportamiento.observer.SistemaAuditoriaObservador;
 import com.logismart.infraestructura.comportamiento.observer.SistemaNotificacionObservador;
 
 import java.util.List;
@@ -36,14 +35,14 @@ public class SistemaLogisticaEventDriven {
     private final MediadorEnvios  mediador;
     private final ColeccionEnvios coleccion;
     private final HistorialEnvios historial;
-    private final CentroDistribucion centro;
+    private final CentroDistribucionMediator centro;
     private final SistemaAuditoria   auditoria;
 
     public SistemaLogisticaEventDriven() {
         // ── Mediator: construir y registrar todos los componentes ────────────
         this.mediador   = new MediadorEnviosConcreto();
-        this.centro     = new CentroDistribucion(mediador);
-        ValidadorEnvio      validador   = new ValidadorEnvio(mediador);
+        this.centro     = new CentroDistribucionMediator(mediador);
+        ValidadorEnvioMediator validador = new ValidadorEnvioMediator(mediador);
         SistemaPago         pago        = new SistemaPago(mediador);
         SistemaNotificacion notificador = new SistemaNotificacion(mediador);
         this.auditoria  = new SistemaAuditoria();
@@ -69,9 +68,8 @@ public class SistemaLogisticaEventDriven {
      * 4. MEDIATOR - se lanza el pipeline completo
      */
     public void procesarEnvios(List<Envio> envios) {
-        ObservadorEnvio centroObs    = new CentroDistribucionObservador();
-        ObservadorEnvio notifObs     = new SistemaNotificacionObservador();
-        ObservadorEnvio auditoriaObs = new SistemaAuditoriaObservador();
+        ObservadorEnvio centroObs = new CentroDistribucionObservador();
+        ObservadorEnvio notifObs  = new SistemaNotificacionObservador();
 
         for (Envio envio : envios) {
             System.out.println("\n──────────────────────────────────────────");
@@ -83,10 +81,10 @@ public class SistemaLogisticaEventDriven {
             // 2. Iterator - incorporar a la colección
             coleccion.agregar(envio);
 
-            // 3. Observer - suscribir observadores
+            // 3. Observer - suscribir observadores (auditoria cubre ambos roles)
             envio.adjuntarObservador(centroObs);
             envio.adjuntarObservador(notifObs);
-            envio.adjuntarObservador(auditoriaObs);
+            envio.adjuntarObservador(auditoria);
 
             // 4. Mediator - lanzar el pipeline event-driven
             centro.crearEnvio(envio);

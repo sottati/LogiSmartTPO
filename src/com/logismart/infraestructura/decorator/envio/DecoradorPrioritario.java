@@ -1,7 +1,7 @@
 package com.logismart.infraestructura.decorator.envio;
 
 public class DecoradorPrioritario extends DecoradorEnvio {
-    public DecoradorPrioritario(Envio envio) {
+    public DecoradorPrioritario(ComponenteEnvio envio) {
         super(envio);
     }
 

@@ -29,7 +29,7 @@ public class ServicioLogisticaCompleto {
         Ubicacion origen = FabricaUbicaciones.obtener("Buenos Aires", "Buenos Aires", "1425");
         Ubicacion destino = FabricaUbicaciones.obtener("Cordoba", "Cordoba", "5000");
 
-        com.logismart.infraestructura.decorator.envio.Envio envio =
+        com.logismart.infraestructura.decorator.envio.ComponenteEnvio envio =
                 new com.logismart.infraestructura.decorator.envio.EnvioBasico(
                         origen.getCiudad(), destino.getCiudad(), peso);
 

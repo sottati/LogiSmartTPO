@@ -5,5 +5,7 @@ import com.logismart.dominio.envio.Envio;
 public interface EstrategiaCalculoCosto {
     double calcular(Envio envio);
     String obtenerNombre();
+
+    default String getDescripcion() { return obtenerNombre(); }
 }
 

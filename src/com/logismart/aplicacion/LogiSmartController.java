@@ -14,10 +14,9 @@ import com.logismart.infraestructura.fabrica.FabricaDeVehiculos;
 import com.logismart.infraestructura.fabrica.TipoEnvio;
 import com.logismart.infraestructura.fabrica.TipoNotificador;
 import com.logismart.infraestructura.fabrica.TipoVehiculo;
-import com.logismart.infraestructura.costo.CalculadorDeCosto;
+import com.logismart.infraestructura.comportamiento.strategy.EstrategiaCalculoCosto;
 import com.logismart.infraestructura.tiempo.CalculadorDeTiempo;
 import com.logismart.infraestructura.vehiculo.AsignadorDeVehiculos;
-import com.logismart.infraestructura.singleton.ConexionBD;
 import com.logismart.infraestructura.singleton.Logger;
 
 import java.time.LocalDateTime;
@@ -37,7 +36,6 @@ import java.util.List;
  */
 public class LogiSmartController {
 
-    private final ConexionBD bd = ConexionBD.obtenerInstancia();
     private final Logger logger = Logger.obtenerInstancia();
 
     private final RepositorioDeEnvios repositorioEnvios;
@@ -45,7 +43,7 @@ public class LogiSmartController {
     private final ValidadorDeEnvios validador;
     private final CalculadorDeRutas calculadorRutas;
     private final AsignadorDeVehiculos asignadorVehiculos;
-    private final CalculadorDeCosto calculadorCosto;
+    private final EstrategiaCalculoCosto calculadorCosto;
     private final CalculadorDeTiempo calculadorTiempo;
 
     public LogiSmartController(
@@ -54,7 +52,7 @@ public class LogiSmartController {
             ValidadorDeEnvios validador,
             CalculadorDeRutas calculadorRutas,
             AsignadorDeVehiculos asignadorVehiculos,
-            CalculadorDeCosto calculadorCosto,
+            EstrategiaCalculoCosto calculadorCosto,
             CalculadorDeTiempo calculadorTiempo) {
         this.repositorioEnvios   = repositorioEnvios;
         this.notificaciones      = notificaciones;
@@ -71,7 +69,7 @@ public class LogiSmartController {
             ValidadorDeEnvios validador,
             CalculadorDeRutas calculadorRutas,
             AsignadorDeVehiculos asignadorVehiculos,
-            CalculadorDeCosto calculadorCosto,
+            EstrategiaCalculoCosto calculadorCosto,
             CalculadorDeTiempo calculadorTiempo) {
         this(
                 repositorioEnvios,
@@ -121,7 +119,6 @@ public class LogiSmartController {
 
         // Persistir (Pure Fabrication: RepositorioDeEnvios)
         repositorioEnvios.guardar(envio);
-        bd.ejecutarQuery("INSERT INTO envios (id, prioridad) VALUES ('" + envio.getId() + "', '" + envio.getPrioridad() + "')");
         logger.log("Envio creado: " + envio.getId() + " tipo=" + tipoEnvio.name());
 
         // Notificar (Pure Fabrication + Indirection: ServicioDeNotificaciones -> Notificador)
@@ -191,7 +188,6 @@ public class LogiSmartController {
             // Iniciar el envio (Expert: Envio gestiona su propio estado)
             envio.iniciar();
             repositorioEnvios.guardar(envio);
-            bd.ejecutarQuery("UPDATE envios SET estado='EN_CURSO' WHERE id='" + envio.getId() + "'");
             logger.log("Ruta asignada: envio=" + idEnvio + " ruta=" + ruta.getId() + " vehiculo=" + vehiculo.getId());
 
             // Notificar (Pure Fabrication + Indirection)
@@ -236,7 +232,6 @@ public class LogiSmartController {
         Envio envio = buscarEnvioOFallar(idEnvio);
         envio.cancelar();
         repositorioEnvios.guardar(envio);
-        bd.ejecutarQuery("UPDATE envios SET estado='CANCELADO' WHERE id='" + envio.getId() + "'");
         logger.log("Envio cancelado: " + envio.getId());
         notificaciones.notificarCancelacion(envio, cliente);
     }
@@ -247,8 +242,6 @@ public class LogiSmartController {
         }
         Vehiculo vehiculo = FabricaDeVehiculos.crearVehiculo(tipoVehiculo, patente);
         flota.agregarVehiculo(vehiculo);
-        bd.ejecutarQuery("INSERT INTO vehiculos (id, tipo, patente) VALUES ('"
-                + vehiculo.getId() + "', '" + vehiculo.getTipo() + "', '" + vehiculo.getPatente() + "')");
         logger.log("Vehiculo creado por factory: " + vehiculo.getId() + " tipo=" + tipoVehiculo.name());
         return vehiculo;
     }

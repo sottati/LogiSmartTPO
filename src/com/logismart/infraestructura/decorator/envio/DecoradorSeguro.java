@@ -1,7 +1,7 @@
 package com.logismart.infraestructura.decorator.envio;
 
 public class DecoradorSeguro extends DecoradorEnvio {
-    public DecoradorSeguro(Envio envio) {
+    public DecoradorSeguro(ComponenteEnvio envio) {
         super(envio);
     }
 

@@ -1,25 +1,29 @@
 ﻿package com.logismart.infraestructura.comportamiento.mediator;
 
 import com.logismart.dominio.envio.Envio;
-
+import com.logismart.dominio.envio.ObservadorEnvio;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Componente Mediator - Sistema de Auditoría.
- * Registra cada evento del pipeline para trazabilidad completa.
- * No necesita mediador: sólo recibe registros, no dispara eventos.
+ * Sistema de Auditoría unificado.
+ * Funciona como componente Mediator (recibe registrar()) y como Observer (implementa actualizar()).
+ * Un único objeto cubre ambos roles: auditoría de pipeline y auditoría de cambios de estado.
  *
- * Patrón: Mediator (GoF) - Hito 11
+ * Patrón: Mediator + Observer (GoF) - Hito 11
  */
-public class SistemaAuditoria {
+public class SistemaAuditoria implements ObservadorEnvio {
 
     private final List<String> logs = new ArrayList<>();
 
+    @Override
+    public void actualizar(Envio envio) {
+        registrar("CAMBIO_ESTADO", envio);
+    }
+
     public void registrar(String evento, Object datos) {
-        String id = (datos instanceof Envio) ? ((Envio) datos).getId() : datos.toString();
-        String entrada = "[Auditoria] " + evento + " - envio=" + id;
+        String entrada = "[Auditoria] " + evento + " - datos=" + datos;
         logs.add(entrada);
         System.out.println(entrada);
     }

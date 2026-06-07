@@ -5,7 +5,7 @@ import com.logismart.dominio.empresa.Cobro;
 import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.composite.centro.PuntoEntrega;
 import com.logismart.infraestructura.persistencia.entidad.CentroAssembler;
-import com.logismart.infraestructura.persistencia.entidad.CentroDistribucion;
+import com.logismart.infraestructura.persistencia.entidad.CentroDistribucionEntity;
 import com.logismart.infraestructura.persistencia.lazy.CentroDistribucionLazyProxy;
 import com.logismart.infraestructura.persistencia.lazy.ClienteLazyProxy;
 import com.logismart.infraestructura.persistencia.lazy.HistorialEnviosLazyProxy;
@@ -98,14 +98,14 @@ public class CasosDePruebaHito13 {
         verificar("DM-06: buscar ClienteFinal por id",
                 "Lucia Gomez".equals(repoC.obtener("DM-CLI-001").getNombre()));
 
-        // 7. Insertar CentroDistribucion (entidad de persistencia)
-        CentroDistribucion cd = new CentroDistribucion("DM-CEN-001", "Centro Sur", "Rosario", "RS-01", 200, 80);
+        // 7. Insertar CentroDistribucionEntity (entidad de persistencia)
+        CentroDistribucionEntity cd = new CentroDistribucionEntity("DM-CEN-001", "Centro Sur", "Rosario", "RS-01", 200, 80);
         repoX.guardar(cd);
-        verificar("DM-07: insertar CentroDistribucion", repoX.obtener("DM-CEN-001") != null);
+        verificar("DM-07: insertar CentroDistribucionEntity", repoX.obtener("DM-CEN-001") != null);
 
         // 8. Datos del centro son correctos
-        CentroDistribucion cdLeido = repoX.obtener("DM-CEN-001");
-        verificar("DM-08: campos de CentroDistribucion", cdLeido.getCapacidad() == 200 && cdLeido.getOcupacion() == 80);
+        CentroDistribucionEntity cdLeido = repoX.obtener("DM-CEN-001");
+        verificar("DM-08: campos de CentroDistribucionEntity", cdLeido.getCapacidad() == 200 && cdLeido.getOcupacion() == 80);
 
         // 9. Insertar Cobro via mapper
         Cobro cobro = new Cobro("DM-COB-001", 750.0, "PENDIENTE", LocalDateTime.now(), "DEBITO");
@@ -157,14 +157,14 @@ public class CasosDePruebaHito13 {
         List<ClienteFinal> lista = repoC.buscarPorNombre("Pedro Ruiz");
         verificar("REP-16: buscarPorNombre", lista.size() == 1);
 
-        // 17. guardar CentroDistribucion y obtenerTodos
-        CentroDistribucion cd1 = new CentroDistribucion("REP-CEN-001", "C-Norte", "Tucuman", "TUC-01", 150, 30);
-        CentroDistribucion cd2 = new CentroDistribucion("REP-CEN-002", "C-Sur", "Mendoza", "MDZ-01", 120, 60);
+        // 17. guardar CentroDistribucionEntity y obtenerTodos
+        CentroDistribucionEntity cd1 = new CentroDistribucionEntity("REP-CEN-001", "C-Norte", "Tucuman", "TUC-01", 150, 30);
+        CentroDistribucionEntity cd2 = new CentroDistribucionEntity("REP-CEN-002", "C-Sur", "Mendoza", "MDZ-01", 120, 60);
         repoX.guardar(cd1); repoX.guardar(cd2);
         verificar("REP-17: obtenerTodos Centros", repoX.obtenerTodos().size() == 2);
 
         // 18. buscarPorUbicacion
-        List<CentroDistribucion> enTucuman = repoX.buscarPorUbicacion("Tucuman");
+        List<CentroDistribucionEntity> enTucuman = repoX.buscarPorUbicacion("Tucuman");
         verificar("REP-18: buscarPorUbicacion", enTucuman.size() == 1);
 
         // 19. guardar Cobros y buscarPorEnvio
@@ -224,7 +224,7 @@ public class CasosDePruebaHito13 {
 
         // 28. multi-entidad: varios tipos en un commit
         UnitOfWork uow2 = new UnitOfWork();
-        CentroDistribucion cd = new CentroDistribucion("UOW-CEN-001", "C", "L", "C-01", 10, 5);
+        CentroDistribucionEntity cd = new CentroDistribucionEntity("UOW-CEN-001", "C", "L", "C-01", 10, 5);
         uow2.registrarNuevo(e);
         uow2.registrarNuevo(c);
         uow2.registrarNuevo(cd);
@@ -249,7 +249,7 @@ public class CasosDePruebaHito13 {
                 "h", "CLIENTE", "ACTIVO", "Marta Diaz", "555-7777", "Bv. Oroño 500");
         repoC.guardar(cliente);
 
-        CentroDistribucion centro = new CentroDistribucion("LL-CEN-001", "Hub Este", "Posadas", "PSS-01", 80, 20);
+        CentroDistribucionEntity centro = new CentroDistribucionEntity("LL-CEN-001", "Hub Este", "Posadas", "PSS-01", 80, 20);
         repoX.guardar(centro);
 
         Envio envio1 = new Envio.EnvioBuilder("LL-CLI-001-ENV-A", "Posadas", "Corrientes").build();
@@ -278,7 +278,7 @@ public class CasosDePruebaHito13 {
         verificar("LL-33: proxy centro no cargado al crear", !centroProxy.estaCargado());
 
         // 34. CentroDistribucionLazyProxy carga al primer acceso
-        CentroDistribucion centroLazy = centroProxy.getCentro();
+        CentroDistribucionEntity centroLazy = centroProxy.getCentro();
         verificar("LL-34: proxy centro cargado y datos correctos",
                 centroProxy.estaCargado() && centroLazy != null && centroLazy.getCapacidad() == 80);
 
@@ -320,7 +320,7 @@ public class CasosDePruebaHito13 {
 
         // 38. CentroAssembler proyecta Composite a entidad plana
         PuntoEntrega punto = new PuntoEntrega("Deposito Central", "Cordoba", "CBA-DC", 500);
-        CentroDistribucion entidad = CentroAssembler.aPersistencia("ARQ-CEN-001", punto);
+        CentroDistribucionEntity entidad = CentroAssembler.aPersistencia("ARQ-CEN-001", punto);
         verificar("ARQ-38: CentroAssembler proyecta capacidad correcta", entidad.getCapacidad() == 500);
 
         // 39. ServicioCentros persiste la proyeccion

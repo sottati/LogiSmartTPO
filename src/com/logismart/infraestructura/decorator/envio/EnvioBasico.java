@@ -1,6 +1,6 @@
 package com.logismart.infraestructura.decorator.envio;
 
-public class EnvioBasico implements Envio {
+public class EnvioBasico implements ComponenteEnvio {
     private final String origen;
     private final String destino;
     private final double peso;

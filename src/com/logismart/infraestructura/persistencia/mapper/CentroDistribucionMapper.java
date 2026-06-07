@@ -1,15 +1,15 @@
 package com.logismart.infraestructura.persistencia.mapper;
 
-import com.logismart.infraestructura.persistencia.entidad.CentroDistribucion;
+import com.logismart.infraestructura.persistencia.entidad.CentroDistribucionEntity;
 
 /**
- * Data Mapper para CentroDistribucion (entidad de persistencia).
+ * Data Mapper para CentroDistribucionEntity (entidad de persistencia).
  * Opera sobre la entidad plana generada por CentroAssembler — no sobre el Composite.
  * Patron: Data Mapper (Fowler, PoEAA).
  */
 public interface CentroDistribucionMapper {
-    void insertar(CentroDistribucion centro);
-    void actualizar(CentroDistribucion centro);
+    void insertar(CentroDistribucionEntity centro);
+    void actualizar(CentroDistribucionEntity centro);
     void eliminar(String id);
-    CentroDistribucion buscarPorId(String id);
+    CentroDistribucionEntity buscarPorId(String id);
 }

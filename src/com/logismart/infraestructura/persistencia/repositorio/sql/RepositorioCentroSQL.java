@@ -1,6 +1,6 @@
 package com.logismart.infraestructura.persistencia.repositorio.sql;
 
-import com.logismart.infraestructura.persistencia.entidad.CentroDistribucion;
+import com.logismart.infraestructura.persistencia.entidad.CentroDistribucionEntity;
 import com.logismart.infraestructura.persistencia.mapper.sql.CentroDistribucionMapperSQL;
 import com.logismart.infraestructura.persistencia.repositorio.RepositorioCentro;
 
@@ -27,24 +27,24 @@ public class RepositorioCentroSQL implements RepositorioCentro {
     }
 
     @Override
-    public void guardar(CentroDistribucion centro) {
+    public void guardar(CentroDistribucionEntity centro) {
         mapper.insertar(centro);
     }
 
     @Override
-    public CentroDistribucion obtener(int id) {
+    public CentroDistribucionEntity obtener(int id) {
         return mapper.buscarPorId(String.valueOf(id));
     }
 
     @Override
-    public List<CentroDistribucion> obtenerTodos() {
+    public List<CentroDistribucionEntity> obtenerTodos() {
         String sql = "SELECT id, nombre, ubicacion, codigo, capacidad, ocupacion "
                    + "FROM centros_distribucion";
-        List<CentroDistribucion> lista = new ArrayList<>();
+        List<CentroDistribucionEntity> lista = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                lista.add(new CentroDistribucion(
+                lista.add(new CentroDistribucionEntity(
                         rs.getString("id"),
                         rs.getString("nombre"),
                         rs.getString("ubicacion"),
@@ -64,15 +64,15 @@ public class RepositorioCentroSQL implements RepositorioCentro {
     }
 
     @Override
-    public List<CentroDistribucion> buscarPorUbicacion(String ubicacion) {
+    public List<CentroDistribucionEntity> buscarPorUbicacion(String ubicacion) {
         String sql = "SELECT id, nombre, ubicacion, codigo, capacidad, ocupacion "
                    + "FROM centros_distribucion WHERE ubicacion=?";
-        List<CentroDistribucion> lista = new ArrayList<>();
+        List<CentroDistribucionEntity> lista = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, ubicacion);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    lista.add(new CentroDistribucion(
+                    lista.add(new CentroDistribucionEntity(
                             rs.getString("id"),
                             rs.getString("nombre"),
                             rs.getString("ubicacion"),

@@ -41,19 +41,19 @@ public final class CasosDePruebaHito9 {
 
     private static void probarDecorator() {
         System.out.println("\n--- Decorator ---");
-        com.logismart.infraestructura.decorator.envio.Envio envio1 =
-                new com.logismart.infraestructura.decorator.envio.EnvioBasico("Buenos Aires", "Cordoba", 5.0);
+        com.logismart.infraestructura.decorator.envio.ComponenteEnvio envio1 =
+                new com.logismart.infraestructura.decorator.envio.ComponenteEnvioBasico("Buenos Aires", "Cordoba", 5.0);
         verificar(Math.abs(envio1.obtenerCosto() - 50.0) < 0.0001, "Caso 1: envio basico costo base");
         verificar(envio1.obtenerTiempoEntrega() == 3, "Caso 1: envio basico tiempo base");
 
-        com.logismart.infraestructura.decorator.envio.Envio envio2 = new DecoradorSeguro(envio1);
+        com.logismart.infraestructura.decorator.envio.ComponenteEnvio envio2 = new DecoradorSeguro(envio1);
         verificar(Math.abs(envio2.obtenerCosto() - 57.5) < 0.0001, "Caso 2: envio con seguro");
 
-        com.logismart.infraestructura.decorator.envio.Envio envio3 = new DecoradorRastreoGPS(envio2);
+        com.logismart.infraestructura.decorator.envio.ComponenteEnvio envio3 = new DecoradorRastreoGPS(envio2);
         verificar(Math.abs(envio3.obtenerCosto() - 107.5) < 0.0001, "Caso 3: envio con seguro y rastreo");
         verificar(envio3.obtenerTiempoEntrega() == 2, "Caso 3: rastreo reduce tiempo");
 
-        com.logismart.infraestructura.decorator.envio.Envio envio4 = new DecoradorPrioritario(
+        com.logismart.infraestructura.decorator.envio.ComponenteEnvio envio4 = new DecoradorPrioritario(
                 new DecoradorNotificacionesSMS(
                         new DecoradorRastreoGPS(
                                 new DecoradorSeguro(envio1))));

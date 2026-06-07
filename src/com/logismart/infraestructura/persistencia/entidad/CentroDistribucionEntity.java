@@ -4,7 +4,7 @@ package com.logismart.infraestructura.persistencia.entidad;
  * Entidad de persistencia plana para CentroDistribucion.
  * Representa una fila en la tabla centros_distribucion.
  *
- * Separada deliberadamente del Composite (infraestructura/composite/centro/CentroDistribucion)
+ * Separada deliberadamente del Composite (CentroDistribucionComposite)
  * que es abstracto y calcula capacidad/ocupacion sumando hijos.
  * Esta clase es una proyeccion snapshot generada por CentroAssembler — no se edita
  * directamente. El Composite es la unica fuente de verdad.
@@ -12,7 +12,7 @@ package com.logismart.infraestructura.persistencia.entidad;
  * Decision de diseno (Hito 13): separar dominio de persistencia evita que el
  * modelo de almacenamiento acople a la jerarquia Composite.
  */
-public class CentroDistribucion {
+public class CentroDistribucionEntity {
     private String id;
     private String nombre;
     private String ubicacion;
@@ -20,10 +20,10 @@ public class CentroDistribucion {
     private int capacidad;
     private int ocupacion;
 
-    public CentroDistribucion() {}
+    public CentroDistribucionEntity() {}
 
-    public CentroDistribucion(String id, String nombre, String ubicacion,
-                               String codigo, int capacidad, int ocupacion) {
+    public CentroDistribucionEntity(String id, String nombre, String ubicacion,
+                                    String codigo, int capacidad, int ocupacion) {
         this.id = id;
         this.nombre = nombre;
         this.ubicacion = ubicacion;
@@ -52,7 +52,7 @@ public class CentroDistribucion {
 
     @Override
     public String toString() {
-        return "CentroDistribucion{id='" + id + "', nombre='" + nombre
+        return "CentroDistribucionEntity{id='" + id + "', nombre='" + nombre
              + "', ubicacion='" + ubicacion + "', capacidad=" + capacidad
              + ", ocupacion=" + ocupacion + "}";
     }

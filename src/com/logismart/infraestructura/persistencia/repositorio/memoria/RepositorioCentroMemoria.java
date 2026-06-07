@@ -1,6 +1,6 @@
 package com.logismart.infraestructura.persistencia.repositorio.memoria;
 
-import com.logismart.infraestructura.persistencia.entidad.CentroDistribucion;
+import com.logismart.infraestructura.persistencia.entidad.CentroDistribucionEntity;
 import com.logismart.infraestructura.persistencia.repositorio.RepositorioCentro;
 
 import java.util.ArrayList;
@@ -10,31 +10,31 @@ import java.util.Map;
 
 /**
  * Implementacion en memoria de RepositorioCentro.
- * Usa HashMap<String, CentroDistribucion> internamente.
- * La entidad de persistencia CentroDistribucion usa String id (generado por el sistema).
+ * Usa HashMap<String, CentroDistribucionEntity> internamente.
+ * La entidad de persistencia CentroDistribucionEntity usa String id (generado por el sistema).
  * La interfaz generica usa int id; se mapea via String.valueOf.
  */
 public class RepositorioCentroMemoria implements RepositorioCentro {
 
-    private final Map<String, CentroDistribucion> almacen = new HashMap<>();
+    private final Map<String, CentroDistribucionEntity> almacen = new HashMap<>();
 
     @Override
-    public void guardar(CentroDistribucion centro) {
+    public void guardar(CentroDistribucionEntity centro) {
         almacen.put(centro.getId(), centro);
     }
 
     @Override
-    public CentroDistribucion obtener(int id) {
+    public CentroDistribucionEntity obtener(int id) {
         return almacen.get(String.valueOf(id));
     }
 
     /** Overload String id — conveniente para el uso interno. */
-    public CentroDistribucion obtener(String id) {
+    public CentroDistribucionEntity obtener(String id) {
         return almacen.get(id);
     }
 
     @Override
-    public List<CentroDistribucion> obtenerTodos() {
+    public List<CentroDistribucionEntity> obtenerTodos() {
         return new ArrayList<>(almacen.values());
     }
 
@@ -48,9 +48,9 @@ public class RepositorioCentroMemoria implements RepositorioCentro {
     }
 
     @Override
-    public List<CentroDistribucion> buscarPorUbicacion(String ubicacion) {
-        List<CentroDistribucion> resultado = new ArrayList<>();
-        for (CentroDistribucion c : almacen.values()) {
+    public List<CentroDistribucionEntity> buscarPorUbicacion(String ubicacion) {
+        List<CentroDistribucionEntity> resultado = new ArrayList<>();
+        for (CentroDistribucionEntity c : almacen.values()) {
             if (ubicacion != null && ubicacion.equalsIgnoreCase(c.getUbicacion())) {
                 resultado.add(c);
             }

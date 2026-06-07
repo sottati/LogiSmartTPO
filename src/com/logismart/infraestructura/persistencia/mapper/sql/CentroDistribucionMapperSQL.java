@@ -1,6 +1,6 @@
 package com.logismart.infraestructura.persistencia.mapper.sql;
 
-import com.logismart.infraestructura.persistencia.entidad.CentroDistribucion;
+import com.logismart.infraestructura.persistencia.entidad.CentroDistribucionEntity;
 import com.logismart.infraestructura.persistencia.mapper.CentroDistribucionMapper;
 
 import java.sql.Connection;
@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Implementacion SQL del Data Mapper para CentroDistribucion (entidad de persistencia).
+ * Implementacion SQL del Data Mapper para CentroDistribucionEntity (entidad de persistencia).
  * Tabla esperada: centros_distribucion(id VARCHAR PK, nombre, ubicacion, codigo, capacidad INT, ocupacion INT)
  *
  * Opera sobre la entidad plana snapshot, generada previamente por CentroAssembler.
@@ -24,7 +24,7 @@ public class CentroDistribucionMapperSQL implements CentroDistribucionMapper {
     }
 
     @Override
-    public void insertar(CentroDistribucion centro) {
+    public void insertar(CentroDistribucionEntity centro) {
         String sql = "INSERT INTO centros_distribucion (id, nombre, ubicacion, codigo, capacidad, ocupacion) "
                    + "VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -41,7 +41,7 @@ public class CentroDistribucionMapperSQL implements CentroDistribucionMapper {
     }
 
     @Override
-    public void actualizar(CentroDistribucion centro) {
+    public void actualizar(CentroDistribucionEntity centro) {
         String sql = "UPDATE centros_distribucion SET nombre=?, ubicacion=?, codigo=?, "
                    + "capacidad=?, ocupacion=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -69,14 +69,14 @@ public class CentroDistribucionMapperSQL implements CentroDistribucionMapper {
     }
 
     @Override
-    public CentroDistribucion buscarPorId(String id) {
+    public CentroDistribucionEntity buscarPorId(String id) {
         String sql = "SELECT id, nombre, ubicacion, codigo, capacidad, ocupacion "
                    + "FROM centros_distribucion WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new CentroDistribucion(
+                    return new CentroDistribucionEntity(
                             rs.getString("id"),
                             rs.getString("nombre"),
                             rs.getString("ubicacion"),

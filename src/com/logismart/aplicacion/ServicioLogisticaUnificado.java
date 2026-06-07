@@ -17,7 +17,7 @@ import com.logismart.infraestructura.bridge.reporte.Reporte;
 import com.logismart.infraestructura.bridge.reporte.ReporteDesempenoProveedores;
 import com.logismart.infraestructura.bridge.reporte.ReporteEnvios;
 import com.logismart.infraestructura.bridge.reporte.ReporteIngresos;
-import com.logismart.infraestructura.composite.centro.CentroDistribucion;
+import com.logismart.infraestructura.composite.centro.CentroDistribucionComposite;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,10 +28,10 @@ public class ServicioLogisticaUnificado {
     private final Map<String, ProveedorEnvio> proveedoresEnvio = new HashMap<>();
     private final Map<String, ProveedorPago> proveedoresPago = new HashMap<>();
     private final Map<String, Integer> desempenoProveedores = new HashMap<>();
-    private final CentroDistribucion centroDistribucion;
+    private final CentroDistribucionComposite centroDistribucion;
     private final List<Envio> enviosRegistrados = new ArrayList<>();
 
-    public ServicioLogisticaUnificado(CentroDistribucion centroDistribucion) {
+    public ServicioLogisticaUnificado(CentroDistribucionComposite centroDistribucion) {
         this.centroDistribucion = centroDistribucion;
         registrarProveedorEnvio(new AdapterDHL());
         registrarProveedorEnvio(new AdapterFedEx());
@@ -75,7 +75,7 @@ public class ServicioLogisticaUnificado {
         }
     }
 
-    public CentroDistribucion obtenerCentroDistribucion() {
+    public CentroDistribucionComposite obtenerCentroDistribucionComposite() {
         return centroDistribucion;
     }
 

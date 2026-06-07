@@ -4,7 +4,7 @@ import com.logismart.dominio.envio.Envio;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PuntoEntrega extends CentroDistribucion {
+public class PuntoEntrega extends CentroDistribucionComposite {
     private final int capacidad;
     private final List<Envio> enviosAlmacenados = new ArrayList<>();
 

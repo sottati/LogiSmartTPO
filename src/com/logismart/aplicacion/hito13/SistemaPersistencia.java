@@ -5,7 +5,7 @@ import com.logismart.dominio.empresa.Cobro;
 import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.composite.centro.PuntoEntrega;
 import com.logismart.infraestructura.persistencia.entidad.CentroAssembler;
-import com.logismart.infraestructura.persistencia.entidad.CentroDistribucion;
+import com.logismart.infraestructura.persistencia.entidad.CentroDistribucionEntity;
 import com.logismart.infraestructura.persistencia.lazy.CentroDistribucionLazyProxy;
 import com.logismart.infraestructura.persistencia.lazy.ClienteLazyProxy;
 import com.logismart.infraestructura.persistencia.lazy.HistorialEnviosLazyProxy;
@@ -48,7 +48,7 @@ public class SistemaPersistencia {
         // ── CentroAssembler: proyeccion Composite → persistencia ──────────────
         System.out.println("\n[1] CentroAssembler — proyeccion de Composite a entidad plana");
         PuntoEntrega nodo = new PuntoEntrega("Centro BA", "Buenos Aires", "CBA-01", 100);
-        CentroDistribucion entidadCentro = CentroAssembler.aPersistencia("C001", nodo);
+        CentroDistribucionEntity entidadCentro = CentroAssembler.aPersistencia("C001", nodo);
         svcCentros.crearCentro(entidadCentro);
         System.out.println("  Centro persistido: " + entidadCentro);
 
@@ -76,7 +76,7 @@ public class SistemaPersistencia {
 
         CentroDistribucionLazyProxy centroProxy = new CentroDistribucionLazyProxy(repoCentros, "C001");
         System.out.println("  CentroProxy creado — cargado: " + centroProxy.estaCargado());
-        CentroDistribucion centroLazy = centroProxy.getCentro();
+        CentroDistribucionEntity centroLazy = centroProxy.getCentro();
         System.out.println("  Tras getCentro() — cargado: " + centroProxy.estaCargado()
                 + " | nombre: " + (centroLazy != null ? centroLazy.getNombre() : "null"));
 

@@ -12,8 +12,8 @@ package com.logismart.infraestructura.comportamiento.mediator;
  */
 public interface MediadorEnvios {
 
-    void registrarCentro(CentroDistribucion centro);
-    void registrarValidador(ValidadorEnvio validador);
+    void registrarCentro(CentroDistribucionMediator centro);
+    void registrarValidador(ValidadorEnvioMediator validador);
     void registrarPago(SistemaPago pago);
     void registrarNotificador(SistemaNotificacion notificador);
     void registrarAuditoria(SistemaAuditoria auditoria);

@@ -1,7 +1,7 @@
 package com.logismart.infraestructura.decorator.envio;
 
 public class DecoradorRastreoGPS extends DecoradorEnvio {
-    public DecoradorRastreoGPS(Envio envio) {
+    public DecoradorRastreoGPS(ComponenteEnvio envio) {
         super(envio);
     }
 

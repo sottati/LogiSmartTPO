@@ -1,19 +1,19 @@
-﻿package com.logismart.infraestructura.comportamiento.mediator;
+package com.logismart.infraestructura.comportamiento.mediator;
 
 import com.logismart.dominio.envio.Envio;
 
 /**
  * Componente Mediator - Centro de Distribución.
  * Inicia el pipeline publicando "ENVIO_CREADO" y registra el envío al final.
- * No conoce a ValidadorEnvio, SistemaPago ni SistemaNotificacion.
+ * No conoce a ValidadorEnvioMediator, SistemaPago ni SistemaNotificacion.
  *
  * Patrón: Mediator (GoF) - Hito 11
  */
-public class CentroDistribucion {
+public class CentroDistribucionMediator {
 
     private final MediadorEnvios mediador;
 
-    public CentroDistribucion(MediadorEnvios mediador) {
+    public CentroDistribucionMediator(MediadorEnvios mediador) {
         this.mediador = mediador;
     }
 
@@ -27,4 +27,3 @@ public class CentroDistribucion {
         mediador.notificar("ENVIO_REGISTRADO", envio);
     }
 }
-

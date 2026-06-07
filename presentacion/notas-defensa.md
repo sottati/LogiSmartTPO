@@ -776,6 +776,48 @@ Las flechas van hacia adentro: la infraestructura conoce al dominio, pero no al 
 
 ---
 
+## 17. Refactors aplicados post-análisis de cohesión
+
+### LogiSmartController — SQL directo mezclado con coordinación de CU
+
+**Problema:** El Controller llamaba directamente a `ConexionBD.obtenerInstancia()` y ejecutaba SQL crudo (`bd.ejecutarQuery("INSERT INTO envios...")`) en los mismos métodos donde coordina los casos de uso. El repositorio (`RepositorioDeEnvios.guardar(envio)`) ya manejaba la persistencia — el SQL era redundante y acoplaba el Controller a la infraestructura de base de datos.
+
+**Corrección:** Se eliminaron todos los `bd.ejecutarQuery(...)` del Controller y el campo `ConexionBD bd`. La persistencia queda exclusivamente en el repositorio (Pure Fabrication correcta). El `Logger` se mantuvo — logging de aplicación es cross-cutting y apropiado en el Controller.
+
+**Cómo responderlo en la defensa:**
+> "El Controller tenía llamadas SQL directas además de usar el repositorio — doble camino de persistencia. Lo corregimos: el Controller solo coordina, el repositorio persiste. El SQL crudo también era un injection risk al concatenar strings sin parametrizar."
+
+---
+
+### Vehiculo.getCostoBaseKm() — condicional de tipo en lugar de polimorfismo
+
+**Problema:** `Vehiculo.getCostoBaseKm()` usaba `if ("CAMION".equalsIgnoreCase(tipo)) return 1.8` — exactamente el smell que GRASP Polymorphism evita. Peor: `FabricaDeVehiculos` creaba instancias de `Vehiculo` directamente con un String de tipo, ignorando las subclases `Camion`, `Auto`, `Moto` que ya existían (creadas para el Abstract Factory de hitos anteriores).
+
+**Corrección:**
+- Cada subclase override `getCostoBaseKm()`: `Camion → 1.8`, `Auto → 1.0`, `Moto → 0.9`
+- Se agregó constructor `(String id, String patente)` a cada subclase
+- `FabricaDeVehiculos` ahora crea `new Camion(id, patente)` / `new Moto(...)` / `new Auto(...)` según el `TipoVehiculo`
+- `Vehiculo.getCostoBaseKm()` queda como `return 1.0` (default polimórfico)
+
+**Cómo responderlo en la defensa:**
+> "Teníamos subclases `Camion`, `Auto`, `Moto` para el Abstract Factory, pero la otra factory creaba `new Vehiculo(...)` directamente con un String. Eso hacía que `getCostoBaseKm()` necesitara un if sobre el tipo. Lo corregimos: la factory ahora crea la subclase correcta y el costo base es polimórfico."
+
+---
+
+### SistemaAuditoria — instanceof para extraer ID
+
+**Problema:** `registrar(String evento, Object datos)` hacía `if (datos instanceof Envio) getId() else toString()` — chequeo de tipo explícito, violación de Polymorphism.
+
+**Corrección:** Se usa `datos.toString()` directamente. `Envio` ya tiene `toString()` implementado (`"Envio{id='...', origen='...', ...}"`), así que el log sigue siendo informativo. El método acepta cualquier `Object` sin saber su tipo concreto.
+
+---
+
+### Dependencias directas — análisis y decisión
+
+**`Logger` (Singleton):** Se mantiene accedido via `Logger.obtenerInstancia()` en el Controller. Es una Pure Fabrication de infraestructura transversal — el acceso por Singleton es apropiado; inyectarlo no añadiría valor testable.
+
+**Factories estáticas (`FabricaDeEnvios`, `FabricaDeVehiculos`):** El Controller las llama directamente. Son el patrón Factory Method — el acoplamiento es intencional. Inyectar una interfaz `FactoriaEnvios` sería over-engineering para el contexto del TPO.
+
 ---
 
 ## 15. GRASP — cómo quedó aplicado en LogiSmart

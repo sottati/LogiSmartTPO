@@ -1,7 +1,7 @@
 package com.logismart.infraestructura.decorator.envio;
 
 public class DecoradorNotificacionesSMS extends DecoradorEnvio {
-    public DecoradorNotificacionesSMS(Envio envio) {
+    public DecoradorNotificacionesSMS(ComponenteEnvio envio) {
         super(envio);
     }
 
