@@ -430,7 +430,7 @@ TRANSPORTISTA    (false, false, false, false, false);</pre>
         <p style="font-size:24px;line-height:1.4;color:var(--body)">Es la capa que más se apoya en GRASP: <strong>bajo acoplamiento y alta cohesión</strong>. La lógica real siempre baja al dominio.</p>
       </div>
     </div>
-    <div class="layer-foot"><span class="arrow">+</span> En esta capa también: <strong>Command</strong> · <strong>Mediator</strong> · <strong>Template Method</strong> &nbsp;→&nbsp; el catálogo completo en el mapa de alcance.</div>
+    <div class="layer-foot"><span class="arrow">+</span> En esta capa también: <strong>Command</strong> · <strong>Mediator</strong> · <strong>Template Method</strong></div>
   </div>
 </section>
 
@@ -616,7 +616,7 @@ Envio envio = new Envio.EnvioBuilder(row.id)
       <h2 class="title">Hablar con el mundo externo y operar en dos países</h2>
       <div class="qa-badge"><span class="pin">Atributos</span><b>Interoperabilidad</b> + <b>Elasticidad regional</b></div>
     </div>
-    <div class="pgrid c3">
+    <div class="pgrid c4">
       <div class="pcard">
         <div class="pcard-toggle">›</div>
         <div class="pcard-need"><span class="cat-dot" style="background:var(--accent)"></span>Integrar sin contaminar el dominio</div>
@@ -641,6 +641,17 @@ Envio envio = new Envio.EnvioBuilder(row.id)
       </div>
       <div class="pcard">
         <div class="pcard-toggle">›</div>
+        <div class="pcard-need"><span class="cat-dot" style="background:var(--accent)"></span>3 tipos × 4 formatos → 7 clases, no 12</div>
+        <div class="pcard-name">Bridge</div>
+        <div class="pcard-idea">Separa qué se reporta del cómo se formatea.</div>
+        <div class="pcard-body"><div class="inner">
+          <div class="pcard-classes">bridge/ · ReporteEnvios · ReporteIngresos · ReporteDesempeno · PDF · Excel · JSON · CSV</div>
+          <div class="pcard-why"><code>Reporte</code> define el contenido; <code>GeneradorReporte</code> define el formato. Agregar XML es 1 clase nueva. Agregar Auditoría es 1 clase nueva. Sin Bridge serían 12 subclases combinadas.</div>
+          <div class="pcard-trade"><b>Trade-off:</b> indirección extra — el reporte delega el formateo en lugar de producir la salida directamente.</div>
+        </div></div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-toggle">›</div>
         <div class="pcard-need"><span class="cat-dot" style="background:var(--accent)"></span>10.000 envíos, no 30.000 objetos</div>
         <div class="pcard-name">Flyweight</div>
         <div class="pcard-idea">Comparte ubicaciones inmutables que se repiten muchísimo.</div>
@@ -651,7 +662,7 @@ Envio envio = new Envio.EnvioBuilder(row.id)
         </div></div>
       </div>
     </div>
-    <div class="layer-foot"><span class="arrow">+</span> También transversal: <strong>Bridge</strong> (reporte ⟷ formato) · <strong>Factory Method</strong> · <strong>Singleton</strong> &nbsp;→&nbsp; ver el mapa de alcance.</div>
+    <div class="layer-foot"><span class="arrow">+</span> También transversal: <strong>Factory Method</strong> · <strong>Singleton</strong></div>
   </div>
 </section>
 

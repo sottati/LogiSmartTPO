@@ -1,128 +1,67 @@
 # LogiSmart — TPO Proceso de Desarrollo de Software · UADE 2026
 
-Plataforma SaaS de logística para PyMEs. Implementación acumulada de 13 hitos.
-
-## Alcance final — 36 patrones
-
-| Familia | Patrones | Hitos |
-|---|---|---|
-| GRASP | Expert · Creator · Controller · Low Coupling · High Cohesion · Polymorphism · Pure Fabrication · Indirection · Protected Variations | 4–5 |
-| GoF Creacionales | Singleton · Factory Method · Abstract Factory · Builder · Prototype | 6–7 |
-| GoF Estructurales | Adapter · Bridge · Composite · Decorator · Facade · Flyweight · Proxy | 8–9 |
-| GoF Comportamiento | Chain of Responsibility · Command · Interpreter · Iterator · Mediator · Memento · Observer · State · Strategy · Template Method · Visitor | 10–12 |
-| Persistencia (PoEAA) | Repository · Data Mapper · Unit of Work · Lazy Load | 13 |
+Plataforma SaaS de logística para PyMEs, desarrollada en Java como trabajo práctico obligatorio. El proyecto se construyó de forma acumulada a lo largo de 13 hitos, aplicando 36 patrones de diseño (GRASP, GoF y persistencia).
 
 ## Requisitos
 
 - Java 17+
 - Terminal con `javac` y `java`
 
-## Estructura del proyecto
-
-```
-src/com/logismart/
-├── app/                        ← punto de entrada (Main.java)
-├── aplicacion/                 ← orquestación de CUs (Controller, Facade, Services)
-│   ├── hito8/ … hito13/       ← demos y casos de prueba por hito
-├── dominio/                    ← entidades y reglas de negocio
-│   ├── usuario/                ← Usuario, AdminEmpresa, AdminPlataforma,
-│   │                              ClienteFinal, OperadorLogistico,
-│   │                              Transportista, IPermisos, Rol
-│   ├── envio/                  ← Envio, Orden, Entrega, SeguimientoEnvio,
-│   │                              MementoEnvio, ObservadorEnvio
-│   ├── vehiculo/               ← Vehiculo, Auto, Camion, Moto, Flota
-│   ├── ruta/                   ← Ruta, PuntoEntrega, PosicionGPS, ETA
-│   └── empresa/                ← Empresa, Suscripcion, Cobro, Metrica, Reporte
-└── infraestructura/
-    ├── abstractfactory/        ← FactoryArgentina, FactoryBrasil
-    ├── adapter/envio|pago/     ← DHL, FedEx, UPS · PayPal, Stripe
-    ├── bridge/reporte/         ← PDF, Excel, JSON, CSV
-    ├── comportamiento/         ← chain, command, interpreter, iterator,
-    │                              mediator, memento, observer, state,
-    │                              strategy, template, visitor
-    ├── composite/centro/       ← red de centros de distribución
-    ├── costo/                  ← estrategias de cálculo de costo
-    ├── decorator/envio/        ← Seguro, GPS, Prioritario, SMS
-    ├── fabrica/                ← Factory Methods de dominio
-    ├── flyweight/              ← Ubicaciones compartidas
-    ├── persistencia/           ← repositorio, mapper, unitofwork, lazy
-    ├── proxy/envio/            ← caché + lazy loading
-    ├── ruta/                   ← algoritmos de selección de ruta
-    ├── singleton/              ← ConexionBD, Logger
-    ├── tiempo/                 ← calculadores de ETA
-    └── vehiculo/               ← asignadores de vehículo
-```
-
-## Compilar
+## Cómo compilar y ejecutar
 
 ```bash
-rg --files src -g "*.java" -0 | xargs -0 javac -d bin
-```
-
-O con `find` (sistemas sin ripgrep):
-
-```bash
+# Compilar
 find src -name "*.java" | xargs javac -d bin
-```
 
-## Ejecutar demo acumulada
-
-```bash
+# Ejecutar la demo acumulada (recorre los patrones de todos los hitos)
 java -cp bin com.logismart.app.Main
 ```
 
-La demo ejecuta en secuencia:
+## Estructura del repositorio
 
-1. Singleton (Logger, ConexionBD)
-2. Abstract Factory regional (Argentina / Brasil)
-3. Factory Method (vehículos, notificadores)
-4. Builder + Prototype (Envio)
-5. Procesamiento regional
-6. Casos Hito 8 (Adapter, Bridge, Composite)
-7. Casos Hito 9 (Decorator, Facade, Flyweight, Proxy)
-8. Casos Hito 10 (Chain, Command, Interpreter)
-9. Casos Hito 11 (Iterator, Mediator, Memento, Observer)
-10. Casos Hito 12 (State, Strategy, Template Method, Visitor)
-11. Casos Hito 13 (Repository, Data Mapper, Unit of Work, Lazy Load)
+```
+LogiSmartTPO/
+├── src/                            ← código fuente Java
+├── bin/                            ← clases compiladas (generado)
+├── hitos/                          ← entregables por hito (HITO_N.html + consignas/)
+├── diagramas/                      ← diagramas UML por hito
+├── presentacion/                   ← slides de defensa y notas de estudio
+├── DIAGRAMA_DE_CLASES_ACTUAL.html  ← diagrama de clases completo (fuente de verdad)
+├── DOCUMENTACION.md                ← decisiones de diseño y detalle de hitos 6-13
+└── index.html                      ← página de presentación del TPO
+```
 
-## Decisiones de diseño destacadas
+### Código fuente (`src/com/logismart/`)
 
-- **Multitenant:** permisos resueltos con `Rol` enum + `IPermisos`. El `LogiSmartController` valida antes de llegar al dominio — el dominio queda testeable en aislamiento.
-- **Dominio sin persistencia:** `Envio` no tiene `guardarEnBaseDatos()`. El Repository define el contrato, la infraestructura lo implementa.
-- **Builder reutilizado:** el `Envio.EnvioBuilder` diseñado en el Hito 7 es el mismo que usa `EnvioMapperSQL` en el Hito 13 para reconstruir entidades desde SQL.
-- **Abstract Factory regional:** `FactoryArgentina` y `FactoryBrasil` garantizan coherencia de objetos por país (IVA 21% vs ICMS 12%, Google Maps vs HERE Maps).
+```
+├── app/              ← punto de entrada (Main.java)
+├── aplicacion/       ← orquestación de casos de uso (Controller, Facade, Services)
+│   └── hito8/ … hito13/   ← demos y casos de prueba por hito
+├── dominio/          ← entidades y reglas de negocio, sin dependencias de infraestructura
+│   ├── usuario/      ← Usuario y subtipos, permisos, roles
+│   ├── envio/        ← Envio, Orden, Entrega, Seguimiento
+│   ├── vehiculo/     ← Vehiculo, Auto, Camion, Moto, Flota
+│   ├── ruta/         ← Ruta, PuntoEntrega, PosicionGPS, ETA
+│   └── empresa/      ← Empresa, Suscripcion, Cobro, Metrica, Reporte
+└── infraestructura/  ← implementaciones técnicas, organizadas por patrón
+```
 
-## Refactoring post-Hito 12
+## Dónde encontrar cada patrón
 
-Cambios de diseño aplicados al dominio (148/148 tests en verde):
+| Familia | Patrones | Hitos | Ubicación principal |
+|---|---|---|---|
+| GRASP | Expert · Creator · Controller · Low Coupling · High Cohesion · Polymorphism · Pure Fabrication · Indirection · Protected Variations | 4–5 | transversal a `dominio/` y `aplicacion/` |
+| GoF Creacionales | Singleton · Factory Method · Abstract Factory · Builder · Prototype | 6–7 | `infraestructura/singleton/`, `fabrica/`, `abstractfactory/` · Builder y Prototype en `dominio/envio/Envio.java` |
+| GoF Estructurales | Adapter · Bridge · Composite · Decorator · Facade · Flyweight · Proxy | 8–9 | `infraestructura/adapter/`, `bridge/`, `composite/`, `decorator/`, `flyweight/`, `proxy/` · Facade en `aplicacion/` |
+| GoF Comportamiento | Chain of Responsibility · Command · Interpreter · Iterator · Mediator · Memento · Observer · State · Strategy · Template Method · Visitor | 10–12 | `infraestructura/comportamiento/` |
+| Persistencia (PoEAA) | Repository · Data Mapper · Unit of Work · Lazy Load | 13 | `infraestructura/persistencia/` |
 
-- `Rol.java` (enum nuevo): centraliza la matriz de permisos 5×5, elimina 25 booleans duplicados en subclases de `Usuario`
-- `PosicionGPS.haversineKm()`: reemplaza fórmula euclidiana por cálculo real sobre la esfera terrestre
-- `Vehiculo.getCostoBaseKm()`: Information Expert — el vehículo conoce su propio costo operativo
-- `Ruta.optimizar()`: ordena paradas por `ordenParada` y recalcula distancia real
+## Cómo navegar el proyecto
 
-## Reorganización del dominio (post-Hito 13)
-
-Las 28 clases de `com.logismart.dominio` fueron agrupadas en subpaquetes semánticos:
-
-| Subpaquete | Clases |
-|---|---|
-| `dominio.usuario` | Usuario, AdminEmpresa, AdminPlataforma, ClienteFinal, OperadorLogistico, Transportista, IPermisos, Rol |
-| `dominio.envio` | Envio, Orden, Entrega, SeguimientoEnvio, MementoEnvio, ObservadorEnvio |
-| `dominio.vehiculo` | Vehiculo, Auto, Camion, Moto, Flota |
-| `dominio.ruta` | Ruta, PuntoEntrega, PosicionGPS, ETA |
-| `dominio.empresa` | Empresa, Suscripcion, Cobro, Metrica, Reporte |
-
-## Entregables
-
-- Código Java compilable — 36 patrones, 148 tests en verde
-- `hitos/HITO_10.html` — Hito 10 (Chain, Command, Interpreter)
-- `hitos/HITO_11.html` — Hito 11 (Iterator, Mediator, Memento, Observer)
-- `hitos/HITO_12.html` — Hito 12 (State, Strategy, Template Method, Visitor)
-- `hitos/HITO_13.html` — Hito 13 (Persistencia)
-- `DIAGRAMA_DE_CLASES_ACTUAL.html` — diagrama acumulativo
-- `presentacion/` — slides de defensa y notas de estudio
-- `DOCUMENTACION.md` — decisiones y cobertura de hitos 6 a 13
+- **Para entender el diseño completo:** abrir `DIAGRAMA_DE_CLASES_ACTUAL.html` en el navegador.
+- **Para ver qué se hizo en cada hito:** abrir `hitos/HITO_N.html` (cada uno incluye explicación, código y diagramas de ese hito). Las consignas originales están en `hitos/consignas/`.
+- **Para entender las decisiones de diseño:** leer `DOCUMENTACION.md`.
+- **Para ver los patrones funcionando:** ejecutar la demo (`Main.java`), que recorre en secuencia los casos de prueba de los hitos 6 a 13.
 
 ## Equipo
 

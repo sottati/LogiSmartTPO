@@ -18,7 +18,7 @@ import java.util.List;
  * Implementa Cloneable para permitir clonación superficial con copia profunda de ordenes.
  */
 public class Envio implements Cloneable {
-	// ─── Campos existentes (Hitos anteriores) ────────────────────────────────
+	// ─── Campos existentes ────────────────────────────────
 	private String id;
 	private Empresa empresa;
 	private String estado;
