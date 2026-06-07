@@ -106,7 +106,7 @@ public final class CasosDePruebaHito8 {
         Envio envio = envio("ENV-H8-I", 3.0);
 
         verificar(servicio.crearEnvio("DHL", envio), "Caso 1: Integracion crea envio con Adapter");
-        verificar(servicio.obtenerCentroDistribucion().obtenerCapacidad() == 180, "Caso 2: Integracion expone Composite");
+        verificar(servicio.obtenerCentroDistribucionComposite().obtenerCapacidad() == 180, "Caso 2: Integracion expone Composite");
         verificar(servicio.generarReporte("envios", "json").generar().contains("ENV-H8-I"), "Caso 3: Integracion genera reporte con Bridge");
     }
 

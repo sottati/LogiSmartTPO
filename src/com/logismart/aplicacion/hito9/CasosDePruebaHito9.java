@@ -42,7 +42,7 @@ public final class CasosDePruebaHito9 {
     private static void probarDecorator() {
         System.out.println("\n--- Decorator ---");
         com.logismart.infraestructura.decorator.envio.ComponenteEnvio envio1 =
-                new com.logismart.infraestructura.decorator.envio.ComponenteEnvioBasico("Buenos Aires", "Cordoba", 5.0);
+                new com.logismart.infraestructura.decorator.envio.EnvioBasico("Buenos Aires", "Cordoba", 5.0);
         verificar(Math.abs(envio1.obtenerCosto() - 50.0) < 0.0001, "Caso 1: envio basico costo base");
         verificar(envio1.obtenerTiempoEntrega() == 3, "Caso 1: envio basico tiempo base");
 
