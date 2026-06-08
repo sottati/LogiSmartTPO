@@ -1,0 +1,1583 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Diagramas de Patrones — LogiSmart</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+    :root {
+      --primary:   #12324b;
+      --primary-2: #1f4f74;
+      --accent:    #dc6b1f;
+      --bg:        #f5f8fc;
+      --surface:   #ffffff;
+      --text:      #112030;
+      --muted:     #4c5f72;
+      --border:    #d8e2ec;
+      --sidebar-w: 272px;
+
+      --c-grasp:    #1f4f74; --c-grasp-bg:  #dce9ff;
+      --c-crea:     #7a3200; --c-crea-bg:   #fff0e3;
+      --c-estr:     #4c2fa0; --c-estr-bg:   #ede9ff;
+      --c-comp:     #1f5d3a; --c-comp-bg:   #e6f4ea;
+      --c-pers:     #0e5c5c; --c-pers-bg:   #e0f5f5;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 15px; }
+    body { font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+    /* ── Sidebar ─────────────────────────────── */
+    #sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.2rem 1rem 2rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .sb-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    /* filter chips */
+    .sb-filters { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 1.1rem; }
+    .sb-filter {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 99px; cursor: pointer;
+      border: 1.5px solid transparent; transition: opacity .15s;
+    }
+    .sb-filter:hover { opacity: .8; }
+    .sb-filter.active { opacity: 1; }
+    .sb-filter.inactive { opacity: .35; }
+    .sb-filter[data-cat="all"]  { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .sb-filter[data-cat="GRASP"]  { background: var(--c-grasp-bg); color: var(--c-grasp); border-color: var(--c-grasp); }
+    .sb-filter[data-cat="Creacional"]  { background: var(--c-crea-bg); color: var(--c-crea); border-color: var(--c-crea); }
+    .sb-filter[data-cat="Estructural"] { background: var(--c-estr-bg); color: var(--c-estr); border-color: var(--c-estr); }
+    .sb-filter[data-cat="Comportamiento"] { background: var(--c-comp-bg); color: var(--c-comp); border-color: var(--c-comp); }
+    .sb-filter[data-cat="Persistencia"] { background: var(--c-pers-bg); color: var(--c-pers); border-color: var(--c-pers); }
+
+    /* nav groups */
+    .sb-group { margin-bottom: 1.1rem; }
+    .sb-group-label {
+      font-size: 0.64rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .4rem; padding-left: 6px;
+    }
+    .sb-link {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 0.78rem; color: var(--muted); text-decoration: none;
+      padding: 4px 6px; border-radius: 6px; transition: background .12s, color .12s;
+    }
+    .sb-link:hover { background: var(--bg); color: var(--primary); }
+    .sb-link.active { background: var(--c-grasp-bg); color: var(--primary); font-weight: 600; }
+    .sb-link .num { font-size: 0.62rem; font-weight: 700; font-family: "IBM Plex Mono", monospace; min-width: 20px; }
+
+    /* ── Main ────────────────────────────────── */
+    #main { flex: 1; padding: 1.5rem 1.75rem 3rem; overflow-x: hidden; }
+
+    .page-header {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.2rem 1.5rem; margin-bottom: 1.75rem;
+    }
+    .page-header h1 { font-size: 1.35rem; color: var(--primary); font-weight: 700; }
+    .page-header p  { margin-top: .35rem; color: var(--muted); font-size: .85rem; line-height: 1.5; }
+
+    /* category section */
+    .cat-section { margin-bottom: 2.5rem; }
+    .cat-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 1.1rem; padding-bottom: .6rem;
+      border-bottom: 2px solid var(--border);
+    }
+    .cat-badge {
+      font-size: .65rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 99px;
+    }
+    .cat-header h2 { font-size: 1rem; font-weight: 700; color: var(--primary); }
+    .cat-header .cat-count { font-size: .78rem; color: var(--muted); }
+
+    .cat-GRASP        .cat-badge { background: var(--c-grasp-bg); color: var(--c-grasp); }
+    .cat-Creacional   .cat-badge { background: var(--c-crea-bg);  color: var(--c-crea);  }
+    .cat-Estructural  .cat-badge { background: var(--c-estr-bg);  color: var(--c-estr);  }
+    .cat-Comportamiento .cat-badge { background: var(--c-comp-bg); color: var(--c-comp); }
+    .cat-Persistencia .cat-badge { background: var(--c-pers-bg);  color: var(--c-pers);  }
+
+    /* pattern grid */
+    .pat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(520px, 1fr)); gap: 1rem; }
+
+    /* pattern card */
+    .pat-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; transition: box-shadow .18s;
+    }
+    .pat-card:hover { box-shadow: 0 4px 20px rgba(18,50,75,.10); }
+
+    .pat-card-head {
+      padding: .85rem 1rem .7rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem;
+    }
+    .pat-card-head-left { flex: 1; min-width: 0; }
+    .pat-name {
+      font-size: .92rem; font-weight: 700; color: var(--primary);
+      display: flex; align-items: center; gap: 6px; margin-bottom: 3px;
+    }
+    .pat-num { font-family: "IBM Plex Mono", monospace; font-size: .65rem; color: var(--muted); font-weight: 400; }
+    .pat-desc { font-size: .77rem; color: var(--muted); line-height: 1.45; }
+    .hito-pill {
+      font-size: .62rem; font-weight: 700; padding: 2px 7px; border-radius: 99px;
+      background: var(--bg); border: 1px solid var(--border); color: var(--muted);
+      white-space: nowrap; flex-shrink: 0;
+    }
+
+    .pat-card-body { padding: .85rem 1rem; }
+
+    /* diagram container */
+    .diagram-wrap {
+      background: var(--bg); border-radius: 8px; padding: .6rem;
+      overflow-x: auto; min-height: 60px;
+    }
+    .diagram-wrap .mermaid { display: flex; justify-content: center; }
+    .diagram-wrap svg { max-width: 100%; height: auto; }
+
+    /* classes footer */
+    .pat-classes {
+      margin-top: .7rem; display: flex; flex-wrap: wrap; gap: 5px;
+    }
+    .class-chip {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .62rem; padding: 2px 7px; border-radius: 4px;
+      background: var(--bg); border: 1px solid var(--border); color: var(--muted);
+    }
+
+    @media (max-width: 860px) {
+      #sidebar { display: none; }
+      .pat-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<nav id="sidebar">
+  <div class="sb-title">Patrones · LogiSmart</div>
+  <div class="sb-filters">
+    <span class="sb-filter active" data-cat="all">Todos</span>
+    <span class="sb-filter active" data-cat="GRASP">GRASP</span>
+    <span class="sb-filter active" data-cat="Creacional">Creac.</span>
+    <span class="sb-filter active" data-cat="Estructural">Estr.</span>
+    <span class="sb-filter active" data-cat="Comportamiento">Comp.</span>
+    <span class="sb-filter active" data-cat="Persistencia">Pers.</span>
+  </div>
+
+  <div class="sb-group" data-cat="GRASP">
+    <div class="sb-group-label">GRASP</div>
+    <a class="sb-link" href="#information-expert"><span class="num">01</span>Information Expert</a>
+    <a class="sb-link" href="#creator"><span class="num">02</span>Creator</a>
+    <a class="sb-link" href="#controller"><span class="num">03</span>Controller</a>
+    <a class="sb-link" href="#low-coupling"><span class="num">04</span>Low Coupling</a>
+    <a class="sb-link" href="#high-cohesion"><span class="num">05</span>High Cohesion</a>
+    <a class="sb-link" href="#polymorphism"><span class="num">06</span>Polymorphism</a>
+    <a class="sb-link" href="#pure-fabrication"><span class="num">07</span>Pure Fabrication</a>
+    <a class="sb-link" href="#indirection"><span class="num">08</span>Indirection</a>
+    <a class="sb-link" href="#protected-variations"><span class="num">09</span>Protected Variations</a>
+  </div>
+
+  <div class="sb-group" data-cat="Creacional">
+    <div class="sb-group-label">GoF Creacionales</div>
+    <a class="sb-link" href="#singleton"><span class="num">10</span>Singleton</a>
+    <a class="sb-link" href="#factory-method"><span class="num">11</span>Factory Method</a>
+    <a class="sb-link" href="#abstract-factory"><span class="num">12</span>Abstract Factory</a>
+    <a class="sb-link" href="#builder"><span class="num">13</span>Builder</a>
+    <a class="sb-link" href="#prototype"><span class="num">14</span>Prototype</a>
+  </div>
+
+  <div class="sb-group" data-cat="Estructural">
+    <div class="sb-group-label">GoF Estructurales</div>
+    <a class="sb-link" href="#adapter"><span class="num">15</span>Adapter</a>
+    <a class="sb-link" href="#bridge"><span class="num">16</span>Bridge</a>
+    <a class="sb-link" href="#composite"><span class="num">17</span>Composite</a>
+    <a class="sb-link" href="#decorator"><span class="num">18</span>Decorator</a>
+    <a class="sb-link" href="#facade"><span class="num">19</span>Facade</a>
+    <a class="sb-link" href="#flyweight"><span class="num">20</span>Flyweight</a>
+    <a class="sb-link" href="#proxy"><span class="num">21</span>Proxy</a>
+  </div>
+
+  <div class="sb-group" data-cat="Comportamiento">
+    <div class="sb-group-label">GoF Comportamiento</div>
+    <a class="sb-link" href="#chain"><span class="num">22</span>Chain of Responsibility</a>
+    <a class="sb-link" href="#command"><span class="num">23</span>Command</a>
+    <a class="sb-link" href="#interpreter"><span class="num">24</span>Interpreter</a>
+    <a class="sb-link" href="#iterator"><span class="num">25</span>Iterator</a>
+    <a class="sb-link" href="#mediator"><span class="num">26</span>Mediator</a>
+    <a class="sb-link" href="#memento"><span class="num">27</span>Memento</a>
+    <a class="sb-link" href="#observer"><span class="num">28</span>Observer</a>
+    <a class="sb-link" href="#state"><span class="num">29</span>State</a>
+    <a class="sb-link" href="#strategy"><span class="num">30</span>Strategy</a>
+    <a class="sb-link" href="#template-method"><span class="num">31</span>Template Method</a>
+    <a class="sb-link" href="#visitor"><span class="num">32</span>Visitor</a>
+  </div>
+
+  <div class="sb-group" data-cat="Persistencia">
+    <div class="sb-group-label">Persistencia (PoEAA)</div>
+    <a class="sb-link" href="#repository"><span class="num">33</span>Repository</a>
+    <a class="sb-link" href="#data-mapper"><span class="num">34</span>Data Mapper</a>
+    <a class="sb-link" href="#unit-of-work"><span class="num">35</span>Unit of Work</a>
+    <a class="sb-link" href="#lazy-load"><span class="num">36</span>Lazy Load</a>
+  </div>
+</nav>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main id="main">
+  <div class="page-header">
+    <h1>Diagramas de Patrones — LogiSmart</h1>
+    <p>36 patrones de diseño aplicados al sistema: GRASP · GoF Creacionales · GoF Estructurales · GoF Comportamiento · Persistencia (PoEAA). Cada diagrama muestra cómo funciona el patrón con las clases reales del proyecto.</p>
+  </div>
+
+  <!-- ── GRASP ── -->
+  <section class="cat-section cat-GRASP" data-cat="GRASP">
+    <div class="cat-header">
+      <span class="cat-badge">GRASP</span>
+      <h2>Patrones GRASP</h2>
+      <span class="cat-count">9 patrones · Hitos 4–5</span>
+    </div>
+    <div class="pat-grid">
+
+      <div class="pat-card" id="information-expert">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">01</span> Information Expert</div>
+            <div class="pat-desc">Asignar responsabilidad a quien tiene la información. <code>Rol</code> es el experto en permisos: contiene la matriz 5×5 completa.</div>
+          </div>
+          <span class="hito-pill">Hito 4–5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-information-expert"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Rol</span>
+            <span class="class-chip">Usuario</span>
+            <span class="class-chip">IPermisos</span>
+            <span class="class-chip">LogiSmartController</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="creator">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">02</span> Creator</div>
+            <div class="pat-desc"><code>FabricaDeEnvios</code> tiene la responsabilidad de crear <code>Envio</code> porque los usa, registra y tiene los datos de inicialización.</div>
+          </div>
+          <span class="hito-pill">Hito 5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-creator"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">FabricaDeEnvios</span>
+            <span class="class-chip">Envio</span>
+            <span class="class-chip">TipoEnvio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="controller">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">03</span> Controller</div>
+            <div class="pat-desc"><code>LogiSmartController</code> recibe todas las peticiones de la UI, verifica permisos y delega sin calcular ni persistir.</div>
+          </div>
+          <span class="hito-pill">Hito 4</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-controller"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">LogiSmartController</span>
+            <span class="class-chip">ServicioLogisticaUnificado</span>
+            <span class="class-chip">RepositorioEnvio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="low-coupling">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">04</span> Low Coupling</div>
+            <div class="pat-desc">El dominio depende de interfaces, no de implementaciones concretas. La misma interfaz <code>RepositorioEnvio</code> sirve tests (memoria) y producción (SQL).</div>
+          </div>
+          <span class="hito-pill">Hito 4–13</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-low-coupling"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">RepositorioEnvio</span>
+            <span class="class-chip">RepositorioEnvioMemoria</span>
+            <span class="class-chip">RepositorioEnvioSQL</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="high-cohesion">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">05</span> High Cohesion</div>
+            <div class="pat-desc">Cada clase tiene una sola responsabilidad. El Controller solo autoriza; la Facade solo orquesta; el Dominio solo aplica reglas de negocio.</div>
+          </div>
+          <span class="hito-pill">Hito 4–5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-high-cohesion"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">LogiSmartController</span>
+            <span class="class-chip">ServicioLogisticaUnificado</span>
+            <span class="class-chip">Envio</span>
+            <span class="class-chip">Notificador</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="polymorphism">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">06</span> Polymorphism</div>
+            <div class="pat-desc">Cada rol implementa <code>IPermisos</code> de forma distinta. Sin <code>instanceof</code>, sin <code>switch</code>. El Controller nunca sabe con qué subtipo habla.</div>
+          </div>
+          <span class="hito-pill">Hito 5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-polymorphism"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">IPermisos</span>
+            <span class="class-chip">OperadorLogistico</span>
+            <span class="class-chip">AdminEmpresa</span>
+            <span class="class-chip">ClienteFinal</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="pure-fabrication">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">07</span> Pure Fabrication</div>
+            <div class="pat-desc"><code>FabricaDeEnvios</code> no existe en el modelo de dominio del negocio. Es una clase inventada para distribuir responsabilidades técnicas con alta cohesión.</div>
+          </div>
+          <span class="hito-pill">Hito 5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-pure-fabrication"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">FabricaDeEnvios</span>
+            <span class="class-chip">FabricaDeVehiculos</span>
+            <span class="class-chip">FabricaDeNotificadores</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="indirection">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">08</span> Indirection</div>
+            <div class="pat-desc"><code>AdapterDHL</code> es el intermediario que desacopla el dominio de la API legacy de DHL. El dominio habla siempre con <code>ProveedorEnvio</code>.</div>
+          </div>
+          <span class="hito-pill">Hito 8</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-indirection"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ProveedorEnvio</span>
+            <span class="class-chip">AdapterDHL</span>
+            <span class="class-chip">DHLAPI</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="protected-variations">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">09</span> Protected Variations</div>
+            <div class="pat-desc"><code>ContextoValidacion</code> encapsula los datos de entrada de la cadena. Si cambia la firma de datos, solo se modifica el contexto; los validadores quedan intactos.</div>
+          </div>
+          <span class="hito-pill">Hito 9</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-protected-variations"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ContextoValidacion</span>
+            <span class="class-chip">CadenaValidadores</span>
+            <span class="class-chip">ValidadorEnvio</span>
+            <span class="class-chip">ValidadorPago</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── GoF CREACIONALES ── -->
+  <section class="cat-section cat-Creacional" data-cat="Creacional">
+    <div class="cat-header">
+      <span class="cat-badge">Creacional</span>
+      <h2>GoF Creacionales</h2>
+      <span class="cat-count">5 patrones · Hitos 6–7</span>
+    </div>
+    <div class="pat-grid">
+
+      <div class="pat-card" id="singleton">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">10</span> Singleton</div>
+            <div class="pat-desc">Una única instancia de <code>Logger</code> y <code>ConfiguracionSistema</code> en toda la JVM. Acceso global controlado, estado centralizado.</div>
+          </div>
+          <span class="hito-pill">Hito 6</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-singleton"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Logger</span>
+            <span class="class-chip">ConfiguracionSistema</span>
+            <span class="class-chip">ConexionBD</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="factory-method">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">11</span> Factory Method</div>
+            <div class="pat-desc"><code>FabricaDeEnvios.crearEnvio(TipoEnvio)</code> encapsula la lógica de instanciación. El cliente pide un envío sin saber qué subclase se crea.</div>
+          </div>
+          <span class="hito-pill">Hito 6</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-factory-method"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">FabricaDeEnvios</span>
+            <span class="class-chip">FabricaDeVehiculos</span>
+            <span class="class-chip">TipoEnvio</span>
+            <span class="class-chip">TipoVehiculo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="abstract-factory">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">12</span> Abstract Factory</div>
+            <div class="pat-desc"><code>LogiSmartFactory</code> crea familias coherentes (vehículo + calculador + mapas). Argentina y Brasil nunca mezclan piezas entre sí.</div>
+          </div>
+          <span class="hito-pill">Hito 6</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-abstract-factory"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">LogiSmartFactory</span>
+            <span class="class-chip">LogiSmartFactoryArgentina</span>
+            <span class="class-chip">LogiSmartFactoryBrasil</span>
+            <span class="class-chip">CalculadorCostos</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="builder">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">13</span> Builder</div>
+            <div class="pat-desc"><code>Envio.EnvioBuilder</code> construye objetos con 12 atributos (9 opcionales) paso a paso. <code>build()</code> garantiza que el objeto resultante sea válido.</div>
+          </div>
+          <span class="hito-pill">Hito 7</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-builder"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Envio.EnvioBuilder</span>
+            <span class="class-chip">Envio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="prototype">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">14</span> Prototype</div>
+            <div class="pat-desc"><code>Envio.clone()</code> crea 100 copias profundas sin re-declarar los 12 atributos opcionales. El prototipo ya tiene el estado deseado; los clones solo cambian id.</div>
+          </div>
+          <span class="hito-pill">Hito 7</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-prototype"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Envio</span>
+            <span class="class-chip">Cloneable</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── GoF ESTRUCTURALES ── -->
+  <section class="cat-section cat-Estructural" data-cat="Estructural">
+    <div class="cat-header">
+      <span class="cat-badge">Estructural</span>
+      <h2>GoF Estructurales</h2>
+      <span class="cat-count">7 patrones · Hitos 8–9</span>
+    </div>
+    <div class="pat-grid">
+
+      <div class="pat-card" id="adapter">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">15</span> Adapter</div>
+            <div class="pat-desc">DHL, FedEx y UPS tienen APIs incompatibles. Cada <code>Adapter</code> implementa <code>ProveedorEnvio</code> y traduce. Cambiar de carrier: un archivo.</div>
+          </div>
+          <span class="hito-pill">Hito 8</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-adapter"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ProveedorEnvio</span>
+            <span class="class-chip">AdapterDHL</span>
+            <span class="class-chip">AdapterFedEx</span>
+            <span class="class-chip">AdapterUPS</span>
+            <span class="class-chip">DHLAPI</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="bridge">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">16</span> Bridge</div>
+            <div class="pat-desc">Separa qué reporte generar de cómo renderizarlo. 3 reportes × 4 formatos = 7 clases, no 12. La abstracción y la implementación evolucionan independientes.</div>
+          </div>
+          <span class="hito-pill">Hito 8</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-bridge"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Reporte</span>
+            <span class="class-chip">GeneradorReporte</span>
+            <span class="class-chip">ReporteEnvios</span>
+            <span class="class-chip">GeneradorPDF</span>
+            <span class="class-chip">GeneradorCSV</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="composite">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">17</span> Composite</div>
+            <div class="pat-desc">La red de distribución es un árbol: centros regionales contienen otros centros o puntos de entrega. El cliente trata ramas y hojas con la misma interfaz.</div>
+          </div>
+          <span class="hito-pill">Hito 12</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-composite"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">CentroDistribucionComposite</span>
+            <span class="class-chip">CentroRegional</span>
+            <span class="class-chip">PuntoEntrega</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="decorator">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">18</span> Decorator</div>
+            <div class="pat-desc">GPS, seguro y prioridad son capas opcionales sobre <code>EnvioBasico</code>. Cada decorador añade costo sin modificar la clase base. Se apilan en cualquier orden.</div>
+          </div>
+          <span class="hito-pill">Hito 9</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-decorator"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ComponenteEnvio</span>
+            <span class="class-chip">EnvioBasico</span>
+            <span class="class-chip">DecoradorRastreoGPS</span>
+            <span class="class-chip">DecoradorSeguro</span>
+            <span class="class-chip">DecoradorPrioritario</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="facade">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">19</span> Facade</div>
+            <div class="pat-desc"><code>ServicioLogisticaUnificado</code> orquesta validación, creación, persistencia y notificación en una sola llamada. El Controller nunca conoce los subsistemas internos.</div>
+          </div>
+          <span class="hito-pill">Hito 9</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-facade"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ServicioLogisticaUnificado</span>
+            <span class="class-chip">CadenaValidadores</span>
+            <span class="class-chip">FabricaDeEnvios</span>
+            <span class="class-chip">RepositorioEnvio</span>
+            <span class="class-chip">Notificador</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="flyweight">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">20</span> Flyweight</div>
+            <div class="pat-desc"><code>FabricaUbicaciones</code> reutiliza instancias de <code>Ubicacion</code> idénticas entre miles de envíos. El estado intrínseco (ciudad, coordenadas) se comparte; el extrínseco lo aporta el Envio.</div>
+          </div>
+          <span class="hito-pill">Hito 9</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-flyweight"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">FabricaUbicaciones</span>
+            <span class="class-chip">Ubicacion</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="proxy">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">21</span> Proxy</div>
+            <div class="pat-desc"><code>ProxyRepositorioEnvios</code> implementa el mismo contrato que el repositorio real. Agrega caché transparente: la segunda consulta nunca llega a la base de datos.</div>
+          </div>
+          <span class="hito-pill">Hito 9</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-proxy"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">RepositorioEnvios</span>
+            <span class="class-chip">ProxyRepositorioEnvios</span>
+            <span class="class-chip">RepositorioEnviosReal</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── GoF COMPORTAMIENTO ── -->
+  <section class="cat-section cat-Comportamiento" data-cat="Comportamiento">
+    <div class="cat-header">
+      <span class="cat-badge">Comportamiento</span>
+      <h2>GoF Comportamiento</h2>
+      <span class="cat-count">11 patrones · Hitos 10–12</span>
+    </div>
+    <div class="pat-grid">
+
+      <div class="pat-card" id="chain">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">22</span> Chain of Responsibility</div>
+            <div class="pat-desc">5 validadores en cadena, ordenados de menor a mayor costo. Si uno falla, corta la cadena. Gracias a <code>ContextoValidacion</code>, agregar un campo nuevo no cascadea.</div>
+          </div>
+          <span class="hito-pill">Hito 9</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-chain"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">CadenaValidadores</span>
+            <span class="class-chip">ValidadorDatos</span>
+            <span class="class-chip">ValidadorSeguridad</span>
+            <span class="class-chip">ValidadorPago</span>
+            <span class="class-chip">ValidadorCapacidad</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="command">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">23</span> Command</div>
+            <div class="pat-desc">Cada operación sobre envíos es un objeto <code>Comando</code>. <code>ColaComandos</code> permite encolar, ejecutar y deshacer operaciones sin que el servicio conozca la implementación.</div>
+          </div>
+          <span class="hito-pill">Hito 10</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-command"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Comando</span>
+            <span class="class-chip">ColaComandos</span>
+            <span class="class-chip">ComandoCrearEnvio</span>
+            <span class="class-chip">ComandoCancelarEnvio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="interpreter">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">24</span> Interpreter</div>
+            <div class="pat-desc">Filtros de envíos como árbol de expresiones combinables. <code>AND(costo&gt;500, OR(destino=Córdoba, NOT(restringido)))</code>. Cada nodo sabe evaluarse a sí mismo.</div>
+          </div>
+          <span class="hito-pill">Hito 11</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-interpreter"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Expresion</span>
+            <span class="class-chip">ExpresionAND</span>
+            <span class="class-chip">ExpresionOR</span>
+            <span class="class-chip">ExpresionCosto</span>
+            <span class="class-chip">ExpresionNOT</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="iterator">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">25</span> Iterator</div>
+            <div class="pat-desc"><code>IteradorEnvios</code> expone la misma interfaz para recorrer colecciones guardadas como Array, Lista o HashMap. El cliente nunca sabe qué estructura interna hay.</div>
+          </div>
+          <span class="hito-pill">Hito 11</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-iterator"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">IteradorEnvios</span>
+            <span class="class-chip">ColeccionEnvios</span>
+            <span class="class-chip">ColeccionArray</span>
+            <span class="class-chip">ColeccionLista</span>
+            <span class="class-chip">ColeccionHash</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="mediator">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">26</span> Mediator</div>
+            <div class="pat-desc"><code>MediadorEnviosConcreto</code> coordina auditoría, pago y notificación cuando un envío cambia de estado. Los subsistemas no se conocen entre sí: solo conocen al mediador.</div>
+          </div>
+          <span class="hito-pill">Hito 11</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-mediator"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">MediadorEnvios</span>
+            <span class="class-chip">MediadorEnviosConcreto</span>
+            <span class="class-chip">SistemaAuditoria</span>
+            <span class="class-chip">SistemaPago</span>
+            <span class="class-chip">SistemaNotificacion</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="memento">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">27</span> Memento</div>
+            <div class="pat-desc"><code>HistorialEnvios</code> guarda snapshots inmutables del estado de un envío. Permite auditoría y rollback sin exponer los internos de <code>Envio</code>.</div>
+          </div>
+          <span class="hito-pill">Hito 10</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-memento"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Envio</span>
+            <span class="class-chip">MementoEnvio</span>
+            <span class="class-chip">HistorialEnvios</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="observer">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">28</span> Observer</div>
+            <div class="pat-desc">Cuando <code>Envio</code> avanza de estado, notifica automáticamente al dashboard, al centro de distribución y al sistema de notificaciones. El envío no sabe quién escucha.</div>
+          </div>
+          <span class="hito-pill">Hito 10</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-observer"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ObservadorEnvio</span>
+            <span class="class-chip">DashboardObservador</span>
+            <span class="class-chip">CentroDistribucionObservador</span>
+            <span class="class-chip">SistemaNotificacionObservador</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="state">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">29</span> State</div>
+            <div class="pat-desc">El ciclo de vida de <code>Envio</code> son 7 estados concretos. Cada estado rechaza transiciones inválidas. Sin este patrón: un <code>switch</code> gigante en cada operación.</div>
+          </div>
+          <span class="hito-pill">Hito 10</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-state"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">EstadoEnvio</span>
+            <span class="class-chip">EstadoConfirmado</span>
+            <span class="class-chip">EstadoEnTransito</span>
+            <span class="class-chip">EstadoEntregado</span>
+            <span class="class-chip">EstadoCancelado</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="strategy">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">30</span> Strategy</div>
+            <div class="pat-desc">El algoritmo de costo de un envío es intercambiable en tiempo de ejecución: por peso, distancia, urgencia, volumen o híbrido. <code>Envio</code> delega en la estrategia activa.</div>
+          </div>
+          <span class="hito-pill">Hito 10</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-strategy"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">EstrategiaCalculoCosto</span>
+            <span class="class-chip">EstrategiaPeso</span>
+            <span class="class-chip">EstrategiaUrgencia</span>
+            <span class="class-chip">EstrategiaDistancia</span>
+            <span class="class-chip">EstrategiaHibrida</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="template-method">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">31</span> Template Method</div>
+            <div class="pat-desc"><code>ProcesoEnvio</code> define el esqueleto invariante: validar → calcular → pagar → notificar. <code>ProcesoNacional</code> e <code>Internacional</code> sobreescriben los hooks sin cambiar el orden.</div>
+          </div>
+          <span class="hito-pill">Hito 10</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-template-method"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ProcesoEnvio</span>
+            <span class="class-chip">ProcesoNacional</span>
+            <span class="class-chip">ProcesoInternacional</span>
+            <span class="class-chip">ProcesoUrgente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="visitor">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">32</span> Visitor</div>
+            <div class="pat-desc">El árbol de centros es estable; las operaciones sobre él (costo, ocupación, búsqueda) crecen. <code>Visitor</code> permite añadir operaciones sin modificar los nodos del árbol.</div>
+          </div>
+          <span class="hito-pill">Hito 12</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-visitor"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">VisitorCentro</span>
+            <span class="class-chip">VisitorCalculoCostoOperativo</span>
+            <span class="class-chip">VisitorCalculoOcupacion</span>
+            <span class="class-chip">NodoCentroRegional</span>
+            <span class="class-chip">NodoPuntoEntrega</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── PERSISTENCIA ── -->
+  <section class="cat-section cat-Persistencia" data-cat="Persistencia">
+    <div class="cat-header">
+      <span class="cat-badge">Persistencia</span>
+      <h2>Persistencia (PoEAA)</h2>
+      <span class="cat-count">4 patrones · Hito 13</span>
+    </div>
+    <div class="pat-grid">
+
+      <div class="pat-card" id="repository">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">33</span> Repository</div>
+            <div class="pat-desc">El dominio pide objetos de negocio, nunca filas SQL. La misma interfaz <code>RepositorioEnvio</code> tiene implementación en memoria (tests) y en SQL (producción).</div>
+          </div>
+          <span class="hito-pill">Hito 13</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-repository"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Repositorio</span>
+            <span class="class-chip">RepositorioEnvio</span>
+            <span class="class-chip">RepositorioEnvioMemoria</span>
+            <span class="class-chip">RepositorioEnvioSQL</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="data-mapper">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">34</span> Data Mapper</div>
+            <div class="pat-desc"><code>EnvioMapper</code> traduce en ambas direcciones entre el objeto de dominio y la fila de base de datos. El dominio nunca conoce el esquema SQL.</div>
+          </div>
+          <span class="hito-pill">Hito 13</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-data-mapper"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">EnvioMapper</span>
+            <span class="class-chip">EnvioMapperSQL</span>
+            <span class="class-chip">ClienteMapper</span>
+            <span class="class-chip">CobroMapper</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="unit-of-work">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">35</span> Unit of Work</div>
+            <div class="pat-desc"><code>UnitOfWork</code> acumula los cambios pendientes y los confirma en una sola transacción. Todo o nada: nunca queda un cobro registrado para un envío que no existe.</div>
+          </div>
+          <span class="hito-pill">Hito 13</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-unit-of-work"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">UnitOfWork</span>
+            <span class="class-chip">EnvioMapper</span>
+            <span class="class-chip">CobroMapper</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="lazy-load">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">36</span> Lazy Load</div>
+            <div class="pat-desc"><code>CentroDistribucionLazyProxy</code> retrasa la carga del centro hasta el primer acceso real. Las consultas que solo necesitan el ID nunca tocan la base de datos.</div>
+          </div>
+          <span class="hito-pill">Hito 13</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-lazy-load"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">CentroDistribucionLazyProxy</span>
+            <span class="class-chip">ClienteLazyProxy</span>
+            <span class="class-chip">HistorialEnviosLazyProxy</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  themeVariables: {
+    primaryColor:       '#dce9ff',
+    primaryTextColor:   '#12324b',
+    primaryBorderColor: '#1f4f74',
+    lineColor:          '#4c5f72',
+    secondaryColor:     '#fff0e3',
+    tertiaryColor:      '#e6f4ea',
+    edgeLabelBackground:'#f5f8fc',
+    noteBkgColor:       '#fffbe6',
+    noteTextColor:      '#5c4a00',
+    activationBkgColor: '#ede9ff',
+    signalTextColor:    '#12324b',
+    actorBkg:           '#f5f8fc',
+    actorBorder:        '#1f4f74',
+    actorTextColor:     '#12324b',
+    fontFamily:         'Inter, system-ui, sans-serif',
+    fontSize:           '13px',
+  },
+  sequence: { actorMargin: 40, width: 130, noteMargin: 10, messageMargin: 30 },
+  flowchart: { htmlLabels: true, curve: 'basis' },
+});
+
+const DIAGRAMS = {
+'information-expert': `sequenceDiagram
+    participant C as LogiSmartController
+    participant U as Usuario
+    participant R as Rol
+    C->>U: operar(CREAR_ENVIO)
+    U->>R: tienePermiso(CREAR_ENVIO)
+    R-->>U: true
+    U-->>C: acceso permitido
+    Note over R: Rol tiene la matriz 5x5<br/>Nadie mas necesita saberlo`,
+
+'creator': `sequenceDiagram
+    participant S as Servicio
+    participant F as FabricaDeEnvios
+    participant B as EnvioBuilder
+    participant E as Envio
+    S->>F: crearEnvio(URGENTE, empresa, fecha)
+    F->>B: new EnvioBuilder(id, origen, destino)
+    F->>B: .tipoEnvio(URGENTE)
+    B->>E: build()
+    E-->>F: envio
+    F-->>S: envio
+    Note over F: Crea lo que usa y registra`,
+
+'controller': `sequenceDiagram
+    actor U as Usuario
+    participant C as LogiSmartController
+    participant F as ServicioLogisticaUnificado
+    participant R as RepositorioEnvio
+    U->>C: crearEnvio(datos)
+    C->>C: verificarPermiso()
+    C->>F: crearEnvio(ctx)
+    F->>R: guardar(envio)
+    R-->>F: OK
+    F-->>C: envio
+    C-->>U: confirmacion
+    Note over C: NO calcula ni persiste<br/>Solo delega y autoriza`,
+
+'low-coupling': `flowchart LR
+    A["Dominio\nEnvio"] -->|depende de| B["RepositorioEnvio\ninterfaz"]
+    B -->|implementa| C["RepositorioEnvioMemoria\ntests"]
+    B -->|implementa| D["RepositorioEnvioSQL\nproduccion"]
+    style A fill:#dce9ff,stroke:#1f4f74,color:#12324b
+    style B fill:#fff0e3,stroke:#dc6b1f,color:#7a3200
+    style C fill:#e6f4ea,stroke:#1f5d3a,color:#1f5d3a
+    style D fill:#e6f4ea,stroke:#1f5d3a,color:#1f5d3a`,
+
+'high-cohesion': `flowchart TD
+    A["LogiSmartController\nSOLO autoriza"] --> B["ServicioLogisticaUnificado\nSOLO orquesta"]
+    B --> C["Envio\nSOLO reglas de negocio"]
+    B --> D["RepositorioEnvio\nSOLO persistencia"]
+    B --> E["Notificador\nSOLO notifica"]
+    style A fill:#dce9ff,stroke:#1f4f74
+    style B fill:#fff0e3,stroke:#dc6b1f
+    style C fill:#e6f4ea,stroke:#1f5d3a
+    style D fill:#e6f4ea,stroke:#1f5d3a
+    style E fill:#e6f4ea,stroke:#1f5d3a`,
+
+'polymorphism': `sequenceDiagram
+    participant C as Controller
+    participant O as OperadorLogistico
+    participant A as AdminEmpresa
+    participant I as IPermisos
+    C->>O: tienePermiso(CREAR_ENVIO)
+    O->>I: polimorfismo
+    I-->>C: true, puede operar
+    C->>A: tienePermiso(CREAR_ENVIO)
+    A->>I: polimorfismo
+    I-->>C: false, no puede operar
+    Note over I: Sin instanceof<br/>Sin switch`,
+
+'pure-fabrication': `flowchart LR
+    A["Servicio"] -->|usa| B["FabricaDeEnvios\nPure Fabrication"]
+    D["Controller"] -->|usa| B
+    B -->|crea| C1["Envio NORMAL"]
+    B -->|crea| C2["Envio URGENTE"]
+    B -->|crea| C3["Envio INTERNACIONAL"]
+    style B fill:#fff0e3,stroke:#dc6b1f,color:#7a3200`,
+
+'indirection': `sequenceDiagram
+    participant D as Dominio
+    participant A as AdapterDHL
+    participant X as DHLAPI
+    D->>A: crearEnvio(envio)
+    A->>A: traducir a formato DHL
+    A->>X: shipPackage(dhlReq)
+    X-->>A: DHL_Response
+    A->>A: parsear respuesta
+    A-->>D: true
+    Note over A: Intermediario que<br/>desacopla contratos`,
+
+'protected-variations': `sequenceDiagram
+    participant C as CadenaValidadores
+    participant V as ValidadorPago
+    participant Ctx as ContextoValidacion
+    C->>V: validar(ctx)
+    V->>Ctx: getEnvio()
+    V->>Ctx: getCobro()
+    Ctx-->>V: datos encapsulados
+    V-->>C: OK
+    Note over Ctx: Si cambia la firma de datos<br/>solo cambia ContextoValidacion<br/>Los validadores no se tocan`,
+
+'singleton': `sequenceDiagram
+    participant A as Modulo A
+    participant L as Logger
+    participant B as Modulo B
+    A->>L: getInstance()
+    L-->>A: instancia (nueva)
+    B->>L: getInstance()
+    L-->>B: misma instancia
+    A->>L: log("ENV001 creado")
+    B->>L: log("ENV001 procesado")
+    Note over L: Una JVM, una instancia<br/>un unico registro de logs`,
+
+'factory-method': `sequenceDiagram
+    participant S as Servicio
+    participant F as FabricaDeEnvios
+    participant E as Envio
+    S->>F: crearEnvio(NORMAL, empresa, fecha)
+    F->>E: EnvioBuilder(id).build()
+    E-->>F: envio normal
+    F-->>S: Envio
+    S->>F: crearEnvio(URGENTE, empresa, fecha)
+    F->>E: EnvioBuilder(id).tipoEnvio(URGENTE).build()
+    E-->>F: envio urgente
+    F-->>S: Envio
+    Note over F: Mismo metodo, distintas<br/>subclases segun TipoEnvio`,
+
+'abstract-factory': `sequenceDiagram
+    participant App
+    participant FAR as LogiSmartFactoryArgentina
+    participant FBR as LogiSmartFactoryBrasil
+    App->>FAR: crearVehiculo()
+    FAR-->>App: Auto AR
+    App->>FAR: crearCalculadorCostos()
+    FAR-->>App: CalculadorCostosArgentina
+    App->>FAR: crearProveedorMapas()
+    FAR-->>App: GoogleMapsArgentina
+    App->>FBR: crearVehiculo()
+    FBR-->>App: Moto BR
+    Note over FAR,FBR: Familias coherentes<br/>Nunca mezcla AR con BR`,
+
+'builder': `sequenceDiagram
+    participant C as Servicio
+    participant B as EnvioBuilder
+    participant E as Envio
+    C->>B: new EnvioBuilder(id, origen, destino)
+    C->>B: .peso(2.5)
+    C->>B: .fragil(true)
+    C->>B: .requiereRefrigeracion(true)
+    C->>B: .horaEntregaPreferida(14:00)
+    C->>B: .build()
+    B->>E: new Envio(this)
+    E-->>C: envio valido y completo
+    Note over B: 9 atributos opcionales<br/>1 llamada build()`,
+
+'prototype': `sequenceDiagram
+    participant S as Servicio
+    participant B as EnvioBuilder
+    participant P as Envio prototipo
+    S->>B: new EnvioBuilder(PROTO, BA, CBA)
+    B->>B: .peso(2.5).fragil(true)
+    B-->>P: build()
+    loop 100 veces
+        S->>P: clone()
+        P-->>S: deep copy
+        S->>S: clon.setId(ENV-N)
+    end
+    Note over P: 100 clones sin reconstruir<br/>los 12 atributos opcionales`,
+
+'adapter': `sequenceDiagram
+    participant D as Dominio
+    participant A as AdapterDHL
+    participant X as DHLAPI
+    D->>A: crearEnvio(Envio)
+    A->>A: traducir a DHL format
+    A->>X: shipPackage(dhlReq)
+    X-->>A: DHL_Response
+    A-->>D: true
+    D->>A: calcularCosto(Envio)
+    A->>X: getQuote(dhlReq)
+    X-->>A: price
+    A-->>D: double
+    Note over A: Mismo contrato ProveedorEnvio<br/>para DHL, FedEx y UPS`,
+
+'bridge': `sequenceDiagram
+    participant C as Servicio
+    participant R as ReporteEnvios
+    participant GP as GeneradorPDF
+    participant GC as GeneradorCSV
+    C->>R: new ReporteEnvios(generadorPDF)
+    C->>R: generar(datos)
+    R->>GP: renderizar(datos)
+    GP-->>R: PDF
+    R-->>C: reporte PDF
+    C->>R: new ReporteEnvios(generadorCSV)
+    C->>R: generar(datos)
+    R->>GC: renderizar(datos)
+    GC-->>C: reporte CSV
+    Note over R,GC: 3 reportes x 4 formatos<br/>= 7 clases, no 12`,
+
+'composite': `flowchart TD
+    A["CentroDistribucionComposite\nBuenos Aires"] --> B["CentroDistribucionComposite\nCordoba"]
+    A --> C["PuntoEntrega\nSuc. Centro BA"]
+    B --> D["PuntoEntrega\nSuc. Nueva Italia"]
+    B --> E["PuntoEntrega\nSuc. Alta Cordoba"]
+    style A fill:#dce9ff,stroke:#1f4f74,color:#12324b
+    style B fill:#dce9ff,stroke:#1f4f74,color:#12324b
+    style C fill:#e6f4ea,stroke:#1f5d3a,color:#1f5d3a
+    style D fill:#e6f4ea,stroke:#1f5d3a,color:#1f5d3a
+    style E fill:#e6f4ea,stroke:#1f5d3a,color:#1f5d3a`,
+
+'decorator': `sequenceDiagram
+    participant C as Servicio
+    participant G as DecoradorRastreoGPS
+    participant S as DecoradorSeguro
+    participant B as EnvioBasico
+    C->>G: calcularCosto()
+    G->>S: calcularCosto()
+    S->>B: calcularCosto()
+    B-->>S: 100
+    S-->>G: 100 + 15 seguro = 115
+    G-->>C: 115 + 8 GPS = 123
+    Note over G,B: Capas se apilan<br/>sin modificar EnvioBasico`,
+
+'facade': `sequenceDiagram
+    participant C as LogiSmartController
+    participant F as ServicioLogisticaUnificado
+    participant V as CadenaValidadores
+    participant B as FabricaDeEnvios
+    participant R as RepositorioEnvio
+    participant N as Notificador
+    C->>F: crearEnvio(ctx)
+    F->>V: validarEnvio(ctx)
+    V-->>F: OK
+    F->>B: crearEnvio(tipo, empresa, fecha)
+    B-->>F: envio
+    F->>R: guardar(envio)
+    F->>N: notificar(envio)
+    F-->>C: envio
+    Note over F: 5 subsistemas, 1 llamada`,
+
+'flyweight': `sequenceDiagram
+    participant E1 as Envio ENV-001
+    participant E2 as Envio ENV-002
+    participant F as FabricaUbicaciones
+    participant U as Ubicacion
+    E1->>F: getUbicacion("Buenos Aires")
+    F-->>E1: instancia compartida
+    E2->>F: getUbicacion("Buenos Aires")
+    F-->>E2: misma instancia
+    Note over U: Estado intrinseco inmutable<br/>compartido entre miles de envios`,
+
+'proxy': `sequenceDiagram
+    participant S as Servicio
+    participant P as ProxyRepositorioEnvios
+    participant R as RepositorioEnviosReal
+    S->>P: obtenerEnvio("ENV001")
+    P->>P: cache hit
+    P-->>S: Envio desde cache
+    S->>P: obtenerEnvio("ENV999")
+    P->>P: cache miss
+    P->>R: obtenerEnvio("ENV999")
+    R-->>P: Envio
+    P->>P: cachear resultado
+    P-->>S: Envio
+    Note over P: Transparente para el cliente<br/>misma interfaz que el real`,
+
+'chain': `sequenceDiagram
+    participant C as CadenaValidadores
+    participant V1 as ValidadorDatos
+    participant V2 as ValidadorSeguridad
+    participant V3 as ValidadorPago
+    participant V4 as ValidadorCapacidad
+    C->>V1: validar(ctx)
+    V1-->>C: OK, continuar
+    C->>V2: validar(ctx)
+    V2-->>C: OK, continuar
+    C->>V3: validar(ctx)
+    V3-->>C: FALLO saldo insuficiente
+    Note over V4: No se ejecuta.<br/>Falla barato y temprano.`,
+
+'command': `sequenceDiagram
+    participant S as Servicio
+    participant Q as ColaComandos
+    participant C1 as ComandoCrearEnvio
+    participant C2 as ComandoCancelarEnvio
+    participant R as Repositorio
+    S->>Q: encolar(ComandoCrearEnvio)
+    Q->>C1: ejecutar()
+    C1->>R: guardar(envio)
+    S->>Q: encolar(ComandoCancelarEnvio)
+    Q->>C2: ejecutar()
+    C2->>R: cancelar(id)
+    S->>Q: deshacer()
+    Q->>C2: deshacer()
+    C2->>R: restaurar(id)`,
+
+'interpreter': `flowchart TD
+    A["ExpresionAND\neval(ctx)"] -->|izq| B["ExpresionCosto\ncosto > 500"]
+    A -->|der| C["ExpresionOR\neval(ctx)"]
+    C -->|izq| D["ExpresionDestino\ndest = Cordoba"]
+    C -->|der| E["ExpresionNOT\neval(ctx)"]
+    E --> F["ExpresionRestringido\nzona restringida"]
+    style A fill:#dce9ff,stroke:#1f4f74
+    style C fill:#dce9ff,stroke:#1f4f74
+    style E fill:#dce9ff,stroke:#1f4f74
+    style B fill:#e6f4ea,stroke:#1f5d3a
+    style D fill:#e6f4ea,stroke:#1f5d3a
+    style F fill:#e6f4ea,stroke:#1f5d3a`,
+
+'iterator': `sequenceDiagram
+    participant C as Servicio
+    participant I as IteradorEnvios
+    participant CA as ColeccionArray
+    participant CH as ColeccionHash
+    C->>I: new IteradorEnvios(coleccionArray)
+    loop hasNext()
+        C->>I: next()
+        I-->>C: Envio
+    end
+    C->>I: new IteradorEnvios(coleccionHash)
+    loop hasNext()
+        C->>I: next()
+        I-->>C: Envio
+    end
+    Note over I: Misma interfaz para<br/>Array, Lista y HashMap`,
+
+'mediator': `sequenceDiagram
+    participant E as Envio
+    participant M as MediadorEnviosConcreto
+    participant A as SistemaAuditoria
+    participant P as SistemaPago
+    participant N as SistemaNotificacion
+    E->>M: notificar(ENTREGADO)
+    M->>A: registrarEntrega(envio)
+    M->>P: confirmarCobro(envio)
+    M->>N: notificarCliente(envio)
+    Note over M: Coordinador central<br/>Subsistemas no se conocen`,
+
+'memento': `sequenceDiagram
+    participant S as Servicio
+    participant E as Envio
+    participant H as HistorialEnvios
+    S->>E: crearMemento()
+    E-->>H: MementoEnvio snapshot
+    S->>E: avanzarEstado(EN_TRANSITO)
+    S->>E: avanzarEstado(EN_REPARTO)
+    S->>H: obtenerUltimo()
+    H-->>S: MementoEnvio
+    S->>E: restaurar(memento)
+    Note over H: Foto inmutable<br/>Auditoria y rollback`,
+
+'observer': `sequenceDiagram
+    participant E as Envio
+    participant D as DashboardObservador
+    participant C as CentroDistribucionObservador
+    participant N as SistemaNotificacionObservador
+    E->>E: avanzarEstado(EN_REPARTO)
+    E->>D: actualizar(envio)
+    E->>C: actualizar(envio)
+    E->>N: actualizar(envio)
+    D-->>D: refrescar mapa en vivo
+    C-->>C: liberar capacidad
+    N-->>N: push al cliente
+    Note over E: Notifica sin conocer<br/>a sus observadores`,
+
+'state': `stateDiagram-v2
+    [*] --> Confirmado
+    Confirmado --> Procesado : procesarEnvio()
+    Procesado --> EnTransito : despachar()
+    EnTransito --> EnReparto : llegar()
+    EnReparto --> Entregado : entregar()
+    Entregado --> [*]
+    Confirmado --> Cancelado : cancelar()
+    EnTransito --> Retenido : retener()
+    Retenido --> EnTransito : liberar()`,
+
+'strategy': `sequenceDiagram
+    participant S as Servicio
+    participant E as Envio
+    participant EP as EstrategiaPeso
+    participant EU as EstrategiaUrgencia
+    S->>E: setEstrategia(EstrategiaPeso)
+    S->>E: calcularCosto()
+    E->>EP: calcular(envio)
+    EP-->>E: 150
+    E-->>S: 150
+    S->>E: setEstrategia(EstrategiaUrgencia)
+    S->>E: calcularCosto()
+    E->>EU: calcular(envio)
+    EU-->>E: 280
+    E-->>S: 280
+    Note over EP,EU: Algoritmo intercambiable<br/>en tiempo de ejecucion`,
+
+'template-method': `sequenceDiagram
+    participant S as Servicio
+    participant PN as ProcesoNacional
+    participant PE as ProcesoEnvio
+    S->>PN: procesarEnvio(envio)
+    PN->>PE: validar() heredado
+    PE-->>PN: OK
+    PN->>PN: calcularCosto() override
+    PN->>PE: procesarPago() heredado
+    PE-->>PN: OK
+    PN->>PN: notificar() override
+    PN-->>S: procesado
+    Note over PE: Esqueleto invariante<br/>Hooks sobreescritos por<br/>Nacional e Internacional`,
+
+'visitor': `sequenceDiagram
+    participant V as VisitorCalculoCostoOperativo
+    participant R as NodoCentroRegional
+    participant P1 as NodoPuntoEntrega A
+    participant P2 as NodoPuntoEntrega B
+    V->>R: visitar(centroRegional)
+    R->>P1: aceptar(visitor)
+    P1->>V: visitar(self)
+    V-->>V: acumular costo P1
+    R->>P2: aceptar(visitor)
+    P2->>V: visitar(self)
+    V-->>V: acumular costo P2
+    V->>V: obtenerCostoTotal()
+    Note over V: Nueva operacion sin<br/>modificar el arbol`,
+
+'repository': `sequenceDiagram
+    participant D as Servicio
+    participant I as RepositorioEnvio
+    participant M as RepositorioEnvioMemoria
+    participant Q as RepositorioEnvioSQL
+    D->>I: obtener("ENV001")
+    I->>M: obtener() en tests
+    M-->>D: Envio
+    D->>I: guardar(envio)
+    I->>Q: guardar() en produccion
+    Q-->>D: OK
+    Note over I: Dominio habla con<br/>la interfaz, nunca con SQL`,
+
+'data-mapper': `sequenceDiagram
+    participant R as Repositorio
+    participant M as EnvioMapper
+    participant BD as Base de Datos
+    R->>M: insertar(envio)
+    M->>M: dominio a entidad
+    M->>BD: INSERT INTO envios
+    BD-->>M: OK
+    R->>M: buscarPorId("ENV001")
+    M->>BD: SELECT FROM envios
+    BD-->>M: ResultSet
+    M->>M: entidad a dominio
+    M-->>R: Envio
+    Note over M: Traduce en ambas direcciones<br/>Dominio nunca conoce SQL`,
+
+'unit-of-work': `sequenceDiagram
+    participant S as Servicio
+    participant U as UnitOfWork
+    participant EM as EnvioMapper
+    participant CM as CobroMapper
+    S->>U: registrarNuevo(envio)
+    S->>U: registrarNuevo(cobro)
+    S->>U: commit()
+    U->>EM: insertar(envio)
+    U->>CM: insertar(cobro)
+    alt ambos OK
+        U-->>S: transaccion confirmada
+    else fallo parcial
+        U->>EM: rollback
+        U->>CM: rollback
+        U-->>S: rollback
+    end
+    Note over U: Todo o nada<br/>Nunca pago sin envio`,
+
+'lazy-load': `sequenceDiagram
+    participant S as Servicio
+    participant P as CentroDistribucionLazyProxy
+    participant R as Repositorio
+    S->>P: new CentroDistribucionLazyProxy(id)
+    Note over P: Centro NO cargado aun
+    S->>P: getCentro()
+    P->>P: estaCargado() = false
+    P->>R: cargar(id)
+    R-->>P: CentroDistribucion
+    P-->>S: centro
+    S->>P: getCentro()
+    P->>P: estaCargado() = true
+    P-->>S: centro sin ir a BD
+    Note over P: Carga solo cuando<br/>realmente se necesita`,
+};
+
+// Render all diagrams
+async function renderAll() {
+  for (const [key, code] of Object.entries(DIAGRAMS)) {
+    const el = document.getElementById('d-' + key);
+    if (!el) continue;
+    try {
+      const id = 'mermaid-' + key;
+      const { svg } = await mermaid.render(id, code);
+      el.innerHTML = svg;
+    } catch (e) {
+      el.innerHTML = `<pre style="color:red;font-size:.7rem;padding:.5rem">${e.message}</pre>`;
+    }
+  }
+}
+
+renderAll();
+
+// ── Sidebar filter ───────────────────────
+const filters = document.querySelectorAll('.sb-filter');
+filters.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const cat = btn.dataset.cat;
+    if (cat === 'all') {
+      // toggle all
+      const allActive = [...filters].filter(f => f.dataset.cat !== 'all').every(f => f.classList.contains('active'));
+      filters.forEach(f => {
+        if (f.dataset.cat !== 'all') {
+          f.classList.toggle('active', !allActive);
+          f.classList.toggle('inactive', allActive);
+        }
+      });
+      setVisibility(!allActive);
+    } else {
+      btn.classList.toggle('active');
+      btn.classList.toggle('inactive');
+      refreshVisibility();
+    }
+  });
+});
+
+function setVisibility(show) {
+  document.querySelectorAll('.cat-section').forEach(sec => {
+    sec.style.display = show ? '' : 'none';
+  });
+  document.querySelectorAll('.sb-group').forEach(g => {
+    g.style.display = show ? '' : 'none';
+  });
+}
+
+function refreshVisibility() {
+  const active = new Set([...filters].filter(f => f.classList.contains('active') && f.dataset.cat !== 'all').map(f => f.dataset.cat));
+  document.querySelectorAll('.cat-section').forEach(sec => {
+    sec.style.display = active.has(sec.dataset.cat) ? '' : 'none';
+  });
+  document.querySelectorAll('.sb-group').forEach(g => {
+    g.style.display = active.has(g.dataset.cat) ? '' : 'none';
+  });
+}
+
+// ── Active nav link on scroll ────────────
+const sections = document.querySelectorAll('.pat-card[id]');
+const navLinks  = document.querySelectorAll('.sb-link');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.sb-link[href="#${entry.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -75% 0px' });
+
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
