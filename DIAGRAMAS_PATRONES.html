@@ -587,11 +587,14 @@
           <span class="hito-pill">Hito 12</span>
         </div>
         <div class="pat-card-body">
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;">Estructura del árbol</div>
           <div class="diagram-wrap"><div class="mermaid" id="d-composite"></div></div>
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:.75rem 0 .4rem;">Flujo de una operación recursiva</div>
+          <div class="diagram-wrap"><div class="mermaid" id="d-composite-seq"></div></div>
           <div class="pat-classes">
             <span class="class-chip">CentroDistribucionComposite</span>
             <span class="class-chip">CentroRegional</span>
-            <span class="class-chip">PuntoEntrega</span>
+            <span class="class-chip">SucursalEntrega</span>
           </div>
         </div>
       </div>
@@ -1219,28 +1222,51 @@ const DIAGRAMS = {
     Note over R,GC: 3 reportes x 4 formatos<br/>= 7 clases, no 12`,
 
 'composite': `flowchart TD
-    A["CentroDistribucionComposite\nBuenos Aires"] --> B["CentroDistribucionComposite\nCordoba"]
-    A --> C["PuntoEntrega\nSuc. Centro BA"]
-    B --> D["PuntoEntrega\nSuc. Nueva Italia"]
-    B --> E["PuntoEntrega\nSuc. Alta Cordoba"]
+    A["CentroDistribucionComposite\nHub Nacional BA\ncapacidad: 200"] --> B["CentroDistribucionComposite\nRegional Cordoba\ncapacidad: 80"]
+    A --> C["SucursalEntrega\nSuc. Centro BA\ncapacidad: 50"]
+    B --> D["SucursalEntrega\nSuc. Nueva Italia\ncapacidad: 30"]
+    B --> E["SucursalEntrega\nSuc. Alta Cordoba\ncapacidad: 50"]
     style A fill:#dce9ff,stroke:#1f4f74,color:#12324b
     style B fill:#dce9ff,stroke:#1f4f74,color:#12324b
     style C fill:#e6f4ea,stroke:#1f5d3a,color:#1f5d3a
     style D fill:#e6f4ea,stroke:#1f5d3a,color:#1f5d3a
     style E fill:#e6f4ea,stroke:#1f5d3a,color:#1f5d3a`,
 
+'composite-seq': `sequenceDiagram
+    participant S as Servicio
+    participant H as HubNacionalBA
+    participant R as RegionalCordoba
+    participant P1 as SucNuevaItalia
+    participant P2 as SucAltaCordoba
+    S->>H: obtenerCapacidad()
+    H->>H: capacidadPropia = 50
+    H->>R: obtenerCapacidad()
+    R->>P1: obtenerCapacidad()
+    P1-->>R: 30
+    R->>P2: obtenerCapacidad()
+    P2-->>R: 50
+    R-->>H: 30 + 50 = 80
+    H-->>S: 50 + 80 = 130
+    Note over H,P2: Un solo metodo. Composite y<br/>Hoja implementan la misma interfaz.`,
+
 'decorator': `sequenceDiagram
     participant C as Servicio
+    participant P as DecoradorPrioritario
+    participant N as DecoradorNotificacionesSMS
     participant G as DecoradorRastreoGPS
     participant S as DecoradorSeguro
-    participant B as EnvioBasico
-    C->>G: calcularCosto()
-    G->>S: calcularCosto()
-    S->>B: calcularCosto()
-    B-->>S: 100
-    S-->>G: 100 + 15 seguro = 115
-    G-->>C: 115 + 8 GPS = 123
-    Note over G,B: Capas se apilan<br/>sin modificar EnvioBasico`,
+    participant B as EnvioBasico 5kg
+    C->>P: obtenerCosto()
+    P->>N: obtenerCosto()
+    N->>G: obtenerCosto()
+    G->>S: obtenerCosto()
+    S->>B: obtenerCosto()
+    B-->>S: 50.0 (5kg x $10)
+    S-->>G: 57.50 (x1.15 seguro)
+    G-->>N: 107.50 (+$50 GPS)
+    N-->>P: 132.50 (+$25 SMS)
+    P-->>C: 232.50 (+$100 prio)
+    Note over P,B: Seguro va primero porque<br/>es multiplicador (x1.15).<br/>Si fuera ultimo inflaria GPS y SMS.`,
 
 'facade': `sequenceDiagram
     participant C as LogiSmartController

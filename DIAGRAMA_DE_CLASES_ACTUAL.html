@@ -768,9 +768,9 @@ class CentroDistribucion {
   +mostrar(profundidad)
 }
 class CentroRegional
-class PuntoEntregaCentro
+class SucursalEntrega
 CentroRegional --|&gt; CentroDistribucion
-PuntoEntregaCentro --|&gt; CentroDistribucion
+SucursalEntrega --|&gt; CentroDistribucion
 CentroRegional o-- CentroDistribucion
 
 class ServicioLogisticaUnificado {
@@ -1510,7 +1510,7 @@ SistemaLogisticaAvanzada --&gt; NodoCentroRegional
                 Composite
               </div>
               <div class="pattern-desc">
-                <code>CentroDistribucion</code> como componente base, <code>CentroRegional</code> como composite y <code>PuntoEntrega</code> como hoja recursiva.
+                <code>CentroDistribucion</code> como componente base, <code>CentroRegional</code> como composite y <code>SucursalEntrega</code> como hoja recursiva.
               </div>
             </div>
 

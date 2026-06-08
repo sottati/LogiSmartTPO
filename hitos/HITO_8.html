@@ -100,7 +100,7 @@
           <tbody>
             <tr><td>1-2</td><td>Adapter</td><td><code>adapter/envio/*</code>, <code>adapter/pago/*</code></td><td><code>ServicioLogisticaUnificado.crearEnvio</code>, <code>procesarPago</code> y <code>CasosDePruebaHito8</code>.</td></tr>
             <tr><td>3-4</td><td>Bridge</td><td><code>bridge/reporte/Reporte</code>, <code>GeneradorReporte</code> y concretos</td><td><code>generarReporte</code> crea reportes variando tipo y formato de forma independiente.</td></tr>
-            <tr><td>5-6</td><td>Composite</td><td><code>CentroDistribucionComposite</code>, <code>CentroRegional</code>, <code>PuntoEntrega</code></td><td>La capacidad y ocupación se calculan recursivamente en un árbol de centros.</td></tr>
+            <tr><td>5-6</td><td>Composite</td><td><code>CentroDistribucionComposite</code>, <code>CentroRegional</code>, <code>SucursalEntrega</code></td><td>La capacidad y ocupación se calculan recursivamente en un árbol de centros.</td></tr>
             <tr><td>7</td><td>Integración</td><td><code>ServicioLogisticaUnificado</code></td><td>Un flujo usa proveedor externo, registra envío, consulta centro y genera reporte.</td></tr>
           </tbody>
         </table>
@@ -286,8 +286,8 @@ GeneradorReporte <|.. GeneradorCSV</pre></div>
       <section class="section" id="composite-impl">
         <div class="section-act">Actividad 6 · Composite</div>
         <h2>Implementación de Composite para centros</h2>
-        <p><code>CentroDistribucionComposite</code> define la interfaz común. <code>CentroRegional</code> contiene hijos y <code>PuntoEntrega</code> actúa como hoja.</p>
-        <div class="tech-note"><strong>Rol dentro del patrón:</strong> <code>CentroDistribucionComposite</code> es el componente común; <code>CentroRegional</code> es el composite porque contiene otros <code>CentroDistribucionComposite</code>; <code>PuntoEntrega</code> es la hoja. Los niveles Nacional, Regional y Local se representan con instancias anidadas de <code>CentroRegional</code>, por eso no hace falta crear una clase por nivel.</div>
+        <p><code>CentroDistribucionComposite</code> define la interfaz común. <code>CentroRegional</code> contiene hijos y <code>SucursalEntrega</code> actúa como hoja.</p>
+        <div class="tech-note"><strong>Rol dentro del patrón:</strong> <code>CentroDistribucionComposite</code> es el componente común; <code>CentroRegional</code> es el composite porque contiene otros <code>CentroDistribucionComposite</code>; <code>SucursalEntrega</code> es la hoja. Los niveles Nacional, Regional y Local se representan con instancias anidadas de <code>CentroRegional</code>, por eso no hace falta crear una clase por nivel.</div>
         <div class="grid-2">
           <pre>public abstract class CentroDistribucionComposite {
     protected String nombre;
@@ -319,9 +319,9 @@ GeneradorReporte <|.. GeneradorCSV</pre></div>
 direction TB
 class CentroDistribucionComposite { &lt;&lt;abstract&gt;&gt; #nombre: String #ubicacion: String #codigo: String +obtenerCapacidad()* int +obtenerOcupacion()* int +mostrar(int)* void }
 class CentroRegional { -subcentros: List~CentroDistribucionComposite~ +agregar(CentroDistribucionComposite) +remover(CentroDistribucionComposite) +obtenerCapacidad() int +obtenerOcupacion() int }
-class PuntoEntrega { -capacidad: int -enviosAlmacenados: List~Envio~ +agregarEnvio(Envio) +obtenerCapacidad() int +obtenerOcupacion() int }
+class SucursalEntrega { -capacidad: int -enviosAlmacenados: List~Envio~ +agregarEnvio(Envio) +obtenerCapacidad() int +obtenerOcupacion() int }
 CentroDistribucionComposite <|-- CentroRegional
-CentroDistribucionComposite <|-- PuntoEntrega
+CentroDistribucionComposite <|-- SucursalEntrega
 CentroRegional o-- CentroDistribucionComposite</pre></div>
         <table>
           <thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>

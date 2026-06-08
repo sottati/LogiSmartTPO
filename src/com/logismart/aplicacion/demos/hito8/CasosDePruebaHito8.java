@@ -13,7 +13,7 @@ import com.logismart.infraestructura.estructural.bridge.reporte.GeneradorPDF;
 import com.logismart.infraestructura.estructural.bridge.reporte.Reporte;
 import com.logismart.infraestructura.estructural.bridge.reporte.ReporteEnvios;
 import com.logismart.infraestructura.estructural.composite.centro.CentroRegional;
-import com.logismart.infraestructura.estructural.composite.centro.PuntoEntrega;
+import com.logismart.infraestructura.estructural.composite.centro.SucursalEntrega;
 
 import java.util.List;
 
@@ -116,8 +116,8 @@ public final class CasosDePruebaHito8 {
         CentroRegional nacional = new CentroRegional("Centro Argentina", "Buenos Aires", "ARG-001");
         CentroRegional regional = new CentroRegional("Centro CABA", "CABA", "CABA-001");
         CentroRegional local = new CentroRegional("Centro San Telmo", "San Telmo", "ST-001");
-        PuntoEntrega punto1 = new PuntoEntrega("Punto San Telmo 1", "San Telmo", "ST-P1", 100);
-        PuntoEntrega punto2 = new PuntoEntrega("Punto San Telmo 2", "San Telmo", "ST-P2", 80);
+        SucursalEntrega punto1 = new SucursalEntrega("Punto San Telmo 1", "San Telmo", "ST-P1", 100);
+        SucursalEntrega punto2 = new SucursalEntrega("Punto San Telmo 2", "San Telmo", "ST-P2", 80);
 
         punto1.agregarEnvio(envio("ENV-H8-C1", 1.0));
         punto2.agregarEnvio(envio("ENV-H8-C2", 1.0));

@@ -3,7 +3,7 @@ package com.logismart.aplicacion.demos.hito13;
 import com.logismart.dominio.usuario.ClienteFinal;
 import com.logismart.dominio.empresa.Cobro;
 import com.logismart.dominio.envio.Envio;
-import com.logismart.infraestructura.estructural.composite.centro.PuntoEntrega;
+import com.logismart.infraestructura.estructural.composite.centro.SucursalEntrega;
 import com.logismart.infraestructura.persistencia.entidad.CentroAssembler;
 import com.logismart.infraestructura.persistencia.entidad.CentroDistribucionEntity;
 import com.logismart.infraestructura.persistencia.lazy.CentroDistribucionLazyProxy;
@@ -319,7 +319,7 @@ public class CasosDePruebaHito13 {
         verificar("ARQ-37: ServicioClientes crear/obtener", svcC.obtenerCliente("ARQ-CLI-001") != null);
 
         // 38. CentroAssembler proyecta Composite a entidad plana
-        PuntoEntrega punto = new PuntoEntrega("Deposito Central", "Cordoba", "CBA-DC", 500);
+        SucursalEntrega punto = new SucursalEntrega("Deposito Central", "Cordoba", "CBA-DC", 500);
         CentroDistribucionEntity entidad = CentroAssembler.aPersistencia("ARQ-CEN-001", punto);
         verificar("ARQ-38: CentroAssembler proyecta capacidad correcta", entidad.getCapacidad() == 500);
 
