@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.envio;
+package com.logismart.dominio.envio;
 
 /**
  * Puerto de salida del dominio - contrato Observer.

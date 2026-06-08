@@ -1,4 +1,4 @@
-﻿package com.logismart.infraestructura.comportamiento.chain;
+package com.logismart.infraestructura.comportamiento.chain;
 
 import com.logismart.dominio.envio.Orden;
 import java.util.List;

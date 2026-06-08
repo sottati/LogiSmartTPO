@@ -1,7 +1,7 @@
 # LogiSmart — Deck de defensa TPO (versión canónica)
 
 ## Estructura del deck
-Archivo principal: `LogiSmart Arquitectura.html` (17 slides, 1920×1080)
+Archivo principal: `LogiSmart Arquitectura.html` (23 slides, 1920×1080)
 Narrativa: negocio sobre arquitectura en 5 capas — cada capa arranca por la
 necesidad de negocio y recién después aparece la decisión de diseño que la cumple.
 
@@ -9,26 +9,30 @@ necesidad de negocio y recién después aparece la decisión de diseño que la c
 - 27 patrones GoF + persistencia (23 GoF acumulados al Hito 12 + 4 de acceso a datos)
 - 229 clases · 148 tests en verde · Hito 13
 
-## Secuencia de slides (17 en total)
-01. Portada (oscura) — chips: 5 capas · 35 patrones · 200 clases · H13
+## Secuencia de slides (23 en total)
+01. Portada (oscura) — chips: 5 capas · 36 patrones · 190 tests ✓
 02. El cliente y su problema — antes/después (planillas → SaaS multitenant)
 03. Qué le prometimos — CU-01 / CU-03 / CU-07 + actores
 04. Atributos de calidad — 5 atributos como brújula de diseño
 05. La arquitectura en 5 capas — hero: cada atributo vive en una capa
-06. Del problema al diseño — sustantivos→clases, verbos→CUs, adjetivos→patrones
-07. Presentación → Aislamiento de datos (Controller, Rol/Polymorphism)
-08. [DECISIÓN B] 25 booleanos → Rol enum — GRASP Information Expert, refactoring con 148 tests
-09. Aplicación → Alta disponibilidad (Facade, Chain of Responsibility)
+06. Presentación → Aislamiento de datos (Controller, Rol/Polymorphism)
+07. [DECISIÓN B] 25 booleanos → Rol enum — GRASP Information Expert, refactoring con tests
+08. Aplicación → Alta disponibilidad (Facade, Chain of Responsibility)
+09. Chain + ContextoValidacion — la deuda que liquidamos
 10. Dominio · Envío el corazón — diagrama radial interactivo con 6 patrones
 11. Dominio → Tiempo real (State, Observer, Memento)
 12. Persistencia → Eficiencia de respuesta (Repository+DataMapper, Proxy+Lazy, UoW)
 13. [DECISIÓN A] H7 sembró H13 cosechó — Builder reutilizado en persistencia, RUP iterativo
 14. Infraestructura → Interoperabilidad + Elasticidad (Adapter, Abstract Factory, Flyweight)
 15. [DECISIÓN E] Abstract Factory como decisión de negocio — AR vs BR, coherencia regional
-16. Flujo de un envío — diagrama de secuencia interactivo (generado por JS)
-17. [DECISIÓN C] Por qué cada cosa está donde está — 5 decisiones de ubicación por capa
-18. [DECISIÓN D] Lo que decidimos no hacer — 4 sacrificios deliberados
-19. Cierre (oscura) — pediste → cumplimos
+16. Composite + Visitor — el mismo árbol
+17. Flujo de un envío — diagrama de secuencia interactivo
+18. [DECISIÓN C] Por qué cada cosa está donde está — 5 decisiones de ubicación por capa
+19. [DECISIÓN D] Lo que decidimos no hacer — 4 sacrificios deliberados
+20. Cierre (oscura) — pediste → cumplimos
+21. Actores y empresa — 5 roles, 1 empresa-tenant, suscripción SaaS
+22. Flota, vehículos y regiones — tipos de vehículo y cobertura geográfica
+23. Ciclo de vida del envío — estados y transiciones completos
 
 ## Narrativa por capa
 - **Presentación**: aislamiento de datos multitenant → Controller + Polymorphism
@@ -57,7 +61,7 @@ necesidad de negocio y recién después aparece la decisión de diseño que la c
   solo por `transform` (keyframe riseT), para que el título no quede invisible.
 
 ## Archivos
-- `LogiSmart Arquitectura.html` — markup de las 17 slides (deck canónico)
+- `LogiSmart Arquitectura.html` — markup de las 23 slides (deck canónico)
 - `deck.css` — sistema visual + todos los componentes nuevos (business-led reframe)
 - `deck.js` — 3 interacciones (cards, comparador, secuencia) — sin cambios
 - `deck-stage.js` — web component contenedor (escala, navegación, print) — sin cambios

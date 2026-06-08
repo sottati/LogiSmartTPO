@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.usuario;
+package com.logismart.dominio.usuario;
 
 import com.logismart.dominio.vehiculo.Vehiculo;
 

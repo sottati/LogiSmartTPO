@@ -1,13 +1,13 @@
 package com.logismart.aplicacion.demos.hito9;
 
 import com.logismart.dominio.envio.Envio;
-import com.logismart.infraestructura.decorator.envio.DecoradorNotificacionesSMS;
-import com.logismart.infraestructura.decorator.envio.DecoradorPrioritario;
-import com.logismart.infraestructura.decorator.envio.DecoradorRastreoGPS;
-import com.logismart.infraestructura.decorator.envio.DecoradorSeguro;
-import com.logismart.infraestructura.flyweight.ubicacion.FabricaUbicaciones;
-import com.logismart.infraestructura.flyweight.ubicacion.Ubicacion;
-import com.logismart.infraestructura.proxy.envio.ProxyRepositorioEnvios;
+import com.logismart.infraestructura.estructural.decorator.envio.DecoradorNotificacionesSMS;
+import com.logismart.infraestructura.estructural.decorator.envio.DecoradorPrioritario;
+import com.logismart.infraestructura.estructural.decorator.envio.DecoradorRastreoGPS;
+import com.logismart.infraestructura.estructural.decorator.envio.DecoradorSeguro;
+import com.logismart.infraestructura.estructural.flyweight.ubicacion.FabricaUbicaciones;
+import com.logismart.infraestructura.estructural.flyweight.ubicacion.Ubicacion;
+import com.logismart.infraestructura.estructural.proxy.envio.ProxyRepositorioEnvios;
 
 public class ServicioLogisticaCompleto {
     private final ServicioLogisticaFacade facade;
@@ -29,8 +29,8 @@ public class ServicioLogisticaCompleto {
         Ubicacion origen = FabricaUbicaciones.obtener("Buenos Aires", "Buenos Aires", "1425");
         Ubicacion destino = FabricaUbicaciones.obtener("Cordoba", "Cordoba", "5000");
 
-        com.logismart.infraestructura.decorator.envio.ComponenteEnvio envio =
-                new com.logismart.infraestructura.decorator.envio.EnvioBasico(
+        com.logismart.infraestructura.estructural.decorator.envio.ComponenteEnvio envio =
+                new com.logismart.infraestructura.estructural.decorator.envio.EnvioBasico(
                         origen.getCiudad(), destino.getCiudad(), peso);
 
         if (conSeguro) {

@@ -1,9 +1,9 @@
-﻿package com.logismart.aplicacion;
+package com.logismart.aplicacion;
 
 import com.logismart.dominio.usuario.ClienteFinal;
 import com.logismart.dominio.envio.Envio;
 import com.logismart.dominio.ruta.Ruta;
-import com.logismart.infraestructura.notificacion.Notificador;
+import com.logismart.infraestructura.estructural.notificacion.Notificador;
 
 /**
  * GRASP Pure Fabrication: Clase artificial sin equivalente en el dominio real.

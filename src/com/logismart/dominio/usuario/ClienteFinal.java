@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.usuario;
+package com.logismart.dominio.usuario;
 
 public class ClienteFinal extends Usuario implements IPermisos {
 	private static final Rol ROL = Rol.CLIENTE;

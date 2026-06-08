@@ -3,7 +3,7 @@ package com.logismart.aplicacion.demos.hito13;
 import com.logismart.dominio.usuario.ClienteFinal;
 import com.logismart.dominio.empresa.Cobro;
 import com.logismart.dominio.envio.Envio;
-import com.logismart.infraestructura.composite.centro.PuntoEntrega;
+import com.logismart.infraestructura.estructural.composite.centro.PuntoEntrega;
 import com.logismart.infraestructura.persistencia.entidad.CentroAssembler;
 import com.logismart.infraestructura.persistencia.entidad.CentroDistribucionEntity;
 import com.logismart.infraestructura.persistencia.lazy.CentroDistribucionLazyProxy;

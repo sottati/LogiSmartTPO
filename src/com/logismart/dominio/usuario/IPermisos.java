@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.usuario;
+package com.logismart.dominio.usuario;
 
 /**
  * GRASP Polymorphism: Define el contrato de permisos para todos los tipos de usuario.

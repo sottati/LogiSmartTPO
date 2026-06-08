@@ -25,7 +25,7 @@ public class CentroAssembler {
      */
     public static CentroDistribucionEntity aPersistencia(
             String id,
-            com.logismart.infraestructura.composite.centro.CentroDistribucionComposite c) {
+            com.logismart.infraestructura.estructural.composite.centro.CentroDistribucionComposite c) {
         return new CentroDistribucionEntity(
                 id,
                 c.getNombre(),

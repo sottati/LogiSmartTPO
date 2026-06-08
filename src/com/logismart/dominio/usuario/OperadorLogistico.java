@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.usuario;
+package com.logismart.dominio.usuario;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

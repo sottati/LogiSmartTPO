@@ -1,0 +1,27 @@
+package com.logismart.infraestructura.estructural.fabrica;
+
+import com.logismart.dominio.vehiculo.Auto;
+import com.logismart.dominio.vehiculo.Camion;
+import com.logismart.dominio.vehiculo.Moto;
+import com.logismart.dominio.vehiculo.Vehiculo;
+
+/**
+ * Factory Method para vehículos - API basada en String.
+ * Complementa FabricaDeVehiculos (que recibe TipoVehiculo enum) para contextos
+ * donde el tipo llega como texto (p.ej. desde configuración o desde una factory regional).
+ */
+public final class VehiculoFactory {
+
+    private VehiculoFactory() {}
+
+    public static Vehiculo crearVehiculo(String tipo) {
+        switch (tipo.toLowerCase()) {
+            case "auto":   return new Auto();
+            case "moto":   return new Moto();
+            case "camion": return new Camion();
+            default:
+                throw new IllegalArgumentException("Tipo de vehículo desconocido: " + tipo);
+        }
+    }
+}
+

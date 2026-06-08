@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.envio;
+package com.logismart.dominio.envio;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

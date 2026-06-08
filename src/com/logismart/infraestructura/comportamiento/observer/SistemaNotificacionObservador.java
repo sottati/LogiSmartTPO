@@ -1,4 +1,4 @@
-﻿package com.logismart.infraestructura.comportamiento.observer;
+package com.logismart.infraestructura.comportamiento.observer;
 
 import com.logismart.dominio.envio.Envio;
 import com.logismart.dominio.envio.ObservadorEnvio;

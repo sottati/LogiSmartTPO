@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.usuario;
+package com.logismart.dominio.usuario;
 
 public class Usuario {
 	private String id;

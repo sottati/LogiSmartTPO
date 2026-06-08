@@ -1,4 +1,4 @@
-﻿package com.logismart.aplicacion;
+package com.logismart.aplicacion;
 
 import com.logismart.dominio.usuario.Usuario;
 import com.logismart.util.BCrypt;

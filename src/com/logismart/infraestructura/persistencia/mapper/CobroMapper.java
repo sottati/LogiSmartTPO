@@ -1,4 +1,4 @@
-﻿package com.logismart.infraestructura.persistencia.mapper;
+package com.logismart.infraestructura.persistencia.mapper;
 
 import com.logismart.dominio.empresa.Cobro;
 

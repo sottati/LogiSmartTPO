@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.envio;
+package com.logismart.dominio.envio;
 
 /**
  * Snapshot inmutable del estado de un Envío en un momento dado.

@@ -1,4 +1,4 @@
-﻿package com.logismart.infraestructura.persistencia.repositorio.memoria;
+package com.logismart.infraestructura.persistencia.repositorio.memoria;
 
 import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.persistencia.repositorio.RepositorioEnvio;

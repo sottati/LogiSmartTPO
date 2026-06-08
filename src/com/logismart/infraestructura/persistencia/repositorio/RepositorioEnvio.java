@@ -1,4 +1,4 @@
-﻿package com.logismart.infraestructura.persistencia.repositorio;
+package com.logismart.infraestructura.persistencia.repositorio;
 
 import com.logismart.dominio.envio.Envio;
 

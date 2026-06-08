@@ -1,8 +1,8 @@
-﻿package com.logismart.aplicacion;
+package com.logismart.aplicacion;
 
 import com.logismart.dominio.envio.Envio;
 import com.logismart.dominio.ruta.Ruta;
-import com.logismart.infraestructura.ruta.CalculadorDeRuta;
+import com.logismart.infraestructura.estructural.ruta.CalculadorDeRuta;
 
 import java.util.List;
 

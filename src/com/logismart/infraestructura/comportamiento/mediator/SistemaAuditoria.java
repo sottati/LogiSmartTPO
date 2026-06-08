@@ -1,4 +1,4 @@
-﻿package com.logismart.infraestructura.comportamiento.mediator;
+package com.logismart.infraestructura.comportamiento.mediator;
 
 import com.logismart.dominio.envio.Envio;
 import com.logismart.dominio.envio.ObservadorEnvio;

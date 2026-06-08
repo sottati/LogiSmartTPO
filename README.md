@@ -43,7 +43,10 @@ LogiSmartTPO/
 │   ├── vehiculo/     ← Vehiculo, Auto, Camion, Moto, Flota
 │   ├── ruta/         ← Ruta, PuntoEntrega, PosicionGPS, ETA
 │   └── empresa/      ← Empresa, Suscripcion, Cobro, Metrica, Reporte
-└── infraestructura/  ← implementaciones técnicas, organizadas por patrón
+└── infraestructura/  ← implementaciones técnicas, organizadas por categoría
+    ├── estructural/  ← patrones creacionales y estructurales GoF
+    ├── comportamiento/ ← patrones de comportamiento GoF
+    └── persistencia/   ← patrones de acceso a datos (PoEAA)
 ```
 
 ## Dónde encontrar cada patrón
@@ -51,8 +54,8 @@ LogiSmartTPO/
 | Familia | Patrones | Hitos | Ubicación principal |
 |---|---|---|---|
 | GRASP | Expert · Creator · Controller · Low Coupling · High Cohesion · Polymorphism · Pure Fabrication · Indirection · Protected Variations | 4–5 | transversal a `dominio/` y `aplicacion/` |
-| GoF Creacionales | Singleton · Factory Method · Abstract Factory · Builder · Prototype | 6–7 | `infraestructura/singleton/`, `fabrica/`, `abstractfactory/` · Builder y Prototype en `dominio/envio/Envio.java` |
-| GoF Estructurales | Adapter · Bridge · Composite · Decorator · Facade · Flyweight · Proxy | 8–9 | `infraestructura/adapter/`, `bridge/`, `composite/`, `decorator/`, `flyweight/`, `proxy/` · Facade en `aplicacion/` |
+| GoF Creacionales | Singleton · Factory Method · Abstract Factory · Builder · Prototype | 6–7 | `infraestructura/estructural/singleton/`, `fabrica/`, `abstractfactory/` · Builder y Prototype en `dominio/envio/Envio.java` |
+| GoF Estructurales | Adapter · Bridge · Composite · Decorator · Facade · Flyweight · Proxy | 8–9 | `infraestructura/estructural/adapter/`, `bridge/`, `composite/`, `decorator/`, `flyweight/`, `proxy/` · Facade en `aplicacion/` |
 | GoF Comportamiento | Chain of Responsibility · Command · Interpreter · Iterator · Mediator · Memento · Observer · State · Strategy · Template Method · Visitor | 10–12 | `infraestructura/comportamiento/` |
 | Persistencia (PoEAA) | Repository · Data Mapper · Unit of Work · Lazy Load | 13 | `infraestructura/persistencia/` |
 

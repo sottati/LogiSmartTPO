@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.usuario;
+package com.logismart.dominio.usuario;
 
 public enum Rol {
     OPERADOR         (true,  true,  true,  true,  false),

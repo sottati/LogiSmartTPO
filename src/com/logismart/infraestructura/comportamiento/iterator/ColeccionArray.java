@@ -1,4 +1,4 @@
-﻿package com.logismart.infraestructura.comportamiento.iterator;
+package com.logismart.infraestructura.comportamiento.iterator;
 
 import com.logismart.dominio.envio.Envio;
 

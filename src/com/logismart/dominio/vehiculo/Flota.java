@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.vehiculo;
+package com.logismart.dominio.vehiculo;
 
 import com.logismart.dominio.empresa.Empresa;
 import java.util.Collections;

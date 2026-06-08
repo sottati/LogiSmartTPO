@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.ruta;
+package com.logismart.dominio.ruta;
 
 import java.time.LocalDateTime;
 

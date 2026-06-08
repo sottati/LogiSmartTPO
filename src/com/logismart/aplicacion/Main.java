@@ -8,8 +8,8 @@ import com.logismart.aplicacion.demos.hito13.CasosDePruebaHito13;
 import com.logismart.aplicacion.demos.hito8.CasosDePruebaHito8;
 import com.logismart.aplicacion.demos.hito9.CasosDePruebaHito9;
 import com.logismart.dominio.envio.Envio;
-import com.logismart.infraestructura.singleton.ConfiguracionSistema;
-import com.logismart.infraestructura.singleton.Logger;
+import com.logismart.infraestructura.estructural.singleton.ConfiguracionSistema;
+import com.logismart.infraestructura.estructural.singleton.Logger;
 
 import java.time.LocalTime;
 import java.util.ArrayList;

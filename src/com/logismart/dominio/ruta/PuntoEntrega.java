@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.ruta;
+package com.logismart.dominio.ruta;
 
 public class PuntoEntrega {
 	private String direccion;

@@ -2,18 +2,18 @@ package com.logismart.aplicacion.demos.hito8;
 
 import com.logismart.aplicacion.ServicioLogisticaUnificado;
 import com.logismart.dominio.envio.Envio;
-import com.logismart.infraestructura.adapter.envio.AdapterDHL;
-import com.logismart.infraestructura.adapter.envio.AdapterFedEx;
-import com.logismart.infraestructura.adapter.envio.AdapterUPS;
-import com.logismart.infraestructura.adapter.pago.AdapterPayPal;
-import com.logismart.infraestructura.adapter.pago.AdapterStripe;
-import com.logismart.infraestructura.bridge.reporte.GeneradorCSV;
-import com.logismart.infraestructura.bridge.reporte.GeneradorJSON;
-import com.logismart.infraestructura.bridge.reporte.GeneradorPDF;
-import com.logismart.infraestructura.bridge.reporte.Reporte;
-import com.logismart.infraestructura.bridge.reporte.ReporteEnvios;
-import com.logismart.infraestructura.composite.centro.CentroRegional;
-import com.logismart.infraestructura.composite.centro.PuntoEntrega;
+import com.logismart.infraestructura.estructural.adapter.envio.AdapterDHL;
+import com.logismart.infraestructura.estructural.adapter.envio.AdapterFedEx;
+import com.logismart.infraestructura.estructural.adapter.envio.AdapterUPS;
+import com.logismart.infraestructura.estructural.adapter.pago.AdapterPayPal;
+import com.logismart.infraestructura.estructural.adapter.pago.AdapterStripe;
+import com.logismart.infraestructura.estructural.bridge.reporte.GeneradorCSV;
+import com.logismart.infraestructura.estructural.bridge.reporte.GeneradorJSON;
+import com.logismart.infraestructura.estructural.bridge.reporte.GeneradorPDF;
+import com.logismart.infraestructura.estructural.bridge.reporte.Reporte;
+import com.logismart.infraestructura.estructural.bridge.reporte.ReporteEnvios;
+import com.logismart.infraestructura.estructural.composite.centro.CentroRegional;
+import com.logismart.infraestructura.estructural.composite.centro.PuntoEntrega;
 
 import java.util.List;
 

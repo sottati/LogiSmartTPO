@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.envio;
+package com.logismart.dominio.envio;
 
 import com.logismart.dominio.empresa.Empresa;
 import com.logismart.infraestructura.comportamiento.state.EstadoConfirmado;

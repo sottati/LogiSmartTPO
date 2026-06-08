@@ -1,4 +1,4 @@
-﻿package com.logismart.infraestructura.comportamiento.chain;
+package com.logismart.infraestructura.comportamiento.chain;
 
 public abstract class ValidadorEnvio {
     protected ValidadorEnvio siguiente;

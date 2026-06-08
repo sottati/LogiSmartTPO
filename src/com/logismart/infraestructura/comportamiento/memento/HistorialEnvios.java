@@ -1,4 +1,4 @@
-﻿package com.logismart.infraestructura.comportamiento.memento;
+package com.logismart.infraestructura.comportamiento.memento;
 
 import com.logismart.dominio.envio.Envio;
 import com.logismart.dominio.envio.MementoEnvio;

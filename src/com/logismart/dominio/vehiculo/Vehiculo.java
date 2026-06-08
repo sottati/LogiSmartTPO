@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.vehiculo;
+package com.logismart.dominio.vehiculo;
 
 public class Vehiculo {
 	private String id;

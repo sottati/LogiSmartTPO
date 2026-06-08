@@ -1,4 +1,4 @@
-﻿package com.logismart.infraestructura.comportamiento.state;
+package com.logismart.infraestructura.comportamiento.state;
 
 import com.logismart.dominio.envio.Envio;
 

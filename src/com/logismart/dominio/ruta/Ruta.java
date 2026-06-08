@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.ruta;
+package com.logismart.dominio.ruta;
 
 import com.logismart.dominio.usuario.Transportista;
 import com.logismart.dominio.vehiculo.Vehiculo;

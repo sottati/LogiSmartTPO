@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.empresa;
+package com.logismart.dominio.empresa;
 
 import java.time.LocalDateTime;
 

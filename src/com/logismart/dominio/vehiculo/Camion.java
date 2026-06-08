@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.vehiculo;
+package com.logismart.dominio.vehiculo;
 
 import java.util.UUID;
 

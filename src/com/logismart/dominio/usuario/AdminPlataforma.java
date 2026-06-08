@@ -1,4 +1,4 @@
-﻿package com.logismart.dominio.usuario;
+package com.logismart.dominio.usuario;
 
 public class AdminPlataforma extends Usuario implements IPermisos {
 	private static final Rol ROL = Rol.ADMIN_PLATAFORMA;
