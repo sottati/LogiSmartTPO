@@ -27,6 +27,10 @@ import com.logismart.infraestructura.persistencia.unitofwork.UnitOfWork;
 import com.logismart.infraestructura.estructural.tiempo.CalculadorDeTiempo;
 import com.logismart.infraestructura.estructural.vehiculo.AsignadorDeVehiculos;
 import com.logismart.infraestructura.estructural.singleton.Logger;
+import com.logismart.aplicacion.servicios.RepositorioDeEnvios;
+import com.logismart.aplicacion.servicios.ValidadorDeEnvios;
+import com.logismart.aplicacion.servicios.ServicioDeNotificaciones;
+import com.logismart.aplicacion.servicios.CalculadorDeRutas;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;

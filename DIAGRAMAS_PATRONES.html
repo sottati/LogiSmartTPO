@@ -307,7 +307,7 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-controller"></div></div>
           <div class="pat-classes">
             <span class="class-chip">LogiSmartController</span>
-            <span class="class-chip">ServicioLogisticaUnificado</span>
+            <span class="class-chip">FacadeProveedoresExternos</span>
             <span class="class-chip">RepositorioEnvio</span>
           </div>
         </div>
@@ -343,7 +343,7 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-high-cohesion"></div></div>
           <div class="pat-classes">
             <span class="class-chip">LogiSmartController</span>
-            <span class="class-chip">ServicioLogisticaUnificado</span>
+            <span class="class-chip">FacadeProveedoresExternos</span>
             <span class="class-chip">Envio</span>
             <span class="class-chip">Notificador</span>
           </div>
@@ -609,6 +609,50 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-decorator"></div></div>
+
+          <table style="width:100%;border-collapse:collapse;font-size:.76rem;margin-top:.75rem;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border);">
+                <th style="text-align:left;padding:.4rem .6rem;color:var(--muted);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;">Capa</th>
+                <th style="text-align:left;padding:.4rem .6rem;color:var(--muted);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;">Operación</th>
+                <th style="text-align:left;padding:.4rem .6rem;color:var(--muted);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;">Regla de negocio</th>
+                <th style="text-align:right;padding:.4rem .6rem;color:var(--muted);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;">Costo (5 kg)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:.4rem .6rem;font-family:'IBM Plex Mono',monospace;color:var(--primary-2);">EnvioBasico</td>
+                <td style="padding:.4rem .6rem;font-family:'IBM Plex Mono',monospace;color:var(--muted);">peso × $10</td>
+                <td style="padding:.4rem .6rem;color:var(--muted);">Costo base por kilogramo. Sin servicios adicionales.</td>
+                <td style="padding:.4rem .6rem;text-align:right;font-weight:600;color:var(--text);">$50.00</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);background:#fafcff;">
+                <td style="padding:.4rem .6rem;font-family:'IBM Plex Mono',monospace;color:var(--primary-2);">DecoradorSeguro</td>
+                <td style="padding:.4rem .6rem;font-family:'IBM Plex Mono',monospace;color:var(--muted);">anterior × 1.15</td>
+                <td style="padding:.4rem .6rem;color:var(--muted);">+15% sobre el costo acumulado. Se aplica <strong>primero</strong> porque es multiplicador: si fuera después, inflaría el GPS y SMS.</td>
+                <td style="padding:.4rem .6rem;text-align:right;font-weight:600;color:var(--text);">$57.50</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:.4rem .6rem;font-family:'IBM Plex Mono',monospace;color:var(--primary-2);">DecoradorRastreoGPS</td>
+                <td style="padding:.4rem .6rem;font-family:'IBM Plex Mono',monospace;color:var(--muted);">anterior + $50</td>
+                <td style="padding:.4rem .6rem;color:var(--muted);">Cargo fijo por telemetría en tiempo real. También reduce el tiempo de entrega en 1 día (<code>max(1, días-1)</code>).</td>
+                <td style="padding:.4rem .6rem;text-align:right;font-weight:600;color:var(--text);">$107.50</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);background:#fafcff;">
+                <td style="padding:.4rem .6rem;font-family:'IBM Plex Mono',monospace;color:var(--primary-2);">DecoradorNotificacionesSMS</td>
+                <td style="padding:.4rem .6rem;font-family:'IBM Plex Mono',monospace;color:var(--muted);">anterior + $25</td>
+                <td style="padding:.4rem .6rem;color:var(--muted);">Cargo fijo por notificaciones SMS al destinatario en cada cambio de estado.</td>
+                <td style="padding:.4rem .6rem;text-align:right;font-weight:600;color:var(--text);">$132.50</td>
+              </tr>
+              <tr style="border-bottom:2px solid var(--border);">
+                <td style="padding:.4rem .6rem;font-family:'IBM Plex Mono',monospace;color:var(--primary-2);">DecoradorPrioritario</td>
+                <td style="padding:.4rem .6rem;font-family:'IBM Plex Mono',monospace;color:var(--muted);">anterior + $100</td>
+                <td style="padding:.4rem .6rem;color:var(--muted);">Cargo fijo por manejo prioritario. Reduce el tiempo de entrega en 2 días adicionales (<code>max(1, días-2)</code>).</td>
+                <td style="padding:.4rem .6rem;text-align:right;font-weight:600;color:var(--text);">$232.50</td>
+              </tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">ComponenteEnvio</span>
             <span class="class-chip">EnvioBasico</span>
@@ -623,14 +667,14 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">19</span> Facade</div>
-            <div class="pat-desc"><code>ServicioLogisticaUnificado</code> orquesta validación, creación, persistencia y notificación en una sola llamada. El Controller nunca conoce los subsistemas internos.</div>
+            <div class="pat-desc"><code>FacadeProveedoresExternos</code> orquesta validación, creación, persistencia y notificación en una sola llamada. El Controller nunca conoce los subsistemas internos.</div>
           </div>
           <span class="hito-pill">Hito 9</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-facade"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">ServicioLogisticaUnificado</span>
+            <span class="class-chip">FacadeProveedoresExternos</span>
             <span class="class-chip">CadenaValidadores</span>
             <span class="class-chip">FabricaDeEnvios</span>
             <span class="class-chip">RepositorioEnvio</span>
@@ -729,18 +773,64 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">24</span> Interpreter</div>
-            <div class="pat-desc">Filtros de envíos como árbol de expresiones combinables. <code>AND(costo&gt;500, OR(destino=Córdoba, NOT(restringido)))</code>. Cada nodo sabe evaluarse a sí mismo.</div>
+            <div class="pat-desc">Filtros de envíos expresados como un árbol AST compuesto de nodos atómicos (<code>ExpresionOrigen</code>, <code>ExpresionCosto</code>…) y combinadores lógicos (<code>AND</code>, <code>OR</code>, <code>NOT</code>). Cada nodo sabe evaluarse recursivamente contra un <code>Envio</code>, sin que el cliente conozca la estructura interna.</div>
           </div>
-          <span class="hito-pill">Hito 11</span>
+          <span class="hito-pill">Hito 10</span>
         </div>
         <div class="pat-card-body">
-          <div class="diagram-wrap"><div class="mermaid" id="d-interpreter"></div></div>
-          <div class="pat-classes">
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em;">Árbol AST — ejemplo: AND(AND(origen=BsAs, costo&gt;100), NOT(restringido))</p>
+          <div class="diagram-wrap" style="margin-bottom:.75rem"><div class="mermaid" id="d-interpreter"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em;">Flujo de evaluación recursiva</p>
+          <div class="diagram-wrap" style="margin-bottom:.75rem"><div class="mermaid" id="d-interpreter-seq"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Reglas de negocio implementadas</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead>
+              <tr style="background:var(--bg)">
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">Expresión</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Evalúa <code>true</code> cuando…</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ExpresionOrigen(ciudad)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">El origen del envío coincide exactamente con <em>ciudad</em></td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ExpresionDestino(ciudad)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">El destino del envío coincide exactamente con <em>ciudad</em></td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ExpresionPeso(val, op)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">El peso satisface el operador (<code>&lt;</code> <code>&gt;</code> <code>=</code>) respecto a <em>val</em></td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ExpresionCosto(val, op)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">El costo satisface el operador (<code>&lt;</code> <code>&gt;</code> <code>=</code>) respecto a <em>val</em></td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ExpresionRestringido</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">El destino contiene la palabra <code>"Restringido"</code> (zona de acceso limitado)</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ExpresionAND(izq, der)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Ambas sub-expresiones retornan <code>true</code> (cortocircuito: si izq es false, no evalúa der)</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ExpresionOR(izq, der)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Al menos una sub-expresión retorna <code>true</code></td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ExpresionNOT(expr)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">La sub-expresión retorna <code>false</code> (inversión lógica)</td></tr>
+            </tbody>
+          </table>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Reglas compuestas de ejemplo (casos de prueba reales)</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead>
+              <tr style="background:var(--bg)">
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Expresión compuesta</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Significado de negocio</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--primary)">Origen("Buenos Aires")</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Envíos que salen desde BsAs</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--primary)">AND(Origen("BsAs"), Peso(&lt;10))</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Envíos livianos desde BsAs (tarifa económica)</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--primary)">OR(Destino("Córdoba"), Destino("Mendoza"))</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Envíos al corredor interior del país</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--primary)">NOT(Restringido)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Excluye destinos en zonas de acceso limitado</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--primary)">AND(AND(Origen("BsAs"), Costo(&gt;100)), NOT(Restringido))</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Regla de despacho: BsAs, costo alto, destino libre</td></tr>
+            </tbody>
+          </table>
+
+          <div class="pat-classes" style="margin-top:.75rem">
             <span class="class-chip">Expresion</span>
             <span class="class-chip">ExpresionAND</span>
             <span class="class-chip">ExpresionOR</span>
-            <span class="class-chip">ExpresionCosto</span>
             <span class="class-chip">ExpresionNOT</span>
+            <span class="class-chip">ExpresionOrigen</span>
+            <span class="class-chip">ExpresionDestino</span>
+            <span class="class-chip">ExpresionCosto</span>
+            <span class="class-chip">ExpresionPeso</span>
+            <span class="class-chip">ExpresionRestringido</span>
           </div>
         </div>
       </div>
@@ -1047,7 +1137,7 @@ const DIAGRAMS = {
 'controller': `sequenceDiagram
     actor U as Usuario
     participant C as LogiSmartController
-    participant F as ServicioLogisticaUnificado
+    participant F as FacadeProveedoresExternos
     participant R as RepositorioEnvio
     U->>C: crearEnvio(datos)
     C->>C: verificarPermiso()
@@ -1068,7 +1158,7 @@ const DIAGRAMS = {
     style D fill:#e6f4ea,stroke:#1f5d3a,color:#1f5d3a`,
 
 'high-cohesion': `flowchart TD
-    A["LogiSmartController\nSOLO autoriza"] --> B["ServicioLogisticaUnificado\nSOLO orquesta"]
+    A["LogiSmartController\nSOLO autoriza"] --> B["FacadeProveedoresExternos\nSOLO orquesta"]
     B --> C["Envio\nSOLO reglas de negocio"]
     B --> D["RepositorioEnvio\nSOLO persistencia"]
     B --> E["Notificador\nSOLO notifica"]
@@ -1270,7 +1360,7 @@ const DIAGRAMS = {
 
 'facade': `sequenceDiagram
     participant C as LogiSmartController
-    participant F as ServicioLogisticaUnificado
+    participant F as FacadeProveedoresExternos
     participant V as CadenaValidadores
     participant B as FabricaDeEnvios
     participant R as RepositorioEnvio
@@ -1342,17 +1432,46 @@ const DIAGRAMS = {
     C2->>R: restaurar(id)`,
 
 'interpreter': `flowchart TD
-    A["ExpresionAND\neval(ctx)"] -->|izq| B["ExpresionCosto\ncosto > 500"]
-    A -->|der| C["ExpresionOR\neval(ctx)"]
-    C -->|izq| D["ExpresionDestino\ndest = Cordoba"]
-    C -->|der| E["ExpresionNOT\neval(ctx)"]
-    E --> F["ExpresionRestringido\nzona restringida"]
+    A["ExpresionAND (raiz)\neval(envio)"] -->|izq| B["ExpresionAND (interna)\neval(envio)"]
+    A -->|der| N["ExpresionNOT\neval(envio)"]
+    B -->|izq| O["ExpresionOrigen\norigen = Buenos Aires"]
+    B -->|der| C["ExpresionCosto\ncosto > 100"]
+    N --> R["ExpresionRestringido\ndestino contiene Restringido"]
     style A fill:#dce9ff,stroke:#1f4f74
-    style C fill:#dce9ff,stroke:#1f4f74
-    style E fill:#dce9ff,stroke:#1f4f74
-    style B fill:#e6f4ea,stroke:#1f5d3a
-    style D fill:#e6f4ea,stroke:#1f5d3a
-    style F fill:#e6f4ea,stroke:#1f5d3a`,
+    style B fill:#dce9ff,stroke:#1f4f74
+    style N fill:#dce9ff,stroke:#1f4f74
+    style O fill:#e6f4ea,stroke:#1f5d3a
+    style C fill:#e6f4ea,stroke:#1f5d3a
+    style R fill:#e6f4ea,stroke:#1f5d3a`,
+
+'interpreter-seq': `sequenceDiagram
+    participant F as FiltroEnvios
+    participant A1 as ExpresionAND (raiz)
+    participant A2 as ExpresionAND (interna)
+    participant O as ExpresionOrigen
+    participant C as ExpresionCosto
+    participant N as ExpresionNOT
+    participant R as ExpresionRestringido
+    participant E as Envio
+
+    F->>A1: evaluar(envio)
+    A1->>A2: evaluar(envio)
+    A2->>O: evaluar(envio)
+    O->>E: getOrigen()
+    E-->>O: "Buenos Aires"
+    O-->>A2: true
+    A2->>C: evaluar(envio)
+    C->>E: getCosto()
+    E-->>C: 150.0
+    C-->>A2: true (150 > 100)
+    A2-->>A1: true
+    A1->>N: evaluar(envio)
+    N->>R: evaluar(envio)
+    R->>E: getDestino()
+    E-->>R: "Cordoba"
+    R-->>N: false (no contiene Restringido)
+    N-->>A1: true (NOT false)
+    A1-->>F: true — pasa el filtro`,
 
 'iterator': `sequenceDiagram
     participant C as Servicio

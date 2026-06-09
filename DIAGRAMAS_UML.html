@@ -1,0 +1,2203 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Diagramas UML — LogiSmart</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+    :root {
+      --primary:   #12324b;
+      --primary-2: #1f4f74;
+      --accent:    #dc6b1f;
+      --bg:        #f5f8fc;
+      --surface:   #ffffff;
+      --text:      #112030;
+      --muted:     #4c5f72;
+      --border:    #d8e2ec;
+      --sidebar-w: 272px;
+
+      --c-grasp:    #1f4f74; --c-grasp-bg:  #dce9ff;
+      --c-crea:     #7a3200; --c-crea-bg:   #fff0e3;
+      --c-estr:     #4c2fa0; --c-estr-bg:   #ede9ff;
+      --c-comp:     #1f5d3a; --c-comp-bg:   #e6f4ea;
+      --c-pers:     #0e5c5c; --c-pers-bg:   #e0f5f5;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 15px; }
+    body { font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+    /* ── Sidebar ─────────────────────────────── */
+    #sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.2rem 1rem 2rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .sb-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .sb-filters { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 1.1rem; }
+    .sb-filter {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 99px; cursor: pointer;
+      border: 1.5px solid transparent; transition: opacity .15s;
+    }
+    .sb-filter:hover { opacity: .8; }
+    .sb-filter.active { opacity: 1; }
+    .sb-filter.inactive { opacity: .35; }
+    .sb-filter[data-cat="all"]          { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .sb-filter[data-cat="GRASP"]        { background: var(--c-grasp-bg); color: var(--c-grasp); border-color: var(--c-grasp); }
+    .sb-filter[data-cat="Creacional"]   { background: var(--c-crea-bg);  color: var(--c-crea);  border-color: var(--c-crea); }
+    .sb-filter[data-cat="Estructural"]  { background: var(--c-estr-bg);  color: var(--c-estr);  border-color: var(--c-estr); }
+    .sb-filter[data-cat="Comportamiento"] { background: var(--c-comp-bg); color: var(--c-comp); border-color: var(--c-comp); }
+    .sb-filter[data-cat="Persistencia"] { background: var(--c-pers-bg);  color: var(--c-pers);  border-color: var(--c-pers); }
+
+    .sb-group { margin-bottom: 1.1rem; }
+    .sb-group-label {
+      font-size: 0.64rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .4rem; padding-left: 6px;
+    }
+    .sb-link {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 0.78rem; color: var(--muted); text-decoration: none;
+      padding: 4px 6px; border-radius: 6px; transition: background .12s, color .12s;
+    }
+    .sb-link:hover { background: var(--bg); color: var(--primary); }
+    .sb-link.active { background: var(--c-grasp-bg); color: var(--primary); font-weight: 600; }
+    .sb-link .num { font-size: 0.62rem; font-weight: 700; font-family: "IBM Plex Mono", monospace; min-width: 20px; }
+
+    /* ── Main ────────────────────────────────── */
+    #main { flex: 1; padding: 1.5rem 1.75rem 3rem; overflow-x: hidden; }
+
+    .page-header {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.2rem 1.5rem; margin-bottom: 1.75rem;
+    }
+    .page-header h1 { font-size: 1.35rem; color: var(--primary); font-weight: 700; }
+    .page-header p  { margin-top: .35rem; color: var(--muted); font-size: .85rem; line-height: 1.5; }
+
+    .cat-section { margin-bottom: 2.5rem; }
+    .cat-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 1.1rem; padding-bottom: .6rem;
+      border-bottom: 2px solid var(--border);
+    }
+    .cat-badge {
+      font-size: .65rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 99px;
+    }
+    .cat-header h2 { font-size: 1rem; font-weight: 700; color: var(--primary); }
+    .cat-header .cat-count { font-size: .78rem; color: var(--muted); }
+
+    .cat-GRASP        .cat-badge { background: var(--c-grasp-bg); color: var(--c-grasp); }
+    .cat-Creacional   .cat-badge { background: var(--c-crea-bg);  color: var(--c-crea);  }
+    .cat-Estructural  .cat-badge { background: var(--c-estr-bg);  color: var(--c-estr);  }
+    .cat-Comportamiento .cat-badge { background: var(--c-comp-bg); color: var(--c-comp); }
+    .cat-Persistencia .cat-badge { background: var(--c-pers-bg);  color: var(--c-pers);  }
+
+    .pat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(520px, 1fr)); gap: 1rem; }
+
+    .pat-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; transition: box-shadow .18s;
+    }
+    .pat-card:hover { box-shadow: 0 4px 20px rgba(18,50,75,.10); }
+
+    .pat-card-head {
+      padding: .85rem 1rem .7rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem;
+    }
+    .pat-card-head-left { flex: 1; min-width: 0; }
+    .pat-name {
+      font-size: .92rem; font-weight: 700; color: var(--primary);
+      display: flex; align-items: center; gap: 6px; margin-bottom: 3px;
+    }
+    .pat-num { font-family: "IBM Plex Mono", monospace; font-size: .65rem; color: var(--muted); font-weight: 400; }
+    .pat-desc { font-size: .77rem; color: var(--muted); line-height: 1.45; }
+    .hito-pill {
+      font-size: .62rem; font-weight: 700; padding: 2px 7px; border-radius: 99px;
+      background: var(--bg); border: 1px solid var(--border); color: var(--muted);
+      white-space: nowrap; flex-shrink: 0;
+    }
+
+    .pat-card-body { padding: .85rem 1rem; }
+
+    .diagram-wrap {
+      background: var(--bg); border-radius: 8px; padding: .6rem;
+      overflow-x: auto; min-height: 60px;
+    }
+    .diagram-wrap .mermaid { display: flex; justify-content: center; }
+    .diagram-wrap svg { max-width: 100%; height: auto; }
+
+    .pat-classes {
+      margin-top: .7rem; display: flex; flex-wrap: wrap; gap: 5px;
+    }
+    .class-chip {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .62rem; padding: 2px 7px; border-radius: 4px;
+      background: var(--bg); border: 1px solid var(--border); color: var(--muted);
+    }
+
+    @media (max-width: 860px) {
+      #sidebar { display: none; }
+      .pat-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<nav id="sidebar">
+  <div class="sb-title">UML · LogiSmart</div>
+  <div class="sb-filters">
+    <span class="sb-filter active" data-cat="all">Todos</span>
+    <span class="sb-filter active" data-cat="GRASP">GRASP</span>
+    <span class="sb-filter active" data-cat="Creacional">Creac.</span>
+    <span class="sb-filter active" data-cat="Estructural">Estr.</span>
+    <span class="sb-filter active" data-cat="Comportamiento">Comp.</span>
+    <span class="sb-filter active" data-cat="Persistencia">Pers.</span>
+  </div>
+
+  <div class="sb-group" data-cat="GRASP">
+    <div class="sb-group-label">GRASP</div>
+    <a class="sb-link" href="#information-expert"><span class="num">01</span>Information Expert</a>
+    <a class="sb-link" href="#creator"><span class="num">02</span>Creator</a>
+    <a class="sb-link" href="#controller"><span class="num">03</span>Controller</a>
+    <a class="sb-link" href="#low-coupling"><span class="num">04</span>Low Coupling</a>
+    <a class="sb-link" href="#high-cohesion"><span class="num">05</span>High Cohesion</a>
+    <a class="sb-link" href="#polymorphism"><span class="num">06</span>Polymorphism</a>
+    <a class="sb-link" href="#pure-fabrication"><span class="num">07</span>Pure Fabrication</a>
+    <a class="sb-link" href="#indirection"><span class="num">08</span>Indirection</a>
+    <a class="sb-link" href="#protected-variations"><span class="num">09</span>Protected Variations</a>
+  </div>
+
+  <div class="sb-group" data-cat="Creacional">
+    <div class="sb-group-label">GoF Creacionales</div>
+    <a class="sb-link" href="#singleton"><span class="num">10</span>Singleton</a>
+    <a class="sb-link" href="#factory-method"><span class="num">11</span>Factory Method</a>
+    <a class="sb-link" href="#abstract-factory"><span class="num">12</span>Abstract Factory</a>
+    <a class="sb-link" href="#builder"><span class="num">13</span>Builder</a>
+    <a class="sb-link" href="#prototype"><span class="num">14</span>Prototype</a>
+  </div>
+
+  <div class="sb-group" data-cat="Estructural">
+    <div class="sb-group-label">GoF Estructurales</div>
+    <a class="sb-link" href="#adapter"><span class="num">15</span>Adapter</a>
+    <a class="sb-link" href="#bridge"><span class="num">16</span>Bridge</a>
+    <a class="sb-link" href="#composite"><span class="num">17</span>Composite</a>
+    <a class="sb-link" href="#decorator"><span class="num">18</span>Decorator</a>
+    <a class="sb-link" href="#facade"><span class="num">19</span>Facade</a>
+    <a class="sb-link" href="#flyweight"><span class="num">20</span>Flyweight</a>
+    <a class="sb-link" href="#proxy"><span class="num">21</span>Proxy</a>
+  </div>
+
+  <div class="sb-group" data-cat="Comportamiento">
+    <div class="sb-group-label">GoF Comportamiento</div>
+    <a class="sb-link" href="#chain"><span class="num">22</span>Chain of Responsibility</a>
+    <a class="sb-link" href="#command"><span class="num">23</span>Command</a>
+    <a class="sb-link" href="#interpreter"><span class="num">24</span>Interpreter</a>
+    <a class="sb-link" href="#iterator"><span class="num">25</span>Iterator</a>
+    <a class="sb-link" href="#mediator"><span class="num">26</span>Mediator</a>
+    <a class="sb-link" href="#memento"><span class="num">27</span>Memento</a>
+    <a class="sb-link" href="#observer"><span class="num">28</span>Observer</a>
+    <a class="sb-link" href="#state"><span class="num">29</span>State</a>
+    <a class="sb-link" href="#strategy"><span class="num">30</span>Strategy</a>
+    <a class="sb-link" href="#template-method"><span class="num">31</span>Template Method</a>
+    <a class="sb-link" href="#visitor"><span class="num">32</span>Visitor</a>
+  </div>
+
+  <div class="sb-group" data-cat="Persistencia">
+    <div class="sb-group-label">Persistencia (PoEAA)</div>
+    <a class="sb-link" href="#repository"><span class="num">33</span>Repository</a>
+    <a class="sb-link" href="#data-mapper"><span class="num">34</span>Data Mapper</a>
+    <a class="sb-link" href="#unit-of-work"><span class="num">35</span>Unit of Work</a>
+    <a class="sb-link" href="#lazy-load"><span class="num">36</span>Lazy Load</a>
+  </div>
+</nav>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main id="main">
+  <div class="page-header">
+    <h1>Diagramas UML de Clases — LogiSmart</h1>
+    <p>36 patrones de diseño aplicados al sistema: GRASP · GoF Creacionales · GoF Estructurales · GoF Comportamiento · Persistencia (PoEAA). Cada diagrama <code>classDiagram</code> muestra la estructura UML con las clases reales del proyecto.</p>
+  </div>
+
+  <!-- ── GRASP ── -->
+  <section class="cat-section cat-GRASP" data-cat="GRASP">
+    <div class="cat-header">
+      <span class="cat-badge">GRASP</span>
+      <h2>Patrones GRASP</h2>
+      <span class="cat-count">9 patrones · Hitos 4–5</span>
+    </div>
+    <div class="pat-grid">
+
+      <div class="pat-card" id="information-expert">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">01</span> Information Expert</div>
+            <div class="pat-desc"><code>Rol</code> implementa <code>IPermisos</code> porque tiene la información: la matriz 5×5 completa de operaciones permitidas por rol. Nadie más necesita conocerla.</div>
+          </div>
+          <span class="hito-pill">Hito 4–5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-information-expert"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">IPermisos</span>
+            <span class="class-chip">Rol</span>
+            <span class="class-chip">Usuario</span>
+            <span class="class-chip">LogiSmartController</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="creator">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">02</span> Creator</div>
+            <div class="pat-desc"><code>FabricaDeEnvios</code> crea <code>Envio</code> porque registra, usa y tiene todos los datos de inicialización. Delega la construcción fluida a <code>EnvioBuilder</code>.</div>
+          </div>
+          <span class="hito-pill">Hito 5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-creator"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">FabricaDeEnvios</span>
+            <span class="class-chip">EnvioBuilder</span>
+            <span class="class-chip">Envio</span>
+            <span class="class-chip">TipoEnvio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="controller">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">03</span> Controller</div>
+            <div class="pat-desc"><code>LogiSmartController</code> recibe todas las peticiones UI, verifica permisos mediante <code>IPermisos</code> y delega a <code>FacadeProveedoresExternos</code> sin calcular ni persistir.</div>
+          </div>
+          <span class="hito-pill">Hito 4</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-controller"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">LogiSmartController</span>
+            <span class="class-chip">FacadeProveedoresExternos</span>
+            <span class="class-chip">RepositorioEnvio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="low-coupling">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">04</span> Low Coupling</div>
+            <div class="pat-desc">El dominio depende de la interfaz <code>ProveedorEntrega</code>, nunca de <code>ServicioEntregaAndreani</code> directamente. Cambiar de proveedor no toca ninguna clase de negocio.</div>
+          </div>
+          <span class="hito-pill">Hito 5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-low-coupling"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ProveedorEntrega</span>
+            <span class="class-chip">ServicioEntregaAndreani</span>
+            <span class="class-chip">ServicioEntregaOCA</span>
+            <span class="class-chip">FacadeProveedoresExternos</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="high-cohesion">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">05</span> High Cohesion</div>
+            <div class="pat-desc">Cada servicio tiene una única responsabilidad bien definida: <code>ServicioNotificacion</code> solo notifica, <code>ServicioPago</code> solo cobra, <code>ServicioRutas</code> solo ruteará. <code>FacadeProveedoresExternos</code> solo orquesta.</div>
+          </div>
+          <span class="hito-pill">Hito 5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-high-cohesion"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">FacadeProveedoresExternos</span>
+            <span class="class-chip">ServicioNotificacion</span>
+            <span class="class-chip">ServicioPago</span>
+            <span class="class-chip">ServicioRutas</span>
+            <span class="class-chip">ServicioClientes</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="polymorphism">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">06</span> Polymorphism</div>
+            <div class="pat-desc"><code>EstadoEnvio</code> define el contrato; cada estado concreto responde a los mismos mensajes con comportamiento propio. No hay <code>instanceof</code> ni <code>switch</code> por estado en el dominio.</div>
+          </div>
+          <span class="hito-pill">Hito 9</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-polymorphism"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">EstadoEnvio</span>
+            <span class="class-chip">EstadoPendiente</span>
+            <span class="class-chip">EstadoEnTransito</span>
+            <span class="class-chip">EstadoEntregado</span>
+            <span class="class-chip">EstadoCancelado</span>
+            <span class="class-chip">EstadoRetenido</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="pure-fabrication">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">07</span> Pure Fabrication</div>
+            <div class="pat-desc"><code>FabricaDeEnvios</code> y <code>FacadeProveedoresExternos</code> no existen en el dominio real: son clases artificiales inventadas para concentrar responsabilidades y mantener alta cohesión.</div>
+          </div>
+          <span class="hito-pill">Hito 5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-pure-fabrication"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">FabricaDeEnvios</span>
+            <span class="class-chip">FacadeProveedoresExternos</span>
+            <span class="class-chip">Envio</span>
+            <span class="class-chip">Cliente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="indirection">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">08</span> Indirection</div>
+            <div class="pat-desc"><code>AdaptadorAndreani</code> actúa como intermediario entre el dominio y la API externa. El dominio solo ve <code>ProveedorEntrega</code>; los detalles del transporte quedan encapsulados.</div>
+          </div>
+          <span class="hito-pill">Hito 7</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-indirection"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ProveedorEntrega</span>
+            <span class="class-chip">AdaptadorAndreani</span>
+            <span class="class-chip">ClienteAndreani</span>
+            <span class="class-chip">FacadeProveedoresExternos</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="protected-variations">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">09</span> Protected Variations</div>
+            <div class="pat-desc"><code>EstrategiaCalculoCosto</code> encapsula el punto de variación: agregar una nueva fórmula de cálculo no modifica <code>ServicioCalculoCosto</code> ni ninguna otra clase existente.</div>
+          </div>
+          <span class="hito-pill">Hito 6</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-protected-variations"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">EstrategiaCalculoCosto</span>
+            <span class="class-chip">EstrategiaPeso</span>
+            <span class="class-chip">EstrategiaUrgencia</span>
+            <span class="class-chip">EstrategiaDistancia</span>
+            <span class="class-chip">ServicioCalculoCosto</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── CREACIONALES ── -->
+  <section class="cat-section cat-Creacional" data-cat="Creacional">
+    <div class="cat-header">
+      <span class="cat-badge">Creacional</span>
+      <h2>GoF Creacionales</h2>
+      <span class="cat-count">5 patrones · Hitos 5–6</span>
+    </div>
+    <div class="pat-grid">
+
+      <div class="pat-card" id="singleton">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">10</span> Singleton</div>
+            <div class="pat-desc"><code>LogiSmartController</code> garantiza una única instancia por JVM. Constructor privado + método estático <code>getInstancia()</code>. Toda la UI pasa por el mismo punto de entrada.</div>
+          </div>
+          <span class="hito-pill">Hito 4</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-singleton"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">LogiSmartController</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="factory-method">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">11</span> Factory Method</div>
+            <div class="pat-desc"><code>FabricaEnvio</code> declara <code>crearEnvio()</code> como método abstracto. Cada subclase (<code>FabricaEnvioNacional</code>, <code>Internacional</code>, <code>Urgente</code>) decide qué tipo concreto instanciar.</div>
+          </div>
+          <span class="hito-pill">Hito 5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-factory-method"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">FabricaEnvio</span>
+            <span class="class-chip">FabricaEnvioNacional</span>
+            <span class="class-chip">FabricaEnvioInternacional</span>
+            <span class="class-chip">FabricaEnvioUrgente</span>
+            <span class="class-chip">Envio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="abstract-factory">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">12</span> Abstract Factory</div>
+            <div class="pat-desc"><code>FabricaSistemaLogistico</code> crea familias compatibles de objetos: repositorios + mappers coherentes. <code>FabricaSistemaMemoria</code> para tests, <code>FabricaSistemaSQL</code> para producción.</div>
+          </div>
+          <span class="hito-pill">Hito 13</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-abstract-factory"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">FabricaSistemaLogistico</span>
+            <span class="class-chip">FabricaSistemaMemoria</span>
+            <span class="class-chip">FabricaSistemaSQL</span>
+            <span class="class-chip">RepositorioEnvio</span>
+            <span class="class-chip">EnvioMapper</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="builder">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">13</span> Builder</div>
+            <div class="pat-desc"><code>EnvioBuilder</code> construye <code>Envio</code> paso a paso con una API fluida. Separa la lógica de construcción del objeto resultado, permitiendo distintas representaciones según el tipo.</div>
+          </div>
+          <span class="hito-pill">Hito 5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-builder"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">EnvioBuilder</span>
+            <span class="class-chip">Envio</span>
+            <span class="class-chip">FabricaDeEnvios</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="prototype">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">14</span> Prototype</div>
+            <div class="pat-desc"><code>Ruta</code> implementa <code>Cloneable</code> para clonar rutas base y personalizar solo el destino. <code>Envio</code> puede clonarse para crear reenvíos sin recalcular todos los campos desde cero.</div>
+          </div>
+          <span class="hito-pill">Hito 6</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-prototype"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Cloneable</span>
+            <span class="class-chip">Ruta</span>
+            <span class="class-chip">Envio</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── ESTRUCTURALES ── -->
+  <section class="cat-section cat-Estructural" data-cat="Estructural">
+    <div class="cat-header">
+      <span class="cat-badge">Estructural</span>
+      <h2>GoF Estructurales</h2>
+      <span class="cat-count">7 patrones · Hitos 7–8</span>
+    </div>
+    <div class="pat-grid">
+
+      <div class="pat-card" id="adapter">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">15</span> Adapter</div>
+            <div class="pat-desc"><code>AdaptadorAndreani</code> y <code>AdaptadorOCA</code> envuelven APIs externas con contratos incompatibles y las exponen bajo la interfaz <code>ProveedorEntrega</code> que espera el dominio.</div>
+          </div>
+          <span class="hito-pill">Hito 7</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-adapter"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ProveedorEntrega</span>
+            <span class="class-chip">AdaptadorAndreani</span>
+            <span class="class-chip">AdaptadorOCA</span>
+            <span class="class-chip">ClienteAndreani</span>
+            <span class="class-chip">ClienteOCA</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="bridge">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">16</span> Bridge</div>
+            <div class="pat-desc">La abstracción (tipo de notificación: creación, entrega) se separa de la implementación (canal: email, SMS). Ambas dimensiones varían de forma independiente mediante <code>CanalNotificacion</code>.</div>
+          </div>
+          <span class="hito-pill">Hito 7</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-bridge"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ServicioNotificacion</span>
+            <span class="class-chip">NotificacionCreacion</span>
+            <span class="class-chip">NotificacionEntrega</span>
+            <span class="class-chip">CanalNotificacion</span>
+            <span class="class-chip">CanalEmail</span>
+            <span class="class-chip">CanalSMS</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="composite">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">17</span> Composite</div>
+            <div class="pat-desc"><code>CentroDistribucion</code> es el componente abstracto. <code>CentroDistribucionComposite</code> (hub, regional) contiene hijos; <code>SucursalEntrega</code> es hoja. El cliente trata a ambos de forma uniforme.</div>
+          </div>
+          <span class="hito-pill">Hito 8</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-composite"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">CentroDistribucion</span>
+            <span class="class-chip">CentroDistribucionComposite</span>
+            <span class="class-chip">SucursalEntrega</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="decorator">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">18</span> Decorator</div>
+            <div class="pat-desc"><code>DecoradorEnvio</code> (abstracto) envuelve otro decorador. Los concretos agregan capas dinámicamente: <code>Seguro</code> → <code>GPS</code> → <code>SMS</code> → <code>Prioritario</code> sobre <code>EnvioBasico</code>.</div>
+          </div>
+          <span class="hito-pill">Hito 8</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-decorator"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">DecoradorEnvio</span>
+            <span class="class-chip">EnvioBasico</span>
+            <span class="class-chip">DecoradorSeguro</span>
+            <span class="class-chip">DecoradorGPS</span>
+            <span class="class-chip">DecoradorSMS</span>
+            <span class="class-chip">DecoradorPrioritario</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="facade">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">19</span> Facade</div>
+            <div class="pat-desc"><code>FacadeProveedoresExternos</code> expone una interfaz simple al controlador y oculta la complejidad del subsistema: fábrica, cálculo de costos, rutas, pagos y notificaciones.</div>
+          </div>
+          <span class="hito-pill">Hito 5</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-facade"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">FacadeProveedoresExternos</span>
+            <span class="class-chip">FabricaDeEnvios</span>
+            <span class="class-chip">ServicioCalculoCosto</span>
+            <span class="class-chip">ServicioPago</span>
+            <span class="class-chip">ServicioNotificacion</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="flyweight">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">20</span> Flyweight</div>
+            <div class="pat-desc"><code>Ubicacion</code> es inmutable y compartida: 10 000 envíos con destino "Córdoba" referencian el mismo objeto. <code>FabricaUbicaciones</code> mantiene el cache estático de instancias.</div>
+          </div>
+          <span class="hito-pill">Hito 8</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-flyweight"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Ubicacion</span>
+            <span class="class-chip">FabricaUbicaciones</span>
+            <span class="class-chip">PuntoEntrega</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="proxy">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">21</span> Proxy</div>
+            <div class="pat-desc"><code>ProxyRepositorioEnvios</code> implementa la misma interfaz que <code>RepositorioEnviosReal</code> e interpone un cache en memoria. Las lecturas repetidas no tocan el repositorio real.</div>
+          </div>
+          <span class="hito-pill">Hito 8</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-proxy"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">RepositorioEnvios</span>
+            <span class="class-chip">ProxyRepositorioEnvios</span>
+            <span class="class-chip">RepositorioEnviosReal</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── COMPORTAMIENTO ── -->
+  <section class="cat-section cat-Comportamiento" data-cat="Comportamiento">
+    <div class="cat-header">
+      <span class="cat-badge">Comportamiento</span>
+      <h2>GoF Comportamiento</h2>
+      <span class="cat-count">11 patrones · Hitos 9–12</span>
+    </div>
+    <div class="pat-grid">
+
+      <div class="pat-card" id="chain">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">22</span> Chain of Responsibility</div>
+            <div class="pat-desc"><code>ValidadorEnvio</code> (abstracto) encadena validadores via <code>siguiente</code>. Si el validador no puede manejar la petición la pasa al siguiente. <code>CadenaValidadores</code> construye la cadena.</div>
+          </div>
+          <span class="hito-pill">Hito 9</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-chain"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ValidadorEnvio</span>
+            <span class="class-chip">CadenaValidadores</span>
+            <span class="class-chip">ContextoValidacion</span>
+            <span class="class-chip">ValidadorPeso</span>
+            <span class="class-chip">ValidadorDestino</span>
+            <span class="class-chip">ValidadorCliente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="command">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">23</span> Command</div>
+            <div class="pat-desc">Cada operación del sistema es un objeto <code>Comando</code>. <code>ColaComandos</code> acumula el historial y permite <code>deshacer()</code>/<code>rehacer()</code>. Los parámetros de la operación viajan encapsulados.</div>
+          </div>
+          <span class="hito-pill">Hito 10</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-command"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Comando</span>
+            <span class="class-chip">ColaComandos</span>
+            <span class="class-chip">ComandoCrearEnvio</span>
+            <span class="class-chip">ComandoCancelarEnvio</span>
+            <span class="class-chip">ComandoModificarEnvio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="interpreter">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">24</span> Interpreter</div>
+            <div class="pat-desc">Filtros de envíos expresados como árbol AST: <code>ExpresionAND</code>, <code>OR</code>, <code>NOT</code> componen expresiones terminales (<code>ExpresionCosto</code>, <code>ExpresionDestino</code>…). Cada nodo evalúa un <code>Envio</code>.</div>
+          </div>
+          <span class="hito-pill">Hito 10</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-interpreter"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Expresion</span>
+            <span class="class-chip">ExpresionAND</span>
+            <span class="class-chip">ExpresionOR</span>
+            <span class="class-chip">ExpresionNOT</span>
+            <span class="class-chip">ExpresionCosto</span>
+            <span class="class-chip">ExpresionDestino</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="iterator">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">25</span> Iterator</div>
+            <div class="pat-desc"><code>IteradorEnvios</code> abstrae el recorrido. El cliente itera la misma forma independientemente de si la colección es <code>ColeccionArray</code>, <code>Lista</code> o <code>Hash</code>. La estructura interna permanece oculta.</div>
+          </div>
+          <span class="hito-pill">Hito 10</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-iterator"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">IteradorEnvios</span>
+            <span class="class-chip">ColeccionEnvios</span>
+            <span class="class-chip">ColeccionArray</span>
+            <span class="class-chip">ColeccionLista</span>
+            <span class="class-chip">ColeccionHash</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="mediator">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">26</span> Mediator</div>
+            <div class="pat-desc"><code>MediadorEnviosConcreto</code> centraliza la coordinación: cuando el estado del envío cambia, orquesta pago, notificación, auditoría y distribución sin que los subsistemas se conozcan entre sí.</div>
+          </div>
+          <span class="hito-pill">Hito 11</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-mediator"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">MediadorEnvios</span>
+            <span class="class-chip">MediadorEnviosConcreto</span>
+            <span class="class-chip">SistemaPago</span>
+            <span class="class-chip">SistemaNotificacion</span>
+            <span class="class-chip">SistemaAuditoria</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="memento">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">27</span> Memento</div>
+            <div class="pat-desc"><code>MementoEnvio</code> captura el estado completo del envío en un instante. <code>HistorialEnvios</code> (caretaker) guarda la secuencia de mementos y permite navegar hacia atrás o adelante en el tiempo.</div>
+          </div>
+          <span class="hito-pill">Hito 11</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-memento"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">MementoEnvio</span>
+            <span class="class-chip">HistorialEnvios</span>
+            <span class="class-chip">Envio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="observer">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">28</span> Observer</div>
+            <div class="pat-desc"><code>Envio</code> notifica a todos sus observadores cuando cambia de estado. <code>DashboardObservador</code>, <code>CentroDistribucionObservador</code> y <code>SistemaNotificacionObservador</code> reaccionan de forma independiente.</div>
+          </div>
+          <span class="hito-pill">Hito 11</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-observer"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ObservadorEnvio</span>
+            <span class="class-chip">Envio</span>
+            <span class="class-chip">DashboardObservador</span>
+            <span class="class-chip">CentroDistribucionObservador</span>
+            <span class="class-chip">SistemaNotificacionObservador</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="state">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">29</span> State</div>
+            <div class="pat-desc"><code>Envio</code> delega todas las operaciones de ciclo de vida a su <code>EstadoEnvio</code> actual. Cada estado concreto implementa solo las transiciones válidas y lanza excepción ante las inválidas.</div>
+          </div>
+          <span class="hito-pill">Hito 9</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-state"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">EstadoEnvio</span>
+            <span class="class-chip">EstadoPendiente</span>
+            <span class="class-chip">EstadoEnTransito</span>
+            <span class="class-chip">EstadoRetenido</span>
+            <span class="class-chip">EstadoEntregado</span>
+            <span class="class-chip">EstadoCancelado</span>
+            <span class="class-chip">Envio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="strategy">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">30</span> Strategy</div>
+            <div class="pat-desc"><code>ServicioCalculoCosto</code> delega la fórmula a la estrategia configurada en tiempo de ejecución. Agregar <code>EstrategiaZonaHoraria</code> o <code>EstrategiaVolumen</code> no toca ninguna clase existente.</div>
+          </div>
+          <span class="hito-pill">Hito 6</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-strategy"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">EstrategiaCalculoCosto</span>
+            <span class="class-chip">EstrategiaPeso</span>
+            <span class="class-chip">EstrategiaUrgencia</span>
+            <span class="class-chip">EstrategiaDistancia</span>
+            <span class="class-chip">EstrategiaHibrida</span>
+            <span class="class-chip">ServicioCalculoCosto</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="template-method">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">31</span> Template Method</div>
+            <div class="pat-desc"><code>ProcesoEnvio</code> define el esqueleto invariante en <code>procesarEnvio()</code>: validar → calcular → notificar → registrar. <code>ProcesoNacional</code>, <code>Internacional</code> y <code>Urgente</code> solo sobreescriben los hooks.</div>
+          </div>
+          <span class="hito-pill">Hito 10</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-template-method"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">ProcesoEnvio</span>
+            <span class="class-chip">ProcesoNacional</span>
+            <span class="class-chip">ProcesoInternacional</span>
+            <span class="class-chip">ProcesoUrgente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="visitor">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">32</span> Visitor</div>
+            <div class="pat-desc">El árbol de centros es estable; las operaciones (costo operativo, ocupación, búsqueda) crecen. <code>VisitorCentro</code> permite añadir nuevas operaciones sin modificar <code>NodoCentroRegional</code> ni <code>NodoPuntoEntrega</code>.</div>
+          </div>
+          <span class="hito-pill">Hito 12</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-visitor"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">VisitorCentro</span>
+            <span class="class-chip">ElementoDistribucion</span>
+            <span class="class-chip">NodoCentroRegional</span>
+            <span class="class-chip">NodoPuntoEntrega</span>
+            <span class="class-chip">VisitorCalculoCostoOperativo</span>
+            <span class="class-chip">VisitorCalculoOcupacion</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── PERSISTENCIA ── -->
+  <section class="cat-section cat-Persistencia" data-cat="Persistencia">
+    <div class="cat-header">
+      <span class="cat-badge">Persistencia</span>
+      <h2>Persistencia (PoEAA)</h2>
+      <span class="cat-count">4 patrones · Hito 13</span>
+    </div>
+    <div class="pat-grid">
+
+      <div class="pat-card" id="repository">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">33</span> Repository</div>
+            <div class="pat-desc">El dominio opera con <code>RepositorioEnvio</code> (interfaz). La misma interfaz tiene <code>RepositorioEnvioMemoria</code> para tests y <code>RepositorioEnvioSQL</code> para producción. Nunca hay SQL en el dominio.</div>
+          </div>
+          <span class="hito-pill">Hito 13</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-repository"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">Repositorio</span>
+            <span class="class-chip">RepositorioEnvio</span>
+            <span class="class-chip">RepositorioEnvioMemoria</span>
+            <span class="class-chip">RepositorioEnvioSQL</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="data-mapper">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">34</span> Data Mapper</div>
+            <div class="pat-desc"><code>EnvioMapper</code> traduce bidireccionalmente entre el objeto de dominio y la fila de base de datos. El dominio ignora el esquema SQL; el mapper ignora las reglas de negocio.</div>
+          </div>
+          <span class="hito-pill">Hito 13</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-data-mapper"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">EnvioMapper</span>
+            <span class="class-chip">EnvioMapperSQL</span>
+            <span class="class-chip">ClienteMapper</span>
+            <span class="class-chip">CobroMapper</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="unit-of-work">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">35</span> Unit of Work</div>
+            <div class="pat-desc"><code>UnitOfWork</code> acumula objetos nuevos, modificados y eliminados en listas internas. Al llamar a <code>commit()</code> los persiste todos en una sola transacción atómica: todo o nada.</div>
+          </div>
+          <span class="hito-pill">Hito 13</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-unit-of-work"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">UnitOfWork</span>
+            <span class="class-chip">EnvioMapper</span>
+            <span class="class-chip">CobroMapper</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-card" id="lazy-load">
+        <div class="pat-card-head">
+          <div class="pat-card-head-left">
+            <div class="pat-name"><span class="pat-num">36</span> Lazy Load</div>
+            <div class="pat-desc"><code>CentroDistribucionLazyProxy</code> retrasa la carga del objeto real hasta el primer acceso. Las consultas que solo necesitan el ID nunca ejecutan la query. Subclasifica el tipo original sin romper el contrato.</div>
+          </div>
+          <span class="hito-pill">Hito 13</span>
+        </div>
+        <div class="pat-card-body">
+          <div class="diagram-wrap"><div class="mermaid" id="d-lazy-load"></div></div>
+          <div class="pat-classes">
+            <span class="class-chip">CentroDistribucionLazyProxy</span>
+            <span class="class-chip">ClienteLazyProxy</span>
+            <span class="class-chip">HistorialEnviosLazyProxy</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  themeVariables: {
+    primaryColor:       '#dce9ff',
+    primaryTextColor:   '#12324b',
+    primaryBorderColor: '#1f4f74',
+    lineColor:          '#4c5f72',
+    secondaryColor:     '#fff0e3',
+    tertiaryColor:      '#e6f4ea',
+    edgeLabelBackground:'#f5f8fc',
+    noteBkgColor:       '#fffbe6',
+    noteTextColor:      '#5c4a00',
+    fontFamily:         'Inter, system-ui, sans-serif',
+    fontSize:           '13px',
+    classDiagram: {
+      useMaxWidth: true,
+    },
+  },
+  classDiagram: { useMaxWidth: true },
+});
+
+const DIAGRAMS = {
+
+'information-expert': `classDiagram
+    class IPermisos {
+        <<interface>>
+        +puedeLeer(u) bool
+        +puedeCrear(u) bool
+        +puedeModificar(u) bool
+        +puedeEliminar(u) bool
+        +puedeAdministrar(u) bool
+    }
+    class Rol {
+        <<enum>>
+        ADMIN
+        OPERADOR
+        CLIENTE
+        AUDITOR
+        SOPORTE
+    }
+    class Usuario {
+        -id: String
+        -nombre: String
+        -rol: Rol
+        +tienePermiso(op) bool
+    }
+    class LogiSmartController {
+        +verificarPermiso(u, op) void
+    }
+    Rol ..|> IPermisos
+    Usuario o-- Rol
+    LogiSmartController --> Usuario`,
+
+'creator': `classDiagram
+    class FabricaDeEnvios {
+        +crearEnvio(tipo, empresa, fecha) Envio
+        +crearEnvioUrgente(empresa) Envio
+    }
+    class EnvioBuilder {
+        -id: String
+        -tipo: TipoEnvio
+        -peso: double
+        +tipoEnvio(t) EnvioBuilder
+        +conPeso(p) EnvioBuilder
+        +conEmpresa(e) EnvioBuilder
+        +build() Envio
+    }
+    class Envio {
+        -id: String
+        -tipo: TipoEnvio
+        -peso: double
+        -costoBase: double
+    }
+    class TipoEnvio {
+        <<enum>>
+        NACIONAL
+        INTERNACIONAL
+        URGENTE
+    }
+    FabricaDeEnvios ..> EnvioBuilder : usa
+    FabricaDeEnvios ..> Envio : crea
+    EnvioBuilder ..> Envio : construye
+    Envio --> TipoEnvio`,
+
+'controller': `classDiagram
+    class LogiSmartController {
+        <<singleton>>
+        -servicio: FacadeProveedoresExternos
+        +crearEnvio(datos) Envio
+        +cancelarEnvio(id) void
+        +consultarEnvio(id) Envio
+        -verificarPermiso(u, op) void
+    }
+    class FacadeProveedoresExternos {
+        +crearEnvio(ctx) Envio
+        +calcularCosto(e) double
+        +asignarRuta(e) void
+    }
+    class RepositorioEnvio {
+        <<interface>>
+        +guardar(e) void
+        +buscarPorId(id) Envio
+        +listar() List~Envio~
+    }
+    LogiSmartController --> FacadeProveedoresExternos
+    FacadeProveedoresExternos --> RepositorioEnvio`,
+
+'low-coupling': `classDiagram
+    class ProveedorEntrega {
+        <<interface>>
+        +realizarEntrega(e) ResultadoEntrega
+        +calcularCosto(e) double
+        +obtenerNombre() String
+    }
+    class ServicioEntregaAndreani {
+        +realizarEntrega(e) ResultadoEntrega
+        +calcularCosto(e) double
+        +obtenerNombre() String
+    }
+    class ServicioEntregaOCA {
+        +realizarEntrega(e) ResultadoEntrega
+        +calcularCosto(e) double
+        +obtenerNombre() String
+    }
+    class FacadeProveedoresExternos {
+        -proveedor: ProveedorEntrega
+        +setProveedor(p) void
+    }
+    ServicioEntregaAndreani ..|> ProveedorEntrega
+    ServicioEntregaOCA ..|> ProveedorEntrega
+    FacadeProveedoresExternos o-- ProveedorEntrega`,
+
+'high-cohesion': `classDiagram
+    class FacadeProveedoresExternos {
+        +crearEnvio(ctx) Envio
+        +rutearEnvio(e) void
+    }
+    class ServicioNotificacion {
+        +notificarCreacion(e) void
+        +notificarEntrega(e) void
+        +notificarCancelacion(e) void
+    }
+    class ServicioPago {
+        +procesarCobro(e) Cobro
+        +revertirCobro(c) void
+    }
+    class ServicioRutas {
+        +calcularRuta(o, d) Ruta
+        +optimizarRuta(r) Ruta
+    }
+    class ServicioClientes {
+        +buscarCliente(id) Cliente
+        +registrarCliente(c) void
+    }
+    FacadeProveedoresExternos --> ServicioNotificacion
+    FacadeProveedoresExternos --> ServicioPago
+    FacadeProveedoresExternos --> ServicioRutas
+    FacadeProveedoresExternos --> ServicioClientes`,
+
+'polymorphism': `classDiagram
+    class EstadoEnvio {
+        <<interface>>
+        +validar(e) void
+        +entregar(e) void
+        +cancelar(e) void
+        +retener(e) void
+        +devolver(e) void
+        +reclamar(e) void
+    }
+    class EstadoPendiente {
+        +validar(e) void
+        +cancelar(e) void
+    }
+    class EstadoEnTransito {
+        +entregar(e) void
+        +retener(e) void
+    }
+    class EstadoEntregado {
+        +reclamar(e) void
+    }
+    class EstadoCancelado
+    class EstadoRetenido {
+        +entregar(e) void
+        +devolver(e) void
+    }
+    EstadoPendiente ..|> EstadoEnvio
+    EstadoEnTransito ..|> EstadoEnvio
+    EstadoEntregado ..|> EstadoEnvio
+    EstadoCancelado ..|> EstadoEnvio
+    EstadoRetenido ..|> EstadoEnvio`,
+
+'pure-fabrication': `classDiagram
+    class FabricaDeEnvios {
+        +crearEnvio(tipo, e, f) Envio
+        +crearEnvioUrgente(e) Envio
+        +crearEnvioInternacional(e) Envio
+    }
+    class FacadeProveedoresExternos {
+        +crearEnvio(ctx) Envio
+        +calcularCosto(e) double
+    }
+    class Envio {
+        -id: String
+        -tipo: TipoEnvio
+        -estado: EstadoEnvio
+    }
+    class Cliente {
+        -id: String
+        -nombre: String
+        -empresa: Empresa
+    }
+    FacadeProveedoresExternos ..> FabricaDeEnvios : delega creacion
+    FabricaDeEnvios ..> Envio : crea
+    FacadeProveedoresExternos --> Envio
+    Envio --> Cliente`,
+
+'indirection': `classDiagram
+    class FacadeProveedoresExternos {
+        -proveedor: ProveedorEntrega
+        +realizarEntrega(e) void
+    }
+    class ProveedorEntrega {
+        <<interface>>
+        +realizarEntrega(e) ResultadoEntrega
+        +calcularCosto(e) double
+    }
+    class AdaptadorAndreani {
+        -andreani: ClienteAndreani
+        +realizarEntrega(e) ResultadoEntrega
+        +calcularCosto(e) double
+    }
+    class ClienteAndreani {
+        +enviar(datos) RespuestaAndreani
+        +cotizar(datos) double
+    }
+    FacadeProveedoresExternos --> ProveedorEntrega
+    AdaptadorAndreani ..|> ProveedorEntrega
+    AdaptadorAndreani --> ClienteAndreani`,
+
+'protected-variations': `classDiagram
+    class EstrategiaCalculoCosto {
+        <<interface>>
+        +calcular(e) double
+        +obtenerNombre() String
+    }
+    class EstrategiaPeso {
+        +calcular(e) double
+        +obtenerNombre() String
+    }
+    class EstrategiaUrgencia {
+        +calcular(e) double
+        +obtenerNombre() String
+    }
+    class EstrategiaDistancia {
+        +calcular(e) double
+        +obtenerNombre() String
+    }
+    class EstrategiaHibrida {
+        +calcular(e) double
+        +obtenerNombre() String
+    }
+    class ServicioCalculoCosto {
+        -estrategia: EstrategiaCalculoCosto
+        +setEstrategia(s) void
+        +calcularCosto(e) double
+    }
+    EstrategiaPeso ..|> EstrategiaCalculoCosto
+    EstrategiaUrgencia ..|> EstrategiaCalculoCosto
+    EstrategiaDistancia ..|> EstrategiaCalculoCosto
+    EstrategiaHibrida ..|> EstrategiaCalculoCosto
+    ServicioCalculoCosto o-- EstrategiaCalculoCosto`,
+
+'singleton': `classDiagram
+    class LogiSmartController {
+        <<singleton>>
+        -instancia LogiSmartController
+        -servicio FacadeProveedoresExternos
+        -repositorio RepositorioEnvio
+        -LogiSmartController()
+        +getInstancia() LogiSmartController
+        +crearEnvio(datos) Envio
+        +cancelarEnvio(id) void
+        +consultarEnvio(id) Envio
+        +modificarEnvio(id, datos) void
+    }`,
+
+'factory-method': `classDiagram
+    class FabricaEnvio {
+        <<abstract>>
+        +crearEnvio() Envio
+        +procesarEnvio(ctx) Envio
+    }
+    class FabricaEnvioNacional {
+        +crearEnvio() Envio
+    }
+    class FabricaEnvioInternacional {
+        +crearEnvio() Envio
+    }
+    class FabricaEnvioUrgente {
+        +crearEnvio() Envio
+    }
+    class Envio {
+        -id: String
+        -tipo: TipoEnvio
+        -peso: double
+    }
+    FabricaEnvioNacional --|> FabricaEnvio
+    FabricaEnvioInternacional --|> FabricaEnvio
+    FabricaEnvioUrgente --|> FabricaEnvio
+    FabricaEnvio ..> Envio : crea`,
+
+'abstract-factory': `classDiagram
+    class FabricaSistemaLogistico {
+        <<abstract>>
+        +crearRepositorioEnvio() RepositorioEnvio
+        +crearRepositorioCliente() RepositorioCliente
+        +crearEnvioMapper() EnvioMapper
+    }
+    class FabricaSistemaMemoria {
+        +crearRepositorioEnvio() RepositorioEnvio
+        +crearRepositorioCliente() RepositorioCliente
+        +crearEnvioMapper() EnvioMapper
+    }
+    class FabricaSistemaSQL {
+        +crearRepositorioEnvio() RepositorioEnvio
+        +crearRepositorioCliente() RepositorioCliente
+        +crearEnvioMapper() EnvioMapper
+    }
+    class RepositorioEnvio {
+        <<interface>>
+    }
+    class EnvioMapper {
+        <<interface>>
+    }
+    FabricaSistemaMemoria --|> FabricaSistemaLogistico
+    FabricaSistemaSQL --|> FabricaSistemaLogistico
+    FabricaSistemaMemoria ..> RepositorioEnvio
+    FabricaSistemaMemoria ..> EnvioMapper
+    FabricaSistemaSQL ..> RepositorioEnvio
+    FabricaSistemaSQL ..> EnvioMapper`,
+
+'builder': `classDiagram
+    class EnvioBuilder {
+        -id: String
+        -origen: PuntoEntrega
+        -destino: PuntoEntrega
+        -tipo: TipoEnvio
+        -peso: double
+        -empresa: Empresa
+        -fechaEstimada: LocalDate
+        +tipoEnvio(t) EnvioBuilder
+        +conPeso(p) EnvioBuilder
+        +conEmpresa(e) EnvioBuilder
+        +conFecha(f) EnvioBuilder
+        +conOrigen(o) EnvioBuilder
+        +conDestino(d) EnvioBuilder
+        +build() Envio
+    }
+    class Envio {
+        -id: String
+        -tipo: TipoEnvio
+        -peso: double
+        -empresa: Empresa
+        -fechaEstimada: LocalDate
+    }
+    class FabricaDeEnvios {
+        +crearEnvio(tipo, e, f) Envio
+    }
+    FabricaDeEnvios ..> EnvioBuilder : configura
+    EnvioBuilder ..> Envio : build`,
+
+'prototype': `classDiagram
+    class Cloneable {
+        <<interface>>
+        +clonar() Object
+    }
+    class Ruta {
+        -origen: PuntoEntrega
+        -destino: PuntoEntrega
+        -distancia: double
+        -waypoints: List~PuntoEntrega~
+        +clonar() Ruta
+        +modificarDestino(d) void
+    }
+    class Envio {
+        -id: String
+        -tipo: TipoEnvio
+        -ruta: Ruta
+        +clonar() Envio
+    }
+    Ruta ..|> Cloneable
+    Envio ..|> Cloneable
+    Envio --> Ruta`,
+
+'adapter': `classDiagram
+    class ProveedorEntrega {
+        <<interface>>
+        +realizarEntrega(e) ResultadoEntrega
+        +calcularCosto(e) double
+        +obtenerNombre() String
+    }
+    class AdaptadorAndreani {
+        -clienteAndreani: ClienteAndreani
+        +realizarEntrega(e) ResultadoEntrega
+        +calcularCosto(e) double
+        +obtenerNombre() String
+    }
+    class AdaptadorOCA {
+        -clienteOCA: ClienteOCA
+        +realizarEntrega(e) ResultadoEntrega
+        +calcularCosto(e) double
+        +obtenerNombre() String
+    }
+    class ClienteAndreani {
+        +enviar(datos) RespuestaAndreani
+        +cotizar(datos) double
+    }
+    class ClienteOCA {
+        +despachar(datos) ResultadoOCA
+        +calcularTarifa(peso) double
+    }
+    AdaptadorAndreani ..|> ProveedorEntrega
+    AdaptadorOCA ..|> ProveedorEntrega
+    AdaptadorAndreani --> ClienteAndreani
+    AdaptadorOCA --> ClienteOCA`,
+
+'bridge': `classDiagram
+    class ServicioNotificacion {
+        <<abstract>>
+        #canal: CanalNotificacion
+        +notificar(e, msg) void
+    }
+    class NotificacionCreacion {
+        +notificar(e, msg) void
+    }
+    class NotificacionEntrega {
+        +notificar(e, msg) void
+    }
+    class NotificacionCancelacion {
+        +notificar(e, msg) void
+    }
+    class CanalNotificacion {
+        <<interface>>
+        +enviar(destinatario, msg) void
+    }
+    class CanalEmail {
+        +enviar(destinatario, msg) void
+    }
+    class CanalSMS {
+        +enviar(destinatario, msg) void
+    }
+    NotificacionCreacion --|> ServicioNotificacion
+    NotificacionEntrega --|> ServicioNotificacion
+    NotificacionCancelacion --|> ServicioNotificacion
+    ServicioNotificacion o-- CanalNotificacion
+    CanalEmail ..|> CanalNotificacion
+    CanalSMS ..|> CanalNotificacion`,
+
+'composite': `classDiagram
+    class CentroDistribucion {
+        <<abstract>>
+        #nombre: String
+        #ubicacion: String
+        #codigo: String
+        +obtenerCapacidad() int
+        +obtenerOcupacion() int
+        +mostrar(profundidad) void
+    }
+    class CentroDistribucionComposite {
+        -hijos: List~CentroDistribucion~
+        +agregar(c) void
+        +remover(c) void
+        +obtenerCapacidad() int
+        +obtenerOcupacion() int
+        +mostrar(profundidad) void
+    }
+    class SucursalEntrega {
+        -capacidad: int
+        -enviosAlmacenados: List~Envio~
+        +agregarEnvio(e) void
+        +removerEnvio(e) void
+        +obtenerCapacidad() int
+        +obtenerOcupacion() int
+        +mostrar(profundidad) void
+    }
+    CentroDistribucionComposite --|> CentroDistribucion
+    SucursalEntrega --|> CentroDistribucion
+    CentroDistribucionComposite o-- CentroDistribucion : hijos`,
+
+'decorator': `classDiagram
+    class DecoradorEnvio {
+        <<abstract>>
+        #envioDecorado: DecoradorEnvio
+        +calcularCosto() double
+        +calcularTiempoEntrega() int
+        +obtenerDescripcion() String
+    }
+    class EnvioBasico {
+        -costoBase: double
+        -tiempoBase: int
+        +calcularCosto() double
+        +calcularTiempoEntrega() int
+        +obtenerDescripcion() String
+    }
+    class DecoradorSeguro {
+        +calcularCosto() double
+        +obtenerDescripcion() String
+    }
+    class DecoradorGPS {
+        +calcularCosto() double
+        +calcularTiempoEntrega() int
+        +obtenerDescripcion() String
+    }
+    class DecoradorSMS {
+        +calcularCosto() double
+        +obtenerDescripcion() String
+    }
+    class DecoradorPrioritario {
+        +calcularCosto() double
+        +calcularTiempoEntrega() int
+        +obtenerDescripcion() String
+    }
+    EnvioBasico --|> DecoradorEnvio
+    DecoradorSeguro --|> DecoradorEnvio
+    DecoradorGPS --|> DecoradorEnvio
+    DecoradorSMS --|> DecoradorEnvio
+    DecoradorPrioritario --|> DecoradorEnvio
+    DecoradorEnvio o-- DecoradorEnvio : envioDecorado`,
+
+'facade': `classDiagram
+    class FacadeProveedoresExternos {
+        -fabrica: FabricaDeEnvios
+        -calculoCosto: ServicioCalculoCosto
+        -rutas: ServicioRutas
+        -pagos: ServicioPago
+        -notificacion: ServicioNotificacion
+        +crearEnvio(ctx) Envio
+        +calcularCosto(e) double
+        +asignarRuta(e) void
+        +procesarPago(e) Cobro
+    }
+    class FabricaDeEnvios
+    class ServicioCalculoCosto
+    class ServicioRutas
+    class ServicioPago
+    class ServicioNotificacion
+    FacadeProveedoresExternos --> FabricaDeEnvios
+    FacadeProveedoresExternos --> ServicioCalculoCosto
+    FacadeProveedoresExternos --> ServicioRutas
+    FacadeProveedoresExternos --> ServicioPago
+    FacadeProveedoresExternos --> ServicioNotificacion`,
+
+'flyweight': `classDiagram
+    class Ubicacion {
+        -ciudad: String
+        -provincia: String
+        -pais: String
+        -codigoPostal: String
+        +getCiudad() String
+        +getProvincia() String
+        +getPais() String
+    }
+    class FabricaUbicaciones {
+        -cache Map~String, Ubicacion~
+        +obtener(ciudad, prov, pais) Ubicacion
+        +limpiarCache() void
+        +tamanoCache() int
+    }
+    class PuntoEntrega {
+        -nombre: String
+        -direccion: String
+        -ubicacion: Ubicacion
+        +getUbicacion() Ubicacion
+    }
+    FabricaUbicaciones ..> Ubicacion : administra cache
+    PuntoEntrega --> Ubicacion : compartida`,
+
+'proxy': `classDiagram
+    class RepositorioEnvios {
+        <<interface>>
+        +buscarPorId(id) Envio
+        +guardar(e) void
+        +listar() List~Envio~
+        +eliminar(id) void
+    }
+    class RepositorioEnviosReal {
+        -almacen: Map~String, Envio~
+        +buscarPorId(id) Envio
+        +guardar(e) void
+        +listar() List~Envio~
+        +eliminar(id) void
+    }
+    class ProxyRepositorioEnvios {
+        -real: RepositorioEnviosReal
+        -cache: Map~String, Envio~
+        +buscarPorId(id) Envio
+        +guardar(e) void
+        +listar() List~Envio~
+        +eliminar(id) void
+    }
+    RepositorioEnviosReal ..|> RepositorioEnvios
+    ProxyRepositorioEnvios ..|> RepositorioEnvios
+    ProxyRepositorioEnvios --> RepositorioEnviosReal`,
+
+'chain': `classDiagram
+    class ValidadorEnvio {
+        <<abstract>>
+        #siguiente: ValidadorEnvio
+        +setSiguiente(v) ValidadorEnvio
+        +validar(ctx) void
+        +obtenerNombre() String
+    }
+    class CadenaValidadores {
+        +construir() ValidadorEnvio
+    }
+    class ContextoValidacion {
+        -envio: Envio
+        -errores: List~String~
+        +addError(msg) void
+        +esValido() bool
+    }
+    class ValidadorPeso {
+        +obtenerNombre() String
+    }
+    class ValidadorDestino {
+        +obtenerNombre() String
+    }
+    class ValidadorCliente {
+        +obtenerNombre() String
+    }
+    class ValidadorFecha {
+        +obtenerNombre() String
+    }
+    ValidadorPeso --|> ValidadorEnvio
+    ValidadorDestino --|> ValidadorEnvio
+    ValidadorCliente --|> ValidadorEnvio
+    ValidadorFecha --|> ValidadorEnvio
+    CadenaValidadores ..> ValidadorEnvio
+    ValidadorEnvio --> ValidadorEnvio : siguiente
+    ValidadorEnvio --> ContextoValidacion`,
+
+'command': `classDiagram
+    class Comando {
+        <<interface>>
+        +ejecutar() void
+        +deshacer() void
+        +obtenerDescripcion() String
+    }
+    class ColaComandos {
+        -historial: List~Comando~
+        -indice: int
+        +ejecutar(c) void
+        +deshacer() void
+        +rehacer() void
+    }
+    class ComandoCrearEnvio {
+        -servicio: FacadeProveedoresExternos
+        -envioCreado: Envio
+        +ejecutar() void
+        +deshacer() void
+        +obtenerDescripcion() String
+    }
+    class ComandoCancelarEnvio {
+        -envioId: String
+        +ejecutar() void
+        +deshacer() void
+        +obtenerDescripcion() String
+    }
+    class ComandoModificarEnvio {
+        -envioId: String
+        +ejecutar() void
+        +deshacer() void
+        +obtenerDescripcion() String
+    }
+    ComandoCrearEnvio ..|> Comando
+    ComandoCancelarEnvio ..|> Comando
+    ComandoModificarEnvio ..|> Comando
+    ColaComandos o-- Comando`,
+
+'interpreter': `classDiagram
+    class Expresion {
+        <<interface>>
+        +evaluar(e) bool
+    }
+    class ExpresionAND {
+        -izquierda: Expresion
+        -derecha: Expresion
+        +evaluar(e) bool
+    }
+    class ExpresionOR {
+        -izquierda: Expresion
+        -derecha: Expresion
+        +evaluar(e) bool
+    }
+    class ExpresionNOT {
+        -expresion: Expresion
+        +evaluar(e) bool
+    }
+    class ExpresionCosto {
+        -operador: String
+        -valor: double
+        +evaluar(e) bool
+    }
+    class ExpresionDestino {
+        -destino: String
+        +evaluar(e) bool
+    }
+    class ExpresionOrigen {
+        -origen: String
+        +evaluar(e) bool
+    }
+    ExpresionAND ..|> Expresion
+    ExpresionOR ..|> Expresion
+    ExpresionNOT ..|> Expresion
+    ExpresionCosto ..|> Expresion
+    ExpresionDestino ..|> Expresion
+    ExpresionOrigen ..|> Expresion
+    ExpresionAND --> Expresion : izquierda, derecha
+    ExpresionOR --> Expresion : izquierda, derecha
+    ExpresionNOT --> Expresion : expresion`,
+
+'iterator': `classDiagram
+    class IteradorEnvios {
+        <<interface>>
+        +tieneSiguiente() bool
+        +siguiente() Envio
+        +reiniciar() void
+    }
+    class ColeccionEnvios {
+        <<interface>>
+        +crearIterador() IteradorEnvios
+        +agregarEnvio(e) void
+        +tamano() int
+    }
+    class ColeccionArray {
+        -envios: Envio[]
+        +crearIterador() IteradorEnvios
+        +agregarEnvio(e) void
+        +tamano() int
+    }
+    class ColeccionLista {
+        -envios: List~Envio~
+        +crearIterador() IteradorEnvios
+        +agregarEnvio(e) void
+        +tamano() int
+    }
+    class ColeccionHash {
+        -envios: Map~String, Envio~
+        +crearIterador() IteradorEnvios
+        +agregarEnvio(e) void
+        +tamano() int
+    }
+    ColeccionArray ..|> ColeccionEnvios
+    ColeccionLista ..|> ColeccionEnvios
+    ColeccionHash ..|> ColeccionEnvios
+    ColeccionEnvios ..> IteradorEnvios : crea`,
+
+'mediator': `classDiagram
+    class MediadorEnvios {
+        <<interface>>
+        +notificarCambioEstado(e, estado) void
+        +coordinarEntrega(e) void
+        +registrarAuditoria(e, accion) void
+    }
+    class MediadorEnviosConcreto {
+        -pago: SistemaPago
+        -notificacion: SistemaNotificacion
+        -auditoria: SistemaAuditoria
+        -centro: CentroDistribucionMediator
+        +notificarCambioEstado(e, estado) void
+        +coordinarEntrega(e) void
+        +registrarAuditoria(e, accion) void
+    }
+    class SistemaPago {
+        +procesarCobro(e) void
+    }
+    class SistemaNotificacion {
+        +enviarNotificacion(e, msg) void
+    }
+    class SistemaAuditoria {
+        +registrar(e, accion) void
+    }
+    MediadorEnviosConcreto ..|> MediadorEnvios
+    MediadorEnviosConcreto --> SistemaPago
+    MediadorEnviosConcreto --> SistemaNotificacion
+    MediadorEnviosConcreto --> SistemaAuditoria`,
+
+'memento': `classDiagram
+    class MementoEnvio {
+        -estadoNombre: String
+        -ubicacion: String
+        -timestamp: LocalDateTime
+        -descripcion: String
+        +getEstadoNombre() String
+        +getTimestamp() LocalDateTime
+        +getDescripcion() String
+    }
+    class HistorialEnvios {
+        -historial: List~MementoEnvio~
+        -indice: int
+        +guardarEstado(e) void
+        +restaurarEstado(e, idx) void
+        +puedeDeshacer() bool
+        +puedeRehacer() bool
+        +getHistorial() List~MementoEnvio~
+    }
+    class Envio {
+        -id: String
+        -estado: EstadoEnvio
+        +crearMemento() MementoEnvio
+        +restaurarDesdeMemento(m) void
+    }
+    Envio ..> MementoEnvio : crea
+    HistorialEnvios o-- MementoEnvio
+    HistorialEnvios --> Envio`,
+
+'observer': `classDiagram
+    class ObservadorEnvio {
+        <<interface>>
+        +actualizar(e, evento) void
+    }
+    class Envio {
+        -observadores: List~ObservadorEnvio~
+        -id: String
+        -estado: EstadoEnvio
+        +agregarObservador(o) void
+        +removerObservador(o) void
+        +notificarObservadores(evento) void
+    }
+    class DashboardObservador {
+        +actualizar(e, evento) void
+    }
+    class CentroDistribucionObservador {
+        +actualizar(e, evento) void
+    }
+    class SistemaNotificacionObservador {
+        +actualizar(e, evento) void
+    }
+    DashboardObservador ..|> ObservadorEnvio
+    CentroDistribucionObservador ..|> ObservadorEnvio
+    SistemaNotificacionObservador ..|> ObservadorEnvio
+    Envio o-- ObservadorEnvio`,
+
+'state': `classDiagram
+    class EstadoEnvio {
+        <<interface>>
+        +validar(e) void
+        +entregar(e) void
+        +cancelar(e) void
+        +retener(e) void
+        +devolver(e) void
+        +reclamar(e) void
+    }
+    class EstadoPendiente {
+        +validar(e) void
+        +cancelar(e) void
+    }
+    class EstadoEnTransito {
+        +entregar(e) void
+        +retener(e) void
+    }
+    class EstadoRetenido {
+        +entregar(e) void
+        +devolver(e) void
+    }
+    class EstadoEntregado {
+        +reclamar(e) void
+    }
+    class EstadoCancelado
+    class Envio {
+        -estado: EstadoEnvio
+        +cambiarEstado(s) void
+        +getEstado() EstadoEnvio
+    }
+    EstadoPendiente ..|> EstadoEnvio
+    EstadoEnTransito ..|> EstadoEnvio
+    EstadoRetenido ..|> EstadoEnvio
+    EstadoEntregado ..|> EstadoEnvio
+    EstadoCancelado ..|> EstadoEnvio
+    Envio o-- EstadoEnvio`,
+
+'strategy': `classDiagram
+    class EstrategiaCalculoCosto {
+        <<interface>>
+        +calcular(e) double
+        +obtenerNombre() String
+    }
+    class EstrategiaPeso {
+        +calcular(e) double
+        +obtenerNombre() String
+    }
+    class EstrategiaUrgencia {
+        +calcular(e) double
+        +obtenerNombre() String
+    }
+    class EstrategiaDistancia {
+        +calcular(e) double
+        +obtenerNombre() String
+    }
+    class EstrategiaHibrida {
+        +calcular(e) double
+        +obtenerNombre() String
+    }
+    class EstrategiaZonaHoraria {
+        +calcular(e) double
+        +obtenerNombre() String
+    }
+    class ServicioCalculoCosto {
+        -estrategia: EstrategiaCalculoCosto
+        +setEstrategia(s) void
+        +calcularCosto(e) double
+    }
+    EstrategiaPeso ..|> EstrategiaCalculoCosto
+    EstrategiaUrgencia ..|> EstrategiaCalculoCosto
+    EstrategiaDistancia ..|> EstrategiaCalculoCosto
+    EstrategiaHibrida ..|> EstrategiaCalculoCosto
+    EstrategiaZonaHoraria ..|> EstrategiaCalculoCosto
+    ServicioCalculoCosto o-- EstrategiaCalculoCosto`,
+
+'template-method': `classDiagram
+    class ProcesoEnvio {
+        <<abstract>>
+        +procesarEnvio(e) void
+        +validarEnvio(e) void
+        +calcularCosto(e) double
+        +notificarCliente(e) void
+        +actualizarRegistro(e) void
+    }
+    class ProcesoNacional {
+        +validarEnvio(e) void
+        +calcularCosto(e) double
+        +notificarCliente(e) void
+        +actualizarRegistro(e) void
+    }
+    class ProcesoInternacional {
+        +validarEnvio(e) void
+        +calcularCosto(e) double
+        +notificarCliente(e) void
+        +actualizarRegistro(e) void
+    }
+    class ProcesoUrgente {
+        +validarEnvio(e) void
+        +calcularCosto(e) double
+        +notificarCliente(e) void
+        +actualizarRegistro(e) void
+    }
+    ProcesoNacional --|> ProcesoEnvio
+    ProcesoInternacional --|> ProcesoEnvio
+    ProcesoUrgente --|> ProcesoEnvio`,
+
+'visitor': `classDiagram
+    class VisitorCentro {
+        <<interface>>
+        +visitarRegional(n) void
+        +visitarSucursal(n) void
+    }
+    class ElementoDistribucion {
+        <<interface>>
+        +aceptar(v) void
+    }
+    class NodoCentroRegional {
+        -nombre: String
+        -hijos: List~ElementoDistribucion~
+        +aceptar(v) void
+    }
+    class NodoPuntoEntrega {
+        -nombre: String
+        -capacidad: int
+        +aceptar(v) void
+    }
+    class VisitorCalculoCostoOperativo {
+        -costoTotal: double
+        +visitarRegional(n) void
+        +visitarSucursal(n) void
+        +getCostoTotal() double
+    }
+    class VisitorCalculoOcupacion {
+        -ocupacionTotal: int
+        +visitarRegional(n) void
+        +visitarSucursal(n) void
+        +getOcupacionTotal() int
+    }
+    class VisitorBusquedaCentro {
+        +visitarRegional(n) void
+        +visitarSucursal(n) void
+    }
+    VisitorCalculoCostoOperativo ..|> VisitorCentro
+    VisitorCalculoOcupacion ..|> VisitorCentro
+    VisitorBusquedaCentro ..|> VisitorCentro
+    NodoCentroRegional ..|> ElementoDistribucion
+    NodoPuntoEntrega ..|> ElementoDistribucion
+    NodoCentroRegional o-- ElementoDistribucion : hijos`,
+
+'repository': `classDiagram
+    class Repositorio~T~ {
+        <<interface>>
+        +guardar(e) void
+        +buscarPorId(id) T
+        +listar() List~T~
+        +eliminar(id) void
+        +actualizar(e) void
+    }
+    class RepositorioEnvio {
+        <<interface>>
+        +buscarPorEstado(s) List~Envio~
+        +buscarPorCliente(id) List~Envio~
+    }
+    class RepositorioEnvioMemoria {
+        -almacen: Map~String, Envio~
+        +guardar(e) void
+        +buscarPorId(id) Envio
+        +listar() List~Envio~
+    }
+    class RepositorioEnvioSQL {
+        -conexion: Connection
+        +guardar(e) void
+        +buscarPorId(id) Envio
+        +listar() List~Envio~
+    }
+    RepositorioEnvio ..|> Repositorio~T~
+    RepositorioEnvioMemoria ..|> RepositorioEnvio
+    RepositorioEnvioSQL ..|> RepositorioEnvio`,
+
+'data-mapper': `classDiagram
+    class EnvioMapper {
+        <<interface>>
+        +toEntity(row) Envio
+        +toRow(e) Map~String, Object~
+    }
+    class EnvioMapperSQL {
+        +toEntity(row) Envio
+        +toRow(e) Map~String, Object~
+        +fromResultSet(rs) Envio
+    }
+    class ClienteMapper {
+        +toEntity(row) Cliente
+        +toRow(c) Map~String, Object~
+    }
+    class CobroMapper {
+        +toEntity(row) Cobro
+        +toRow(c) Map~String, Object~
+    }
+    class Envio {
+        -id: String
+        -tipo: TipoEnvio
+        -peso: double
+    }
+    class Cliente {
+        -id: String
+        -nombre: String
+    }
+    EnvioMapperSQL ..|> EnvioMapper
+    EnvioMapperSQL ..> Envio : construye
+    ClienteMapper ..> Cliente : construye`,
+
+'unit-of-work': `classDiagram
+    class UnitOfWork {
+        -nuevos: List~Object~
+        -sucios: List~Object~
+        -eliminados: List~Object~
+        -envioMapper: EnvioMapper
+        -cobroMapper: CobroMapper
+        +registrarNuevo(o) void
+        +registrarSucio(o) void
+        +registrarEliminado(o) void
+        +commit() void
+        +rollback() void
+    }
+    class EnvioMapper {
+        <<interface>>
+        +insertar(e) void
+        +actualizar(e) void
+        +eliminar(id) void
+    }
+    class CobroMapper {
+        <<interface>>
+        +insertar(c) void
+        +actualizar(c) void
+        +eliminar(id) void
+    }
+    UnitOfWork --> EnvioMapper
+    UnitOfWork --> CobroMapper`,
+
+'lazy-load': `classDiagram
+    class CentroDistribucion {
+        <<abstract>>
+        #nombre: String
+        +obtenerCapacidad() int
+        +obtenerOcupacion() int
+        +mostrar(p) void
+    }
+    class CentroDistribucionLazyProxy {
+        -id: String
+        -centroReal: CentroDistribucion
+        -cargado: bool
+        +obtenerCapacidad() int
+        +obtenerOcupacion() int
+        +mostrar(p) void
+        -cargarSiNecesario() void
+    }
+    class ClienteLazyProxy {
+        -id: String
+        -clienteReal: Cliente
+        -cargado: bool
+        +getNombre() String
+        +getEmail() String
+        -cargarSiNecesario() void
+    }
+    class HistorialEnviosLazyProxy {
+        -envioId: String
+        -historialReal: HistorialEnvios
+        -cargado: bool
+        +getHistorial() List~MementoEnvio~
+        -cargarSiNecesario() void
+    }
+    CentroDistribucionLazyProxy --|> CentroDistribucion`,
+
+};
+
+// Render all diagrams
+async function renderAll() {
+  for (const [key, code] of Object.entries(DIAGRAMS)) {
+    const el = document.getElementById('d-' + key);
+    if (!el) continue;
+    try {
+      const id = 'mermaid-' + key;
+      const { svg } = await mermaid.render(id, code);
+      el.innerHTML = svg;
+    } catch (e) {
+      el.innerHTML = `<pre style="color:red;font-size:.7rem;padding:.5rem">${e.message}</pre>`;
+    }
+  }
+}
+
+renderAll();
+
+// ── Sidebar filter ───────────────────────
+const filters = document.querySelectorAll('.sb-filter');
+filters.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const cat = btn.dataset.cat;
+    if (cat === 'all') {
+      const allActive = [...filters].filter(f => f.dataset.cat !== 'all').every(f => f.classList.contains('active'));
+      filters.forEach(f => {
+        if (f.dataset.cat !== 'all') {
+          f.classList.toggle('active', !allActive);
+          f.classList.toggle('inactive', allActive);
+        }
+      });
+      setVisibility(!allActive);
+    } else {
+      btn.classList.toggle('active');
+      btn.classList.toggle('inactive');
+      refreshVisibility();
+    }
+  });
+});
+
+function setVisibility(show) {
+  document.querySelectorAll('.cat-section').forEach(sec => {
+    sec.style.display = show ? '' : 'none';
+  });
+  document.querySelectorAll('.sb-group').forEach(g => {
+    g.style.display = show ? '' : 'none';
+  });
+}
+
+function refreshVisibility() {
+  const active = new Set([...filters].filter(f => f.classList.contains('active') && f.dataset.cat !== 'all').map(f => f.dataset.cat));
+  document.querySelectorAll('.cat-section').forEach(sec => {
+    sec.style.display = active.has(sec.dataset.cat) ? '' : 'none';
+  });
+  document.querySelectorAll('.sb-group').forEach(g => {
+    g.style.display = active.has(g.dataset.cat) ? '' : 'none';
+  });
+}
+
+// ── Active nav link on scroll ────────────
+const sections = document.querySelectorAll('.pat-card[id]');
+const navLinks  = document.querySelectorAll('.sb-link');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.sb-link[href="#${entry.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -75% 0px' });
+
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

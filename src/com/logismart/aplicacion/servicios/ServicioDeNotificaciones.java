@@ -1,4 +1,4 @@
-package com.logismart.aplicacion;
+package com.logismart.aplicacion.servicios;
 
 import com.logismart.dominio.usuario.ClienteFinal;
 import com.logismart.dominio.envio.Envio;
@@ -72,4 +72,3 @@ public class ServicioDeNotificaciones {
         return notificador.getCanal();
     }
 }
-

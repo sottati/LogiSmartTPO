@@ -1,6 +1,6 @@
 package com.logismart.aplicacion.demos.hito8;
 
-import com.logismart.aplicacion.ServicioLogisticaUnificado;
+import com.logismart.aplicacion.FacadeProveedoresExternos;
 import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.estructural.adapter.envio.AdapterDHL;
 import com.logismart.infraestructura.estructural.adapter.envio.AdapterFedEx;
@@ -102,7 +102,7 @@ public final class CasosDePruebaHito8 {
     private static void probarIntegracion() {
         System.out.println("\n--- Integracion ---");
 
-        ServicioLogisticaUnificado servicio = new ServicioLogisticaUnificado(arbolCentros());
+        FacadeProveedoresExternos servicio = new FacadeProveedoresExternos(arbolCentros());
         Envio envio = envio("ENV-H8-I", 3.0);
 
         verificar(servicio.crearEnvio("DHL", envio), "Caso 1: Integracion crea envio con Adapter");

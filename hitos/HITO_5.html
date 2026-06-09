@@ -347,8 +347,8 @@
             </tr>
             <tr>
               <td>P3</td>
-              <td>El mecanismo de notificación no existe. <code>TrackingService</code> solo publica tracking pero no notifica al cliente por ningún canal. La elección de canal (Email/SMS/Push) generaría un <code>switch</code> o múltiples <code>if</code>.</td>
-              <td><code>TrackingService</code>, ausencia de notificador</td>
+              <td>El mecanismo de notificación no existe. <code>ServicioSeguimiento</code> solo publica tracking pero no notifica al cliente por ningún canal. La elección de canal (Email/SMS/Push) generaría un <code>switch</code> o múltiples <code>if</code>.</td>
+              <td><code>ServicioSeguimiento</code>, ausencia de notificador</td>
               <td><span class="badge" style="background:#276749;color:white">Polymorphism</span> <span class="badge" style="background:#553c9a;color:white">Indirection</span></td>
             </tr>
             <tr>
@@ -389,8 +389,8 @@
             </tr>
             <tr>
               <td>P10</td>
-              <td>La exportación de reportes tiene un único formato. <code>ReporteService</code> necesita condicionales para soportar PDF, JSON, Excel.</td>
-              <td><code>ReporteService</code></td>
+              <td>La exportación de reportes tiene un único formato. <code>ServicioReportes</code> necesita condicionales para soportar PDF, JSON, Excel.</td>
+              <td><code>ServicioReportes</code></td>
               <td><span class="badge" style="background:#c05621;color:white">Protected Variations</span></td>
             </tr>
           </tbody>
@@ -1430,7 +1430,7 @@ sequenceDiagram
             <ul class="note-list">
               <li>Sin Controller: la UI accedía directamente al dominio</li>
               <li>Sin permisos polimórficos: riesgo de <code>instanceof</code> en cada verificación</li>
-              <li>Sin servicio de notificaciones: canal hardcodeado en <code>TrackingService</code></li>
+              <li>Sin servicio de notificaciones: canal hardcodeado en <code>ServicioSeguimiento</code></li>
               <li>Sin persistencia: los envíos no sobrevivían entre llamadas</li>
               <li>Algoritmos fijos: costo, asignación y tiempo de entrega sin abstracción</li>
             </ul>

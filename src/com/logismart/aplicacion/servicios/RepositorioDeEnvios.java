@@ -1,4 +1,4 @@
-package com.logismart.aplicacion;
+package com.logismart.aplicacion.servicios;
 
 import com.logismart.dominio.envio.Envio;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * GRASP Pure Fabrication: Clase artificial que centraliza la persistencia de Envios.
  * La responsabilidad de almacenar y recuperar envios no pertenece ni a Envio
- * (que es una entidad de dominio) ni a Logismart (que es la fachada del sistema).
+ * (que es una entidad de dominio) ni a LogiSmartController (que delegaria toda su logica).
  *
  * En produccion esta clase delegaria en un ORM o una base de datos.
  * En este contexto academico usa un Map en memoria como store.
@@ -58,4 +58,3 @@ public class RepositorioDeEnvios {
         return store.size();
     }
 }
-

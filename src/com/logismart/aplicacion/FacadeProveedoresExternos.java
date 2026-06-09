@@ -24,14 +24,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ServicioLogisticaUnificado {
+/**
+ * Facade (GoF Estructural) que simplifica el acceso a los proveedores externos.
+ * Envuelve los Adapters de envío (DHL, FedEx, UPS), los Adapters de pago
+ * (PayPal, Stripe), el Bridge de reportes y el Composite de centros de
+ * distribución bajo una interfaz única.
+ *
+ * El llamador (LogiSmartController u otras demos) no necesita conocer qué
+ * adaptador concreto se usa ni cómo se construye un reporte.
+ */
+public class FacadeProveedoresExternos {
     private final Map<String, ProveedorEnvio> proveedoresEnvio = new HashMap<>();
     private final Map<String, ProveedorPago> proveedoresPago = new HashMap<>();
     private final Map<String, Integer> desempenoProveedores = new HashMap<>();
     private final CentroDistribucionComposite centroDistribucion;
     private final List<Envio> enviosRegistrados = new ArrayList<>();
 
-    public ServicioLogisticaUnificado(CentroDistribucionComposite centroDistribucion) {
+    public FacadeProveedoresExternos(CentroDistribucionComposite centroDistribucion) {
         this.centroDistribucion = centroDistribucion;
         registrarProveedorEnvio(new AdapterDHL());
         registrarProveedorEnvio(new AdapterFedEx());
@@ -99,4 +108,3 @@ public class ServicioLogisticaUnificado {
         }
     }
 }
-

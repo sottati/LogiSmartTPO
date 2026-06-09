@@ -398,7 +398,7 @@
               <td><strong>SeguimientoEnvio</strong></td>
               <td>Registrar estado actual, historial de posiciones GPS y ETA vigente</td>
               <td><span class="badge badge-ok">Si</span></td>
-              <td>La notificacion externa se extrae a <code>TrackingService</code>. El dominio queda enfocado en estado, posicion y ETA.</td>
+              <td>La notificacion externa se extrae a <code>ServicioSeguimiento</code>. El dominio queda enfocado en estado, posicion y ETA.</td>
             </tr>
             <tr>
               <td><strong>PosicionGPS</strong></td>
@@ -434,7 +434,7 @@
               <td><strong>Reporte</strong></td>
               <td>Consolidar metricas de performance de una Empresa en un periodo</td>
               <td><span class="badge badge-ok">Si</span></td>
-              <td><code>exportar()</code> y <code>compartir()</code> se movieron a <code>ReporteService</code>. La entidad mantiene foco de negocio.</td>
+              <td><code>exportar()</code> y <code>compartir()</code> se movieron a <code>ServicioReportes</code>. La entidad mantiene foco de negocio.</td>
             </tr>
             <tr>
               <td><strong>Metrica</strong></td>
@@ -460,7 +460,7 @@
             <strong>Relaciones por objeto (no solo IDs):</strong> <code>Envio</code>, <code>Flota</code>, <code>AdminEmpresa</code>, <code>OperadorLogistico</code> y <code>Transportista</code> ahora modelan asociaciones con objetos del dominio.
           </li>
           <li>
-            <strong>Separacion dominio/tecnico:</strong> la logica de infraestructura queda en servicios de aplicacion (<code>ReporteService</code>, <code>TrackingService</code>, <code>AutenticacionService</code>).
+            <strong>Separacion dominio/tecnico:</strong> la logica de infraestructura queda en servicios de aplicacion (<code>ServicioReportes</code>, <code>ServicioSeguimiento</code>, <code>ServicioAutenticacion</code>).
           </li>
           <li>
             <strong>Coherencia de creacion (Creator):</strong> <code>Envio</code> crea internamente <code>SeguimientoEnvio</code> y <code>Entrega</code>, reduciendo acoplamiento del llamador.
@@ -853,16 +853,16 @@ class Metrica {
   +comparar(otra) int
 }
 
-class ReporteService {
+class ServicioReportes {
   +exportar(reporte) String
   +compartir(reporte, destino)
 }
 
-class TrackingService {
+class ServicioSeguimiento {
   +publicarTracking(seguimiento)
 }
 
-class AutenticacionService {
+class ServicioAutenticacion {
   +hashearPassword(passwordPlano) String
   +validarPassword(usuario, passwordPlano) boolean
   +cambiarPassword(usuario, nuevaPasswordPlano)
@@ -901,10 +901,10 @@ Empresa "1" --> "1" Suscripcion : posee
 Suscripcion "1" *-- "0..*" Cobro : genera
 AdminPlataforma "1" --> "0..*" Suscripcion : administra
 
-ReporteService ..> Reporte : usa
-TrackingService ..> SeguimientoEnvio : usa
-AutenticacionService ..> Usuario : usa
-AutenticacionService ..> BCrypt : delega hashing
+ServicioReportes ..> Reporte : usa
+ServicioSeguimiento ..> SeguimientoEnvio : usa
+ServicioAutenticacion ..> Usuario : usa
+ServicioAutenticacion ..> BCrypt : delega hashing
           </pre>
         </div>
       </div>
@@ -1116,10 +1116,10 @@ flowchart LR
     Flota --> Vehiculo
     SeguimientoEnvio --> PosicionGPS
 
-    AutenticacionService --> Usuario
-    AutenticacionService --> BCrypt
-    ReporteService --> Reporte
-    TrackingService --> SeguimientoEnvio
+    ServicioAutenticacion --> Usuario
+    ServicioAutenticacion --> BCrypt
+    ServicioReportes --> Reporte
+    ServicioSeguimiento --> SeguimientoEnvio
           </pre>
         </div>
 
@@ -1148,7 +1148,7 @@ flowchart LR
               <td>Esperado para un actor de orquestacion del flujo operativo. No hay dependencias innecesarias.</td>
             </tr>
             <tr>
-              <td><strong>AutenticacionService</strong></td>
+              <td><strong>ServicioAutenticacion</strong></td>
               <td>Usuario, BCrypt</td>
               <td>Medio</td>
               <td>Correcto: la dependencia tecnica de hashing queda fuera del dominio y centralizada en capa de aplicacion.</td>
@@ -1201,7 +1201,7 @@ class Reporte {
   +generar()
 }
 
-class ReporteService {
+class ServicioReportes {
   +exportar(reporte)
   +compartir(reporte)
 }
@@ -1212,7 +1212,7 @@ class SeguimientoEnvio {
   +actualizarETA(min, confianza)
 }
 
-class TrackingService {
+class ServicioSeguimiento {
   +publicarTracking(seguimiento)
 }
 
@@ -1222,8 +1222,8 @@ class ETA {
   -nivelConfianza
 }
 
-ReporteService ..> Reporte : usa
-TrackingService ..> SeguimientoEnvio : usa
+ServicioReportes ..> Reporte : usa
+ServicioSeguimiento ..> SeguimientoEnvio : usa
             </pre>
           </div>
         </div>
@@ -1243,7 +1243,7 @@ TrackingService ..> SeguimientoEnvio : usa
         <div class="callout callout-ok">
           <strong>Aplicado:</strong>
           <code>BCrypt</code> se mantiene en <code>com.logismart.util</code> y su uso queda encapsulado
-          en <code>AutenticacionService</code>, preservando la separacion entre dominio e infraestructura.
+          en <code>ServicioAutenticacion</code>, preservando la separacion entre dominio e infraestructura.
         </div>
       </div>
 
@@ -1354,7 +1354,7 @@ sequenceDiagram
     participant ENT as Entrega
     participant SEG as SeguimientoEnvio
     participant EV as Envio
-    participant TS as TrackingService
+    participant TS as ServicioSeguimiento
     actor CF as ClienteFinal
 
     TR->>+ENT: confirmarExitosa(observaciones, prueba)
@@ -1373,17 +1373,17 @@ sequenceDiagram
     EV-->>-TR: estado = CERRADO
 
     EV->>+TS: publicarTracking(seguimiento)
-    Note over TS: High Cohesion: la publicacion esta en TrackingService, fuera del dominio
+    Note over TS: High Cohesion: la publicacion esta en ServicioSeguimiento, fuera del dominio
     TS-->>CF: notificacion de entrega exitosa
     TS-->>-EV: ok
           </pre>
         </div>
         <p><strong>Validacion:</strong>
           Este diagrama refleja directamente la separacion de responsabilidades propuesta en la Actividad 4.
-          <code>publicarTracking()</code> fue extraida del dominio a <code>TrackingService</code>
+          <code>publicarTracking()</code> fue extraida del dominio a <code>ServicioSeguimiento</code>
           (High Cohesion aplicado): el dominio solo gestiona estado, la notificacion la maneja
           la capa de aplicacion. No hay dependencias ciclicas. La cadena de responsabilidades
-          (<code>Entrega</code> → <code>SeguimientoEnvio</code> → <code>Envio</code> → <code>TrackingService</code>)
+          (<code>Entrega</code> → <code>SeguimientoEnvio</code> → <code>Envio</code> → <code>ServicioSeguimiento</code>)
           sigue un orden logico y sin comunicaciones directas innecesarias.
         </p>
       </div>

@@ -1,4 +1,4 @@
-package com.logismart.aplicacion;
+package com.logismart.aplicacion.servicios;
 
 import com.logismart.dominio.envio.Envio;
 import com.logismart.dominio.ruta.Ruta;
@@ -76,4 +76,3 @@ public class ValidadorDeEnvios {
         return new ResultadoValidacion(errores.isEmpty(), errores);
     }
 }
-

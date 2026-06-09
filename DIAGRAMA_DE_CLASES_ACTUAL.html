@@ -462,16 +462,16 @@ class Metrica {
 }
 
 %% ---- APPLICATION SERVICES ----
-class ReporteService {
+class ServicioReportes {
   +exportar(reporte) String
   +compartir(reporte, destino)
 }
 
-class TrackingService {
+class ServicioSeguimiento {
   +publicarTracking(seguimiento)
 }
 
-class AutenticacionService {
+class ServicioAutenticacion {
   +hashearPassword(passwordPlano) String
   +validarPassword(usuario, passwordPlano) boolean
   +cambiarPassword(usuario, nuevaPasswordPlano)
@@ -773,7 +773,7 @@ CentroRegional --|&gt; CentroDistribucion
 SucursalEntrega --|&gt; CentroDistribucion
 CentroRegional o-- CentroDistribucion
 
-class ServicioLogisticaUnificado {
+class FacadeProveedoresExternos {
   -proveedoresEnvio Map~String, ProveedorEnvio~
   -proveedoresPago Map~String, ProveedorPago~
   -centroDistribucion CentroDistribucion
@@ -831,10 +831,10 @@ Empresa "1" --&gt; "1" Suscripcion : posee
 Suscripcion "1" *-- "0..*" Cobro : genera
 AdminPlataforma "1" --&gt; "0..*" Suscripcion : administra
 
-ReporteService ..&gt; Reporte : usa
-TrackingService ..&gt; SeguimientoEnvio : usa
-AutenticacionService ..&gt; Usuario : usa
-AutenticacionService ..&gt; BCrypt : delega hashing
+ServicioReportes ..&gt; Reporte : usa
+ServicioSeguimiento ..&gt; SeguimientoEnvio : usa
+ServicioAutenticacion ..&gt; Usuario : usa
+ServicioAutenticacion ..&gt; BCrypt : delega hashing
 
 %% ---- RELACIONES HITO 7 ----
 LogiSmartFactoryArgentina --&gt; Auto
@@ -846,11 +846,11 @@ LogiSmartFactoryBrasil --&gt; HereMaps
 EnvioBuilder ..&gt; Envio : construye
 
 %% ---- RELACIONES HITO 8 ----
-ServicioLogisticaUnificado --&gt; ProveedorEnvio
-ServicioLogisticaUnificado --&gt; ProveedorPago
-ServicioLogisticaUnificado --&gt; CentroDistribucion
-ServicioLogisticaUnificado --&gt; ReporteBridge
-ServicioLogisticaUnificado ..&gt; GeneradorReporte
+FacadeProveedoresExternos --&gt; ProveedorEnvio
+FacadeProveedoresExternos --&gt; ProveedorPago
+FacadeProveedoresExternos --&gt; CentroDistribucion
+FacadeProveedoresExternos --&gt; ReporteBridge
+FacadeProveedoresExternos ..&gt; GeneradorReporte
 
 %% ---- GOF: ESTRUCTURALES (Hito 9) ----
 class EnvioDecoradorContrato {
@@ -1520,7 +1520,7 @@ SistemaLogisticaAvanzada --&gt; NodoCentroRegional
                 Integración
               </div>
               <div class="pattern-desc">
-                <code>ServicioLogisticaUnificado</code> orquesta Adapter + Bridge + Composite en un flujo único.
+                <code>FacadeProveedoresExternos</code> orquesta Adapter + Bridge + Composite en un flujo único.
               </div>
             </div>
           </div>

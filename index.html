@@ -468,6 +468,7 @@
           <a class="cover-link accent-link" href="#documentacion">Leer documentación</a>
           <a class="cover-link" href="DIAGRAMA_DE_CLASES_ACTUAL.html">Diagrama de clases</a>
           <a class="cover-link" href="DIAGRAMAS_PATRONES.html">Diagramas de patrones</a>
+          <a class="cover-link" href="DIAGRAMAS_UML.html">Diagramas UML</a>
         </div>
       </div>
     </header>
@@ -630,6 +631,16 @@
                 <div class="hito-label">36 diagramas Mermaid</div>
                 <div class="hito-title">Diagramas de Patrones</div>
                 <div class="hito-desc">Secuencia, flujo y estado para cada patrón con clases reales</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
+            <a class="hito-card" href="DIAGRAMAS_UML.html"
+               style="border-color: var(--primary-2); background: linear-gradient(135deg, #f0f5ff 0%, var(--surface) 60%);">
+              <div class="hito-number" style="background: var(--primary-2); font-size: 0.9rem; letter-spacing: -0.02em;">UML</div>
+              <div class="hito-body">
+                <div class="hito-label">36 diagramas UML de clases</div>
+                <div class="hito-title">Diagramas UML</div>
+                <div class="hito-desc">classDiagram Mermaid con clases reales por patrón</div>
               </div>
               <div class="hito-arrow">›</div>
             </a>
@@ -904,7 +915,7 @@
             </li>
             <li>
               <span class="pkg-name">com.logismart.aplicacion</span>
-              <span class="pkg-desc">GRASP Controller (<code>LogiSmartController</code>), Pure Fabrications y servicios de integración: <code>ServicioLogisticaUnificado</code> para Hito 8 y <code>aplicacion.hito8</code>/<code>aplicacion.hito9</code>/<code>aplicacion.hito10</code> para evidencia ejecutable.</span>
+              <span class="pkg-desc">GRASP Controller (<code>LogiSmartController</code>), Pure Fabrications y servicios de integración: <code>FacadeProveedoresExternos</code> para Hito 8 y <code>aplicacion.hito8</code>/<code>aplicacion.hito9</code>/<code>aplicacion.hito10</code> para evidencia ejecutable.</span>
             </li>
             <li>
               <span class="pkg-name">com.logismart.infraestructura.singleton</span>
@@ -960,7 +971,7 @@
             </li>
             <li>
               <span class="pkg-name">com.logismart.util</span>
-              <span class="pkg-desc">Utilidades transversales: <code>BCrypt</code> para hashing de contraseñas, delegado por <code>AutenticacionService</code>.</span>
+              <span class="pkg-desc">Utilidades transversales: <code>BCrypt</code> para hashing de contraseñas, delegado por <code>ServicioAutenticacion</code>.</span>
             </li>
           </ul>
         </div>
@@ -1133,7 +1144,7 @@
                 <code>ProveedorEnvio</code> con <code>AdapterDHL</code>, <code>AdapterFedEx</code> y <code>AdapterUPS</code>.<br>
                 <code>ProveedorPago</code> con <code>AdapterPayPal</code> y <code>AdapterStripe</code>.
               </div>
-              <div class="p-tradeoff"><strong>Evidencia:</strong> <code>CasosDePruebaHito8</code> verifica creación, costos y pagos. <code>ServicioLogisticaUnificado</code> consume proveedores por interfaz, no por API externa.</div>
+              <div class="p-tradeoff"><strong>Evidencia:</strong> <code>CasosDePruebaHito8</code> verifica creación, costos y pagos. <code>FacadeProveedoresExternos</code> consume proveedores por interfaz, no por API externa.</div>
             </div>
 
             <div class="p-card">

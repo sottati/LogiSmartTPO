@@ -98,10 +98,10 @@
         <table>
           <thead><tr><th>Actividad</th><th>Patrón</th><th>Archivos principales</th><th>Evidencia</th></tr></thead>
           <tbody>
-            <tr><td>1-2</td><td>Adapter</td><td><code>adapter/envio/*</code>, <code>adapter/pago/*</code></td><td><code>ServicioLogisticaUnificado.crearEnvio</code>, <code>procesarPago</code> y <code>CasosDePruebaHito8</code>.</td></tr>
+            <tr><td>1-2</td><td>Adapter</td><td><code>adapter/envio/*</code>, <code>adapter/pago/*</code></td><td><code>FacadeProveedoresExternos.crearEnvio</code>, <code>procesarPago</code> y <code>CasosDePruebaHito8</code>.</td></tr>
             <tr><td>3-4</td><td>Bridge</td><td><code>bridge/reporte/Reporte</code>, <code>GeneradorReporte</code> y concretos</td><td><code>generarReporte</code> crea reportes variando tipo y formato de forma independiente.</td></tr>
             <tr><td>5-6</td><td>Composite</td><td><code>CentroDistribucionComposite</code>, <code>CentroRegional</code>, <code>SucursalEntrega</code></td><td>La capacidad y ocupación se calculan recursivamente en un árbol de centros.</td></tr>
-            <tr><td>7</td><td>Integración</td><td><code>ServicioLogisticaUnificado</code></td><td>Un flujo usa proveedor externo, registra envío, consulta centro y genera reporte.</td></tr>
+            <tr><td>7</td><td>Integración</td><td><code>FacadeProveedoresExternos</code></td><td>Un flujo usa proveedor externo, registra envío, consulta centro y genera reporte.</td></tr>
           </tbody>
         </table>
       </section>
@@ -336,10 +336,10 @@ CentroRegional o-- CentroDistribucionComposite</pre></div>
 
       <section class="section" id="integracion">
         <div class="section-act">Actividad 7 · Integración</div>
-        <h2>ServicioLogisticaUnificado</h2>
+        <h2>FacadeProveedoresExternos</h2>
         <p>El servicio integra Adapter, Bridge y Composite en un flujo único.</p>
-        <div class="tech-note"><strong>Integración específica:</strong> el cliente no instancia APIs externas ni reportes concretos. Llama a <code>ServicioLogisticaUnificado</code>; el servicio resuelve el adapter por nombre de proveedor, mantiene los envíos registrados, expone el centro raíz composite (<code>CentroDistribucionComposite</code>) y arma el bridge reporte/formato cuando se solicita un reporte.</div>
-        <pre>public class ServicioLogisticaUnificado {
+        <div class="tech-note"><strong>Integración específica:</strong> el cliente no instancia APIs externas ni reportes concretos. Llama a <code>FacadeProveedoresExternos</code>; el servicio resuelve el adapter por nombre de proveedor, mantiene los envíos registrados, expone el centro raíz composite (<code>CentroDistribucionComposite</code>) y arma el bridge reporte/formato cuando se solicita un reporte.</div>
+        <pre>public class FacadeProveedoresExternos {
     private final Map&lt;String, ProveedorEnvio&gt; proveedoresEnvio = new HashMap&lt;&gt;();
     private final Map&lt;String, ProveedorPago&gt; proveedoresPago = new HashMap&lt;&gt;();
     private final CentroDistribucionComposite centroDistribucion;
@@ -366,7 +366,7 @@ CentroRegional o-- CentroDistribucionComposite</pre></div>
         <h3>Diagrama de secuencia - Caso completo</h3>
         <div class="diagram"><pre class="mermaid">sequenceDiagram
 participant Cliente
-participant Servicio as ServicioLogisticaUnificado
+participant Servicio as FacadeProveedoresExternos
 participant Adapter as AdapterDHL
 participant API as DHLAPI
 participant Centro as CentroDistribucionComposite
@@ -403,7 +403,7 @@ Reporte-->>Cliente: reporte generado</pre></div>
             <tr><td>Adapter</td><td>DHL, FedEx, UPS, PayPal y Stripe</td><td>Las APIs externas se usan mediante contratos internos uniformes.</td></tr>
             <tr><td>Bridge</td><td>PDF, JSON, CSV y cambio de generador en runtime</td><td>Tipo de reporte y formato varían independientemente.</td></tr>
             <tr><td>Composite</td><td>Árbol de 4 niveles con capacidad, ocupación y porcentaje</td><td>Los cálculos se resuelven recursivamente sin diferenciar hojas y contenedores en el cliente.</td></tr>
-            <tr><td>Integración</td><td><code>ServicioLogisticaUnificado</code></td><td>Adapter, Bridge y Composite se usan juntos en un flujo de logística.</td></tr>
+            <tr><td>Integración</td><td><code>FacadeProveedoresExternos</code></td><td>Adapter, Bridge y Composite se usan juntos en un flujo de logística.</td></tr>
           </tbody>
         </table>
         <pre>CasosDePruebaHito8.ejecutar();
