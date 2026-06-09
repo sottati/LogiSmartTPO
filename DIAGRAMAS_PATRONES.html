@@ -268,6 +268,27 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-information-expert"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Matriz de permisos — Rol como Information Expert</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:24%"/><col style="width:15%"/><col style="width:15%"/><col style="width:15%"/><col style="width:16%"/><col style="width:15%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">Rol</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">crearEnvio</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">asignarRuta</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">verReportes</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">gestionarFlota</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">adminEmpresas</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">OPERADOR</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ADMIN_EMPRESA</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ADMIN_PLATAFORMA</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">CLIENTE</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">TRANSPORTISTA</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">Rol</span>
             <span class="class-chip">Usuario</span>
@@ -287,6 +308,21 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-creator"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">FabricaDeEnvios — datos requeridos para crear un Envio</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">parámetro</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">tipo</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">null →</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">TipoEnvio tipo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">enum (EXPRESS · STANDARD · ECONOMICO)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">IllegalArgumentException</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">Empresa empresa</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">entidad de dominio</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">IllegalArgumentException</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">LocalDateTime fecha</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">fecha programada de entrega</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">IllegalArgumentException</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">FabricaDeEnvios</span>
             <span class="class-chip">Envio</span>
@@ -305,6 +341,26 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-controller"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Operaciones — permiso requerido y delegación</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:26%"/><col style="width:24%"/><col style="width:50%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">método</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">permiso</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">delega en</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">crearEnvio()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">puedeCrearEnvio()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">FabricaDeEnvios · RepositorioDeEnvios</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">asignarRuta()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">puedeAsignarRuta()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Memento · Strategy×2 · State · Observer · Repositorio</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">calcularCosto()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Envio.calcularCosto()</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">obtenerEstado()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Envio.getEstado()</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">cancelarEnvio()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">puedeCrearEnvio()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">estadoGoF.cancelar()</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">entregarEnvio()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">puedeCrearEnvio()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">estadoGoF.entregar()</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">verificarPermisoReporte()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">puedeVerReportes()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">lanza SecurityException si falla</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">LogiSmartController</span>
             <span class="class-chip">FacadeProveedoresExternos</span>
@@ -323,6 +379,20 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-low-coupling"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">RepositorioEnvio — dos implementaciones, mismo contrato</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">implementación</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">contexto</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">almacenamiento</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">RepositorioEnvioMemoria</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">tests</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Map&lt;String, Envio&gt; en JVM</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">RepositorioEnvioSQL</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">producción</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">JDBC PreparedStatement</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">RepositorioEnvio</span>
             <span class="class-chip">RepositorioEnvioMemoria</span>
@@ -341,6 +411,24 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-high-cohesion"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Cada clase tiene una única responsabilidad</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:30%"/><col style="width:35%"/><col style="width:35%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">clase</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">hace</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">NO hace</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">LogiSmartController</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">verifica permisos · delega</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">calcular, persistir, notificar</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">FacadeProveedoresExternos</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">orquesta subsistemas</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">aplicar reglas de dominio</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">Envio</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">aplica reglas de dominio</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">conocer SQL ni hablar con UI</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">RepositorioDeEnvios</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">persiste y recupera Envios</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">validar, calcular, notificar</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">Notificador</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">envía notificaciones</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">decidir cuándo ni a quién</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">LogiSmartController</span>
             <span class="class-chip">FacadeProveedoresExternos</span>
@@ -360,6 +448,25 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-polymorphism"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">IPermisos — dispatch sin instanceof ni switch</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:34%"/><col style="width:22%"/><col style="width:22%"/><col style="width:22%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">clase concreta</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">puedeCrearEnvio()</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">puedeAsignarRuta()</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">puedeVerReportes()</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">OperadorLogistico</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">AdminEmpresa</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">AdminPlataforma</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ClienteFinal</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">Transportista</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">IPermisos</span>
             <span class="class-chip">OperadorLogistico</span>
@@ -379,6 +486,22 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-pure-fabrication"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Clases inventadas — sin equivalente en el dominio de negocio</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:30%"/><col style="width:40%"/><col style="width:30%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">clase inventada</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">crea / gestiona</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">razón de existir</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">FabricaDeEnvios</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">EnvioExpress · EnvioStandard · EnvioEconomico</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">encapsula instanciación con alta cohesión</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">FabricaDeVehiculos</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Auto · Moto · Camion por TipoVehiculo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">crea el vehículo correcto en runtime</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">FabricaDeNotificadores</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">NotificadorEmail · NotificadorSMS</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">elige el canal según configuración</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">FabricaDeEnvios</span>
             <span class="class-chip">FabricaDeVehiculos</span>
@@ -397,6 +520,22 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-indirection"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Adapters — traducción entre dominio y APIs legacy</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:22%"/><col style="width:20%"/><col style="width:58%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">adapter</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">API legacy</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">método dominio → método API</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">AdapterDHL</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">DHLAPI</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>crearEnvio()</code> → <code>registrarPaquete()</code> · <code>calcularCosto()</code> → <code>calcularTarifa()</code></td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">AdapterFedEx</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">FedExAPI</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>crearEnvio()</code> → <code>crearShipment()</code> · <code>calcularCosto()</code> → <code>getShippingRate()</code></td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">AdapterUPS</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">UPSConnector</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>crearEnvio()</code> → <code>sendPackage()</code> · <code>calcularCosto()</code> → <code>estimateCost()</code></td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">ProveedorEnvio</span>
             <span class="class-chip">AdapterDHL</span>
@@ -415,6 +554,23 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-protected-variations"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Cadena de validadores — orden fail-fast de menor a mayor costo</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:30%"/><col style="width:70%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">validador</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">condición que rechaza</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ValidadorDatos</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">origen vacío · destino vacío · peso ≤ 0</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ValidadorSeguridad</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">destino contiene "Restringido"</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ValidadorPago</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">costo ≤ 0 · medioPago nulo o vacío</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ValidadorCapacidad</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">sin espacio disponible para el peso del envío</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ValidadorInventario</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">stock insuficiente para algún productoId de las órdenes</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">ContextoValidacion</span>
             <span class="class-chip">CadenaValidadores</span>
@@ -446,6 +602,22 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-singleton"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Tres singletons — estado global controlado</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:26%"/><col style="width:42%"/><col style="width:32%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">clase</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">estado protegido</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">thread-safe</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">Logger</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">archivo <code>logismart.log</code> · timestamp formatter</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">volatile + synchronized block</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ConfiguracionSistema</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">empresa="LogiSmart" · version="7.0" · region</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">double-checked locking</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ConexionBD</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">única conexión JDBC a la base de datos</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">volatile + synchronized block</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">Logger</span>
             <span class="class-chip">ConfiguracionSistema</span>
@@ -464,6 +636,36 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-factory-method"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">FabricaDeEnvios — TipoEnvio → Envio concreto</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">TipoEnvio</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">clase concreta</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">prioridad</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">días · mult. costo</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">EXPRESS</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">EnvioExpress</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">ALTA</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">1 día · ×1.45</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">STANDARD</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">EnvioStandard</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">MEDIA</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">3 días · ×1.00</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ECONOMICO</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">EnvioEconomico</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">BAJA</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">7 días · ×0.85</td></tr>
+            </tbody>
+          </table>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">FabricaDeVehiculos — TipoVehiculo → Vehiculo concreto</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">TipoVehiculo</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">clase concreta</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">null/desconocido →</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">CAMION</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Camion</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)" rowspan="3">IllegalArgumentException</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">MOTO</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Moto</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">AUTO</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Auto</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">FabricaDeEnvios</span>
             <span class="class-chip">FabricaDeVehiculos</span>
@@ -483,6 +685,22 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-abstract-factory"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Familia de objetos por región — nunca se mezclan</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:30%"/><col style="width:23%"/><col style="width:24%"/><col style="width:23%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">factory concreta</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">crearVehiculo()</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">crearCalculadorCostos()</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">crearProveedorMapas()</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">LogiSmartFactoryArgentina</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Auto</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">CalculadorCostosArgentina (IVA 21%)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">GoogleMapsArgentina</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">LogiSmartFactoryBrasil</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Moto</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">CalculadorCostosBrasil (ICMS 12%)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">HereMaps</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">LogiSmartFactory</span>
             <span class="class-chip">LogiSmartFactoryArgentina</span>
@@ -502,6 +720,24 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-builder"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">EnvioBuilder — campos requeridos vs opcionales</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">campo</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">requerido</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">setter del builder</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">id</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓ (constructor)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">origen</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓ (constructor)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">destino</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">✓ (constructor)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">estado · peso · costo · tipo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>.estado() .peso() .costo() .tipo()</code></td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">fragil · requiereSignatura · requiereRefrigeracion · requiereAseguranza</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>boolean</code> setters encadenables</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">instruccionesEspeciales · contactoEmergencia · horaEntregaPreferida</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>String/LocalTime</code> setters encadenables</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">Envio.EnvioBuilder</span>
             <span class="class-chip">Envio</span>
@@ -519,6 +755,22 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-prototype"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Envio.clone() — copia profunda de todos los campos</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">campo</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">en el clon</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">id</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">distinto — se sobreescribe con <code>setId()</code> tras el clone</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">origen · destino · peso · costo · tipo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">copiado idéntico del prototipo</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">estado · fragil · requiere*</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">copiado idéntico del prototipo</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">instrucciones · contacto · horaEntrega</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">copiado idéntico del prototipo</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:.71rem;color:var(--muted);margin:.4rem 0 .75rem">Caso de uso: replicar 100 envíos de prueba con el mismo estado inicial sin re-declarar los 12 atributos opcionales.</p>
+
           <div class="pat-classes">
             <span class="class-chip">Envio</span>
             <span class="class-chip">Cloneable</span>
@@ -1172,6 +1424,33 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-repository"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Repositorio&lt;T&gt; — métodos del contrato</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">método</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">operación SQL equivalente</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">guardar(T entidad)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">INSERT / UPDATE</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">obtener(int id)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">SELECT WHERE id = ?</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">obtenerTodos()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">SELECT * FROM tabla</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">eliminar(int id)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">DELETE WHERE id = ?</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Implementaciones de RepositorioEnvio</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">implementación</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">contexto</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">almacenamiento</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">RepositorioEnvioMemoria</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">tests</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Map&lt;String, Envio&gt; en JVM</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">RepositorioEnvioSQL</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">producción</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">JDBC PreparedStatement</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">Repositorio</span>
             <span class="class-chip">RepositorioEnvio</span>
@@ -1191,6 +1470,26 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-data-mapper"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">EnvioMapperSQL — tabla <code>envios</code> → objeto <code>Envio</code></p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">columna SQL</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">getter Java</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">tipo</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">id</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">getId()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">VARCHAR PK</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">origen</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">getOrigen()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">VARCHAR</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">destino</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">getDestino()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">VARCHAR</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">peso</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">getPeso()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">DOUBLE</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">estado</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">getEstado()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">VARCHAR</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">costo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">getCosto()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">DOUBLE</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">tipo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">getTipo()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">VARCHAR</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">metodo_pago</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">—</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">VARCHAR nullable (null en implementación actual)</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">EnvioMapper</span>
             <span class="class-chip">EnvioMapperSQL</span>
@@ -1210,6 +1509,24 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-unit-of-work"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">UnitOfWork — diario de cambios y orden de commit</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:34%"/><col style="width:22%"/><col style="width:22%"/><col style="width:22%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">operación</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">lista interna</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">orden en commit()</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">SQL generado</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">registrarNuevo(Object)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">nuevos</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">1º</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">INSERT</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">registrarModificado(Object)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">modificados</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">2º</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">UPDATE</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">registrarEliminado(Object)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">eliminados</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">3º</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">DELETE</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">rollback()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)" colspan="3">descarta las tres listas sin ejecutar nada — todo o nada garantizado</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">UnitOfWork</span>
             <span class="class-chip">EnvioMapper</span>
@@ -1228,6 +1545,23 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-lazy-load"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Tres proxies de carga diferida</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:34%"/><col style="width:28%"/><col style="width:20%"/><col style="width:18%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">proxy</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">wrappea</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">trigger de carga</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">llamadas siguientes</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">CentroDistribucionLazyProxy</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">CentroDistribucionEntity</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">getCentro()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">instancia cacheada</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ClienteLazyProxy</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">ClienteFinal</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">getCliente()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">instancia cacheada</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">HistorialEnviosLazyProxy</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">HistorialEnvios</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">getHistorial()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">instancia cacheada</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">CentroDistribucionLazyProxy</span>
             <span class="class-chip">ClienteLazyProxy</span>
