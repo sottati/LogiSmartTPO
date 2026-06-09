@@ -1112,7 +1112,13 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-visitor"></div></div>
 
           <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Reglas de negocio — 4 visitantes</p>
-          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup>
+              <col style="width:26%"/>
+              <col style="width:28%"/>
+              <col style="width:24%"/>
+              <col style="width:22%"/>
+            </colgroup>
             <thead>
               <tr style="background:var(--bg)">
                 <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">Visitor</th>
@@ -1122,10 +1128,10 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">VisitorCalculoCostoOperativo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoTotal += punto.obtenerCostoOperativo()</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoTotal += $1.000</code> (costo fijo por centro)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>obtenerCostoTotal()</code></td></tr>
-              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">VisitorCalculoOcupacion</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Acumula paquetes y capacidad del punto</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Solo cuenta el nodo (sin paquetes)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>(paquetes × 100) / capacidad</code> → %</td></tr>
-              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">VisitorBusquedaPuntosCriticos</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Agrega al listado si ocupación ≥ 90 %</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Solo cuenta el nodo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>List&lt;String&gt;</code> de nombres críticos</td></tr>
-              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">VisitorGeneradorReporte</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">"Punto: nombre paquetes=X"</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">"Centro: nombre"</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>String</code> reporte completo del árbol</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp);word-break:break-word;overflow-wrap:anywhere">VisitorCalculoCostoOperativo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted);word-break:break-word"><code>costoTotal += punto.obtenerCostoOperativo()</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoTotal += $1.000</code> (costo fijo por centro)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted);word-break:break-word"><code>obtenerCostoTotal()</code></td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp);word-break:break-word;overflow-wrap:anywhere">VisitorCalculoOcupacion</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Acumula paquetes y capacidad del punto</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Solo cuenta el nodo (sin paquetes)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted);word-break:break-word"><code>(paquetes × 100) / capacidad</code> → %</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp);word-break:break-word;overflow-wrap:anywhere">VisitorBusquedaPuntosCriticos</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Agrega al listado si ocupación ≥ 90 %</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Solo cuenta el nodo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted);word-break:break-word"><code>List&lt;String&gt;</code> de nombres críticos</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp);word-break:break-word;overflow-wrap:anywhere">VisitorGeneradorReporte</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">"Punto: nombre paquetes=X"</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">"Centro: nombre"</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted);word-break:break-word"><code>String</code> reporte completo del árbol</td></tr>
             </tbody>
           </table>
 
