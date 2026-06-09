@@ -741,7 +741,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
 <section data-label="CU-04 asignarRuta" data-screen-label="14 CU-04 — Asignar hoja de ruta">
   <div class="frame">
     <div class="head" style="margin-bottom:20px">
-      <div class="eyebrow">Controller · Memento · Strategy · State · Observer</div>
+      <div class="eyebrow">Controller · Strategy · State · Observer · Unit of Work</div>
       <h2 class="title">Asignar hoja de ruta</h2>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1;align-content:start">
@@ -755,17 +755,8 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         </div>
       </div>
 
-      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">2</div>
-        <div class="h3" style="font-size:24px">Snapshot</div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Antes de modificar nada, <code>MementoEnvio</code> guarda un snapshot inmutable — permite restaurar si algo falla</div>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
-          <span class="band-tag">Memento</span>
-        </div>
-      </div>
-
       <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">3</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">2</div>
         <div class="h3" style="font-size:24px">Elegir vehículo</div>
         <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>AsignadorDeVehiculos</code> selecciona el vehículo para la ruta — criterio intercambiable: PorCapacidad o PorDisponibilidad</div>
         <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
@@ -774,7 +765,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
       </div>
 
       <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">4</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">3</div>
         <div class="h3" style="font-size:24px">Elegir ruta</div>
         <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>CalculadorDeRuta</code> elige la ruta y le asigna el vehículo — la ruta lo necesita para calcular su costo por km</div>
         <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
@@ -783,7 +774,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
       </div>
 
       <div class="panel" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">5</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">4</div>
         <div class="h3" style="font-size:24px">Transición</div>
         <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>cambiarEstado()</code> fuerza EN_TRANSITO — la validación vive en los métodos de comportamiento</div>
         <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
@@ -792,11 +783,20 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
       </div>
 
       <div class="panel" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">6</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">5</div>
         <div class="h3" style="font-size:24px">Notificar</div>
         <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>cambiarEstado()</code> dispara <code>notificarObservadores()</code> — Dashboard, SMS y auditoría reciben el evento automáticamente</div>
         <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
           <span class="band-tag">Observer</span>
+        </div>
+      </div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">6</div>
+        <div class="h3" style="font-size:24px">Persistir</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>unitOfWork.commit()</code> persiste el envío modificado — si algo falló antes, <code>rollback()</code> deshace todo atomicamente</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Unit of Work</span>
         </div>
       </div>
 
