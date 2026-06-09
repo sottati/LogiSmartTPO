@@ -744,18 +744,104 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
       <div class="eyebrow">Controller · Memento · Strategy · State · Observer</div>
       <h2 class="title">Asignar hoja de ruta</h2>
     </div>
-    <div id="seq-root-cu04" class="seq"></div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:14px;flex:1;align-content:start">
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">1</div>
+        <div class="h3" style="font-size:24px">Controller</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Recibe <code>asignarRuta()</code> y orquesta — punto de entrada único, sin lógica en el dominio del usuario</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">GRASP Controller</span>
+        </div>
+      </div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">2</div>
+        <div class="h3" style="font-size:24px">Snapshot</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Antes de modificar nada, <code>MementoEnvio</code> guarda un snapshot inmutable — permite restaurar si algo falla</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Memento</span>
+        </div>
+      </div>
+
+      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">3</div>
+        <div class="h3" style="font-size:24px">Elegir vehículo</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>AsignadorDeVehiculos</code> selecciona por capacidad o disponibilidad — criterio intercambiable sin tocar el Controller</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Strategy</span>
+        </div>
+      </div>
+
+      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">4</div>
+        <div class="h3" style="font-size:24px">Elegir ruta</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>CalculadorDeRuta</code> elige entre candidatas — MasCercana, MasBarata o MenosCongestionada</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Strategy</span>
+        </div>
+      </div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">5</div>
+        <div class="h3" style="font-size:24px">Transición</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>cambiarEstado()</code> fuerza EN_TRANSITO — la validación vive en los métodos de comportamiento</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">State</span>
+        </div>
+      </div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">6</div>
+        <div class="h3" style="font-size:24px">Notificar</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>cambiarEstado()</code> dispara <code>notificarObservadores()</code> — Dashboard, SMS y auditoría reciben el evento automáticamente</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Observer</span>
+        </div>
+      </div>
+
+    </div>
   </div>
 </section>
 
 <!-- ════════ 18 · CU-07 — SEGUIR EL ENVÍO ════════ -->
 <section data-label="CU-07 State+Observer" data-screen-label="15 CU-07 — Seguir el envío en vivo">
   <div class="frame">
-    <div class="head" style="margin-bottom:20px">
+    <div class="head" style="margin-bottom:24px">
       <div class="eyebrow">State + Observer · el envío ni sabe quién escucha</div>
       <h2 class="title">Seguir el envío en vivo</h2>
     </div>
-    <div id="seq-root-cu07" class="seq"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1;align-content:start">
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">1</div>
+        <div class="h3" style="font-size:24px">GPS tracking apilado</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>DecoradorRastreoGPS</code> envuelve al <code>Envio</code> sin modificar su clase base — la interfaz es idéntica para el resto del sistema</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Decorator</span>
+        </div>
+      </div>
+
+      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">2</div>
+        <div class="h3" style="font-size:24px">Transición válida</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>entregar()</code> delega en <code>EstadoEnTransito</code> — valida que la transición a EN_REPARTO sea legal sin un <code>switch</code> gigante</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">State</span>
+          <span class="band-tag">EN_TRANSITO → EN_REPARTO</span>
+        </div>
+      </div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">3</div>
+        <div class="h3" style="font-size:24px">Observer · tres suscriptores</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>notificarObservadores()</code> propaga el evento a todos: Dashboard refresca el mapa, cliente recibe SMS, Centro actualiza ocupación — el Envío ni sabe quién escucha</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Observer</span>
+        </div>
+      </div>
+
+    </div>
   </div>
 </section>
 
