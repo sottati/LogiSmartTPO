@@ -993,6 +993,24 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-chain"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Cadena de validadores — orden fail-fast de menor a mayor costo</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:30%"/><col style="width:70%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">validador</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">condición que corta la cadena (devuelve false)</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ValidadorDatos</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">origen vacío · destino vacío · peso ≤ 0</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ValidadorSeguridad</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">destino contiene "Restringido"</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ValidadorPago</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">costo ≤ 0 · medioPago nulo o vacío</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ValidadorCapacidad</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">sin espacio disponible para el peso del envío</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ValidadorInventario</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">stock insuficiente para algún productoId de las órdenes</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:.71rem;color:var(--muted);margin:.4rem 0 .75rem">Si alguno devuelve <code>false</code>, el siguiente <strong>no se invoca</strong>. El orden es intencional: los validadores más baratos computacionalmente van primero.</p>
+
           <div class="pat-classes">
             <span class="class-chip">CadenaValidadores</span>
             <span class="class-chip">ValidadorDatos</span>
@@ -1013,6 +1031,22 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-command"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Comandos implementados — ejecutar y deshacer</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:28%"/><col style="width:36%"/><col style="width:36%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">comando</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">ejecutar()</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">deshacer()</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ComandoCrearEnvio</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>servicio.crearEnvio(envio)</code> → guarda <code>numeroSeguimiento</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>servicio.cancelarEnvio(numeroSeguimiento)</code></td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ComandoCancelarEnvio</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>servicio.cancelarEnvio(numeroSeguimiento)</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>servicio.reactivarEnvio(numeroSeguimiento)</code></td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:.71rem;color:var(--muted);margin:.4rem 0 .75rem"><code>ColaComandos</code> encola, ejecuta y deshace sin conocer la implementación concreta — el servicio que los invoca no sabe si está creando o cancelando.</p>
+
           <div class="pat-classes">
             <span class="class-chip">Comando</span>
             <span class="class-chip">ColaComandos</span>
@@ -1197,6 +1231,37 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-memento"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">MementoEnvio — campos capturados en el snapshot</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">campo</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">tipo</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">nota</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">estado</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">String</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">nombre del estado GoF al momento del snapshot</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">origen · destino</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">String</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">atributos logísticos congelados</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">peso · costo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">double</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">atributos logísticos congelados</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">timestamp</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">long</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>System.currentTimeMillis()</code> — trazabilidad de auditoría</td></tr>
+            </tbody>
+          </table>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">HistorialEnvios — navegación bidireccional</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4;table-layout:fixed">
+            <colgroup><col style="width:38%"/><col style="width:62%"/></colgroup>
+            <thead><tr style="background:var(--bg)">
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">operación</th>
+              <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">comportamiento</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">guardarEstado(Envio)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">agrega snapshot; si el cursor no está al final, descarta los estados posteriores antes de insertar</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">irAlEstadoAnterior(Envio)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">cursor-- y restaura; no hace nada si ya está en el primer estado</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">irAlEstadoSiguiente(Envio)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">cursor++ y restaura; no hace nada si ya está en el último estado (redo)</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">irAlEstado(int, Envio)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">acceso directo a cualquier índice del historial — para auditoría</td></tr>
+            </tbody>
+          </table>
+
           <div class="pat-classes">
             <span class="class-chip">Envio</span>
             <span class="class-chip">MementoEnvio</span>
