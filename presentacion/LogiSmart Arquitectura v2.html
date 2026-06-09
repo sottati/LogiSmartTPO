@@ -431,51 +431,6 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
   </div>
 </section>
 
-<!-- ════════ 08 · ROL ENUM · 25 BOOLEANOS → UNA LÍNEA ════════ -->
-<section data-label="El Rol enum" data-screen-label="08 El Rol enum">
-  <div class="frame">
-    <div class="head" style="margin-bottom:16px">
-      <div class="eyebrow">Decisión de refactoring — GRASP Information Expert</div>
-      <h2 class="title">25 booleanos dispersos, un enum centralizado</h2>
-    </div>
-    <div style="display:flex;gap:28px;align-items:center;margin-bottom:20px">
-      <div class="dp-metric">
-        <div class="dp-num" style="color:var(--cat-crea)">25</div>
-        <div class="dp-label">booleanos<br/>en 5 clases</div>
-      </div>
-      <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent)">→</div>
-      <div class="dp-metric">
-        <div class="dp-num" style="color:var(--ok)">1</div>
-        <div class="dp-label">enum · fuente<br/>de verdad única</div>
-      </div>
-      <div class="callout info" style="flex:1;margin:0">
-        <span class="ic">▸</span>
-        <div>Un permiso nuevo: antes, <strong>5 archivos</strong> a editar. Ahora, <strong>una columna más en el enum</strong>. El cambio se realizó con la batería de tests en verde — sin miedo a romper nada.</div>
-      </div>
-    </div>
-    <div class="cols c2" style="flex:1;gap:20px">
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="h3" style="color:var(--muted)">Antes — duplicado en 5 clases</div>
-        <pre class="dp-pre" style="flex:1">// AdminEmpresa.java
-private boolean puedeCrearEnvio    = true;
-private boolean puedeAsignarRuta   = false;
-private boolean puedeVerReportes   = true;
-// ídem en Transportista, ClienteFinal…
-// → 5 clases × 5 permisos = 25 booleans</pre>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="h3" style="color:var(--accent-strong)">Después — GRASP Expert centralizado</div>
-        <pre class="dp-pre" style="flex:1">// Rol.java — única fuente de verdad
-//                crear  asig  rep   flota  admin
-OPERADOR         (true,  true,  true,  true,  false),
-ADMIN_EMPRESA    (true,  false, true,  false, false),
-ADMIN_PLATAFORMA (true,  true,  true,  true,  true ),
-CLIENTE          (false, false, false, false, false),
-TRANSPORTISTA    (false, false, false, false, false);</pre>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ════════ 09 · APLICACIÓN → ALTA DISPONIBILIDAD ════════ -->
 <section data-label="Alta disponibilidad" data-screen-label="09 Aplicación · Alta disponibilidad">
@@ -556,51 +511,6 @@ boolean validar(ContextoValidacion ctx) {
   </div>
 </section>
 
-<!-- ════════ 10 · DOMINIO · ENVÍO EL CORAZÓN ════════ -->
-<section data-label="Envío, el corazón" data-screen-label="10 Dominio · Envío el corazón">
-  <div class="frame">
-    <div class="head" style="margin-bottom:6px">
-      <div class="eyebrow">Capa 03 · Dominio</div>
-      <h2 class="title"><code style="background:none;padding:0;color:var(--accent)">Envio</code>, el corazón del negocio</h2>
-    </div>
-    <div style="display:flex;justify-content:center;margin:0">
-      <div style="position:relative;width:1180px;height:500px">
-        <svg class="heart-svg" viewBox="0 0 1180 500" preserveAspectRatio="xMidYMid meet">
-          <line class="heart-edge" x1="590" y1="250" x2="255" y2="100"/>
-          <line class="heart-edge" x1="590" y1="250" x2="925" y2="100"/>
-          <line class="heart-edge" x1="590" y1="250" x2="120" y2="278"/>
-          <line class="heart-edge" x1="590" y1="250" x2="1060" y2="278"/>
-          <line class="heart-edge" x1="590" y1="250" x2="290" y2="438"/>
-          <line class="heart-edge" x1="590" y1="250" x2="890" y2="438"/>
-        </svg>
-        <div class="heart-core" style="position:absolute;left:590px;top:250px;transform:translate(-50%,-50%)">
-          <div class="hc-l">dominio · entidad</div>
-          <div class="hc-n">Envio</div>
-        </div>
-        <div class="heart-sat" data-hpat="builder"   style="left:255px;top:100px"><div class="hs-p">Builder</div><div class="hs-d">se construye paso a paso</div></div>
-        <div class="heart-sat" data-hpat="prototype" style="left:925px;top:100px"><div class="hs-p">Prototype</div><div class="hs-d">se clona en lotes</div></div>
-        <div class="heart-sat" data-hpat="state"     style="left:120px;top:278px"><div class="hs-p">State</div><div class="hs-d">evoluciona de estado</div></div>
-        <div class="heart-sat" data-hpat="strategy"  style="left:1060px;top:278px"><div class="hs-p">Strategy</div><div class="hs-d">calcula su costo</div></div>
-        <div class="heart-sat" data-hpat="memento"   style="left:290px;top:438px"><div class="hs-p">Memento</div><div class="hs-d">guarda su historial</div></div>
-        <div class="heart-sat" data-hpat="observer"  style="left:890px;top:438px"><div class="hs-p">Observer</div><div class="hs-d">notifica sus cambios</div></div>
-      </div>
-    </div>
-    <div class="heart-detail" id="heart-detail">
-      <div class="hd-idle">
-        <span class="ic">▸</span>
-        <div>Seleccioná un patrón para ver su rol en <code>Envio</code> — o seguí al slide siguiente para ver State, Observer y Memento en detalle.</div>
-      </div>
-      <div class="hd-active">
-        <div class="hd-left">
-          <div class="hd-name"></div>
-          <div class="hd-cls"></div>
-          <div class="hd-desc"></div>
-        </div>
-        <div class="hd-code"><pre class="hd-pre"></pre></div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ════════ 11 · DOMINIO → SEGUIMIENTO EN TIEMPO REAL ════════ -->
 <section data-label="Tiempo real" data-screen-label="11 Dominio · Seguimiento en tiempo real">
