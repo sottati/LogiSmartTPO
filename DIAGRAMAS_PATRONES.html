@@ -893,18 +893,43 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">26</span> Mediator</div>
-            <div class="pat-desc"><code>MediadorEnviosConcreto</code> coordina auditoría, pago y notificación cuando un envío cambia de estado. Los subsistemas no se conocen entre sí: solo conocen al mediador.</div>
+            <div class="pat-desc"><code>MediadorEnviosConcreto</code> orquesta un pipeline de 5 etapas para procesar un envío. Cada componente solo conoce al mediador: cuando termina su trabajo publica un evento y el <code>switch</code> del mediador decide quién actúa a continuación. Si querés cambiar el orden o agregar un paso, tocás únicamente el mediador.</div>
           </div>
           <span class="hito-pill">Hito 11</span>
         </div>
         <div class="pat-card-body">
-          <div class="diagram-wrap"><div class="mermaid" id="d-mediator"></div></div>
-          <div class="pat-classes">
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em;">Pipeline completo — happy path</p>
+          <div class="diagram-wrap" style="margin-bottom:.75rem"><div class="mermaid" id="d-mediator"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Eventos del pipeline y quién los procesa</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead>
+              <tr style="background:var(--bg)">
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">#</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">Evento</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Quién lo publica</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Qué hace el mediador</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-weight:600;color:var(--muted)">1</td><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ENVIO_CREADO</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">CentroDistribucionMediator</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">audita → llama a validador.validar()</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-weight:600;color:var(--muted)">2a</td><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">VALIDACION_OK</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">ValidadorEnvioMediator</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">audita → llama a pago.procesarPago()</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-weight:600;color:var(--muted)">2b</td><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">VALIDACION_FALLIDA</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">ValidadorEnvioMediator</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">audita → pipeline se detiene (pago nunca se ejecuta)</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-weight:600;color:var(--muted)">3</td><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">PAGO_CONFIRMADO</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">SistemaPago</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">audita → llama a notificador.enviarConfirmacion()</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-weight:600;color:var(--muted)">4</td><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">NOTIFICACION_ENVIADA</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">SistemaNotificacion</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">audita → llama a centro.registrarEnvio()</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-weight:600;color:var(--muted)">5</td><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ENVIO_REGISTRADO</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">CentroDistribucionMediator</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">audita → fin del pipeline</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:.76rem;color:var(--muted);margin-top:.35rem"><strong>Clave:</strong> <code>ValidadorEnvioMediator</code> no sabe que existe <code>SistemaPago</code>. <code>SistemaPago</code> no sabe que existe <code>SistemaNotificacion</code>. Cada uno solo publica un evento y el <code>switch</code> del mediador decide qué pasa después.</p>
+
+          <div class="pat-classes" style="margin-top:.75rem">
             <span class="class-chip">MediadorEnvios</span>
             <span class="class-chip">MediadorEnviosConcreto</span>
-            <span class="class-chip">SistemaAuditoria</span>
+            <span class="class-chip">CentroDistribucionMediator</span>
+            <span class="class-chip">ValidadorEnvioMediator</span>
             <span class="class-chip">SistemaPago</span>
             <span class="class-chip">SistemaNotificacion</span>
+            <span class="class-chip">SistemaAuditoria</span>
           </div>
         </div>
       </div>
@@ -1530,16 +1555,30 @@ const DIAGRAMS = {
     Note over S,IL: mismo código cliente — ColeccionLista`,
 
 'mediator': `sequenceDiagram
-    participant E as Envio
+    participant C as CentroDistribucionMediator
     participant M as MediadorEnviosConcreto
     participant A as SistemaAuditoria
+    participant V as ValidadorEnvioMediator
     participant P as SistemaPago
     participant N as SistemaNotificacion
-    E->>M: notificar(ENTREGADO)
-    M->>A: registrarEntrega(envio)
-    M->>P: confirmarCobro(envio)
-    M->>N: notificarCliente(envio)
-    Note over M: Coordinador central<br/>Subsistemas no se conocen`,
+
+    C->>M: notificar("ENVIO_CREADO", envio)
+    M->>A: registrar("ENVIO_CREADO")
+    M->>V: validar(envio)
+    Note right of V: V no conoce a P ni a N
+    V->>M: notificar("VALIDACION_OK", envio)
+    M->>A: registrar("VALIDACION_OK")
+    M->>P: procesarPago(envio)
+    Note right of P: P no conoce a N ni a C
+    P->>M: notificar("PAGO_CONFIRMADO", envio)
+    M->>A: registrar("PAGO_CONFIRMADO")
+    M->>N: enviarConfirmacion(envio)
+    N->>M: notificar("NOTIFICACION_ENVIADA", envio)
+    M->>A: registrar("NOTIFICACION_ENVIADA")
+    M->>C: registrarEnvio(envio)
+    C->>M: notificar("ENVIO_REGISTRADO", envio)
+    M->>A: registrar("ENVIO_REGISTRADO")
+    Note over M: switch(evento) decide quién sigue`,
 
 'memento': `sequenceDiagram
     participant S as Servicio
