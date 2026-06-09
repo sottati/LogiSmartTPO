@@ -393,7 +393,7 @@
         <div class="pcard-name">Controller</div>
         <div class="pcard-idea">Una sola puerta de entrada que valida quién pide qué, y delega.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">aplicacion/ · LogiSmartController</div>
+          <div class="pcard-classes">LogiSmartController</div>
           <div class="pcard-why">Recibe las solicitudes de la interfaz, <strong>valida permisos</strong> e inyecta dependencias por constructor. No calcula ni persiste.</div>
           <div class="pcard-trade"><b>Trade-off:</b> la capa queda deliberadamente delgada — exige disciplina para no filtrar lógica de negocio hacia arriba.</div>
         </div></div>
@@ -404,7 +404,7 @@
         <div class="pcard-name">Rol · Polymorphism</div>
         <div class="pcard-idea">El acceso de cada rol resuelto con polimorfismo, no con condicionales.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">dominio/ · Rol (enum) · IPermisos</div>
+          <div class="pcard-classes">Rol (enum) · IPermisos</div>
           <div class="pcard-why">El enum <code>Rol</code> centraliza la matriz de permisos <strong>5×5</strong> y elimina 25 booleanos duplicados. Evita <code>instanceof</code> y <code>switch</code>.</div>
           <div class="pcard-trade"><b>Trade-off:</b> la matriz vive en un único enum; un rol radicalmente nuevo obliga a extenderla — aceptable porque los 5 roles del SaaS son estables.</div>
         </div></div>
@@ -447,7 +447,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Facade</div>
         <div class="pcard-idea">Una interfaz simple sobre cinco subsistemas que se coordinan en orden.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">aplicacion/ · ServicioLogisticaFacade</div>
+          <div class="pcard-classes">ServicioLogisticaFacade</div>
           <div class="pcard-why"><code>crearEnvio()</code> orquesta inventario, pago, rastreo, notificación y reportes en el orden correcto. El cliente no conoce ese orden.</div>
           <div class="pcard-trade"><b>Trade-off:</b> riesgo de «God Object» — por eso la fachada <strong>solo coordina y delega</strong>, nunca calcula ni valida ella misma.</div>
         </div></div>
@@ -458,7 +458,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Chain of Responsibility</div>
         <div class="pcard-idea">Validación en cadena que corta en el primer rechazo.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">chain/ · CadenaValidadores</div>
+          <div class="pcard-classes">CadenaValidadores</div>
           <div class="pcard-why">5 validadores en orden de costo: datos → inventario → pago → seguridad → capacidad. Corta apenas uno falla (fail-fast).</div>
           <div class="pcard-trade"><b>Trade-off:</b> el orden importa — agregar un validador es una clase nueva, pero hay que ubicarlo bien en la cadena.</div>
         </div></div>
@@ -534,7 +534,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">State</div>
         <div class="pcard-idea">El envío evoluciona solo, siguiendo su máquina de estados.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">state/ · Confirmado → EnTránsito → EnReparto → Entregado</div>
+          <div class="pcard-classes">Confirmado → EnTránsito → EnReparto → Entregado</div>
           <div class="pcard-why">Cada estado decide sus transiciones válidas; las inválidas se rechazan solas. Sin State, <code>entregar()</code> sería un <code>switch</code> gigante.</div>
           <div class="pcard-trade"><b>Trade-off:</b> más clases que un condicional, pero las reglas quedan explícitas y agregar «EN_ADUANA» es una clase nueva.</div>
         </div></div>
@@ -545,7 +545,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Observer</div>
         <div class="pcard-idea">Al cambiar de estado, el envío notifica a sus suscriptores.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">observer/ · Dashboard · Auditoría · Notificaciones</div>
+          <div class="pcard-classes">Dashboard · Auditoría · Notificaciones</div>
           <div class="pcard-why">El cambio <code>CONFIRMADO → EN_TRÁNSITO</code> avisa solo. Agregar «notificar al teléfono» es suscribir un observador, sin tocar <code>Envio</code>.</div>
           <div class="pcard-trade"><b>Trade-off:</b> un observador que falla puede cortar al resto — se aísla cada notificación y, a escala, se haría asíncrona.</div>
         </div></div>
@@ -556,7 +556,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Memento</div>
         <div class="pcard-idea">Una foto inmutable del envío para restaurar o comparar.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">memento/ · MementoEnvio · HistorialEnvios</div>
+          <div class="pcard-classes">MementoEnvio · HistorialEnvios</div>
           <div class="pcard-why">Snapshot de solo lectura (estado, origen, destino, costo, timestamp) sin exponer los campos privados de <code>Envio</code>.</div>
           <div class="pcard-trade"><b>Trade-off:</b> guardar historial cuesta memoria — se conserva solo lo necesario para auditar y reconstruir.</div>
         </div></div>
@@ -581,7 +581,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Repository + Data Mapper</div>
         <div class="pcard-idea">Acceso uniforme que esconde si el dato viene de memoria o de SQL.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">persistencia/ · RepositorioEnvios · EnvioMapper</div>
+          <div class="pcard-classes">RepositorioEnvios · EnvioMapper</div>
           <div class="pcard-why">El <code>Envio</code> se reconstruye vía <strong>Builder</strong>, reutilizando el dominio existente. Cambiar el backend no afecta al negocio.</div>
           <div class="pcard-trade"><b>Trade-off:</b> reutilizar el dominio vs un registro plano introduce desfasaje — mitigado declarando el Composite como única fuente de verdad.</div>
         </div></div>
@@ -592,7 +592,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Proxy + Lazy Load</div>
         <div class="pcard-idea">Cachea consultas y difiere la carga hasta que se necesita.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">proxy/ · ProxyRepositorioEnvios</div>
+          <div class="pcard-classes">ProxyRepositorioEnvios</div>
           <div class="pcard-why">Consultar el mismo envío 10 veces no debe pegarle 10 veces a la base. Es transparente: el cliente no lo distingue del real.</div>
           <div class="pcard-trade"><b>Trade-off:</b> la caché puede quedar obsoleta — aceptable para lecturas de tracking; se invalida en cada escritura.</div>
         </div></div>
@@ -603,7 +603,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Unit of Work</div>
         <div class="pcard-idea">Agrupa los cambios y los confirma en una transacción atómica.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">persistencia/ · UnitOfWork</div>
+          <div class="pcard-classes">UnitOfWork</div>
           <div class="pcard-why">Confirma todos los cambios juntos o ninguno. Garantiza coherencia ante un fallo a mitad de una operación.</div>
           <div class="pcard-trade"><b>Trade-off:</b> mantener la unidad de trabajo agrega bookkeeping — justificado por la criticidad del dato logístico.</div>
         </div></div>
@@ -629,7 +629,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Adapter</div>
         <div class="pcard-idea">Traduce APIs externas incompatibles a un contrato propio.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">adapter/ · DHL · FedEx · UPS · PayPal · Stripe</div>
+          <div class="pcard-classes">DHL · FedEx · UPS · PayPal · Stripe</div>
           <div class="pcard-why">Las APIs externas son cajas negras con firmas y unidades distintas. El adapter las lleva a <code>ProveedorEnvio</code> / <code>ProveedorPago</code>.</div>
           <div class="pcard-trade"><b>Trade-off:</b> cada proveedor nuevo es un adapter nuevo — pero el dominio nunca cambia al cambiar de proveedor.</div>
         </div></div>
@@ -640,7 +640,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Abstract Factory</div>
         <div class="pcard-idea">Familias de objetos compatibles, nunca piezas mezcladas.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">abstractfactory/ · FactoryArgentina · FactoryBrasil</div>
+          <div class="pcard-classes">FactoryArgentina · FactoryBrasil</div>
           <div class="pcard-why">Cada fábrica produce un trío coherente: vehículo + calculador (IVA 21% vs ICMS 12%) + proveedor de mapas. Nunca un auto argentino con cálculo brasileño.</div>
           <div class="pcard-trade"><b>Trade-off:</b> agregar una región es una familia entera nueva — el costo de garantizar coherencia regional.</div>
         </div></div>
@@ -651,7 +651,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Bridge</div>
         <div class="pcard-idea">Separa qué se reporta del cómo se formatea.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">bridge/ · ReporteEnvios · ReporteIngresos · ReporteDesempeno · PDF · Excel · JSON · CSV</div>
+          <div class="pcard-classes">ReporteEnvios · ReporteIngresos · ReporteDesempeno · PDF · Excel · JSON · CSV</div>
           <div class="pcard-why"><code>Reporte</code> define el contenido; <code>GeneradorReporte</code> define el formato. Agregar XML es 1 clase nueva. Agregar Auditoría es 1 clase nueva. Sin Bridge serían 12 subclases combinadas.</div>
           <div class="pcard-trade"><b>Trade-off:</b> indirección extra — el reporte delega el formateo en lugar de producir la salida directamente.</div>
         </div></div>
@@ -662,7 +662,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Flyweight</div>
         <div class="pcard-idea">Comparte ubicaciones inmutables que se repiten muchísimo.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">flyweight/ · Ubicacion · FabricaUbicaciones</div>
+          <div class="pcard-classes">Ubicacion · FabricaUbicaciones</div>
           <div class="pcard-why">Origen y destino se repiten («Buenos Aires», «Córdoba»). 10.000 envíos a 3 ciudades = 3 instancias compartidas.</div>
           <div class="pcard-trade"><b>Trade-off:</b> exige inmutabilidad estricta (campos <code>final</code>) para ser seguro de compartir entre hilos.</div>
         </div></div>
