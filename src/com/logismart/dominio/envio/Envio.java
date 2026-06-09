@@ -1,7 +1,9 @@
 package com.logismart.dominio.envio;
 
 import com.logismart.dominio.empresa.Empresa;
-import com.logismart.infraestructura.comportamiento.state.EstadoConfirmado;
+import com.logismart.infraestructura.comportamiento.state.EstadoEnCurso;
+import com.logismart.infraestructura.comportamiento.state.EstadoCerrado;
+import com.logismart.infraestructura.comportamiento.state.EstadoPendiente;
 import com.logismart.infraestructura.comportamiento.state.EstadoEnvio;
 import com.logismart.infraestructura.comportamiento.strategy.EstrategiaCalculoCosto;
 
@@ -21,7 +23,6 @@ public class Envio implements Cloneable {
 	// ─── Campos existentes ────────────────────────────────
 	private String id;
 	private Empresa empresa;
-	private String estado;
 	private String prioridad;
 	private LocalDateTime fechaProgramada;
 	private List<Orden> ordenes;
@@ -48,7 +49,7 @@ public class Envio implements Cloneable {
 	private final java.util.List<ObservadorEnvio> observadores = new java.util.ArrayList<>();
 
 	// ─── Campos Hito 12 (State / Strategy) ───────────────────────────────────
-	private EstadoEnvio estadoGoF = new EstadoConfirmado();
+	private EstadoEnvio estadoGoF = new EstadoPendiente();
 	private String tipo;
 	private EstrategiaCalculoCosto estrategia;
 
@@ -56,7 +57,7 @@ public class Envio implements Cloneable {
 	public Envio(String id, Empresa empresa, String prioridad, LocalDateTime fechaProgramada) {
 		this.id = id;
 		this.empresa = empresa;
-		this.estado = "PENDIENTE";
+		this.estadoGoF = new EstadoPendiente();
 		this.prioridad = prioridad;
 		this.fechaProgramada = fechaProgramada;
 		this.ordenes = new ArrayList<>();
@@ -68,7 +69,7 @@ public class Envio implements Cloneable {
 	private Envio(EnvioBuilder builder) {
 		this.id = builder.id;
 		this.empresa = null;
-		this.estado = builder.estado;
+		this.estadoGoF = EstadoEnvio.fromNombre(builder.estado);
 		this.prioridad = "MEDIA";
 		this.fechaProgramada = null;
 		this.ordenes = new ArrayList<>();
@@ -164,7 +165,7 @@ public class Envio implements Cloneable {
 	}
 
 	public String getEstado() {
-		return estado;
+		return estadoGoF.obtenerNombre();
 	}
 
 	public String getPrioridad() {
@@ -197,18 +198,15 @@ public class Envio implements Cloneable {
 	}
 
 	public void iniciar() {
-		estado = "EN_CURSO";
-		notificarObservadores();
+		cambiarEstado(new EstadoEnCurso());
 	}
 
 	public void cancelar() {
-		estado = "CANCELADO";
-		notificarObservadores();
+		estadoGoF.cancelar(this);
 	}
 
 	public void cerrar() {
-		estado = "CERRADO";
-		notificarObservadores();
+		cambiarEstado(new EstadoCerrado());
 	}
 
 	// ─── Getters del Builder ─────────────────────────────────────────────────
@@ -239,7 +237,7 @@ public class Envio implements Cloneable {
 	 * a través de este método.
 	 */
 	public MementoEnvio crearMemento() {
-		return new MementoEnvio(estado, origen, destino, peso, costo);
+		return new MementoEnvio(estadoGoF.obtenerNombre(), origen, destino, peso, costo);
 	}
 
 	/**
@@ -247,7 +245,7 @@ public class Envio implements Cloneable {
 	 * Equivalente al "undo" del patrón Memento.
 	 */
 	public void restaurarDesdeMemento(MementoEnvio memento) {
-		this.estado  = memento.obtenerEstado();
+		this.estadoGoF = EstadoEnvio.fromNombre(memento.obtenerEstado());
 		this.origen  = memento.obtenerOrigen();
 		this.destino = memento.obtenerDestino();
 		this.peso    = memento.obtenerPeso();
@@ -255,25 +253,13 @@ public class Envio implements Cloneable {
 	}
 
 	/** Alias solicitado por la consigna - equivalente a getEstado(). */
-	public String obtenerEstado() { return estado; }
-
-	/**
-	 * Cambia el estado del Envío y notifica a todos los observadores suscritos.
-	 * Unifica Memento y Observer: cualquier cambio de estado puede capturarse
-	 * (Memento) y propagarse automáticamente (Observer).
-	 */
-	public void cambiarEstado(String nuevoEstado) {
-		this.estado = nuevoEstado;
-		System.out.println("[Envio " + id + "] Estado → " + nuevoEstado);
-		notificarObservadores();
-	}
+	public String obtenerEstado() { return estadoGoF.obtenerNombre(); }
 
 	// ─── Hito 12: State ──────────────────────────────────────────────────────
 
 	public void cambiarEstado(EstadoEnvio nuevoEstado) {
 		this.estadoGoF = nuevoEstado;
-		this.estado = nuevoEstado.obtenerNombre();
-		System.out.println("[Envio " + id + "] Estado GoF → " + nuevoEstado.obtenerNombre());
+		System.out.println("[Envio " + id + "] Estado → " + nuevoEstado.obtenerNombre());
 		notificarObservadores();
 	}
 
@@ -328,4 +314,3 @@ public class Envio implements Cloneable {
 			 + "', peso=" + peso + ", fragil=" + fragil + "}";
 	}
 }
-

@@ -975,7 +975,7 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">29</span> State</div>
-            <div class="pat-desc">El ciclo de vida de <code>Envio</code> son 7 estados concretos. Cada estado rechaza transiciones inválidas. Sin este patrón: un <code>switch</code> gigante en cada operación.</div>
+            <div class="pat-desc">El ciclo de vida de <code>Envio</code> tiene 9 estados concretos. <code>getEstado()</code> se deriva siempre de <code>estadoGoF.obtenerNombre()</code>; no existe campo String paralelo. Cada estado rechaza transiciones inválidas. <code>EstadoEnvio.fromNombre()</code> permite reconstruir el estado GoF desde un snapshot (Memento).</div>
           </div>
           <span class="hito-pill">Hito 10</span>
         </div>
@@ -983,10 +983,15 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-state"></div></div>
           <div class="pat-classes">
             <span class="class-chip">EstadoEnvio</span>
+            <span class="class-chip">EstadoPendiente</span>
             <span class="class-chip">EstadoConfirmado</span>
             <span class="class-chip">EstadoEnTransito</span>
+            <span class="class-chip">EstadoEnReparto</span>
+            <span class="class-chip">EstadoRetenido</span>
             <span class="class-chip">EstadoEntregado</span>
             <span class="class-chip">EstadoCancelado</span>
+            <span class="class-chip">EstadoEnCurso</span>
+            <span class="class-chip">EstadoCerrado</span>
           </div>
         </div>
       </div>
@@ -1608,15 +1613,26 @@ const DIAGRAMS = {
     Note over E: Notifica sin conocer<br/>a sus observadores`,
 
 'state': `stateDiagram-v2
-    [*] --> Confirmado
-    Confirmado --> Procesado : procesarEnvio()
-    Procesado --> EnTransito : despachar()
-    EnTransito --> EnReparto : llegar()
-    EnReparto --> Entregado : entregar()
-    Entregado --> [*]
-    Confirmado --> Cancelado : cancelar()
-    EnTransito --> Retenido : retener()
-    Retenido --> EnTransito : liberar()`,
+    [*] --> PENDIENTE
+    PENDIENTE --> CONFIRMADO : validar()
+    PENDIENTE --> CANCELADO : cancelar()
+    CONFIRMADO --> EN_TRANSITO : validar()
+    CONFIRMADO --> CANCELADO : cancelar()
+    CONFIRMADO --> RETENIDO : retener()
+    EN_TRANSITO --> EN_REPARTO : entregar()
+    EN_TRANSITO --> RETENIDO : retener()
+    EN_REPARTO --> ENTREGADO : entregar()
+    EN_REPARTO --> EN_TRANSITO : devolver()
+    EN_REPARTO --> RETENIDO : retener()
+    ENTREGADO --> CONFIRMADO : devolver()
+    RETENIDO --> EN_TRANSITO : devolver()
+    PENDIENTE --> EN_CURSO : iniciar()
+    EN_CURSO --> EN_REPARTO : entregar()
+    EN_CURSO --> CANCELADO : cancelar()
+    EN_CURSO --> RETENIDO : retener()
+    ENTREGADO --> CERRADO : cerrar()
+    CANCELADO --> [*]
+    CERRADO --> [*]`,
 
 'strategy': `sequenceDiagram
     participant S as Servicio

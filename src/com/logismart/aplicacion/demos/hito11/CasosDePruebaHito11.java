@@ -18,6 +18,10 @@ import com.logismart.infraestructura.comportamiento.memento.HistorialEnvios;
 import com.logismart.infraestructura.comportamiento.observer.CentroDistribucionObservador;
 import com.logismart.infraestructura.comportamiento.observer.DashboardObservador;
 import com.logismart.infraestructura.comportamiento.observer.SistemaNotificacionObservador;
+import com.logismart.infraestructura.comportamiento.state.EstadoCancelado;
+import com.logismart.infraestructura.comportamiento.state.EstadoEntregado;
+import com.logismart.infraestructura.comportamiento.state.EstadoEnReparto;
+import com.logismart.infraestructura.comportamiento.state.EstadoEnTransito;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -170,7 +174,7 @@ public final class CasosDePruebaHito11 {
         verificar(hist.obtenerTamaño() == 1, "Caso 1: historial tiene 1 entrada tras primer guardado");
 
         // Caso 2: avanzar a EN_TRANSITO y guardar
-        envio.cambiarEstado("EN_TRANSITO");
+        envio.cambiarEstado(new EstadoEnTransito());
         hist.guardarEstado(envio);
         verificar(hist.obtenerTamaño() == 2, "Caso 2: historial tiene 2 entradas");
 
@@ -185,9 +189,9 @@ public final class CasosDePruebaHito11 {
                 "Caso 4: irAlEstadoSiguiente regresa a EN_TRANSITO");
 
         // Caso 5: avanzar hasta ENTREGADO y guardar 2 estados más
-        envio.cambiarEstado("EN_REPARTO");
+        envio.cambiarEstado(new EstadoEnReparto());
         hist.guardarEstado(envio);
-        envio.cambiarEstado("ENTREGADO");
+        envio.cambiarEstado(new EstadoEntregado());
         hist.guardarEstado(envio);
         hist.mostrarHistorial();
         verificar(hist.obtenerTamaño() == 4, "Caso 5: historial completo tiene 4 entradas");
@@ -198,7 +202,7 @@ public final class CasosDePruebaHito11 {
                 "Caso 6: irAlEstado(0) restaura estado inicial CONFIRMADO");
 
         // Caso 7: guardar desde posición intermedia descarta estados futuros
-        envio.cambiarEstado("CANCELADO");
+        envio.cambiarEstado(new EstadoCancelado());
         hist.guardarEstado(envio);
         verificar(hist.obtenerTamaño() == 2,
                 "Caso 7: guardar desde posición 0 descarta estados futuros (tamaño=2)");
@@ -221,12 +225,12 @@ public final class CasosDePruebaHito11 {
         envio.adjuntarObservador(new DashboardObservador());
         envio.adjuntarObservador(contador);
 
-        envio.cambiarEstado("EN_TRANSITO");
+        envio.cambiarEstado(new EstadoEnTransito());
         verificar(notificaciones.get() == 1,
                 "Caso 1: cambiarEstado notifica a todos los observadores (contador=1)");
 
         // Caso 2: segundo cambio de estado - todos los observadores vuelven a actuar
-        envio.cambiarEstado("ENTREGADO");
+        envio.cambiarEstado(new EstadoEntregado());
         verificar(notificaciones.get() == 2,
                 "Caso 2: segundo cambio de estado - contador llega a 2");
 
@@ -236,10 +240,10 @@ public final class CasosDePruebaHito11 {
         AtomicInteger cont2 = new AtomicInteger(0);
         envio2.adjuntarObservador(dash);
         envio2.adjuntarObservador(e -> cont2.incrementAndGet());
-        envio2.cambiarEstado("EN_TRANSITO");
+        envio2.cambiarEstado(new EstadoEnTransito());
         int antes = cont2.get();
         envio2.desadjuntarObservador(dash);
-        envio2.cambiarEstado("ENTREGADO");
+        envio2.cambiarEstado(new EstadoEntregado());
         verificar(cont2.get() == antes + 1,
                 "Caso 3: desadjuntar dashboard - lambda sigue recibiendo notificación");
 
@@ -250,9 +254,9 @@ public final class CasosDePruebaHito11 {
         AtomicInteger contB = new AtomicInteger(0);
         envioA.adjuntarObservador(e -> contA.incrementAndGet());
         envioB.adjuntarObservador(e -> contB.incrementAndGet());
-        envioA.cambiarEstado("EN_TRANSITO");
-        envioA.cambiarEstado("ENTREGADO");
-        envioB.cambiarEstado("CANCELADO");
+        envioA.cambiarEstado(new EstadoEnTransito());
+        envioA.cambiarEstado(new EstadoEntregado());
+        envioB.cambiarEstado(new EstadoCancelado());
         verificar(contA.get() == 2, "Caso 4a: envioA notificó 2 veces");
         verificar(contB.get() == 1, "Caso 4b: envioB notificó 1 vez");
 

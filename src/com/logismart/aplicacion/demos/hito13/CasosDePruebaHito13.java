@@ -11,6 +11,7 @@ import com.logismart.infraestructura.persistencia.lazy.ClienteLazyProxy;
 import com.logismart.infraestructura.persistencia.lazy.HistorialEnviosLazyProxy;
 import com.logismart.infraestructura.persistencia.repositorio.memoria.RepositorioCentroMemoria;
 import com.logismart.infraestructura.persistencia.repositorio.memoria.RepositorioClienteMemoria;
+import com.logismart.infraestructura.comportamiento.state.EstadoEnCurso;
 import com.logismart.infraestructura.persistencia.repositorio.memoria.RepositorioEnvioMemoria;
 import com.logismart.infraestructura.persistencia.repositorio.memoria.RepositorioPagoMemoria;
 import com.logismart.infraestructura.persistencia.unitofwork.UnitOfWork;
@@ -80,7 +81,7 @@ public class CasosDePruebaHito13 {
         verificar("DM-02: buscar Envio por id", "DM-ENV-001".equals(encontrado.getId()));
 
         // 3. Actualizar Envio (re-guardar con estado modificado)
-        encontrado.cambiarEstado("EN_CURSO");
+        encontrado.cambiarEstado(new EstadoEnCurso());
         repoE.guardar(encontrado);
         verificar("DM-03: actualizar Envio", "EN_CURSO".equals(repoE.obtener("DM-ENV-001").getEstado()));
 
