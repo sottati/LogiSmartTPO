@@ -186,8 +186,9 @@ public class LogiSmartController {
         if (!solicitante.puedeAsignarRuta()) {
             throw new SecurityException("El usuario no tiene permiso para asignar rutas");
         }
+        Envio envio = null;
         try {
-            Envio envio = buscarEnvioOFallar(idEnvio);
+            envio = buscarEnvioOFallar(idEnvio);
 
             // Memento: snapshot antes de la transición de estado
             historialDe(envio).guardarEstado(envio);
@@ -221,6 +222,7 @@ public class LogiSmartController {
 
             return ruta;
         } catch (Exception e) {
+            if (envio != null) historialDe(envio).irAlEstadoAnterior(envio);
             unitOfWork.rollback();
             logger.logError("asignarRuta", e);
             throw e;
