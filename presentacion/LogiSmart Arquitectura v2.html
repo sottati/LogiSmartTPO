@@ -805,48 +805,8 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
 </section>
 
 <!-- ════════ 18 · CU-07 — SEGUIR EL ENVÍO ════════ -->
-<section data-label="CU-07 State+Observer" data-screen-label="15 CU-07 — Seguir el envío en vivo">
-  <div class="frame">
-    <div class="head" style="margin-bottom:24px">
-      <div class="eyebrow">State + Observer · el envío ni sabe quién escucha</div>
-      <h2 class="title">Seguir el envío en vivo</h2>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1;align-content:start">
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">1</div>
-        <div class="h3" style="font-size:24px">GPS tracking apilado</div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>DecoradorRastreoGPS</code> envuelve al <code>Envio</code> sin modificar su clase base — la interfaz es idéntica para el resto del sistema</div>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
-          <span class="band-tag">Decorator</span>
-        </div>
-      </div>
-
-      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">2</div>
-        <div class="h3" style="font-size:24px">Transición válida</div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>entregar()</code> delega en <code>EstadoEnTransito</code> — valida que la transición a EN_REPARTO sea legal sin un <code>switch</code> gigante</div>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
-          <span class="band-tag">State</span>
-          <span class="band-tag">EN_TRANSITO → EN_REPARTO</span>
-        </div>
-      </div>
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">3</div>
-        <div class="h3" style="font-size:24px">Observer · tres suscriptores</div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>notificarObservadores()</code> propaga el evento a todos: Dashboard refresca el mapa, cliente recibe SMS, Centro actualiza ocupación — el Envío ni sabe quién escucha</div>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
-          <span class="band-tag">Observer</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ════════ 19 · CIERRE ════════ -->
-<section class="closing" data-label="Cierre" data-screen-label="16 Cierre">
+<!-- ════════ 16 · CIERRE ════════ -->
+<section class="closing" data-label="Cierre" data-screen-label="15 Cierre">
   <div class="grid-tex"></div>
   <div class="frame" style="display:flex;flex-direction:column;justify-content:center;gap:44px">
 
