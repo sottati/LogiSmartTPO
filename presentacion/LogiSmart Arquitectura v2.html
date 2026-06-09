@@ -546,7 +546,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-idea">Al cambiar de estado, el envío notifica a sus suscriptores.</div>
         <div class="pcard-body"><div class="inner">
           <div class="pcard-classes">Dashboard · Auditoría · Notificaciones</div>
-          <div class="pcard-why">El cambio <code>CONFIRMADO → EN_TRÁNSITO</code> avisa solo. Agregar «notificar al teléfono» es suscribir un observador, sin tocar <code>Envio</code>.</div>
+          <div class="pcard-why">El cambio <code>CONFIRMADO → EN_TRANSITO</code> avisa solo. Agregar «notificar al teléfono» es suscribir un observador, sin tocar <code>Envio</code>.</div>
           <div class="pcard-trade"><b>Trade-off:</b> un observador que falla puede cortar al resto — se aísla cada notificación y, a escala, se haría asíncrona.</div>
         </div></div>
       </div>
@@ -741,7 +741,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
 <section data-label="CU-04 asignarRuta" data-screen-label="14 CU-04 — Asignar hoja de ruta">
   <div class="frame">
     <div class="head" style="margin-bottom:20px">
-      <div class="eyebrow">Controller · Memento · Strategy · State · Observer · el método más rico del sistema</div>
+      <div class="eyebrow">Controller · Memento · Strategy · State · Observer</div>
       <h2 class="title">Asignar hoja de ruta</h2>
     </div>
     <div id="seq-root-cu04" class="seq"></div>
@@ -827,7 +827,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
   "",
   "",
   "Retomo yo. Hasta acá vimos cada capa y cada patrón por separado. Ahora veámoslos colaborando en flujos reales del sistema. Una sola petición que cruza las cinco capas. Entra por Presentación: el Controller valida los permisos del rol. Baja a Aplicación: el Facade orquesta y la Chain valida fail-fast. Infraestructura crea el envío con Factory y lo despacha al carrier traduciendo con Adapter. En el Dominio, cambia de estado con State y eso notifica solo con Observer. Y Persistencia lo guarda, con el Proxy cacheando las lecturas, sin que el dominio toque SQL. Una petición, cinco capas, los patrones colaborando en ejecución — no en abstracto.",
-  "Este es el método más rico de todo el sistema, y es código real del Controller: asignarRuta. Miren cuántos patrones colaboran en una sola operación. Primero valida el permiso del rol con Information Expert. Antes de tocar nada, Memento saca un snapshot. Dos Strategy encadenadas: AsignadorDeVehiculos elige el vehículo y CalculadorDeRuta elige la ruta. Luego State transiciona el envío a EN_TRÁNSITO, y ese cambio dispara automáticamente a Observer: dashboard, SMS y auditoría. Seis patrones, un solo método — todo código real.",
+  "Este es el método más rico de todo el sistema, y es código real del Controller: asignarRuta. Miren cuántos patrones colaboran en una sola operación. Primero valida el permiso del rol con Information Expert. Antes de tocar nada, Memento saca un snapshot. Dos Strategy encadenadas: AsignadorDeVehiculos elige el vehículo y CalculadorDeRuta elige la ruta. Luego State transiciona el envío a EN_TRANSITO, y ese cambio dispara automáticamente a Observer: dashboard, SMS y auditoría. Seis patrones, un solo método — todo código real.",
   "Cuando el transportista reporta su posición, el servicio de tracking se apila sobre Envío con Decorator — sin tocar la clase base. El Envío delega la transición en su objeto de estado con State: EstadoEnCurso valida que la transición sea legal. Y ese cambio dispara solo a los tres suscriptores con Observer: el Dashboard refresca el mapa, el cliente recibe un SMS y el Centro actualiza su ocupación. El envío ni sabe quién está escuchando.",
   "Para cerrar volvemos a lo que prometimos: importar pedidos, planificar rutas y seguir el envío en vivo —los CU. Y lo que cumplimos: trece hitos, cinco capas, treinta y seis patrones y la batería de tests en verde como evidencia de un proceso disciplinado. La frase con la que abrimos y cerramos es la misma: en LogiSmart, primero el negocio; cada patrón existe para sostener una necesidad concreta. Gracias, quedamos para sus preguntas."
 ]
