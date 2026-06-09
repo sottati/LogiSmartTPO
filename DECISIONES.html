@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>LogiSmart · Trade-offs y Refactorings</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap");
+
+    :root {
+      --primary:      #17324d;
+      --primary-2:    #1f4d78;
+      --accent:       #dc6b1f;
+      --bg:           #f4f7fb;
+      --surface:      #ffffff;
+      --text:         #14202c;
+      --muted:        #4f6172;
+      --border:       #d9e2ec;
+
+      --c-to:         #92400e;
+      --c-to-bg:      #fef3c7;
+      --c-to-border:  #fde68a;
+
+      --c-rf:         #065f46;
+      --c-rf-bg:      #d1fae5;
+      --c-rf-border:  #6ee7b7;
+
+      --c-at:         #1e40af;
+      --c-at-bg:      #dbeafe;
+      --c-at-border:  #93c5fd;
+
+      --sidebar-w:    220px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Inter", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--primary);
+      display: flex; align-items: center; gap: 1rem;
+      padding: 0 1.5rem; height: 48px;
+      border-bottom: 3px solid var(--accent);
+    }
+    .topbar-title {
+      font-size: .75rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: #fff;
+    }
+    .topbar-links { display: flex; gap: .75rem; margin-left: auto; }
+    .topbar-links a {
+      font-size: .72rem; color: #93b5cc;
+      text-decoration: none; padding: 3px 10px;
+      border: 1px solid rgba(255,255,255,.15); border-radius: 5px;
+      transition: background .15s;
+    }
+    .topbar-links a:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+    /* ── LAYOUT ── */
+    .layout { display: flex; flex: 1; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w); flex-shrink: 0;
+      position: sticky; top: 48px; align-self: flex-start;
+      height: calc(100vh - 48px); overflow-y: auto;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.25rem 0;
+    }
+    .sb-section-label {
+      font-size: .62rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--muted); padding: .6rem 1rem .3rem;
+    }
+    .sb-link {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .38rem 1rem; font-size: .78rem;
+      color: var(--primary-2); text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all .15s;
+    }
+    .sb-link:hover { background: var(--bg); border-left-color: var(--accent); }
+    .sb-link .num {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .68rem; color: var(--muted); flex-shrink: 0;
+    }
+    .sb-sep { height: 1px; background: var(--border); margin: .6rem 1rem; }
+
+    /* ── MAIN ── */
+    #main { flex: 1; padding: 2rem 2rem 4rem; max-width: 960px; }
+
+    .page-title {
+      font-size: 1.6rem; font-weight: 800;
+      color: var(--primary); letter-spacing: -.03em;
+      margin-bottom: .4rem;
+    }
+    .page-lead {
+      font-size: .88rem; color: var(--muted); margin-bottom: 2.5rem;
+      max-width: 640px; line-height: 1.7;
+    }
+
+    /* ── HITO SECTION ── */
+    .hito-section { margin-bottom: 3rem; }
+    .hito-header {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: .6rem;
+      border-bottom: 2px solid var(--border);
+    }
+    .hito-pill-lg {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .7rem; font-weight: 600;
+      background: var(--primary); color: #fff;
+      padding: 3px 10px; border-radius: 5px;
+    }
+    .hito-name {
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* ── CARD GRID ── */
+    .cards { display: flex; flex-direction: column; gap: .9rem; }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .card-head {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .65rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tag {
+      font-size: .62rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 4px;
+    }
+    .tag-to  { background: var(--c-to-bg);  color: var(--c-to);  border: 1px solid var(--c-to-border);  }
+    .tag-rf  { background: var(--c-rf-bg);  color: var(--c-rf);  border: 1px solid var(--c-rf-border);  }
+    .tag-at  { background: var(--c-at-bg);  color: var(--c-at);  border: 1px solid var(--c-at-border);  }
+    .card-head-title {
+      font-size: .88rem; font-weight: 700; color: var(--text);
+      flex: 1;
+    }
+    .card-body { padding: .85rem 1rem; }
+
+    /* Trade-off layout */
+    .to-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: .5rem; margin-bottom: .65rem;
+    }
+    .to-col { padding: .6rem .75rem; border-radius: 6px; }
+    .to-col.decided {
+      background: var(--c-to-bg);
+      border: 1px solid var(--c-to-border);
+    }
+    .to-col.alt {
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+    .to-col-label {
+      font-size: .6rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .3rem;
+    }
+    .to-col.decided .to-col-label { color: var(--c-to); }
+    .to-col-text { font-size: .8rem; color: var(--text); line-height: 1.5; }
+
+    .reason-row {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: .55rem .75rem;
+      font-size: .78rem; color: var(--muted); line-height: 1.55;
+      margin-top: .4rem;
+    }
+    .reason-row strong { color: var(--primary-2); }
+
+    /* Refactoring layout */
+    .rf-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: .5rem; margin-bottom: .65rem;
+    }
+    .rf-col { padding: .6rem .75rem; border-radius: 6px; }
+    .rf-col.before {
+      background: var(--bg); border: 1px solid var(--border);
+    }
+    .rf-col.after {
+      background: var(--c-rf-bg); border: 1px solid var(--c-rf-border);
+    }
+    .rf-col-label {
+      font-size: .6rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .3rem;
+    }
+    .rf-col.after .rf-col-label { color: var(--c-rf); }
+    .rf-col-text { font-size: .8rem; color: var(--text); line-height: 1.5; }
+
+    .commit-chip {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .67rem; color: var(--muted);
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1px 7px;
+    }
+
+    code {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .82em;
+      background: rgba(31,77,120,.07);
+      padding: 1px 4px; border-radius: 3px;
+    }
+
+    @media (max-width: 640px) {
+      .to-grid, .rf-grid { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <nav class="topbar">
+    <span class="topbar-title">LogiSmart · Trade-offs y Refactorings</span>
+    <div class="topbar-links">
+      <a href="index.html">← Inicio</a>
+      <a href="DIAGRAMAS_PATRONES.html">Diagramas de patrones</a>
+      <a href="DIAGRAMA_DE_CLASES_ACTUAL.html">Diagrama de clases</a>
+    </div>
+  </nav>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sb-section-label">Hitos</div>
+      <a class="sb-link" href="#h4"><span class="num">H4</span> Presentación</a>
+      <a class="sb-link" href="#h5"><span class="num">H5</span> GRASP avanzado</a>
+      <a class="sb-link" href="#h6"><span class="num">H6–7</span> Creacionales</a>
+      <a class="sb-link" href="#h8"><span class="num">H8</span> Estructurales I</a>
+      <a class="sb-link" href="#h9"><span class="num">H9</span> Estructurales II</a>
+      <a class="sb-link" href="#h10"><span class="num">H10</span> Comportamiento</a>
+      <a class="sb-link" href="#h12"><span class="num">H12</span> Composite + Visitor</a>
+      <a class="sb-link" href="#h13"><span class="num">H13</span> Persistencia</a>
+      <div class="sb-sep"></div>
+      <div class="sb-section-label">Leyenda</div>
+      <a class="sb-link" href="#"><span class="tag tag-to">TRADE-OFF</span></a>
+      <a class="sb-link" href="#"><span class="tag tag-rf">REFACTORING</span></a>
+    </aside>
+
+    <!-- MAIN -->
+    <main id="main">
+
+      <h1 class="page-title">Trade-offs y Refactorings</h1>
+      <p class="page-lead">
+        Decisiones de diseño deliberadas organizadas por hito.
+        Cada trade-off documenta qué se eligió, qué se descartó y por qué.
+        Cada refactoring documenta el estado anterior, el posterior y el commit que lo materializó.
+        Fuentes: código fuente, historial git y notas de defensa.
+      </p>
+
+      <!-- ══════════════ HITO 4 ══════════════ -->
+      <section class="hito-section" id="h4">
+        <div class="hito-header">
+          <span class="hito-pill-lg">Hito 4</span>
+          <span class="hito-name">Presentación — GRASP Controller e Information Expert</span>
+        </div>
+        <div class="cards">
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Controller único vs. múltiples controllers por entidad</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">Un único <code>LogiSmartController</code> como puerta de entrada. Recibe todas las peticiones, verifica permisos y delega sin calcular ni persistir.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Un controller por entidad: <code>EnvioController</code>, <code>VehiculoController</code>, <code>UsuarioController</code>…</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> el control de acceso (verificar qué rol puede hacer qué) queda centralizado en un solo punto. En un sistema multitenant, dispersar ese chequeo aumenta la probabilidad de olvidar una verificación. El trade-off es que el Controller crece si se agregan muchas operaciones — se mitiga delegando inmediatamente y nunca calculando en él.
+                <br><strong>Atributo sostenido:</strong> aislamiento de datos entre PyMEs.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Permiso verificado en cada operación vs. token/sesión pre-validado</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">El Controller llama a <code>solicitante.puedeCrearEnvio()</code> en cada operación. Si falla, lanza <code>SecurityException</code> antes de tocar el dominio.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Validar permisos en la autenticación (login) y confiar en el token durante la sesión.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> en un sistema académico sin capa de sesión real, verificar en cada llamada garantiza que los tests de dominio corran sin contexto de sesión y que el dominio quede testeable de forma aislada.
+                <br><strong>Trade-off explícito:</strong> latencia adicional por chequeo en cada operación, recuperada con caché en persistencia (Proxy, Hito 9).
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════ HITO 5 ══════════════ -->
+      <section class="hito-section" id="h5">
+        <div class="hito-header">
+          <span class="hito-pill-lg">Hito 5</span>
+          <span class="hito-name">GRASP avanzado — Creator, Polymorphism, Pure Fabrication</span>
+        </div>
+        <div class="cards">
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-rf">Refactoring</span>
+              <span class="card-head-title">25 booleanos dispersos → enum <code>Rol</code> centralizado</span>
+            </div>
+            <div class="card-body">
+              <div class="rf-grid">
+                <div class="rf-col before">
+                  <div class="rf-col-label">Antes</div>
+                  <div class="rf-col-text">Cada subclase de <code>Usuario</code> (<code>OperadorLogistico</code>, <code>AdminEmpresa</code>, etc.) declaraba sus 5 permisos como <code>boolean</code> individuales. Agregar un permiso = modificar 5 archivos.</div>
+                </div>
+                <div class="rf-col after">
+                  <div class="rf-col-label">Después</div>
+                  <div class="rf-col-text">Enum <code>Rol</code> como única fuente de verdad. Cada valor del enum es una fila con sus 5 permisos: <code>OPERADOR(true,true,true,true,false)</code>. Agregar un permiso = 1 columna nueva.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Patrón aplicado:</strong> GRASP Information Expert — <code>Rol</code> es el experto de sus propios permisos.
+                <br><strong>Ganancia:</strong> toda la batería de tests pasó en verde; la lógica de permisos quedó testeable en una sola clase. Mencionado en guion como "una de las decisiones de las que estamos más orgullosos".
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Permisos en el enum vs. tabla de permisos en base de datos</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">Los permisos están hardcodeados en el enum <code>Rol</code>. Son estables — no los configura el operador en runtime.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Tabla SQL de permisos por rol, configurable por el administrador de la plataforma en runtime.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> los roles de LogiSmart son fijos por contrato de negocio (OPERADOR, CLIENTE, TRANSPORTISTA, ADMIN_EMPRESA, ADMIN_PLATAFORMA). La flexibilidad adicional no estaba en el alcance del TPO y agregaría complejidad de persistencia innecesaria.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════ HITOS 6–7 ══════════════ -->
+      <section class="hito-section" id="h6">
+        <div class="hito-header">
+          <span class="hito-pill-lg">Hitos 6–7</span>
+          <span class="hito-name">GoF Creacionales</span>
+        </div>
+        <div class="cards">
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title"><code>EnvioBuilder</code> vs. constructor telescópico</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text"><code>Envio.EnvioBuilder</code> con 3 campos requeridos en el constructor y 11 opcionales como setters encadenables. <code>build()</code> garantiza un objeto válido.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">5+ overloads de constructor: <code>Envio(id, origen, destino)</code>, <code>Envio(id, origen, destino, peso)</code>, etc. Combinaciones inválidas posibles.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> con 12 atributos (9 opcionales) el constructor telescópico produce código ilegible y combinaciones sin sentido. El Builder hace explícito qué es obligatorio y qué es opcional. También habilita el Prototype (Hito 7): <code>Envio.clone()</code> copia todos los campos para generar lotes de tests.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Abstract Factory por región vs. if/switch por país</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text"><code>LogiSmartFactoryArgentina</code> (Auto + IVA 21% + Google Maps) y <code>LogiSmartFactoryBrasil</code> (Moto + ICMS 12% + HERE Maps). Familia coherente garantizada por el compilador.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text"><code>if (pais.equals("AR")) crearAuto() else crearMoto()</code> disperso por el código. Riesgo de combinar Auto (AR) con HereMaps (BR).</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> cambiar de región en runtime = cambiar la factory. Es imposible obtener una familia incoherente (Auto argentino con motor de mapas brasileño) porque la factory solo crea su propia familia completa.
+                <br><strong>Trade-off:</strong> agregar un nuevo producto abstracto (ej. <code>crearMoneda()</code>) obliga a modificar todas las factories concretas.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title"><code>EstrategiaDistancia</code> con 500 km fijos vs. distancia real desde API</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text"><code>peso × 500</code> — distancia fija de 500 km como placeholder. Tests son deterministas y reproducibles.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Llamada real a la API de mapas para calcular la distancia entre origen y destino.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> un test que depende de una API externa no es confiable — varía con latencia, quota y disponibilidad del servicio. Se eligió resignar realismo en esta estrategia para tener tests deterministas. Se documentó como "sacrificio deliberado" en el guion de defensa.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════ HITO 8 ══════════════ -->
+      <section class="hito-section" id="h8">
+        <div class="hito-header">
+          <span class="hito-pill-lg">Hito 8</span>
+          <span class="hito-name">GoF Estructurales I — Adapter, Bridge, Composite, Decorator, Facade</span>
+        </div>
+        <div class="cards">
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Adapter por carrier vs. llamadas directas al API legacy desde el dominio</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">Interfaz <code>ProveedorEnvio</code> + 3 adapters (<code>AdapterDHL</code>, <code>AdapterFedEx</code>, <code>AdapterUPS</code>). Cambiar de carrier = 1 archivo nuevo.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Llamar <code>DHLAPI.registrarPaquete()</code> directamente desde el dominio o desde la Facade. El dominio quedaría acoplado al protocolo de cada carrier.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> DHL, FedEx y UPS tienen métodos con nombres incompatibles (<code>registrarPaquete</code>, <code>crearShipment</code>, <code>sendPackage</code>). El Adapter es el único punto de traducción por carrier. El dominio solo conoce la interfaz unificada.
+                <br><strong>Atributo sostenido:</strong> interoperabilidad sin contaminar el dominio.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Bridge 3×4 = 7 clases vs. herencia 3×4 = 12 clases</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">Separar qué reporte generar (<code>ReporteEnvios</code>, <code>ReporteCentros</code>, <code>ReporteVehiculos</code>) de cómo renderizarlo (<code>GeneradorPDF</code>, <code>GeneradorCSV</code>, <code>GeneradorJSON</code>, <code>GeneradorHTML</code>). Total: 7 clases.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Una subclase por combinación: <code>ReporteEnviosPDF</code>, <code>ReporteEnviosCSV</code>… 3 tipos × 4 formatos = 12 clases. Agregar un formato nuevo = 3 clases.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> la abstracción (qué) y la implementación (cómo) evolucionan independientemente. Agregar un nuevo tipo de reporte no requiere implementarlo en cada formato, y viceversa.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════ HITO 9 ══════════════ -->
+      <section class="hito-section" id="h9">
+        <div class="hito-header">
+          <span class="hito-pill-lg">Hito 9</span>
+          <span class="hito-name">GoF Estructurales II — Flyweight, Proxy + Chain of Responsibility</span>
+        </div>
+        <div class="cards">
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Chain fail-fast vs. validación acumulada</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">5 validadores ordenados de menor a mayor costo computacional. El primero que falla corta la cadena: nunca se consulta el inventario si los datos básicos son inválidos.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Ejecutar todos los validadores y acumular errores para devolver un único mensaje con todos los problemas.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> el orden es intencional — datos (barato) → seguridad → pago → capacidad → inventario (caro). No tiene sentido consultar stock si el origen está vacío.
+                <br><strong>Trade-off:</strong> el cliente recibe un error a la vez, no todos de una. Se acepta porque en operaciones logísticas una validación fallida suele invalidar las demás igualmente.
+                <br><strong>Atributo sostenido:</strong> eficiencia de respuesta.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-rf">Refactoring</span>
+              <span class="card-head-title">Firma creciente de la Chain → <code>ContextoValidacion</code> (Protected Variations)</span>
+              <span class="commit-chip">844b925</span>
+            </div>
+            <div class="card-body">
+              <div class="rf-grid">
+                <div class="rf-col before">
+                  <div class="rf-col-label">Antes</div>
+                  <div class="rf-col-text">Cada vez que un validador necesitaba un dato nuevo, la firma de <code>validar()</code> crecía: <code>validar(Envio, Cobro, String productoId, …)</code>. Cambio en cascada a todos los validadores.</div>
+                </div>
+                <div class="rf-col after">
+                  <div class="rf-col-label">Después</div>
+                  <div class="rf-col-text"><code>validar(ContextoValidacion ctx)</code>. <code>ContextoValidacion</code> es un Value Object con todos los inputs. Agregar un campo = 1 línea en el contexto; los validadores existentes no cambian.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Patrón aplicado:</strong> GRASP Protected Variations — encapsulá el punto de variación (<code>productoId</code> se movió a <code>Orden</code>).
+                <br><strong>Commit:</strong> <code>844b925 Refactor Chain of Responsibility: introduce ContextoValidacion, mover productoId a Orden</code>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════ HITO 10 ══════════════ -->
+      <section class="hito-section" id="h10">
+        <div class="hito-header">
+          <span class="hito-pill-lg">Hito 10</span>
+          <span class="hito-name">GoF Comportamiento — State, Strategy, Observer, Memento, Command, Template Method</span>
+        </div>
+        <div class="cards">
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-rf">Refactoring</span>
+              <span class="card-head-title">Campo <code>String estado</code> + switch → 9 clases <code>EstadoEnvio</code> (State GoF)</span>
+              <span class="commit-chip">e9d7685</span>
+            </div>
+            <div class="card-body">
+              <div class="rf-grid">
+                <div class="rf-col before">
+                  <div class="rf-col-label">Antes</div>
+                  <div class="rf-col-text">Campo <code>String estado</code> paralelo al objeto GoF. Transiciones con if/switch. Riesgo de inconsistencia entre el String y el objeto. Cada nuevo estado requería modificar todos los switches.</div>
+                </div>
+                <div class="rf-col after">
+                  <div class="rf-col-label">Después</div>
+                  <div class="rf-col-text"><code>EstadoEnvio estadoGoF</code> como única fuente de verdad. <code>getEstado()</code> se deriva de <code>estadoGoF.obtenerNombre()</code>. Cada estado concreto rechaza transiciones inválidas sin if.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Patrón aplicado:</strong> State GoF. Agregar un estado nuevo = 1 clase; no toca los estados existentes.
+                <br><strong>Commit:</strong> <code>e9d7685 Refactor State: unificar estado en GoF, eliminar campo String paralelo</code>
+                <br><strong>Commit de sync:</strong> <code>df83770 Sync hitos 11 y 12: actualizar refs al refactor State</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title"><code>MementoEnvio</code> en <code>dominio/</code> vs. en <code>infraestructura/comportamiento/memento/</code></span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text"><code>MementoEnvio</code> vive en <code>dominio/envio/</code>. El historial de auditoría es un concepto de negocio puro — captura datos de dominio (estado, origen, destino, peso, costo).</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Mover <code>MementoEnvio</code> a <code>infraestructura/comportamiento/memento/</code> para mayor cohesión del patrón GoF.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> si <code>MementoEnvio</code> viviera en infraestructura y <code>Envio</code> (dominio) lo usara como Originator, se crearía una dependencia <strong>dominio → infraestructura</strong>, que viola Clean Architecture. El trade-off es que el patrón GoF queda con sus partes en paquetes distintos.
+                <br><em>Trade-off documentado en el Javadoc de <code>MementoEnvio</code>.</em>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Strategy de costo inyectada vs. if/else en <code>Envio.calcularCosto()</code></span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">8 clases <code>EstrategiaCalculoCosto</code> intercambiables en runtime: Peso, Urgencia, Distancia, DistanciaReal, Volumen, Fijo, PorBulto, Híbrida. <code>Envio</code> delega y nunca sabe cuál recibe.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Un método <code>calcularCosto()</code> con 8 ramas if/else. Agregar una estrategia = modificar el método y sus tests existentes.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> el Operador Logístico elige el algoritmo al crear el envío, y puede cambiarlo sin recompilar. Agregar una estrategia nueva = 1 clase que implementa la interfaz; los tests existentes no cambian.
+                <br><strong>Atributo sostenido:</strong> elasticidad — la estrategia puede cambiar por región o por acuerdo comercial.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Historial Memento con navegación bidireccional vs. stack LIFO simple</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text"><code>HistorialEnvios</code> con cursor indexado. Soporta <code>irAlEstadoAnterior()</code>, <code>irAlEstadoSiguiente()</code> y <code>irAlEstado(int)</code> — acceso directo a cualquier punto del historial para auditoría.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Stack LIFO (<code>Deque</code>): solo deshacer el último estado. Más simple, pero no sirve para auditoría — LogiSmart necesita reconstruir cualquier estado pasado de un envío.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> la auditoría de envíos es un requisito operativo real — el operador puede necesitar ver el estado de un envío en cualquier punto de su ciclo de vida, no solo el anterior. La navegación bidireccional habilita esto a costo de mayor complejidad de cursor.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════ HITO 12 ══════════════ -->
+      <section class="hito-section" id="h12">
+        <div class="hito-header">
+          <span class="hito-pill-lg">Hito 12</span>
+          <span class="hito-name">Composite + Visitor</span>
+        </div>
+        <div class="cards">
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-rf">Refactoring</span>
+              <span class="card-head-title">Prefijo <code>Nodo*</code> eliminado → <code>CentroRegional</code> / <code>SucursalEntrega</code></span>
+              <span class="commit-chip">eb7911a</span>
+            </div>
+            <div class="card-body">
+              <div class="rf-grid">
+                <div class="rf-col before">
+                  <div class="rf-col-label">Antes</div>
+                  <div class="rf-col-text"><code>NodoCentroDistribucion</code>, <code>NodoPuntoEntrega</code>. El prefijo "Nodo" se usó para evitar colisión semántica con <code>dominio.ruta.PuntoEntrega</code>.</div>
+                </div>
+                <div class="rf-col after">
+                  <div class="rf-col-label">Después</div>
+                  <div class="rf-col-text"><code>CentroRegional</code>, <code>SucursalEntrega</code>. La colisión se resolvió renombrando el otro lado: <code>PuntoEntrega</code> → <code>SucursalEntrega</code> para evitar la ambigüedad.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> el prefijo "Nodo" era artificial y confundía la lectura del modelo. La solución correcta era resolver la colisión de nombres en la fuente, no ocultarla con un prefijo.
+                <br><strong>Commit:</strong> <code>eb7911a Refactor Composite+Visitor: unificar jerarquías, eliminar clases Nodo*</code>
+                <br><strong>Anterior:</strong> <code>8492c83 Rename composite PuntoEntrega → SucursalEntrega para evitar confusion con dominio.ruta.PuntoEntrega</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Composite jerárquico en dominio vs. tabla plana en persistencia (desfasaje aceptado)</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">El árbol <code>CentroDistribucionComposite</code> es la única fuente de verdad de la jerarquía. La persistencia es plana (<code>RepositorioCentroMemoria</code> con un Map) — el desfasaje se acepta explícitamente.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Persistencia jerárquica: nested sets o adjacency list en SQL (<code>parent_id</code>). Consistencia garantizada, pero agrega complejidad de queries recursivos.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> dentro del alcance del TPO, la jerarquía se construye en memoria y el Composite es la referencia. La persistencia plana es suficiente para los tests. El desfasaje fue documentado como "sacrificio deliberado" en el guion de defensa.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════ HITO 13 ══════════════ -->
+      <section class="hito-section" id="h13">
+        <div class="hito-header">
+          <span class="hito-pill-lg">Hito 13</span>
+          <span class="hito-name">Persistencia PoEAA — Repository, Data Mapper, Unit of Work, Lazy Load</span>
+        </div>
+        <div class="cards">
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Data Mapper + Repository vs. Active Record</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text"><code>EnvioMapper</code> traduce entre el objeto de dominio y la fila SQL. <code>RepositorioEnvio</code> expone objetos de negocio, nunca filas. El dominio nunca conoce el esquema SQL.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Active Record: <code>Envio.save()</code> y <code>Envio.findById()</code> directamente en la entidad de dominio (estilo Rails).</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> con Active Record, el dominio quedaría acoplado a la base de datos y los tests necesitarían una BD real. Con el patrón Repository, <code>RepositorioEnvioMemoria</code> (tests) y <code>RepositorioEnvioSQL</code> (producción) implementan la misma interfaz — los tests corren sin BD.
+                <br><strong>Atributo sostenido:</strong> bajo acoplamiento, testabilidad.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Lazy Load por proxy virtual vs. eager loading al instanciar <code>Envio</code></span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">3 proxies (<code>CentroDistribucionLazyProxy</code>, <code>ClienteLazyProxy</code>, <code>HistorialEnviosLazyProxy</code>). El objeto relacionado se carga solo al primer acceso; llamadas siguientes devuelven la instancia cacheada.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Cargar todos los objetos relacionados al instanciar <code>Envio</code>. Simple, pero consultas que solo necesitan el ID van innecesariamente a la BD.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> en un sistema logístico con miles de envíos, consultar el centro de distribución completo para una operación que solo necesita el ID es un desperdicio. El Lazy Load evita esas consultas sin cambiar la interfaz del cliente.
+                <br><strong>Atributo sostenido:</strong> eficiencia de respuesta.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-rf">Refactoring</span>
+              <span class="card-head-title"><code>infraestructura/</code> plana → organizada por tipo de patrón</span>
+              <span class="commit-chip">bbc1f62</span>
+            </div>
+            <div class="card-body">
+              <div class="rf-grid">
+                <div class="rf-col before">
+                  <div class="rf-col-label">Antes</div>
+                  <div class="rf-col-text">Todos los patrones de infraestructura en un único paquete plano. Difícil navegar qué era estructural, qué comportamiento y qué persistencia.</div>
+                </div>
+                <div class="rf-col after">
+                  <div class="rf-col-label">Después</div>
+                  <div class="rf-col-text"><code>infraestructura/estructural/</code> · <code>infraestructura/comportamiento/</code> · <code>infraestructura/persistencia/</code>. Estructura refleja la taxonomía GoF.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Patrón aplicado:</strong> GRASP High Cohesion — agrupar por responsabilidad técnica.
+                <br><strong>Commit:</strong> <code>bbc1f62 Reorganize infraestructura/ into estructural/, comportamiento/, persistencia/</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Unit of Work: operaciones INSERT → UPDATE → DELETE vs. orden de llegada</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text"><code>commit()</code> ejecuta siempre en orden fijo: primero todos los INSERT, luego todos los UPDATE, finalmente todos los DELETE. Garantiza integridad referencial.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Ejecutar en orden de registro (<code>registrarNuevo</code>, <code>registrarModificado</code>, <code>registrarEliminado</code> mezclados). Puede intentar actualizar una fila antes de crearla.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Razón:</strong> si un envío se crea y se cobra en la misma unidad de trabajo, el INSERT del envío debe ir antes que el INSERT del cobro (que tiene FK al envío). El orden fijo INSERT→UPDATE→DELETE garantiza que las FKs siempre apunten a filas ya existentes.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
