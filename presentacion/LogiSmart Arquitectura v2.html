@@ -879,64 +879,57 @@ visitar(CentroRegional centro)</pre>
 <!-- ════════ 16 · FLUJO INTEGRAL ════════ -->
 <section data-label="Flujo integral" data-screen-label="16 Flujo integral">
   <div class="frame">
-    <div class="head" style="margin-bottom:20px">
+    <div class="head" style="margin-bottom:24px">
       <div class="eyebrow">Flujo integral · cinco capas colaborando en ejecución</div>
       <h2 class="title">Una petición que cruza las cinco capas</h2>
     </div>
-    <div class="arch-stack" style="flex:1;gap:10px">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;flex:1;align-content:start">
 
-      <div class="band">
-        <div class="band-id" style="font-size:38px;min-width:44px">01</div>
-        <div style="flex:1">
-          <div class="band-name">Presentación</div>
-          <div class="band-role"><code>Controller</code> recibe la petición · <code>Rol.puedeCrear()</code> verifica permisos antes de delegar</div>
-        </div>
-        <div class="band-tags" style="margin-top:0;justify-content:flex-end">
-          <span class="band-tag">Controller</span><span class="band-tag">Information Expert</span>
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">1</div>
+        <div class="h3" style="font-size:24px">Presentación</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>Controller</code> recibe · <code>Rol.puedeCrear()</code> autoriza antes de delegar — sin lógica de negocio</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Controller</span>
+          <span class="band-tag">Info Expert</span>
         </div>
       </div>
 
-      <div class="band">
-        <div class="band-id" style="font-size:38px;min-width:44px">02</div>
-        <div style="flex:1">
-          <div class="band-name">Aplicación</div>
-          <div class="band-role"><code>ServicioLogisticaFacade</code> orquesta los subsistemas · <code>Chain</code> valida en orden de costo, fail-fast</div>
-        </div>
-        <div class="band-tags" style="margin-top:0;justify-content:flex-end">
-          <span class="band-tag">Facade</span><span class="band-tag">Chain of Responsibility</span>
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--cat-comp);line-height:1;letter-spacing:-.04em">2</div>
+        <div class="h3" style="font-size:24px">Aplicación</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>Facade</code> orquesta los subsistemas · <code>Chain</code> valida en orden de costo, fail-fast</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag" style="color:var(--cat-comp);background:var(--cat-comp-tint);border-color:oklch(0.85 0.07 152)">Facade</span>
+          <span class="band-tag" style="color:var(--cat-comp);background:var(--cat-comp-tint);border-color:oklch(0.85 0.07 152)">Chain</span>
         </div>
       </div>
 
-      <div class="band" style="border-left-color:var(--cat-crea)">
-        <div class="band-id" style="font-size:38px;min-width:44px;color:var(--cat-crea)">05</div>
-        <div style="flex:1">
-          <div class="band-name">Infraestructura</div>
-          <div class="band-role"><code>AbstractFactory</code> crea el <code>Envio</code> regional · <code>Adapter</code> traduce al protocolo del carrier</div>
-        </div>
-        <div class="band-tags" style="margin-top:0;justify-content:flex-end">
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--cat-crea);line-height:1;letter-spacing:-.04em">3</div>
+        <div class="h3" style="font-size:24px">Infraestructura</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>Factory</code> crea el <code>Envio</code> regional · <code>Adapter</code> traduce al protocolo del carrier</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
           <span class="band-tag" style="color:var(--cat-crea);background:var(--cat-crea-tint);border-color:oklch(0.85 0.08 50)">Abstract Factory</span>
           <span class="band-tag" style="color:var(--cat-crea);background:var(--cat-crea-tint);border-color:oklch(0.85 0.08 50)">Adapter</span>
         </div>
       </div>
 
-      <div class="band heart">
-        <div class="band-id" style="font-size:38px;min-width:44px">03</div>
-        <div style="flex:1">
-          <div class="band-name">Dominio · el corazón</div>
-          <div class="band-role"><code>Envio.cambiarEstado()</code> transiciona con <code>State</code> · el cambio dispara <code>Observer</code> automáticamente</div>
-        </div>
-        <div class="band-tags" style="margin-top:0;justify-content:flex-end">
-          <span class="band-tag">State</span><span class="band-tag">Observer</span>
+      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">4</div>
+        <div class="h3" style="font-size:24px">Dominio · el corazón</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>Envio.cambiarEstado()</code> transiciona con <code>State</code> · el cambio dispara <code>Observer</code> automáticamente</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">State</span>
+          <span class="band-tag">Observer</span>
         </div>
       </div>
 
-      <div class="band" style="border-left-color:var(--cat-estr)">
-        <div class="band-id" style="font-size:38px;min-width:44px;color:var(--cat-estr)">04</div>
-        <div style="flex:1">
-          <div class="band-name">Persistencia</div>
-          <div class="band-role"><code>Proxy</code> cachea las lecturas frecuentes · <code>Repository</code> guarda objetos sin que el dominio toque SQL</div>
-        </div>
-        <div class="band-tags" style="margin-top:0;justify-content:flex-end">
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--cat-estr);line-height:1;letter-spacing:-.04em">5</div>
+        <div class="h3" style="font-size:24px">Persistencia</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>Proxy</code> cachea las lecturas frecuentes · <code>Repository</code> guarda objetos sin que el dominio toque SQL</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
           <span class="band-tag" style="color:var(--cat-estr);background:var(--cat-estr-tint);border-color:oklch(0.85 0.06 222)">Proxy</span>
           <span class="band-tag" style="color:var(--cat-estr);background:var(--cat-estr-tint);border-color:oklch(0.85 0.06 222)">Repository</span>
         </div>
@@ -949,72 +942,59 @@ visitar(CentroRegional centro)</pre>
 <!-- ════════ 17 · CU-03 — STRATEGY ════════ -->
 <section data-label="CU-03 Strategy" data-screen-label="17 CU-03 — Planificar ruta óptima">
   <div class="frame">
-    <div class="head" style="margin-bottom:28px">
+    <div class="head" style="margin-bottom:24px">
       <div class="eyebrow">CU-03 · Strategy · dos algoritmos intercambiables</div>
       <h2 class="title">Planificar la ruta óptima: dos Strategy encadenadas</h2>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 56px 1fr 56px 1fr;gap:0;flex:1;align-items:start">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex:1;align-content:start">
 
-      <!-- Col 1: Controller -->
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div class="panel" style="text-align:center">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Entrada</div>
-          <div class="h3"><code style="font-size:26px">Controller</code></div>
-          <div style="font-size:23px;color:var(--body);margin-top:12px;line-height:1.4">recibe el pedido de planificación y delega sin elegir el algoritmo</div>
-        </div>
-        <div class="callout info">
-          <div class="ic">i</div>
-          <div>La firma <code>planificarRuta(pedido)</code> nunca cambia aunque el criterio sí.</div>
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">1</div>
+        <div class="h3" style="font-size:24px">Controller</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Recibe el pedido de planificación y delega sin elegir el algoritmo — la firma <code>planificarRuta()</code> nunca cambia</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">GRASP Controller</span>
         </div>
       </div>
 
-      <!-- Arrow 1 -->
-      <div style="display:flex;align-items:flex-start;justify-content:center;padding-top:54px">
-        <svg width="56" height="28" viewBox="0 0 56 28" fill="none"><line x1="0" y1="14" x2="42" y2="14" stroke="var(--accent-line)" stroke-width="2.5"/><polygon points="40,6 56,14 40,22" fill="var(--accent-line)"/></svg>
-      </div>
-
-      <!-- Col 2: Dos Strategy -->
-      <div style="display:flex;flex-direction:column;gap:16px">
-        <div class="panel panel-tint" style="position:relative">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:8px">Strategy 1</div>
-          <div class="h3" style="font-size:26px"><code>AsignadorDeVehiculos</code></div>
-          <div style="font-size:23px;color:var(--body);margin-top:10px;line-height:1.35">Elige el vehículo según el criterio configurado</div>
-          <div class="band-tags" style="margin-top:12px">
-            <span class="band-tag">PorCapacidad</span>
-            <span class="band-tag">PorDisponibilidad</span>
-          </div>
-        </div>
-        <div class="panel panel-tint">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:8px">Strategy 2</div>
-          <div class="h3" style="font-size:26px"><code>CalculadorDeRuta</code></div>
-          <div style="font-size:23px;color:var(--body);margin-top:10px;line-height:1.35">Elige la ruta óptima entre candidatas</div>
-          <div class="band-tags" style="margin-top:12px">
-            <span class="band-tag">MasBarata</span>
-            <span class="band-tag">MasCercana</span>
-            <span class="band-tag">MenosCongestionada</span>
-          </div>
+      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">2</div>
+        <div class="h3" style="font-size:24px"><code style="font-size:.82em">AsignadorDeVehiculos</code></div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Strategy 1 — elige el vehículo óptimo según el criterio configurado</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Strategy</span>
+          <span class="band-tag">PorCapacidad</span>
+          <span class="band-tag">PorDisponibilidad</span>
         </div>
       </div>
 
-      <!-- Arrow 2 -->
-      <div style="display:flex;align-items:flex-start;justify-content:center;padding-top:54px">
-        <svg width="56" height="28" viewBox="0 0 56 28" fill="none"><line x1="0" y1="14" x2="42" y2="14" stroke="var(--accent-line)" stroke-width="2.5"/><polygon points="40,6 56,14 40,22" fill="var(--accent-line)"/></svg>
-      </div>
-
-      <!-- Col 3: Ruta Expert -->
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div class="panel" style="text-align:center">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">GRASP Expert</div>
-          <div class="h3"><code style="font-size:26px">Ruta</code></div>
-          <div style="font-size:23px;color:var(--body);margin-top:12px;line-height:1.4">conoce su propio recorrido · calcula <strong>distancia</strong> y <strong>costo</strong></div>
-        </div>
-        <div class="callout info">
-          <div class="ic">→</div>
-          <div>Cambiar el criterio de ruta = enchufar otra <code>Strategy</code>, <strong>sin tocar el Controller</strong>.</div>
+      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">3</div>
+        <div class="h3" style="font-size:24px"><code style="font-size:.82em">CalculadorDeRuta</code></div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Strategy 2 — elige la ruta óptima entre candidatas con criterio intercambiable</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Strategy</span>
+          <span class="band-tag">MasBarata</span>
+          <span class="band-tag">MasCercana</span>
+          <span class="band-tag">MenosCongestionada</span>
         </div>
       </div>
 
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">4</div>
+        <div class="h3" style="font-size:24px"><code style="font-size:.9em">Ruta</code></div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Information Expert — conoce su propio recorrido y calcula <strong>distancia</strong> y <strong>costo total</strong></div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Info Expert</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="callout info" style="margin-top:18px">
+      <div class="ic">→</div>
+      <div style="font-size:24px">Cambiar el criterio de ruta = enchufar otra <code>Strategy</code> en el paso 3, <strong>sin tocar el Controller ni la firma del método</strong>.</div>
     </div>
   </div>
 </section>
@@ -1090,71 +1070,47 @@ visitar(CentroRegional centro)</pre>
 <!-- ════════ 19 · CU-07 — SEGUIR EL ENVÍO ════════ -->
 <section data-label="CU-07 State+Observer" data-screen-label="19 CU-07 — Seguir el envío en vivo">
   <div class="frame">
-    <div class="head" style="margin-bottom:28px">
+    <div class="head" style="margin-bottom:24px">
       <div class="eyebrow">CU-07 · State + Observer · el envío ni sabe quién escucha</div>
       <h2 class="title">Seguimiento en vivo: State dispara Observer</h2>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 56px 1fr 56px 1fr;gap:0;flex:1;align-items:center">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1;align-content:start">
 
-      <!-- Col 1: Trigger -->
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div class="panel" style="text-align:center">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Disparador</div>
-          <div class="h3" style="font-size:26px">Transportista</div>
-          <div style="font-size:23px;color:var(--body);margin-top:10px;line-height:1.4">reporta su posición GPS en el sistema</div>
-        </div>
-        <div class="panel" style="background:oklch(0.99 0.015 88 / .5);border-color:oklch(0.88 0.06 50)">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.04em;text-transform:uppercase;color:oklch(0.5 0.14 145);margin-bottom:6px">Decorator</div>
-          <div style="font-size:23px;color:var(--body);line-height:1.35">El servicio GPS se <strong>apila sobre Envio</strong> con Decorator, sin modificar la clase base</div>
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">1</div>
+        <div class="h3" style="font-size:24px">Transportista reporta</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Informa su posición GPS. El servicio de tracking se <strong>apila sobre <code>Envio</code></strong> con Decorator — sin modificar la clase base</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Decorator</span>
         </div>
       </div>
 
-      <!-- Arrow 1 -->
-      <div style="display:flex;align-items:center;justify-content:center">
-        <svg width="56" height="28" viewBox="0 0 56 28" fill="none"><line x1="0" y1="14" x2="42" y2="14" stroke="var(--accent-line)" stroke-width="2.5"/><polygon points="40,6 56,14 40,22" fill="var(--accent-line)"/></svg>
-      </div>
-
-      <!-- Col 2: State -->
-      <div class="panel panel-tint" style="text-align:center">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:10px">State</div>
-        <div class="h3" style="font-size:26px"><code>Envio.cambiarEstado()</code></div>
-        <div style="font-size:23px;color:var(--body);margin-top:12px;line-height:1.4">valida que la transición sea legal desde el estado actual · luego llama a <code>notificarObservadores()</code></div>
-        <div class="band-tags" style="margin-top:16px;justify-content:center">
-          <span class="band-tag">EN_PREPARACION</span>
+      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">2</div>
+        <div class="h3" style="font-size:24px"><code style="font-size:.82em">Envio.cambiarEstado()</code></div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">State valida que la transición sea legal · luego llama a <code>notificarObservadores()</code> — el envío no sabe quién escucha</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">State</span>
           <span class="band-tag">EN_TRÁNSITO</span>
           <span class="band-tag">EN_REPARTO</span>
+          <span class="band-tag">ENTREGADO</span>
         </div>
       </div>
 
-      <!-- Arrow 2 -->
-      <div style="display:flex;align-items:center;justify-content:center">
-        <svg width="56" height="28" viewBox="0 0 56 28" fill="none"><line x1="0" y1="14" x2="42" y2="14" stroke="var(--accent-line)" stroke-width="2.5"/><polygon points="40,6 56,14 40,22" fill="var(--accent-line)"/></svg>
-      </div>
-
-      <!-- Col 3: Observer fan-out -->
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px">Observer — tres suscriptores</div>
-        <div class="panel" style="display:flex;gap:14px;align-items:center">
-          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--accent);flex:0 0 auto">01</div>
-          <div>
-            <div style="font-size:24px;font-weight:600;color:var(--ink)">Dashboard</div>
-            <div style="font-size:22px;color:var(--body)">refresca el mapa y el ETA en tiempo real</div>
-          </div>
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">3</div>
+        <div class="h3" style="font-size:24px">Observer · tres suscriptores</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">
+          <code>notificarObservadores()</code> propaga el evento a todos:
+          <ul style="list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:11px">
+            <li style="position:relative;padding-left:20px"><span style="position:absolute;left:0;top:.45em;width:8px;height:8px;border-radius:2px;background:var(--accent);display:block"></span><strong>Dashboard</strong> — refresca el mapa y el ETA</li>
+            <li style="position:relative;padding-left:20px"><span style="position:absolute;left:0;top:.45em;width:8px;height:8px;border-radius:2px;background:var(--accent);display:block"></span><strong>Cliente final</strong> — email o SMS con ETA actualizado</li>
+            <li style="position:relative;padding-left:20px"><span style="position:absolute;left:0;top:.45em;width:8px;height:8px;border-radius:2px;background:var(--accent);display:block"></span><strong>Centro</strong> — actualiza su ocupación y capacidad</li>
+          </ul>
         </div>
-        <div class="panel" style="display:flex;gap:14px;align-items:center">
-          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--accent);flex:0 0 auto">02</div>
-          <div>
-            <div style="font-size:24px;font-weight:600;color:var(--ink)">Cliente final</div>
-            <div style="font-size:22px;color:var(--body)">recibe email o SMS con ETA actualizado</div>
-          </div>
-        </div>
-        <div class="panel" style="display:flex;gap:14px;align-items:center">
-          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--accent);flex:0 0 auto">03</div>
-          <div>
-            <div style="font-size:24px;font-weight:600;color:var(--ink)">Centro de distribución</div>
-            <div style="font-size:22px;color:var(--body)">actualiza su ocupación y capacidad disponible</div>
-          </div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Observer</span>
         </div>
       </div>
 
