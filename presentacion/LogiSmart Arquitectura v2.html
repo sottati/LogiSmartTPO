@@ -445,10 +445,10 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-toggle">›</div>
         <div class="pcard-need"><span class="cat-dot" style="background:var(--accent)"></span>Una llamada para una operación compleja</div>
         <div class="pcard-name">Facade</div>
-        <div class="pcard-idea">Una interfaz simple sobre cinco subsistemas que se coordinan en orden.</div>
+        <div class="pcard-idea">Una interfaz simple para subsistema que coordina operaciones en orden.</div>
         <div class="pcard-body"><div class="inner">
           <div class="pcard-classes">FacadeProveedoresExternos</div>
-          <div class="pcard-why">El Controller delega en la Facade para acceder a DHL, FedEx, UPS, PayPal y Stripe — sin conocer qué adaptador concreto se usa ni cómo se construye un reporte.</div>
+          <div class="pcard-why">El Controller delega en la Facade para acceder a DHL, FedEx, UPS, PayPal y Stripe.</div>
           <div class="pcard-trade"><b>Trade-off:</b> riesgo de «God Object» — por eso la fachada <strong>solo coordina y delega</strong>, nunca calcula ni valida ella misma.</div>
         </div></div>
       </div>
@@ -468,7 +468,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <p style="font-size:24px;line-height:1.4;color:var(--body)">Es la capa que más se apoya en GRASP: <strong>bajo acoplamiento y alta cohesión</strong>. La lógica real siempre baja al dominio.</p>
       </div>
     </div>
-    <div class="layer-foot"><span class="arrow">+</span> En esta capa también: <strong>Command</strong> · <strong>Mediator</strong> · <strong>Template Method</strong></div>
+    <div class="layer-foot"><span class="arrow">+</span> En esta capa también: <strong>Template Method</strong></div>
   </div>
 </section>
 
