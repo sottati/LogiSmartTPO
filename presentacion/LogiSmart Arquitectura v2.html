@@ -767,7 +767,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
       <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">3</div>
         <div class="h3" style="font-size:24px">Elegir vehículo</div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>AsignadorDeVehiculos</code> selecciona por capacidad o disponibilidad — criterio intercambiable sin tocar el Controller</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>AsignadorDeVehiculos</code> selecciona el vehículo para la ruta — criterio intercambiable: PorCapacidad o PorDisponibilidad</div>
         <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
           <span class="band-tag">Strategy</span>
         </div>
@@ -776,7 +776,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
       <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">4</div>
         <div class="h3" style="font-size:24px">Elegir ruta</div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>CalculadorDeRuta</code> elige entre candidatas — MasCercana, MasBarata o MenosCongestionada</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>CalculadorDeRuta</code> elige la ruta y le asigna el vehículo — la ruta lo necesita para calcular su costo por km</div>
         <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
           <span class="band-tag">Strategy</span>
         </div>
