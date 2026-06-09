@@ -1,5 +1,6 @@
 package com.logismart.infraestructura.estructural.composite.centro;
 
+import com.logismart.infraestructura.comportamiento.visitor.VisitorCentro;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,14 @@ public class CentroRegional extends CentroDistribucionComposite {
 
     public List<CentroDistribucionComposite> obtenerSubcentros() {
         return new ArrayList<>(subcentros);
+    }
+
+    @Override
+    public void aceptar(VisitorCentro visitor) {
+        visitor.visitar(this);
+        for (CentroDistribucionComposite sub : subcentros) {
+            sub.aceptar(visitor);
+        }
     }
 
     @Override

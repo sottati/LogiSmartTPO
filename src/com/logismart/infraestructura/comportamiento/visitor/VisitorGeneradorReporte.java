@@ -1,11 +1,14 @@
 package com.logismart.infraestructura.comportamiento.visitor;
 
+import com.logismart.infraestructura.estructural.composite.centro.CentroRegional;
+import com.logismart.infraestructura.estructural.composite.centro.SucursalEntrega;
+
 public class VisitorGeneradorReporte implements VisitorCentro {
     private final StringBuilder reporte = new StringBuilder();
     private int nodosVisitados;
 
     @Override
-    public void visitar(NodoPuntoEntrega punto) {
+    public void visitar(SucursalEntrega punto) {
         reporte.append("Punto: ")
                 .append(punto.obtenerNombre())
                 .append(" paquetes=")
@@ -15,7 +18,7 @@ public class VisitorGeneradorReporte implements VisitorCentro {
     }
 
     @Override
-    public void visitar(NodoCentroRegional centro) {
+    public void visitar(CentroRegional centro) {
         reporte.append("Centro: ")
                 .append(centro.obtenerNombre())
                 .append('\n');

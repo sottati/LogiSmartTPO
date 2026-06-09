@@ -1,6 +1,9 @@
 package com.logismart.infraestructura.comportamiento.visitor;
 
+import com.logismart.infraestructura.estructural.composite.centro.CentroRegional;
+import com.logismart.infraestructura.estructural.composite.centro.SucursalEntrega;
+
 public interface VisitorCentro {
-    void visitar(NodoPuntoEntrega punto);
-    void visitar(NodoCentroRegional centro);
+    void visitar(SucursalEntrega punto);
+    void visitar(CentroRegional centro);
 }

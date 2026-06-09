@@ -1,6 +1,9 @@
 package com.logismart.infraestructura.estructural.composite.centro;
 
-public abstract class CentroDistribucionComposite {
+import com.logismart.infraestructura.comportamiento.visitor.ElementoDistribucion;
+import com.logismart.infraestructura.comportamiento.visitor.VisitorCentro;
+
+public abstract class CentroDistribucionComposite implements ElementoDistribucion {
     protected String nombre;
     protected String ubicacion;
     protected String codigo;
@@ -15,9 +18,15 @@ public abstract class CentroDistribucionComposite {
     public abstract int obtenerOcupacion();
     public abstract void mostrar(int profundidad);
 
+    @Override
+    public abstract void aceptar(VisitorCentro visitor);
+
+    @Override
+    public String obtenerNombre() { return nombre; }
+
     public double obtenerPorcentajeOcupacion() {
-        int capacidad = obtenerCapacidad();
-        return capacidad == 0 ? 0 : (double) obtenerOcupacion() / capacidad * 100;
+        int cap = obtenerCapacidad();
+        return cap == 0 ? 0 : (double) obtenerOcupacion() / cap * 100;
     }
 
     public String getNombre() { return nombre; }

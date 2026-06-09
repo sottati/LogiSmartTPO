@@ -1181,22 +1181,32 @@ class ElementoDistribucion {
   +aceptar(visitor)
   +obtenerNombre() String
 }
-class NodoPuntoEntrega {
-  -paquetes int
+class CentroDistribucionComposite {
+  &lt;&lt;abstract&gt;&gt;
+  #nombre String
+  +obtenerCapacidad() int
+  +obtenerOcupacion() int
+  +aceptar(visitor)
+}
+class CentroRegional {
+  -subcentros List~CentroDistribucionComposite~
+  +agregar(centro)
+}
+class SucursalEntrega {
   -capacidad int
   -costoOperativo double
-}
-class NodoCentroRegional {
-  -hijos List~ElementoDistribucion~
-  +agregar(elemento)
+  -enviosAlmacenados List~Envio~
+  +obtenerPaquetes() int
+  +obtenerCostoOperativo() double
 }
 class VisitorCalculoOcupacion
 class VisitorGeneradorReporte
 class VisitorCalculoCostoOperativo
 class VisitorBusquedaPuntosCriticos
-ElementoDistribucion &lt;|.. NodoPuntoEntrega
-ElementoDistribucion &lt;|.. NodoCentroRegional
-NodoCentroRegional o-- ElementoDistribucion
+ElementoDistribucion &lt;|.. CentroDistribucionComposite
+CentroDistribucionComposite &lt;|-- CentroRegional
+CentroDistribucionComposite &lt;|-- SucursalEntrega
+CentroRegional o-- CentroDistribucionComposite : subcentros
 VisitorCentro &lt;|.. VisitorCalculoOcupacion
 VisitorCentro &lt;|.. VisitorGeneradorReporte
 VisitorCentro &lt;|.. VisitorCalculoCostoOperativo
@@ -1204,7 +1214,7 @@ VisitorCentro &lt;|.. VisitorBusquedaPuntosCriticos
 ElementoDistribucion --&gt; VisitorCentro : acepta
 
 class SistemaLogisticaAvanzada {
-  -redDistribucion NodoCentroRegional
+  -redDistribucion CentroRegional
   +procesarEnvio(envio, estrategia, proceso) double
   +calcularOcupacionRed() double
   +calcularCostoOperativoRed() double
@@ -1212,7 +1222,7 @@ class SistemaLogisticaAvanzada {
 SistemaLogisticaAvanzada --&gt; EstadoEnvio
 SistemaLogisticaAvanzada --&gt; EstrategiaCalculoCosto
 SistemaLogisticaAvanzada --&gt; ProcesoEnvio
-SistemaLogisticaAvanzada --&gt; NodoCentroRegional
+SistemaLogisticaAvanzada --&gt; CentroRegional
           </pre>
         </div>
       </main>
@@ -1752,7 +1762,7 @@ SistemaLogisticaAvanzada --&gt; NodoCentroRegional
                 Visitor
               </div>
               <div class="pattern-desc">
-                <code>VisitorCentro</code> agrega operaciones sobre <code>NodoCentroRegional</code> y <code>NodoPuntoEntrega</code> sin modificar la estructura.
+                <code>VisitorCentro</code> agrega operaciones sobre <code>CentroRegional</code> y <code>SucursalEntrega</code> sin modificar la estructura.
               </div>
             </div>
 

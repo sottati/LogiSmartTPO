@@ -985,15 +985,36 @@
             </thead>
             <tbody>
               <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaPeso</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>peso × $5.00/kg</code></td></tr>
-              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaUrgencia</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">URGENTE=$500 · EXPRESS=$300 · NORMAL=$100</td></tr>
-              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaDistanciaReal</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoPorKm × distancia</code> (tarifa configurable)</td></tr>
-              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaPorBulto</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">tarifa fija por paquete</td></tr>
-              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaFijo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">monto fijo sin importar el envío</td></tr>
-              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaHibrida</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">combinación ponderada de otras estrategias</td></tr>
-              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaVolumen</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">basada en dimensiones del paquete</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaUrgencia</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">URGENTE=$500 · EXPRESS=$300 · NORMAL=$100 (según <code>envio.getTipo()</code>)</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaDistancia</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>peso × 500</code> (500 km fijos de referencia; base de la Híbrida)</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaDistanciaReal</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoPorKm × distanciaKm</code> (tarifa configurable por vehículo)</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaVolumen</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>peso × 4.0</code> (aproximación de m³ a partir del peso)</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaFijo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">monto fijo configurado al construir (≥ 0)</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaPorBulto</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>Σ(orden.getTotalBultos()) × costoPorBulto</code></td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">EstrategiaHibrida</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>distancia×0.40 + peso×0.30 + urgencia×0.30</code></td></tr>
             </tbody>
           </table>
-          <p style="font-size:.76rem;color:var(--muted);margin-top:.35rem">La estrategia es intercambiable en runtime desde <code>CalculadorDeRutas</code>. El cliente nunca referencia la estrategia concreta.</p>
+          <p style="font-size:.76rem;color:var(--muted);margin-top:.35rem"><strong>Criterio de selección:</strong> la estrategia se inyecta en <code>Envio</code> vía <code>establecerEstrategia()</code> — la elige el Operador Logístico al crear el envío; el dominio nunca la decide solo.</p>
+
+          <!-- Operaciones sobre el árbol de centros (Visitor) -->
+          <h4 style="font-size:.85rem;font-weight:700;color:var(--heading);margin:1.25rem 0 .5rem">Operaciones sobre el árbol de centros <span style="font-weight:400;color:var(--muted);font-size:.75rem">— Visitor (Hito 12)</span></h4>
+          <table style="width:100%;border-collapse:collapse;font-size:.78rem;line-height:1.4">
+            <thead>
+              <tr style="background:var(--bg)">
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Visitor</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">En SucursalEntrega</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">En CentroRegional</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">VisitorCalculoCostoOperativo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoTotal += obtenerCostoOperativo()</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoTotal += $1.000</code> (fijo por centro)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>obtenerCostoTotal()</code></td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">VisitorCalculoOcupacion</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Acumula paquetes y capacidad</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Solo cuenta el nodo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>(paquetes × 100) / capacidad</code> → %</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">VisitorBusquedaPuntosCriticos</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Agrega al listado si ocupación ≥ 90 %</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Solo cuenta el nodo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>List&lt;String&gt;</code> de nombres críticos</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">VisitorGeneradorReporte</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">"Punto: nombre paquetes=X"</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">"Centro: nombre"</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>String</code> reporte del árbol completo</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:.76rem;color:var(--muted);margin-top:.35rem"><strong>Criterio de activación:</strong> se llama a <code>nodo.aceptar(visitor)</code> en la raíz; el <em>double dispatch</em> enruta al <code>visitar()</code> correcto sin <code>instanceof</code>. La elección del Visitor la hace el llamador según la consulta que necesita.</p>
 
           <!-- Proveedores externos (Adapter) -->
           <h4 style="font-size:.85rem;font-weight:700;color:var(--heading);margin:1.25rem 0 .5rem">Tarifas de carriers externos <span style="font-weight:400;color:var(--muted);font-size:.75rem">— Adapter (Hito 8)</span></h4>
@@ -1469,7 +1490,7 @@
               <div class="p-intent">Agregar operaciones sobre una estructura de objetos sin modificar las clases de esa estructura.</div>
               <div class="p-applied-label">Implementado en</div>
               <div class="p-applied">
-                <code>VisitorCentro</code> opera sobre <code>NodoCentroRegional</code> y <code>NodoPuntoEntrega</code> para ocupacion, reporte, costo operativo y puntos criticos.
+                <code>VisitorCentro</code> opera sobre <code>CentroRegional</code> y <code>SucursalEntrega</code> para ocupacion, reporte, costo operativo y puntos criticos.
               </div>
             </div>
 

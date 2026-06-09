@@ -12,12 +12,12 @@ import com.logismart.infraestructura.comportamiento.template.ProcesoEnvio;
 import com.logismart.infraestructura.comportamiento.template.ProcesoInternacional;
 import com.logismart.infraestructura.comportamiento.template.ProcesoNacional;
 import com.logismart.infraestructura.comportamiento.template.ProcesoUrgente;
-import com.logismart.infraestructura.comportamiento.visitor.NodoCentroRegional;
-import com.logismart.infraestructura.comportamiento.visitor.NodoPuntoEntrega;
 import com.logismart.infraestructura.comportamiento.visitor.VisitorBusquedaPuntosCriticos;
 import com.logismart.infraestructura.comportamiento.visitor.VisitorCalculoCostoOperativo;
 import com.logismart.infraestructura.comportamiento.visitor.VisitorCalculoOcupacion;
 import com.logismart.infraestructura.comportamiento.visitor.VisitorGeneradorReporte;
+import com.logismart.infraestructura.estructural.composite.centro.CentroRegional;
+import com.logismart.infraestructura.estructural.composite.centro.SucursalEntrega;
 
 public final class CasosDePruebaHito12 {
     private static int total;
@@ -132,7 +132,7 @@ public final class CasosDePruebaHito12 {
     private static void probarVisitor() {
         System.out.println("\n--- Visitor ---");
 
-        NodoCentroRegional red = redDePrueba();
+        CentroRegional red = redDePrueba();
 
         VisitorCalculoOcupacion ocupacion = new VisitorCalculoOcupacion();
         red.aceptar(ocupacion);
@@ -176,11 +176,21 @@ public final class CasosDePruebaHito12 {
         return envio;
     }
 
-    private static NodoCentroRegional redDePrueba() {
-        NodoCentroRegional raiz = new NodoCentroRegional("Centro AMBA");
-        NodoCentroRegional regional = new NodoCentroRegional("Centro Norte");
-        regional.agregar(new NodoPuntoEntrega("Punto Norte", 90, 100, 1200.0));
-        regional.agregar(new NodoPuntoEntrega("Punto Oeste", 70, 100, 1800.0));
+    private static void llenar(SucursalEntrega sucursal, int cantidad) {
+        for (int i = 0; i < cantidad; i++) {
+            sucursal.agregarEnvio(new Envio.EnvioBuilder("E-" + i, "A", "B").build());
+        }
+    }
+
+    private static CentroRegional redDePrueba() {
+        CentroRegional raiz = new CentroRegional("Centro AMBA", "AMBA", "C-AMBA");
+        CentroRegional regional = new CentroRegional("Centro Norte", "Norte", "C-NORTE");
+        SucursalEntrega norte = new SucursalEntrega("Punto Norte", "Norte", "S-NORTE", 100, 1200.0);
+        llenar(norte, 90);
+        SucursalEntrega oeste = new SucursalEntrega("Punto Oeste", "Oeste", "S-OESTE", 100, 1800.0);
+        llenar(oeste, 70);
+        regional.agregar(norte);
+        regional.agregar(oeste);
         raiz.agregar(regional);
         return raiz;
     }

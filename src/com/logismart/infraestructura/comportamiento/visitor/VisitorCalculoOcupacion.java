@@ -1,19 +1,22 @@
 package com.logismart.infraestructura.comportamiento.visitor;
 
+import com.logismart.infraestructura.estructural.composite.centro.CentroRegional;
+import com.logismart.infraestructura.estructural.composite.centro.SucursalEntrega;
+
 public class VisitorCalculoOcupacion implements VisitorCentro {
     private int paquetesTotales;
     private int capacidadTotal;
     private int nodosVisitados;
 
     @Override
-    public void visitar(NodoPuntoEntrega punto) {
+    public void visitar(SucursalEntrega punto) {
         paquetesTotales += punto.obtenerPaquetes();
         capacidadTotal += punto.obtenerCapacidad();
         nodosVisitados++;
     }
 
     @Override
-    public void visitar(NodoCentroRegional centro) {
+    public void visitar(CentroRegional centro) {
         nodosVisitados++;
     }
 

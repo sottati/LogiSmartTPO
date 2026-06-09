@@ -1006,11 +1006,40 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-strategy"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Reglas de negocio — 8 estrategias</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead>
+              <tr style="background:var(--bg)">
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">Estrategia</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Fórmula</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Nota</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">EstrategiaPeso</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>peso × $5.00/kg</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Costo lineal al peso del envío</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">EstrategiaUrgencia</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">URGENTE=$500 · EXPRESS=$300 · NORMAL=$100</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Según <code>envio.getTipo()</code></td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">EstrategiaDistancia</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>peso × 500</code> (500 km fijos de referencia)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Placeholder; base de la Híbrida</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">EstrategiaDistanciaReal</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoPorKm × distanciaKm</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Tarifa por km configurable (según vehículo)</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">EstrategiaVolumen</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>peso × 4.0</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Aproximación de m³ a partir del peso</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">EstrategiaFijo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>tarifaFija</code> (≥ 0, configurada al construir)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Monto fijo sin importar el envío</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">EstrategiaPorBulto</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>Σ(orden.getTotalBultos()) × costoPorBulto</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Agrega bultos de todas las órdenes del envío</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">EstrategiaHibrida</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>distancia×0.40 + peso×0.30 + urgencia×0.30</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Combina 3 estrategias con pesos fijos</td></tr>
+            </tbody>
+          </table>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Criterio de selección</p>
+          <p style="font-size:.71rem;color:var(--muted);margin:0 0 .75rem">La estrategia se inyecta en <code>Envio</code> vía <code>establecerEstrategia()</code> — la elige el Operador Logístico al crear o configurar el envío, nunca el dominio. <code>Envio</code> delega el cálculo sin saber qué implementación recibe.</p>
+
           <div class="pat-classes">
             <span class="class-chip">EstrategiaCalculoCosto</span>
             <span class="class-chip">EstrategiaPeso</span>
             <span class="class-chip">EstrategiaUrgencia</span>
             <span class="class-chip">EstrategiaDistancia</span>
+            <span class="class-chip">EstrategiaDistanciaReal</span>
+            <span class="class-chip">EstrategiaVolumen</span>
+            <span class="class-chip">EstrategiaFijo</span>
+            <span class="class-chip">EstrategiaPorBulto</span>
             <span class="class-chip">EstrategiaHibrida</span>
           </div>
         </div>
@@ -1081,12 +1110,36 @@
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-visitor"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Reglas de negocio — 4 visitantes</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead>
+              <tr style="background:var(--bg)">
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">Visitor</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">En SucursalEntrega</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">En CentroRegional</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">VisitorCalculoCostoOperativo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoTotal += punto.obtenerCostoOperativo()</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoTotal += $1.000</code> (costo fijo por centro)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>obtenerCostoTotal()</code></td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">VisitorCalculoOcupacion</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Acumula paquetes y capacidad del punto</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Solo cuenta el nodo (sin paquetes)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>(paquetes × 100) / capacidad</code> → %</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">VisitorBusquedaPuntosCriticos</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Agrega al listado si ocupación ≥ 90 %</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Solo cuenta el nodo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>List&lt;String&gt;</code> de nombres críticos</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">VisitorGeneradorReporte</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">"Punto: nombre paquetes=X"</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">"Centro: nombre"</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>String</code> reporte completo del árbol</td></tr>
+            </tbody>
+          </table>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Criterio de activación</p>
+          <p style="font-size:.71rem;color:var(--muted);margin:0 0 .75rem">Se invoca <code>nodo.aceptar(visitor)</code> en la raíz del árbol. El <em>double dispatch</em> garantiza que cada nodo llama a la sobrecarga correcta de <code>visitar()</code> sin <code>instanceof</code>. La elección del Visitor la hace el llamador (Operador Logístico o sistema) según la consulta que necesita; los nodos del árbol no saben qué Visitor reciben.</p>
+
           <div class="pat-classes">
             <span class="class-chip">VisitorCentro</span>
             <span class="class-chip">VisitorCalculoCostoOperativo</span>
             <span class="class-chip">VisitorCalculoOcupacion</span>
-            <span class="class-chip">NodoCentroRegional</span>
-            <span class="class-chip">NodoPuntoEntrega</span>
+            <span class="class-chip">VisitorBusquedaPuntosCriticos</span>
+            <span class="class-chip">VisitorGeneradorReporte</span>
+            <span class="class-chip">CentroRegional</span>
+            <span class="class-chip">SucursalEntrega</span>
           </div>
         </div>
       </div>
@@ -1703,9 +1756,9 @@ const DIAGRAMS = {
 
 'visitor': `sequenceDiagram
     participant V as VisitorCalculoCostoOperativo
-    participant R as NodoCentroRegional
-    participant P1 as NodoPuntoEntrega A
-    participant P2 as NodoPuntoEntrega B
+    participant R as CentroRegional
+    participant P1 as SucursalEntrega A
+    participant P2 as SucursalEntrega B
     V->>R: visitar(centroRegional)
     R->>P1: aceptar(visitor)
     P1->>V: visitar(self)

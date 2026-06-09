@@ -181,7 +181,7 @@ public void entregar() { estadoGoF.entregar(this); }</pre>
       <section class="section" id="visitor">
         <div class="section-act">Actividad 4 · Visitor</div>
         <h2>Visitor: operaciones sobre red de distribución</h2>
-        <p>Se evita chocar nombres existentes renombrando los elementos del Visitor: <code>ElementoDistribucion</code>, <code>NodoPuntoEntrega</code> y <code>NodoCentroRegional</code>. La operación se mueve al visitor y la estructura solo acepta visitantes.</p>
+        <p>Las clases Composite <code>CentroRegional</code> y <code>SucursalEntrega</code> implementan <code>ElementoDistribucion</code> directamente. La operación se mueve al visitor y la estructura solo acepta visitantes.</p>
         <div class="pattern-badge">GoF · Visitor</div>
         <table>
           <thead><tr><th>Visitor</th><th>Resultado</th><th>Recorrido</th></tr></thead>
@@ -242,9 +242,10 @@ VisitorCentro <|.. VisitorCalculoOcupacion
 VisitorCentro <|.. VisitorGeneradorReporte
 VisitorCentro <|.. VisitorCalculoCostoOperativo
 VisitorCentro <|.. VisitorBusquedaPuntosCriticos
-ElementoDistribucion <|.. NodoPuntoEntrega
-ElementoDistribucion <|.. NodoCentroRegional
-NodoCentroRegional o-- ElementoDistribucion</pre>
+ElementoDistribucion <|.. CentroDistribucionComposite
+CentroDistribucionComposite <|-- CentroRegional
+CentroDistribucionComposite <|-- SucursalEntrega
+CentroRegional o-- CentroDistribucionComposite : subcentros</pre>
         <h3>Integración</h3>
         <pre class="mermaid">sequenceDiagram
 participant Sistema as SistemaLogisticaAvanzada

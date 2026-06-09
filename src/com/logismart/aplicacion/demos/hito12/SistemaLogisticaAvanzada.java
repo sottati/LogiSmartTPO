@@ -4,14 +4,14 @@ import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.comportamiento.state.EstadoConfirmado;
 import com.logismart.infraestructura.comportamiento.strategy.EstrategiaCalculoCosto;
 import com.logismart.infraestructura.comportamiento.template.ProcesoEnvio;
-import com.logismart.infraestructura.comportamiento.visitor.NodoCentroRegional;
 import com.logismart.infraestructura.comportamiento.visitor.VisitorCalculoCostoOperativo;
 import com.logismart.infraestructura.comportamiento.visitor.VisitorCalculoOcupacion;
+import com.logismart.infraestructura.estructural.composite.centro.CentroRegional;
 
 public class SistemaLogisticaAvanzada {
-    private final NodoCentroRegional redDistribucion;
+    private final CentroRegional redDistribucion;
 
-    public SistemaLogisticaAvanzada(NodoCentroRegional redDistribucion) {
+    public SistemaLogisticaAvanzada(CentroRegional redDistribucion) {
         this.redDistribucion = redDistribucion;
     }
 
@@ -38,7 +38,7 @@ public class SistemaLogisticaAvanzada {
         return visitor.obtenerCostoTotal();
     }
 
-    public NodoCentroRegional obtenerRedDistribucion() {
+    public CentroRegional obtenerRedDistribucion() {
         return redDistribucion;
     }
 }

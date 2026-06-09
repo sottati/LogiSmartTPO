@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
@@ -263,6 +263,117 @@
           <div class="band-qa">Elasticidad</div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ 06 · MODELO DE NEGOCIO (resumen) ════════ -->
+<section data-label="Modelo de negocio" data-screen-label="06 Modelo de negocio">
+  <div class="frame">
+    <div class="head" style="margin-bottom:16px">
+      <div class="eyebrow">Contexto de negocio — antes de entrar a las capas</div>
+      <h2 class="title">Un SaaS multi-tenant para PyMEs logísticas</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;flex:1;min-height:0">
+
+      <!-- Columna 1: Actores -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:var(--accent-strong);text-transform:uppercase;letter-spacing:.07em">Actores · 5 roles</div>
+        <div class="panel" style="padding:11px 14px;display:flex;align-items:baseline;gap:10px">
+          <span style="font-weight:700;font-size:.85em;color:var(--accent-strong);flex:0 0 140px">Admin. Plataforma</span>
+          <span style="font-size:.74em;opacity:.55">LogiSmart · acceso total</span>
+        </div>
+        <div class="panel" style="padding:11px 14px;display:flex;align-items:baseline;gap:10px">
+          <span style="font-weight:700;font-size:.85em;color:var(--accent-strong);flex:0 0 140px">Operador Logístico</span>
+          <span style="font-size:.74em;opacity:.55">PyME · usuario principal</span>
+        </div>
+        <div class="panel" style="padding:11px 14px;display:flex;align-items:baseline;gap:10px">
+          <span style="font-weight:700;font-size:.85em;color:var(--accent-strong);flex:0 0 140px">Admin. Empresa</span>
+          <span style="font-size:.74em;opacity:.55">PyME · dueño / gerente</span>
+        </div>
+        <div class="panel" style="padding:11px 14px;display:flex;align-items:baseline;gap:10px">
+          <span style="font-weight:700;font-size:.85em;color:var(--accent-strong);flex:0 0 140px">Transportista</span>
+          <span style="font-size:.74em;opacity:.55">PyME · chofer</span>
+        </div>
+        <div class="panel" style="padding:11px 14px;display:flex;align-items:baseline;gap:10px">
+          <span style="font-weight:700;font-size:.85em;color:var(--muted);flex:0 0 140px">Cliente Final</span>
+          <span style="font-size:.74em;opacity:.55">Externo · CU-07</span>
+        </div>
+        <div class="callout info" style="margin:0;flex:1;align-items:flex-start">
+          <span class="ic">▸</span>
+          <div style="font-size:.82em">Cada PyME es un <strong>tenant</strong> con su <strong>Suscripción</strong>. Los permisos salen de la matriz 5×5 del enum <code>Rol</code>.</div>
+        </div>
+      </div>
+
+      <!-- Columna 2: Envío -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:var(--accent-strong);text-transform:uppercase;letter-spacing:.07em">Envío · la entidad central</div>
+        <div class="panel" style="padding:14px 16px">
+          <div style="font-weight:700;font-size:.82em;color:var(--accent-strong);margin-bottom:8px">Ciclo de vida (State)</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:.78em;color:var(--body);line-height:1.75">
+            CONFIRMADO → EN_TRANSITO<br/>→ EN_REPARTO → ENTREGADO<br/>
+            <span style="opacity:.45">↳ CANCELADO · RETENIDO desde intermedios</span>
+          </div>
+        </div>
+        <div class="panel" style="padding:14px 16px">
+          <div style="font-weight:700;font-size:.82em;color:var(--accent-strong);margin-bottom:8px">Tipos de proceso (Template Method)</div>
+          <ul class="kvs" style="font-size:.8em">
+            <li><strong>Nacional</strong> · peso × $100</li>
+            <li><strong>Internacional</strong> · peso × $250 + $1.000</li>
+            <li><strong>Urgente</strong> · peso × $180 + $500</li>
+          </ul>
+        </div>
+        <div class="panel" style="padding:14px 16px;flex:1">
+          <div style="font-weight:700;font-size:.82em;color:var(--cat-estr);margin-bottom:8px">Estrategias de costo (Strategy · 6)</div>
+          <div style="font-size:.78em;color:var(--body)">Peso · Distancia · Urgencia · Volumen · Fijo · Híbrida</div>
+          <div style="font-weight:700;font-size:.82em;color:var(--cat-estr);margin:10px 0 6px">Servicios adicionales (Decorator)</div>
+          <div style="font-size:.78em;color:var(--body)">GPS tracking +$50 · Seguro +15 %</div>
+        </div>
+      </div>
+
+      <!-- Columna 3: Flota y regiones -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:var(--accent-strong);text-transform:uppercase;letter-spacing:.07em">Flota · 3 vehículos · 2 regiones</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div class="panel" style="padding:12px 10px;text-align:center">
+            <div style="font-weight:700;font-size:.88em;color:var(--cat-crea)">Moto</div>
+            <div style="font-size:.72em;opacity:.65;margin-top:5px;line-height:1.5">100 kg<br/>$0.90/km</div>
+          </div>
+          <div class="panel" style="padding:12px 10px;text-align:center">
+            <div style="font-weight:700;font-size:.88em;color:var(--accent-strong)">Auto</div>
+            <div style="font-size:.72em;opacity:.65;margin-top:5px;line-height:1.5">500 kg<br/>$1.00/km</div>
+          </div>
+          <div class="panel" style="padding:12px 10px;text-align:center">
+            <div style="font-weight:700;font-size:.88em;color:var(--cat-comp)">Camión</div>
+            <div style="font-size:.72em;opacity:.65;margin-top:5px;line-height:1.5">5.000 kg<br/>$1.80/km</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1">
+          <div class="panel" style="padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+            <div style="font-weight:700;font-size:.88em;color:var(--cat-crea)">🇦🇷 Argentina</div>
+            <ul class="kvs" style="font-size:.8em">
+              <li><strong>Default:</strong> Auto</li>
+              <li><strong>IVA</strong> 21 %</li>
+              <li>Google Maps</li>
+              <li style="opacity:.6">($100 + peso×$15) × 1.21</li>
+            </ul>
+          </div>
+          <div class="panel" style="padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+            <div style="font-weight:700;font-size:.88em;color:var(--cat-estr)">🇧🇷 Brasil</div>
+            <ul class="kvs" style="font-size:.8em">
+              <li><strong>Default:</strong> Moto</li>
+              <li><strong>ICMS</strong> 12 %</li>
+              <li>HERE Maps</li>
+              <li style="opacity:.6">($80 + peso×$12) × 1.12</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout info" style="margin:0">
+          <span class="ic">▸</span>
+          <div style="font-size:.82em"><code>crearFactory(region)</code> — el único punto del sistema con fábricas concretas. El resto del código solo ve <code>LogiSmartFactory</code>.</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -814,202 +925,6 @@ visitar(CentroRegional centro)</pre>
 </section>
 
 <!-- ════════ 18 · LO QUE DECIDIMOS NO HACER ════════ -->
-
-<!-- ════════ 21 · ACTORES Y EMPRESA ════════ -->
-<section data-label="Actores y empresa" data-screen-label="21 Actores y empresa">
-  <div class="frame">
-    <div class="head" style="margin-bottom:16px">
-      <div class="eyebrow">Modelo de negocio — Usuarios</div>
-      <h2 class="title">5 roles, 1 empresa-tenant, 1 suscripci&oacute;n SaaS</h2>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;flex:1">
-
-      <div class="panel" style="background:oklch(0.96 0.03 250/.7);display:flex;flex-direction:column;gap:6px;padding:16px 14px">
-        <div style="font-weight:700;font-size:.9em;color:var(--accent-strong)">Admin. Plataforma</div>
-        <div style="font-size:.74em;opacity:.6;margin-bottom:6px">LogiSmart &middot; acceso total</div>
-        <ul class="kvs" style="gap:8px;font-size:.78em">
-          <li>Crear env&iacute;os</li><li>Asignar rutas</li><li>Ver reportes</li><li>Gestionar flota</li><li><strong>Administrar empresas</strong></li>
-        </ul>
-      </div>
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:6px;padding:16px 14px">
-        <div style="font-weight:700;font-size:.9em;color:var(--accent-strong)">Operador Log&iacute;stico</div>
-        <div style="font-size:.74em;opacity:.6;margin-bottom:6px">PyME &middot; usuario principal</div>
-        <ul class="kvs" style="gap:8px;font-size:.78em">
-          <li>Crear env&iacute;os</li><li>Asignar rutas</li><li>Ver reportes</li><li>Gestionar flota</li>
-        </ul>
-      </div>
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:6px;padding:16px 14px">
-        <div style="font-weight:700;font-size:.9em;color:var(--accent-strong)">Admin. Empresa</div>
-        <div style="font-size:.74em;opacity:.6;margin-bottom:6px">PyME &middot; due&ntilde;o / gerente</div>
-        <ul class="kvs" style="gap:8px;font-size:.78em">
-          <li>Crear env&iacute;os</li><li>Ver reportes</li><li>Gestiona la suscripci&oacute;n</li>
-        </ul>
-      </div>
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:6px;padding:16px 14px">
-        <div style="font-weight:700;font-size:.9em;color:var(--accent-strong)">Transportista</div>
-        <div style="font-size:.74em;opacity:.6;margin-bottom:6px">PyME &middot; chofer</div>
-        <ul class="kvs" style="gap:8px;font-size:.78em">
-          <li>Ejecuta rutas</li><li>Reporta posici&oacute;n GPS</li><li>Registra entregas</li><li>Sin permisos de gesti&oacute;n (matriz Rol)</li>
-        </ul>
-      </div>
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:6px;padding:16px 14px">
-        <div style="font-weight:700;font-size:.9em;color:var(--accent-strong)">Cliente Final</div>
-        <div style="font-size:.74em;opacity:.6;margin-bottom:6px">Externo &middot; destinatario</div>
-        <ul class="kvs" style="gap:8px;font-size:.78em">
-          <li>Sigue su env&iacute;o en vivo (CU-07)</li><li>Sin acceso al sistema de gesti&oacute;n</li>
-        </ul>
-      </div>
-
-    </div>
-    <div class="callout info" style="margin-top:14px">
-      <span class="ic">&#9654;</span>
-      <div>Cada PyME es un <strong>tenant</strong> con una <strong>Suscripci&oacute;n</strong> (fee mensual por cantidad de env&iacute;os). Los permisos salen de la matriz 5&times;5 del enum <code>Rol</code> — la misma de la slide 08.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ════════ 22 · FLOTA, VEHÍCULOS Y REGIONES ════════ -->
-<section data-label="Flota, vehículos y regiones" data-screen-label="22 Flota, vehículos y regiones">
-  <div class="frame">
-    <div class="head" style="margin-bottom:16px">
-      <div class="eyebrow">Modelo de negocio — Flota</div>
-      <h2 class="title">3 tipos de vehículo · 2 regiones con reglas distintas</h2>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px">
-      <div class="panel" style="display:flex;flex-direction:column;gap:8px;padding:16px 18px">
-        <div style="font-weight:700;font-size:.95em;color:var(--cat-crea)">Moto</div>
-        <ul class="kvs" style="font-size:.82em">
-          <li><strong>Carga máx.:</strong> 100 kg</li>
-          <li><strong>Costo/km:</strong> $0.90</li>
-          <li><strong>Default región:</strong> Brasil (Factory)</li>
-          <li><strong>Creación directa:</strong> VehiculoFactory</li>
-        </ul>
-      </div>
-      <div class="panel" style="display:flex;flex-direction:column;gap:8px;padding:16px 18px">
-        <div style="font-weight:700;font-size:.95em;color:var(--accent-strong)">Auto</div>
-        <ul class="kvs" style="font-size:.82em">
-          <li><strong>Carga máx.:</strong> 500 kg</li>
-          <li><strong>Costo/km:</strong> $1.00</li>
-          <li><strong>Default región:</strong> Argentina (Factory)</li>
-          <li><strong>Creación directa:</strong> VehiculoFactory</li>
-        </ul>
-      </div>
-      <div class="panel" style="display:flex;flex-direction:column;gap:8px;padding:16px 18px">
-        <div style="font-weight:700;font-size:.95em;color:var(--cat-comp)">Camión</div>
-        <ul class="kvs" style="font-size:.82em">
-          <li><strong>Carga máx.:</strong> 5.000 kg</li>
-          <li><strong>Costo/km:</strong> $1.80</li>
-          <li><strong>Default región:</strong> ninguna</li>
-          <li><strong>Creación:</strong> solo VehiculoFactory</li>
-        </ul>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-      <div class="panel" style="display:flex;flex-direction:column;gap:8px;padding:16px 18px">
-        <div style="font-weight:700;font-size:.9em;color:var(--cat-crea)">Argentina</div>
-        <ul class="kvs" style="font-size:.82em">
-          <li><strong>Vehículo default:</strong> Auto</li>
-          <li><strong>Impuesto:</strong> IVA 21 %</li>
-          <li><strong>Fórmula:</strong> ($100 + peso×$15) × 1.21</li>
-          <li><strong>Mapas:</strong> Google Maps</li>
-          <li><strong>Ej. 10 kg:</strong> $302.50</li>
-        </ul>
-      </div>
-      <div class="panel" style="display:flex;flex-direction:column;gap:8px;padding:16px 18px">
-        <div style="font-weight:700;font-size:.9em;color:var(--cat-estr)">Brasil</div>
-        <ul class="kvs" style="font-size:.82em">
-          <li><strong>Vehículo default:</strong> Moto</li>
-          <li><strong>Impuesto:</strong> ICMS 12 %</li>
-          <li><strong>Fórmula:</strong> ($80 + peso×$12) × 1.12</li>
-          <li><strong>Mapas:</strong> HERE Maps</li>
-          <li><strong>Ej. 10 kg:</strong> R$224.00</li>
-        </ul>
-      </div>
-    </div>
-    <div class="callout info" style="margin:0">
-      <span class="ic">▸</span>
-      <div>La selección de región ocurre en <code>LogiSmartApp.crearFactory(region)</code> — único punto del sistema con nombres de fábricas concretas. El resto del código solo ve <code>LogiSmartFactory</code>.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ════════ 23 · CICLO DE VIDA DEL ENVÍO ════════ -->
-<section data-label="Ciclo de vida del envío" data-screen-label="23 Ciclo de vida del envío">
-  <div class="frame">
-    <div class="head" style="margin-bottom:14px">
-      <div class="eyebrow">Modelo de negocio — Envío</div>
-      <h2 class="title">El ciclo de vida completo de un envío</h2>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;flex:1;min-height:0">
-
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="panel" style="padding:14px 16px">
-          <div style="font-weight:700;font-size:.85em;color:var(--accent-strong);margin-bottom:8px">Estado del envío (State)</div>
-          <div style="font-size:.78em;color:var(--body);line-height:1.6">
-            CONFIRMADO → EN_TRANSITO<br/>→ EN_REPARTO → ENTREGADO<br/>
-            <span style="opacity:.55">↳ CANCELADO · RETENIDO desde estados intermedios</span>
-          </div>
-        </div>
-        <div class="panel" style="padding:14px 16px;flex:1">
-          <div style="font-weight:700;font-size:.85em;color:var(--accent-strong);margin-bottom:8px">Tipos de proceso (Template Method)</div>
-          <ul class="kvs" style="font-size:.78em">
-            <li><strong>Nacional:</strong> peso × $100</li>
-            <li><strong>Internacional:</strong> peso × $250 + $1.000</li>
-            <li><strong>Urgente:</strong> peso × $180 + $500</li>
-          </ul>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="panel" style="padding:14px 16px">
-          <div style="font-weight:700;font-size:.85em;color:var(--cat-comp);margin-bottom:8px">Validaciones (Chain · 5 pasos)</div>
-          <ul class="kvs" style="font-size:.78em">
-            <li>1 · Datos (origen, destino, peso)</li>
-            <li>2 · Inventario (stock)</li>
-            <li>3 · Pago (cobro válido)</li>
-            <li>4 · Seguridad (destino no restringido)</li>
-            <li>5 · Capacidad (vehículo disponible)</li>
-          </ul>
-        </div>
-        <div class="panel" style="padding:14px 16px;flex:1">
-          <div style="font-weight:700;font-size:.85em;color:var(--cat-comp);margin-bottom:8px">Notificaciones (Observer)</div>
-          <ul class="kvs" style="font-size:.78em">
-            <li>Dashboard operativo en tiempo real</li>
-            <li>Email / SMS al cliente final</li>
-            <li>Centro de distribución</li>
-          </ul>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="panel" style="padding:14px 16px">
-          <div style="font-weight:700;font-size:.85em;color:var(--cat-estr);margin-bottom:8px">Estrategias de costo (Strategy · 6)</div>
-          <ul class="kvs" style="font-size:.78em">
-            <li><strong>Peso:</strong> kg × $5</li>
-            <li><strong>Distancia:</strong> km × $500</li>
-            <li><strong>Urgencia:</strong> $500 / $300 / $100</li>
-            <li><strong>Volumen:</strong> m³ × $4</li>
-            <li><strong>Fijo:</strong> monto configurable</li>
-            <li><strong>Híbrida:</strong> 40 % dist + 30 % peso + 30 % urg</li>
-          </ul>
-        </div>
-        <div class="panel" style="padding:14px 16px;flex:1">
-          <div style="font-weight:700;font-size:.85em;color:var(--cat-estr);margin-bottom:8px">Servicios adicionales (Decorator)</div>
-          <ul class="kvs" style="font-size:.78em">
-            <li><strong>GPS tracking:</strong> +$50 fijo</li>
-            <li><strong>Seguro:</strong> +15 % sobre total</li>
-            <li style="opacity:.55;font-style:italic">El orden de decoradores importa</li>
-          </ul>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
 
 <!-- ════════ 20 · CIERRE ════════ -->
 <section class="closing" data-label="Cierre" data-screen-label="20 Cierre">

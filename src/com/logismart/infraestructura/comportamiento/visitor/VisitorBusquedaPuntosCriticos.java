@@ -1,5 +1,7 @@
 package com.logismart.infraestructura.comportamiento.visitor;
 
+import com.logismart.infraestructura.estructural.composite.centro.CentroRegional;
+import com.logismart.infraestructura.estructural.composite.centro.SucursalEntrega;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +11,7 @@ public class VisitorBusquedaPuntosCriticos implements VisitorCentro {
     private int nodosVisitados;
 
     @Override
-    public void visitar(NodoPuntoEntrega punto) {
+    public void visitar(SucursalEntrega punto) {
         if (punto.obtenerCapacidad() > 0
                 && punto.obtenerPaquetes() * 100.0 / punto.obtenerCapacidad() >= 90.0) {
             puntosCriticos.add(punto.obtenerNombre());
@@ -18,7 +20,7 @@ public class VisitorBusquedaPuntosCriticos implements VisitorCentro {
     }
 
     @Override
-    public void visitar(NodoCentroRegional centro) {
+    public void visitar(CentroRegional centro) {
         nodosVisitados++;
     }
 

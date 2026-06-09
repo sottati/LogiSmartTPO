@@ -215,7 +215,7 @@ Llegando al Hito 13 había mucho código que no queríamos romper. El refactorin
 
 ### Sacrificios deliberados (importante para la defensa — demuestra madurez técnica)
 - Distancia fija de **500 km** en una Strategy → para tener **tests deterministas** en vez de aleatorios.
-- Naming del **Visitor** elegido para evitar colisión con el **Composite** de centros.
+- Jerarquía Composite (`CentroRegional`/`SucursalEntrega`) **unificada** con Visitor: ambas implementan `ElementoDistribucion` directamente, eliminando la duplicación de `Nodo*`.
 - Desfasaje dominio jerárquico (Composite) vs. registro plano de persistencia → aceptado y neutralizado con única fuente de verdad.
 
 ### La decisión que conecta el Hito 7 con el Hito 13
@@ -1562,14 +1562,14 @@ Si los fusionáramos en una jerarquía única (`ReporteEnviosPDF extends Reporte
 La red de distribución de LogiSmart tiene tres niveles:
 
 ```
-CentroRegional "Argentina"          ← contenedor (tiene hijos)
-  CentroRegional "Zona Norte"       ← contenedor (tiene hijos)
-    PuntoEntrega "Rosario" (50/100) ← hoja (sin hijos, almacena Envios)
-    PuntoEntrega "Córdoba" (30/80)  ← hoja
-  PuntoEntrega "Buenos Aires" (200/500) ← hoja
+CentroRegional "Argentina"               ← contenedor (tiene hijos)
+  CentroRegional "Zona Norte"            ← contenedor (tiene hijos)
+    SucursalEntrega "Rosario" (50/100)   ← hoja (sin hijos, almacena Envios)
+    SucursalEntrega "Córdoba" (30/80)    ← hoja
+  SucursalEntrega "Buenos Aires" (200/500) ← hoja
 ```
 
-**Hoja:** `PuntoEntrega` — capacidad fija, almacena `Envio`s, no tiene subcentros
+**Hoja:** `SucursalEntrega` — capacidad fija, almacena `Envio`s, no tiene subcentros
 **Contenedor:** `CentroRegional` — tiene `List<CentroDistribucionComposite> subcentros`, puede contener hojas u otros contenedores
 
 **Tratamiento uniforme:** el cliente llama `centro.obtenerCapacidad()` sobre cualquier nodo — no sabe ni le importa si es hoja o contenedor. `CentroDistribucionComposite` es el tipo común para ambos.
@@ -1591,7 +1591,7 @@ public int obtenerCapacidad() {
     return total;
 }
 
-// PuntoEntrega.java — caso base, termina la recursión
+// SucursalEntrega.java — caso base, termina la recursión
 @Override
 public int obtenerCapacidad() {
     return capacidad;  // retorna su valor fijo, sin hijos que recorrer
@@ -1604,7 +1604,7 @@ El patrón completo: el nodo raíz llama al método → propaga hacia abajo → 
 
 #### ¿Qué hace `agregar()` en una hoja: excepción o no-op? ¿Por qué?
 
-En la implementación de LogiSmart, `PuntoEntrega` directamente **no tiene** el método `agregar(CentroDistribucionComposite)`. Solo `CentroRegional` lo tiene.
+En la implementación de LogiSmart, `SucursalEntrega` directamente **no tiene** el método `agregar(CentroDistribucionComposite)`. Solo `CentroRegional` lo tiene.
 
 Este es el diseño "safe Composite": la interfaz base (`CentroDistribucionComposite`) solo declara los métodos de componente (`obtenerCapacidad`, `obtenerOcupacion`, `mostrar`). Los métodos de gestión de hijos (`agregar`, `remover`) solo viven en el contenedor concreto.
 
@@ -1619,12 +1619,22 @@ La alternativa es declarar `agregar()` en la interfaz base y que la hoja lance `
 
 #### ¿Qué pasa si agregás un nuevo nivel?
 
-Si hay que agregar "Zona" entre `CentroRegional` y `PuntoEntrega`:
+Si hay que agregar "Zona" entre `CentroRegional` y `SucursalEntrega`:
 
 1. Crear `Zona extends CentroDistribucionComposite` con `List<CentroDistribucionComposite>` y su lógica recursiva
 2. `agregar(CentroDistribucionComposite)` en `Zona`
 
 Ningún cliente que use `CentroDistribucionComposite` cambia — llaman `obtenerCapacidad()` igual que antes. El árbol crece un nivel pero la interfaz es la misma.
+
+---
+
+#### ¿Por qué la clase hoja se llama `SucursalEntrega` y no `PuntoEntrega`?
+
+La clase se llamaba `PuntoEntrega` originalmente. El problema: en el dominio existe `dominio.ruta.PuntoEntrega`, que representa la **parada de una ruta** (coordenadas, ventana horaria). Las dos clases modelan conceptos distintos y el nombre colisionaba semánticamente — leer `PuntoEntrega` en contexto de infraestructura era ambiguo.
+
+**El renombre**: la clase del Composite representa una **sucursal física** de la red de distribución — tiene capacidad, almacena envíos físicamente, tiene un código de centro. `SucursalEntrega` es el nombre preciso. El dominio `PuntoEntrega` conserva su nombre porque modela paradas de ruta, no centros físicos.
+
+Este refactor no afecta comportamiento — solo claridad semántica. Después del rename, cualquier lector puede distinguir de qué `PuntoEntrega` habla un texto sin necesidad de ver el `import`.
 
 ---
 
@@ -1652,7 +1662,7 @@ Clave para la defensa: **Adapter es una solución a un problema que ya ocurrió.
        └── AdapterDHL.crearEnvio(envio)
            └── dhlAPI.registrarPaquete(origen, destino, peso)
 
-3. El envío se asigna a un PuntoEntrega de la red (COMPOSITE)
+3. El envío se asigna a una SucursalEntrega de la red (COMPOSITE)
        └── centroRegional.obtenerCapacidad()  ← recursivo por toda la jerarquía
            └── verifica si hay espacio antes de aceptar el envío
 
@@ -2342,6 +2352,33 @@ En `Envio` coexisten: `estadoGoF` (State) modela en qué etapa del ciclo de vida
 
 ---
 
+#### ¿Por qué `Envio` tiene `estadoGoF` y no simplemente `estado`? ¿Qué pasó con el campo `String estado`?
+
+Antes del refactor, `Envio` tenía **dos campos en paralelo** para modelar el mismo concepto:
+
+```java
+private String estado = "CONFIRMADO";          // campo original (Hito 2)
+private EstadoEnvio estadoGoF = new EstadoConfirmado();  // campo GoF (Hito 12)
+```
+
+Ese diseño era una deuda: dos fuentes de verdad para el mismo dato. Cualquier transición requería actualizar los dos. Si uno se desincronizaba del otro, los tests y la lógica de negocio darían resultados inconsistentes.
+
+**El refactor (post-Hito 12):** se eliminó `String estado` de `Envio`. Solo queda `estadoGoF` como fuente de verdad. El nombre `estadoGoF` distingue que es el estado gestionado por el patrón GoF — el prefijo quedó para claridad mientras coexistían los dos; hoy es el único campo de estado.
+
+**¿Cómo funciona la reconstrucción desde la base de datos?** El `EnvioBuilder` sí conserva un campo `String estado = "PENDIENTE"`, pero solo como puente para el Data Mapper (que lee una fila SQL y necesita pasar el estado como String). En el constructor de `Envio`, ese String se convierte inmediatamente:
+
+```java
+// Envio constructor
+this.estadoGoF = EstadoEnvio.fromNombre(builder.estado);
+```
+
+Así el dominio nunca guarda un String de estado — lo convierte al instante en el objeto GoF correspondiente. El Builder es el único punto donde el String existe, y solo dura el tiempo de construcción.
+
+**Cómo responderlo en la defensa:**
+> "Antes teníamos un String y un objeto de State en paralelo — dos fuentes de verdad para el mismo dato. Eliminamos el String: solo `estadoGoF` rige el estado. El Builder mantiene un String para compatibilidad con el Data Mapper, pero lo convierte a GoF en el constructor de `Envio`. A partir de ahí, el dominio nunca ve un String de estado."
+
+---
+
 ### Strategy
 
 #### ¿Quién elige la estrategia y cuándo? ¿Puede cambiarse en runtime?
@@ -2481,7 +2518,7 @@ Lo que NO puede cambiar: el **orden** `validar → calcularCosto → procesarPag
 
 Permite agregar **nuevas operaciones sobre una jerarquía de clases estable sin modificar esas clases**.
 
-Sin Visitor, agregar "calcular costo operativo" significaría agregar `calcularCostoOperativo()` a `ElementoDistribucion` y a cada clase concreta (`NodoCentroRegional`, `NodoPuntoEntrega`). Con cuatro operaciones (`VisitorCalculoOcupacion`, `VisitorCalculoCostoOperativo`, `VisitorGeneradorReporte`, `VisitorBusquedaPuntosCriticos`), eso serían 4 métodos nuevos por clase.
+Sin Visitor, agregar "calcular costo operativo" significaría agregar `calcularCostoOperativo()` a `ElementoDistribucion` y a cada clase concreta (`CentroRegional`, `SucursalEntrega`). Con cuatro operaciones (`VisitorCalculoOcupacion`, `VisitorCalculoCostoOperativo`, `VisitorGeneradorReporte`, `VisitorBusquedaPuntosCriticos`), eso serían 4 métodos nuevos por clase.
 
 Con Visitor, se crea `VisitorCalculoCostoOperativo` sin tocar nada existente.
 
@@ -2491,27 +2528,27 @@ Con Visitor, se crea `VisitorCalculoCostoOperativo` sin tocar nada existente.
 
 En Java, el polimorfismo estándar es **single dispatch**: el método se elige según el tipo del receptor. Si tenés `ElementoDistribucion elemento` y llamás `elemento.aceptar(visitor)`, Java elige `aceptar()` según el tipo real de `elemento`.
 
-El problema: dentro de `aceptar`, si llamás `visitor.visitar(this)` con `this` declarado como `ElementoDistribucion`, Java no puede elegir en compilación entre `visitar(NodoPuntoEntrega)` y `visitar(NodoCentroRegional)` — son overloads distintos.
+El problema: dentro de `aceptar`, si llamás `visitor.visitar(this)` con `this` declarado como `ElementoDistribucion`, Java no puede elegir en compilación entre `visitar(SucursalEntrega)` y `visitar(CentroRegional)` — son overloads distintos.
 
 **Double dispatch** encadena dos resoluciones polimórficas:
-1. `elemento.aceptar(visitor)` → resuelto por el tipo real de `elemento` (ej. `NodoPuntoEntrega`)
-2. `visitor.visitar(this)` → dentro de `NodoPuntoEntrega.aceptar()`, `this` es `NodoPuntoEntrega` — Java puede resolver el overload en compilación
+1. `elemento.aceptar(visitor)` → resuelto por el tipo real de `elemento` (ej. `SucursalEntrega`)
+2. `visitor.visitar(this)` → dentro de `SucursalEntrega.aceptar()`, `this` es `SucursalEntrega` — Java puede resolver el overload en compilación
 
 `aceptar(visitor)` hace exactamente esto:
 ```java
-// NodoPuntoEntrega
+// SucursalEntrega (hoja)
 @Override
 public void aceptar(VisitorCentro visitor) {
-    visitor.visitar(this);  // 'this' = NodoPuntoEntrega → elige visitar(NodoPuntoEntrega)
+    visitor.visitar(this);  // 'this' = SucursalEntrega → elige visitar(SucursalEntrega)
 }
 ```
 ```java
-// NodoCentroRegional
+// CentroRegional (rama)
 @Override
 public void aceptar(VisitorCentro visitor) {
-    visitor.visitar(this);       // 'this' = NodoCentroRegional → elige visitar(NodoCentroRegional)
-    for (ElementoDistribucion hijo : hijos) {
-        hijo.aceptar(visitor);   // propaga recursivamente
+    visitor.visitar(this);                         // 'this' = CentroRegional → elige visitar(CentroRegional)
+    for (CentroDistribucionComposite sub : subcentros) {
+        sub.aceptar(visitor);                      // propaga recursivamente
     }
 }
 ```
@@ -2524,22 +2561,22 @@ Cuando la **jerarquía de elementos es inestable**. Agregar `NodoCentroUrbano` r
 
 La extensibilidad se invierte respecto al enfoque sin Visitor: Visitor hace fácil agregar operaciones, pero difícil agregar tipos.
 
-En LogiSmart, la jerarquía tiene 2 tipos de nodo (`NodoCentroRegional`, `NodoPuntoEntrega`) — estable. Los visitors son 4 y pueden crecer. Eso justifica la elección.
+En LogiSmart, la jerarquía tiene 2 tipos de nodo (`CentroRegional`, `SucursalEntrega`) — estable. Los visitors son 4 y pueden crecer. Eso justifica la elección.
 
 ---
 
 #### ¿Sobre qué estructura del Hito 8 trabajan los visitors? ¿Quién recorre: el visitor o el elemento?
 
-El **Composite** de centros del Hito 8 — `NodoCentroRegional` tiene `List<ElementoDistribucion> hijos`, igual que el Composite de entonces. Los visitors del Hito 12 operan sobre esa misma estructura jerárquica.
+El **Composite** de centros del Hito 8: `CentroRegional` (rama) tiene `List<CentroDistribucionComposite> subcentros` y `SucursalEntrega` (hoja) almacena envíos reales. Ambas implementan `ElementoDistribucion` (via `CentroDistribucionComposite`). Los visitors del Hito 12 operan sobre esa misma estructura.
 
-El **elemento recorre**, no el visitor. `NodoCentroRegional.aceptar()` propaga recursivamente:
+El **elemento recorre**, no el visitor. `CentroRegional.aceptar()` propaga recursivamente:
 ```java
 visitor.visitar(this);
-for (ElementoDistribucion hijo : hijos) {
-    hijo.aceptar(visitor);  // el árbol se recorre a sí mismo
+for (CentroDistribucionComposite sub : subcentros) {
+    sub.aceptar(visitor);  // el árbol se recorre a sí mismo
 }
 ```
-El visitor solo sabe qué hacer *en* cada nodo — no sabe cómo está organizado el árbol. `NodoPuntoEntrega` no itera (es hoja): solo llama `visitor.visitar(this)`.
+El visitor solo sabe qué hacer *en* cada nodo — no sabe cómo está organizado el árbol. `SucursalEntrega` no itera (es hoja): solo llama `visitor.visitar(this)`.
 
 ---
 
@@ -2550,6 +2587,34 @@ El visitor solo sabe qué hacer *en* cada nodo — no sabe cómo está organizad
 **Visitor**: la operación queda cohesiva en una clase. Todo el cálculo de costo operativo vive en `VisitorCalculoCostoOperativo`. Pero agregar `NodoCentroUrbano` rompe todos los visitors.
 
 El trade-off es explícito: **la estabilidad de la jerarquía de tipos determina si Visitor es ganancia o deuda técnica**. Si los tipos cambian frecuentemente → evitar Visitor. Si las operaciones cambian frecuentemente → Visitor es la herramienta correcta.
+
+---
+
+#### ¿Por qué `CentroRegional` y `SucursalEntrega` implementan `ElementoDistribucion` directamente, y no hay clases `NodoCentroRegional`/`NodoPuntoEntrega` separadas?
+
+**El problema original**: la primera versión del código tenía dos jerarquías paralelas que modelaban la misma red de distribución:
+
+- **Composite** (Hito 8): `CentroDistribucionComposite` → `CentroRegional` / `SucursalEntrega` — usada para calcular capacidad, ocupación y mostrar el árbol.
+- **Visitor** (Hito 12): `ElementoDistribucion` → `NodoCentroRegional` / `NodoPuntoEntrega` — usada exclusivamente para los visitors. Estas clases tenían `paquetes`, `capacidad` y `costoOperativo` como campos fijos en el constructor.
+
+La dualidad generaba un problema de verdad: la presentación afirmaba que "Visitor opera sobre el árbol del Composite", pero en el código los visitors solo veían `Nodo*`, no `CentroRegional`/`SucursalEntrega`. Eran dos árboles independientes.
+
+**El refactor**: `CentroDistribucionComposite` implementa `ElementoDistribucion`. Las clases concretas (`CentroRegional`, `SucursalEntrega`) implementan `aceptar(VisitorCentro)` directamente, y se agregan a `SucursalEntrega` los métodos `obtenerPaquetes()` (alias de `obtenerOcupacion()`) y `obtenerCostoOperativo()` (campo configurable en el constructor). Las clases `Nodo*` se eliminan.
+
+**Por qué no al revés** (hacer que los visitors usen `Nodo*` como fachada del Composite): el árbol de centros ya existe como `CentroRegional`/`SucursalEntrega` con estado real (envíos almacenados). Tener un árbol espejo de `Nodo*` significaría sincronizarlos manualmente — fuente de bugs. La fuente de verdad debe ser una sola.
+
+**Consecuencia en `VisitorCentro`**: el parámetro de las firmas cambia de tipos ficticios a tipos reales:
+```java
+// Antes
+void visitar(NodoPuntoEntrega punto);
+void visitar(NodoCentroRegional centro);
+
+// Después
+void visitar(SucursalEntrega punto);
+void visitar(CentroRegional centro);
+```
+
+El mecanismo de double dispatch es idéntico — lo único que cambia es quién es `this` dentro de `aceptar()`.
 
 ---
 
@@ -2577,7 +2642,7 @@ proceso.procesarEnvio(envio);
 // STATE — transición final según el estado actual
 envio.entregar();
 
-// VISITOR (externo) — recorre la red sin tocar NodoCentroRegional/NodoPuntoEntrega
+// VISITOR (externo) — recorre la red sin tocar CentroRegional/SucursalEntrega
 redDistribucion.aceptar(new VisitorCalculoOcupacion());
 ```
 

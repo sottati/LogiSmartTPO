@@ -895,7 +895,7 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">32</span> Visitor</div>
-            <div class="pat-desc">El árbol de centros es estable; las operaciones (costo operativo, ocupación, búsqueda) crecen. <code>VisitorCentro</code> permite añadir nuevas operaciones sin modificar <code>NodoCentroRegional</code> ni <code>NodoPuntoEntrega</code>.</div>
+            <div class="pat-desc">El árbol de centros es estable; las operaciones (costo operativo, ocupación, búsqueda) crecen. <code>VisitorCentro</code> permite añadir nuevas operaciones sin modificar <code>CentroRegional</code> ni <code>SucursalEntrega</code>.</div>
           </div>
           <span class="hito-pill">Hito 12</span>
         </div>
@@ -904,8 +904,8 @@
           <div class="pat-classes">
             <span class="class-chip">VisitorCentro</span>
             <span class="class-chip">ElementoDistribucion</span>
-            <span class="class-chip">NodoCentroRegional</span>
-            <span class="class-chip">NodoPuntoEntrega</span>
+            <span class="class-chip">CentroRegional</span>
+            <span class="class-chip">SucursalEntrega</span>
             <span class="class-chip">VisitorCalculoCostoOperativo</span>
             <span class="class-chip">VisitorCalculoOcupacion</span>
           </div>
@@ -1967,38 +1967,42 @@ const DIAGRAMS = {
         <<interface>>
         +aceptar(v) void
     }
-    class NodoCentroRegional {
-        -nombre: String
-        -hijos: List~ElementoDistribucion~
+    class CentroDistribucionComposite {
+        <<abstract>>
+        +obtenerCapacidad() int
         +aceptar(v) void
     }
-    class NodoPuntoEntrega {
-        -nombre: String
+    class CentroRegional {
+        -subcentros: List~CentroDistribucionComposite~
+        +agregar(c) void
+    }
+    class SucursalEntrega {
         -capacidad: int
-        +aceptar(v) void
+        -costoOperativo: double
+        +obtenerPaquetes() int
     }
     class VisitorCalculoCostoOperativo {
         -costoTotal: double
-        +visitarRegional(n) void
-        +visitarSucursal(n) void
-        +getCostoTotal() double
+        +visitar(SucursalEntrega) void
+        +visitar(CentroRegional) void
+        +obtenerCostoTotal() double
     }
     class VisitorCalculoOcupacion {
-        -ocupacionTotal: int
-        +visitarRegional(n) void
-        +visitarSucursal(n) void
-        +getOcupacionTotal() int
+        +visitar(SucursalEntrega) void
+        +visitar(CentroRegional) void
+        +obtenerOcupacion() double
     }
     class VisitorBusquedaCentro {
-        +visitarRegional(n) void
-        +visitarSucursal(n) void
+        +visitar(SucursalEntrega) void
+        +visitar(CentroRegional) void
     }
     VisitorCalculoCostoOperativo ..|> VisitorCentro
     VisitorCalculoOcupacion ..|> VisitorCentro
     VisitorBusquedaCentro ..|> VisitorCentro
-    NodoCentroRegional ..|> ElementoDistribucion
-    NodoPuntoEntrega ..|> ElementoDistribucion
-    NodoCentroRegional o-- ElementoDistribucion : hijos`,
+    ElementoDistribucion <|.. CentroDistribucionComposite
+    CentroDistribucionComposite <|-- CentroRegional
+    CentroDistribucionComposite <|-- SucursalEntrega
+    CentroRegional o-- CentroDistribucionComposite : subcentros`,
 
 'repository': `classDiagram
     class Repositorio~T~ {
