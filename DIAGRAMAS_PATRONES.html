@@ -839,18 +839,52 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">25</span> Iterator</div>
-            <div class="pat-desc"><code>IteradorEnvios</code> expone la misma interfaz para recorrer colecciones guardadas como Array, Lista o HashMap. El cliente nunca sabe qué estructura interna hay.</div>
+            <div class="pat-desc">El sistema almacena envíos en tres estructuras con perfiles de acceso distintos. <code>IteradorEnvios</code> + <code>ColeccionEnvios</code> desacoplan al cliente de la implementación concreta: el mismo código de <code>SistemaLogisticaEventDriven</code> recorre Array, Lista o Hash sin cambiar una línea.</div>
           </div>
           <span class="hito-pill">Hito 11</span>
         </div>
         <div class="pat-card-body">
-          <div class="diagram-wrap"><div class="mermaid" id="d-iterator"></div></div>
-          <div class="pat-classes">
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em;">Flujo — mismo cliente itera Array y Lista sin cambiar código</p>
+          <div class="diagram-wrap" style="margin-bottom:.75rem"><div class="mermaid" id="d-iterator"></div></div>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Colecciones disponibles y sus casos de uso</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead>
+              <tr style="background:var(--bg)">
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--primary)">Implementación</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Estructura interna</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Caso de uso en LogiSmart</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ColeccionArray</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Array fijo (cap. 1000) — O(1) por índice</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Envíos activos del día; iteración secuencial rápida</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ColeccionLista</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Lista enlazada simple — O(1) inserción al final</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Historial cronológico de envíos procesados</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--c-comp)">ColeccionHash</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">HashMap&lt;String,Envio&gt; — O(1) búsqueda por ID</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Lookup rápido de un envío por número de seguimiento</td></tr>
+            </tbody>
+          </table>
+
+          <p style="font-size:.75rem;font-weight:600;color:var(--muted);margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.06em;">Reglas de comportamiento</p>
+          <table style="width:100%;border-collapse:collapse;font-size:.73rem;line-height:1.4">
+            <thead>
+              <tr style="background:var(--bg)">
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Operación</th>
+                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Comportamiento garantizado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--primary)">crearIterador()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Devuelve un nuevo iterador posicionado al primer elemento; no modifica la colección</td></tr>
+              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--primary)">reiniciar()</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Permite múltiples pasadas sobre la misma colección (reportes, auditorías, estadísticas)</td></tr>
+              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--primary)">remover(envio)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">En Array: compacta el arreglo preservando orden; en Lista: reenlaza nodos; en Hash: elimina la clave</td></tr>
+            </tbody>
+          </table>
+
+          <div class="pat-classes" style="margin-top:.75rem">
             <span class="class-chip">IteradorEnvios</span>
             <span class="class-chip">ColeccionEnvios</span>
             <span class="class-chip">ColeccionArray</span>
             <span class="class-chip">ColeccionLista</span>
             <span class="class-chip">ColeccionHash</span>
+            <span class="class-chip">SistemaLogisticaEventDriven</span>
           </div>
         </div>
       </div>
@@ -1474,21 +1508,26 @@ const DIAGRAMS = {
     A1-->>F: true — pasa el filtro`,
 
 'iterator': `sequenceDiagram
-    participant C as Servicio
-    participant I as IteradorEnvios
+    participant S as SistemaLogisticaEventDriven
     participant CA as ColeccionArray
-    participant CH as ColeccionHash
-    C->>I: new IteradorEnvios(coleccionArray)
-    loop hasNext()
-        C->>I: next()
-        I-->>C: Envio
+    participant IA as IteradorArray
+    participant CL as ColeccionLista
+    participant IL as IteradorLista
+
+    S->>CA: crearIterador()
+    CA-->>S: IteradorEnvios (IteradorArray)
+    loop tieneSiguiente()
+        S->>IA: obtenerSiguiente()
+        IA-->>S: Envio
     end
-    C->>I: new IteradorEnvios(coleccionHash)
-    loop hasNext()
-        C->>I: next()
-        I-->>C: Envio
+    Note over S,IA: 3 envíos procesados desde ColeccionArray
+    S->>CL: crearIterador()
+    CL-->>S: IteradorEnvios (IteradorLista)
+    loop tieneSiguiente()
+        S->>IL: obtenerSiguiente()
+        IL-->>S: Envio
     end
-    Note over I: Misma interfaz para<br/>Array, Lista y HashMap`,
+    Note over S,IL: mismo código cliente — ColeccionLista`,
 
 'mediator': `sequenceDiagram
     participant E as Envio

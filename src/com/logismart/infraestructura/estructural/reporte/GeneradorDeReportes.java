@@ -5,7 +5,7 @@ import com.logismart.dominio.empresa.Reporte;
 /**
  * GRASP Protected Variations: Abstrae el formato de exportacion de reportes.
  * Punto de variacion: el formato puede ser PDF, Excel, JSON o CSV.
- * ReporteService no necesita saber el formato; solo invoca exportar().
+ * ServicioReportes no necesita saber el formato; solo invoca exportar().
  */
 public interface GeneradorDeReportes {
 

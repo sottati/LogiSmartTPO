@@ -4,7 +4,7 @@ import com.logismart.dominio.empresa.Reporte;
 
 /**
  * GRASP Protected Variations: Exporta reportes en formato PDF.
- * ReporteService no necesita saber el formato; solo llama a exportar().
+ * ServicioReportes no necesita saber el formato; solo llama a exportar().
  * En produccion usaria una libreria como iText o JasperReports.
  */
 public class GeneradorDeReportesPDF implements GeneradorDeReportes {

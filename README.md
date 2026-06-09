@@ -49,6 +49,38 @@ LogiSmartTPO/
     └── persistencia/   ← patrones de acceso a datos (PoEAA)
 ```
 
+## El paquete `aplicacion/` en detalle
+
+```
+aplicacion/
+├── Main.java                          ← punto de entrada; orquesta Singleton, demos y casos de prueba
+├── LogiSmartController.java           ← GRASP Controller; único punto de acceso desde la capa de presentación
+├── FacadeProveedoresExternos.java     ← Facade; encapsula DHL/FedEx/UPS, PayPal/Stripe, Bridge y Composite
+└── servicios/                         ← GRASP Pure Fabrication; clases de soporte sin análogo en el dominio
+    ├── RepositorioDeEnvios.java       ← acceso a colección de envíos (delegate al Proxy)
+    ├── ValidadorDeEnvios.java         ← reglas de validación de creación y asignación de ruta
+    ├── ServicioDeNotificaciones.java  ← canal de notificación configurable (email/SMS/push)
+    ├── CalculadorDeRutas.java         ← selección de ruta via Strategy; delega a CalculadorDeRutas
+    ├── ServicioSeguimiento.java       ← publica actualizaciones de tracking a los observadores
+    ├── ServicioAutenticacion.java     ← hash y validación de contraseñas
+    └── ServicioReportes.java          ← exporta y comparte reportes via Bridge
+```
+
+**Responsabilidades clave:**
+
+| Clase | Patrón(es) | Qué hace |
+|---|---|---|
+| `LogiSmartController` | GRASP Controller | Recibe todas las operaciones del sistema y delega; nunca contiene lógica de negocio propia |
+| `FacadeProveedoresExternos` | Facade | Único punto de entrada para interactuar con carriers externos, pagos, reportes y centros de distribución |
+| `RepositorioDeEnvios` | Pure Fabrication | Abstrae la colección de envíos; delega en `ProxyRepositorioEnvios` para control de acceso |
+| `ValidadorDeEnvios` | Pure Fabrication | Centraliza las reglas de validación para no contaminar la entidad `Envio` |
+| `CalculadorDeRutas` | Pure Fabrication + Strategy | Selecciona la estrategia de cálculo de ruta según el contexto |
+
+**Cómo navegar:**
+- Las demos y casos de prueba de cada hito viven en `aplicacion/demos/hito8/` … `hito13/`
+- El Controller es el único conocedor de `FacadeProveedoresExternos`; los servicios de `servicios/` son utilizados solo por el Controller
+- Si necesitás agregar una nueva operación de negocio: primero modelá en `dominio/`, implementá la lógica en `infraestructura/`, y conectá a través del Controller
+
 ## Dónde encontrar cada patrón
 
 | Familia | Patrones | Hitos | Ubicación principal |

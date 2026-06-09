@@ -122,7 +122,7 @@ La implementación fue mucho más allá de los 3 CUs seleccionados. Al verificar
 | CU-04 | ✓ Completo | `LogiSmartController.asignarRuta()` vincula ruta a `Transportista` |
 | CU-05 | ✓ Completo | `Transportista.iniciarRecorrido()` · `actualizarPosicion()` |
 | CU-06 | ✓ Completo | `Transportista.registrarEntrega()` · `reportarIncidente()` |
-| CU-07 | ✓ Completo | `ClienteFinal.consultarTracking()` · `verETA()` · `TrackingService` |
+| CU-07 | ✓ Completo | `ClienteFinal.consultarTracking()` · `verETA()` · `ServicioSeguimiento` |
 | CU-08 | ✓ Completo | `AdminPlataforma.darAltaEmpresa/Baja()` · `gestionarBilling()` |
 
 **Prometimos 3, entregamos 7.** Eso es algo a destacar en la defensa.
@@ -147,7 +147,7 @@ Sí. No fue una decisión deliberada de "vamos a implementar todos los CUs" — 
 | 4–5 | GRASP: Expert, Creator, Controller, Low Coupling | Para modelar `Envio`, `Ruta`, `Flota`, `Vehiculo`, `Transportista` con Expert/Creator → CU-02, 03, 04, 05, 06 |
 | 6–7 | Creacionales: Singleton, Factory Method, Abstract Factory, Builder | `FabricaDeVehiculos` → CU-02. `Builder` para `Envio` → CU-03. `AbstractFactory` regional (AR/BR) → dimensión geográfica |
 | 8–9 | Estructurales: Adapter, Bridge, Composite, Decorator, Facade, Proxy | `Adapter` DHL/FedEx/UPS + PayPal/Stripe → CU-08. `Chain` de validadores → prerequisito de todos |
-| 10–12 | Comportamiento I/II/III: Chain, Command, Iterator, Mediator, Memento, Observer, State, Strategy, Template, Visitor | `State` + `Observer` + `TrackingService` → CU-07. `Command` con undo → CU-06 |
+| 10–12 | Comportamiento I/II/III: Chain, Command, Iterator, Mediator, Memento, Observer, State, Strategy, Template, Visitor | `State` + `Observer` + `ServicioSeguimiento` → CU-07. `Command` con undo → CU-06 |
 | 13 | Persistencia: Repository, Data Mapper, Unit of Work, Lazy Load | `darAltaEmpresa()` + `gestionarBilling()` con capa de datos → CU-08 completo |
 
 **La conclusión para la defensa:** esto demuestra fidelidad al enfoque iterativo e incremental de RUP. Cada iteración agregó funcionalidad sin romper lo anterior — la prueba son los 148 tests siempre en verde.
@@ -330,7 +330,7 @@ Después se filtra: se eliminan los que son demasiado generales, redundantes o q
 | Adjetivo en el texto | Lo que genera |
 |---|---|
 | óptimas (rutas) | Strategy pattern para calcular la ruta más eficiente |
-| en tiempo real (tráfico, tracking) | Observer pattern + TrackingService |
+| en tiempo real (tráfico, tracking) | Observer pattern + ServicioSeguimiento |
 | tercerizados (transportistas) | El Transportista puede ser externo — mismo modelo que interno |
 | mensual (fee) | atributo `periodo` en Cobro |
 | alta disponibilidad | NFR → Facade + Chain para que nada quede a medias |
