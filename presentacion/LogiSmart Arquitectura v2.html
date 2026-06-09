@@ -447,8 +447,8 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         <div class="pcard-name">Facade</div>
         <div class="pcard-idea">Una interfaz simple sobre cinco subsistemas que se coordinan en orden.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">ServicioLogisticaFacade</div>
-          <div class="pcard-why"><code>crearEnvio()</code> orquesta inventario, pago, rastreo, notificación y reportes en el orden correcto. El cliente no conoce ese orden.</div>
+          <div class="pcard-classes">FacadeProveedoresExternos</div>
+          <div class="pcard-why">El Controller delega en la Facade para acceder a DHL, FedEx, UPS, PayPal y Stripe — sin conocer qué adaptador concreto se usa ni cómo se construye un reporte.</div>
           <div class="pcard-trade"><b>Trade-off:</b> riesgo de «God Object» — por eso la fachada <strong>solo coordina y delega</strong>, nunca calcula ni valida ella misma.</div>
         </div></div>
       </div>
@@ -863,7 +863,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
   "",
   "En Presentación el atributo es aislamiento de datos. Acá vive el Controller: una sola puerta de entrada que valida quién pide qué y delega; recibe las solicitudes, chequea permisos e inyecta dependencias, pero no calcula ni persiste. Y los permisos no los resolvemos con if frágiles sino con polimorfismo: un enum Rol que centraliza la matriz de permisos cinco por cinco.",
   "Esta es una de las decisiones de las que estamos más orgullosos. Antes teníamos veinticinco booleanos de permisos repartidos en cinco clases —cada rol repetía sus permisos a mano. Lo refactorizamos a un único enum Rol que es la fuente de verdad: cada rol es una fila con sus cinco permisos. Esto es GRASP Information Expert. ¿La ganancia? Agregar un permiso antes eran cinco archivos; ahora es una columna más en el enum.",
-  "En Aplicación el atributo es alta disponibilidad: que una operación compleja no quede a medias. La sostienen dos patrones. Primero un Facade, ServicioLogisticaFacade: una sola llamada, crearEnvio, que orquesta inventario, pago, rastreo, notificación y reportes en el orden correcto —el cliente no conoce ese orden. Segundo, Chain of Responsibility: cinco validadores en orden de costo —datos, inventario, pago, seguridad, capacidad— que cortan apenas uno falla, fail-fast.",
+  "En Aplicación el atributo es alta disponibilidad: que una operación compleja no quede a medias. La sostienen dos patrones. Primero un Facade, FacadeProveedoresExternos: el Controller delega en ella para acceder a DHL, FedEx, UPS, PayPal y Stripe sin conocer qué adaptador concreto se usa. Segundo, Chain of Responsibility: cinco validadores en orden de costo —datos, inventario, pago, seguridad, capacidad— que cortan apenas uno falla, fail-fast.",
   "Esta es la deuda técnica que liquidamos. La firma de los validadores se volvía frágil con cada campo nuevo: agregar un parámetro rompía toda la cadena. Creamos ContextoValidacion como Value Object, aplicando Protected Variations. Ahora los validadores ya no saben cómo crece el contexto.",
   "",
   "",
