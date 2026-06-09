@@ -433,7 +433,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
 
 
 <!-- ════════ 09 · APLICACIÓN → ALTA DISPONIBILIDAD ════════ -->
-<section data-label="Alta disponibilidad" data-screen-label="09 Aplicación · Alta disponibilidad">
+<section data-label="Alta disponibilidad" data-screen-label="08 Aplicación · Alta disponibilidad">
   <div class="frame">
     <div class="head" style="margin-bottom:18px">
       <div class="eyebrow">Capa 02 · Aplicación</div>
@@ -473,7 +473,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
 </section>
 
 <!-- ════════ 10 · DOMINIO · ENVÍO EL CORAZÓN ════════ -->
-<section data-label="Envío, el corazón" data-screen-label="10 Dominio · Envío el corazón">
+<section data-label="Envío, el corazón" data-screen-label="09 Dominio · Envío el corazón">
   <div class="frame">
     <div class="head" style="margin-bottom:6px">
       <div class="eyebrow">Capa 03 · Dominio</div>
@@ -520,7 +520,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
 
 
 <!-- ════════ 11 · DOMINIO → SEGUIMIENTO EN TIEMPO REAL ════════ -->
-<section data-label="Tiempo real" data-screen-label="11 Dominio · Seguimiento en tiempo real">
+<section data-label="Tiempo real" data-screen-label="10 Dominio · Seguimiento en tiempo real">
   <div class="frame">
     <div class="head" style="margin-bottom:18px">
       <div class="eyebrow">Capa 03 · Dominio</div>
@@ -567,7 +567,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
 </section>
 
 <!-- ════════ 12 · PERSISTENCIA → EFICIENCIA ════════ -->
-<section data-label="Eficiencia" data-screen-label="12 Persistencia · Eficiencia de respuesta">
+<section data-label="Eficiencia" data-screen-label="11 Persistencia · Eficiencia de respuesta">
   <div class="frame">
     <div class="head" style="margin-bottom:18px">
       <div class="eyebrow">Capa 04 · Persistencia</div>
@@ -615,7 +615,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
 
 
 <!-- ════════ 14 · INFRAESTRUCTURA → INTEROPERABILIDAD ════════ -->
-<section data-label="Interoperabilidad" data-screen-label="14 Infraestructura · Interoperabilidad">
+<section data-label="Interoperabilidad" data-screen-label="12 Infraestructura · Interoperabilidad">
   <div class="frame">
     <div class="head" style="margin-bottom:18px">
       <div class="eyebrow">Capa 05 · Infraestructura</div>
@@ -675,7 +675,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
 
 
 <!-- ════════ 16 · FLUJO INTEGRAL ════════ -->
-<section data-label="Flujo integral" data-screen-label="16 Flujo integral">
+<section data-label="Flujo integral" data-screen-label="13 Flujo integral">
   <div class="frame">
     <div class="head" style="margin-bottom:24px">
       <div class="eyebrow">Flujo integral · cinco capas colaborando en ejecución</div>
@@ -737,188 +737,30 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
   </div>
 </section>
 
-<!-- ════════ 17 · CU-03 — STRATEGY ════════ -->
-<section data-label="CU-03 Strategy" data-screen-label="17 CU-03 — Planificar ruta óptima">
+<!-- ════════ 17 · CU-04 — ASIGNAR HOJA DE RUTA ════════ -->
+<section data-label="CU-04 asignarRuta" data-screen-label="14 CU-04 — Asignar hoja de ruta">
   <div class="frame">
-    <div class="head" style="margin-bottom:24px">
-      <div class="eyebrow">CU-03 · Strategy · dos algoritmos intercambiables</div>
-      <h2 class="title">Planificar la ruta óptima: dos Strategy encadenadas</h2>
+    <div class="head" style="margin-bottom:20px">
+      <div class="eyebrow">CU-04 · asignarRuta() · seis patrones en un método real</div>
+      <h2 class="title">asignarRuta: del permiso al Observer en diez pasos</h2>
     </div>
-
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex:1;align-content:start">
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">1</div>
-        <div class="h3" style="font-size:24px">Controller</div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Recibe el pedido de planificación y delega sin elegir el algoritmo — la firma <code>planificarRuta()</code> nunca cambia</div>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
-          <span class="band-tag">GRASP Controller</span>
-        </div>
-      </div>
-
-      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">2</div>
-        <div class="h3" style="font-size:24px"><code style="font-size:.82em">AsignadorDeVehiculos</code></div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Strategy 1 — elige el vehículo óptimo según el criterio configurado</div>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
-          <span class="band-tag">Strategy</span>
-          <span class="band-tag">PorCapacidad</span>
-          <span class="band-tag">PorDisponibilidad</span>
-        </div>
-      </div>
-
-      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">3</div>
-        <div class="h3" style="font-size:24px"><code style="font-size:.82em">CalculadorDeRuta</code></div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Strategy 2 — elige la ruta óptima entre candidatas con criterio intercambiable</div>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
-          <span class="band-tag">Strategy</span>
-          <span class="band-tag">MasBarata</span>
-          <span class="band-tag">MasCercana</span>
-          <span class="band-tag">MenosCongestionada</span>
-        </div>
-      </div>
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">4</div>
-        <div class="h3" style="font-size:24px"><code style="font-size:.9em">Ruta</code></div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Information Expert — conoce su propio recorrido y calcula <strong>distancia</strong> y <strong>costo total</strong></div>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
-          <span class="band-tag">Info Expert</span>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="callout info" style="margin-top:18px">
-      <div class="ic">→</div>
-      <div style="font-size:24px">Cambiar el criterio de ruta = enchufar otra <code>Strategy</code> en el paso 3, <strong>sin tocar el Controller ni la firma del método</strong>.</div>
-    </div>
+    <div id="seq-root-cu04" class="seq"></div>
   </div>
 </section>
 
-<!-- ════════ 18 · CU-04 — ASIGNAR HOJA DE RUTA ════════ -->
-<section data-label="CU-04 asignarRuta" data-screen-label="18 CU-04 — Asignar hoja de ruta">
+<!-- ════════ 18 · CU-07 — SEGUIR EL ENVÍO ════════ -->
+<section data-label="CU-07 State+Observer" data-screen-label="15 CU-07 — Seguir el envío en vivo">
   <div class="frame">
-    <div class="head" style="margin-bottom:24px">
-      <div class="eyebrow">CU-04 · <code>Controller.asignarRuta()</code> · seis patrones</div>
-      <h2 class="title">asignarRuta: seis patrones en un solo método</h2>
-      <div style="font-size:22px;color:var(--muted);margin-top:6px">Todos ocurren dentro de <code>asignarRuta()</code> en el Controller — no están dispersos por el sistema</div>
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1;align-content:start">
-
-      <div class="panel" style="display:flex;gap:16px;align-items:flex-start">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">1</div>
-        <div>
-          <div class="h3" style="font-size:24px">Verificar permiso</div>
-          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>Rol.puedeAsignar()</code> — el dominio nunca ve la lógica de seguridad</div>
-          <div class="band-tags" style="margin-top:10px"><span class="band-tag">Information Expert</span></div>
-        </div>
-      </div>
-
-      <div class="panel" style="display:flex;gap:16px;align-items:flex-start">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">2</div>
-        <div>
-          <div class="h3" style="font-size:24px">Snapshot de seguridad</div>
-          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>Memento.snapshot()</code> guarda el estado del envío antes de cualquier cambio</div>
-          <div class="band-tags" style="margin-top:10px"><span class="band-tag">Memento</span></div>
-        </div>
-      </div>
-
-      <div class="panel" style="display:flex;gap:16px;align-items:flex-start">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">3</div>
-        <div>
-          <div class="h3" style="font-size:24px">Elegir vehículo</div>
-          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>AsignadorDeVehiculos</code> selecciona por capacidad o disponibilidad</div>
-          <div class="band-tags" style="margin-top:10px"><span class="band-tag">Strategy</span></div>
-        </div>
-      </div>
-
-      <div class="panel" style="display:flex;gap:16px;align-items:flex-start">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">4</div>
-        <div>
-          <div class="h3" style="font-size:24px">Calcular ruta</div>
-          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>CalculadorDeRuta</code> elige la ruta óptima entre candidatas</div>
-          <div class="band-tags" style="margin-top:10px"><span class="band-tag">Strategy</span></div>
-        </div>
-      </div>
-
-      <div class="panel panel-tint" style="display:flex;gap:16px;align-items:flex-start">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">5</div>
-        <div>
-          <div class="h3" style="font-size:24px">Transición de estado</div>
-          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>envio.setEstado(EN_TRÁNSITO)</code> — la transición es validada por el estado actual</div>
-          <div class="band-tags" style="margin-top:10px"><span class="band-tag">State</span></div>
-        </div>
-      </div>
-
-      <div class="panel panel-tint" style="display:flex;gap:16px;align-items:flex-start">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">6</div>
-        <div>
-          <div class="h3" style="font-size:24px">Notificar + persistir</div>
-          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>Observer</code> propaga el ETA · <code>Repository</code> + <code>UnitOfWork</code> confirman juntos</div>
-          <div class="band-tags" style="margin-top:10px"><span class="band-tag">Observer</span><span class="band-tag">Repository</span><span class="band-tag">Unit of Work</span></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ════════ 19 · CU-07 — SEGUIR EL ENVÍO ════════ -->
-<section data-label="CU-07 State+Observer" data-screen-label="19 CU-07 — Seguir el envío en vivo">
-  <div class="frame">
-    <div class="head" style="margin-bottom:24px">
+    <div class="head" style="margin-bottom:20px">
       <div class="eyebrow">CU-07 · State + Observer · el envío ni sabe quién escucha</div>
       <h2 class="title">Seguimiento en vivo: State dispara Observer</h2>
     </div>
-
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1;align-content:start">
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">1</div>
-        <div class="h3" style="font-size:24px">Transportista reporta</div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Informa su posición GPS. El servicio de tracking se <strong>apila sobre <code>Envio</code></strong> con Decorator — sin modificar la clase base</div>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
-          <span class="band-tag">Decorator</span>
-        </div>
-      </div>
-
-      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">2</div>
-        <div class="h3" style="font-size:24px"><code style="font-size:.82em">Envio.cambiarEstado()</code></div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">State valida que la transición sea legal · luego llama a <code>notificarObservadores()</code> — el envío no sabe quién escucha</div>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
-          <span class="band-tag">State</span>
-          <span class="band-tag">EN_TRÁNSITO</span>
-          <span class="band-tag">EN_REPARTO</span>
-          <span class="band-tag">ENTREGADO</span>
-        </div>
-      </div>
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">3</div>
-        <div class="h3" style="font-size:24px">Observer · tres suscriptores</div>
-        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">
-          <code>notificarObservadores()</code> propaga el evento a todos:
-          <ul style="list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:11px">
-            <li style="position:relative;padding-left:20px"><span style="position:absolute;left:0;top:.45em;width:8px;height:8px;border-radius:2px;background:var(--accent);display:block"></span><strong>Dashboard</strong> — refresca el mapa y el ETA</li>
-            <li style="position:relative;padding-left:20px"><span style="position:absolute;left:0;top:.45em;width:8px;height:8px;border-radius:2px;background:var(--accent);display:block"></span><strong>Cliente final</strong> — email o SMS con ETA actualizado</li>
-            <li style="position:relative;padding-left:20px"><span style="position:absolute;left:0;top:.45em;width:8px;height:8px;border-radius:2px;background:var(--accent);display:block"></span><strong>Centro</strong> — actualiza su ocupación y capacidad</li>
-          </ul>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
-          <span class="band-tag">Observer</span>
-        </div>
-      </div>
-
-    </div>
+    <div id="seq-root-cu07" class="seq"></div>
   </div>
 </section>
 
-<!-- ════════ 20 · CIERRE ════════ -->
-<section class="closing" data-label="Cierre" data-screen-label="20 Cierre">
+<!-- ════════ 19 · CIERRE ════════ -->
+<section class="closing" data-label="Cierre" data-screen-label="16 Cierre">
   <div class="grid-tex"></div>
   <div class="frame" style="display:flex;flex-direction:column;justify-content:center;gap:44px">
 
@@ -985,9 +827,8 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
   "",
   "",
   "Retomo yo. Hasta acá vimos cada capa y cada patrón por separado. Ahora veámoslos colaborando en flujos reales del sistema. Una sola petición que cruza las cinco capas. Entra por Presentación: el Controller valida los permisos del rol. Baja a Aplicación: el Facade orquesta y la Chain valida fail-fast. Infraestructura crea el envío con Factory y lo despacha al carrier traduciendo con Adapter. En el Dominio, cambia de estado con State y eso notifica solo con Observer. Y Persistencia lo guarda, con el Proxy cacheando las lecturas, sin que el dominio toque SQL. Una petición, cinco capas, los patrones colaborando en ejecución — no en abstracto.",
-  "Primer caso de uso: planificar la ruta óptima. El Controller recibe el pedido y delega. Acá entran dos Strategy encadenadas: primero AsignadorDeVehiculos elige el vehículo —por capacidad o disponibilidad— y después CalculadorDeRuta elige la ruta entre las candidatas, con un criterio intercambiable: más barata, más cercana o menos congestionada. Finalmente Ruta, que es el Expert de su propio recorrido, calcula distancia y costo. Cambiar el criterio de ruta es enchufar otra Strategy, sin tocar el Controller.",
-  "Este es el método más rico de todo el sistema, y es código real del Controller: asignarRuta. Miren cuántos patrones colaboran en una sola operación. Primero valida el permiso del rol. Antes de tocar nada, saca un snapshot con Memento. Después, dos Strategy: una elige el vehículo y otra la ruta —el detalle que acabamos de ver recién. Valida la asignación, transiciona el estado a EN_TRÁNSITO con State, y ese cambio notifica al dashboard y al cliente con Observer, actualizando el ETA. Y al final persiste con Unit of Work y Repository, que agrupan los cambios y confirman de una. Seis patrones, un solo método —y todo es código real, no un demo.",
-  "Cuando el transportista reporta su posición y el envío avanza, Envío.cambiarEstado hace la transición con State. Y ese cambio dispara solo a Observer: notificarObservadores propaga el evento a todos los suscriptos —el dashboard refresca el mapa y el ETA, al cliente final le llega un email o SMS, y el centro actualiza su ocupación. El envío ni sabe quién está escuchando. Y ese servicio de tracking GPS, de hecho, se le había agregado al envío apilándolo con Decorator.",
+  "Este es el método más rico de todo el sistema, y es código real del Controller: asignarRuta. Miren cuántos patrones colaboran en una sola operación. Primero valida el permiso del rol con Information Expert. Antes de tocar nada, Memento saca un snapshot. Dos Strategy encadenadas: AsignadorDeVehiculos elige el vehículo y CalculadorDeRuta elige la ruta. Luego State transiciona el envío a EN_TRÁNSITO, y ese cambio dispara automáticamente a Observer: dashboard, SMS y auditoría. Seis patrones, un solo método — todo código real.",
+  "Cuando el transportista reporta su posición, el servicio de tracking se apila sobre Envío con Decorator — sin tocar la clase base. El Envío delega la transición en su objeto de estado con State: EstadoEnCurso valida que la transición sea legal. Y ese cambio dispara solo a los tres suscriptores con Observer: el Dashboard refresca el mapa, el cliente recibe un SMS y el Centro actualiza su ocupación. El envío ni sabe quién está escuchando.",
   "Para cerrar volvemos a lo que prometimos: importar pedidos, planificar rutas y seguir el envío en vivo —los CU. Y lo que cumplimos: trece hitos, cinco capas, treinta y seis patrones y la batería de tests en verde como evidencia de un proceso disciplinado. La frase con la que abrimos y cerramos es la misma: en LogiSmart, primero el negocio; cada patrón existe para sostener una necesidad concreta. Gracias, quedamos para sus preguntas."
 ]
 </script>

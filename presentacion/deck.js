@@ -100,50 +100,15 @@ document.querySelectorAll('.cmp-tab').forEach(tab => {
   });
 });
 
-/* ── 3 · DIAGRAMA DE SECUENCIA INTERACTIVO ──────────────────────── */
-(function buildSequence(){
-  const root = document.getElementById('seq-root');
+/* ── 3 · DIAGRAMAS DE SECUENCIA INTERACTIVOS ────────────────────── */
+function buildSequence(rootId, actors, steps, initTxt) {
+  const root = document.getElementById(rootId);
   if (!root) return;
-
-  const actors = [
-    { nm: 'Cliente',      role: 'actor' },
-    { nm: 'Facade',       role: 'ServicioLogística' },
-    { nm: 'Builder',      role: 'EnvioBuilder' },
-    { nm: 'Validadores',  role: 'CadenaValidadores' },
-    { nm: 'Strategy',     role: 'EstrategiaCosto' },
-    { nm: 'Proceso',      role: 'ProcesoNacional' },
-    { nm: 'Envío',        role: 'State' },
-    { nm: 'Observers',    role: 'suscriptores' },
-  ];
-
-  const steps = [
-    { from:0, to:1, label:'crearEnvio()', pat:'Facade',
-      txt:'El cliente llama un único método. La fachada orquesta todos los subsistemas internos sin exponerlos.' },
-    { from:1, to:2, label:'new EnvioBuilder()…build()', pat:'Builder',
-      txt:'La fachada arma el Envío paso a paso —tipo, peso, origen, destino— de forma legible y segura.' },
-    { from:2, to:1, ret:true, label:'Envio', pat:'Builder',
-      txt:'El Builder devuelve un Envío ya construido y consistente.' },
-    { from:1, to:3, label:'validarEnvio(envio)', pat:'Chain of Responsibility', chip:'Chain',
-      txt:'El envío pasa por 5 validadores en orden de costo. Si uno falla, corta la cadena (fail-fast).' },
-    { from:3, to:1, ret:true, label:'true', pat:'Chain of Responsibility', chip:'Chain',
-      txt:'Todos los validadores pasaron: el envío es válido y la cadena devuelve el control.' },
-    { from:1, to:4, label:'calcular(envio)', pat:'Strategy',
-      txt:'Se inyecta la estrategia adecuada (ej. Híbrida). El algoritmo de costo es intercambiable en runtime.' },
-    { from:4, to:1, ret:true, label:'costo', pat:'Strategy',
-      txt:'La estrategia devuelve el costo sin que la fachada conozca la fórmula interna.' },
-    { from:1, to:5, label:'procesarEnvio(envio)', pat:'Template Method',
-      txt:'El proceso ejecuta un esqueleto fijo y final: validar → calcular → cobrar → notificar.' },
-    { from:5, to:6, label:'cambiarEstado(EstadoEnTransito)', pat:'State',
-      txt:'Confirmado el pago, el Envío transiciona. Delega la lógica al objeto de estado actual.' },
-    { from:6, to:7, label:'notificarObservadores()', pat:'Observer',
-      txt:'cambiarEstado() llama internamente a notificarObservadores(). El dashboard, la auditoría y el SMS reciben el evento automáticamente.' },
-  ];
 
   const N = actors.length;
   const M = steps.length;
-  const center = i => (i + 0.5) / N * 100; // % center of column i
+  const center = i => (i + 0.5) / N * 100;
 
-  /* actors header */
   const head = document.createElement('div');
   head.className = 'seq-actors';
   head.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
@@ -152,7 +117,6 @@ document.querySelectorAll('.cmp-tab').forEach(tab => {
   ).join('');
   root.appendChild(head);
 
-  /* canvas: lifelines + messages */
   const canvas = document.createElement('div');
   canvas.className = 'seq-canvas';
   const lines = document.createElement('div');
@@ -183,32 +147,31 @@ document.querySelectorAll('.cmp-tab').forEach(tab => {
   canvas.appendChild(msgs);
   root.appendChild(canvas);
 
-  /* footer: caption + controls */
   const foot = document.createElement('div');
   foot.className = 'seq-foot';
   foot.innerHTML =
     `<div class="seq-caption">
-       <div class="pat" id="seq-pat">Diagrama de secuencia</div>
-       <div class="txt" id="seq-txt">Seguí el flujo de un envío a través de los patrones. Pulsá “Siguiente paso” para empezar.</div>
+       <div class="pat seq-pat">Diagrama de secuencia</div>
+       <div class="txt seq-txt">${initTxt}</div>
      </div>
      <div class="seq-controls">
-       <span class="seq-step-n" id="seq-stepn">0 / ${M}</span>
-       <div class="seq-dots" id="seq-dots">${steps.map((_,i)=>`<span class="d" data-d="${i+1}"></span>`).join('')}</div>
-       <button class="seq-btn" id="seq-prev">◀ Atrás</button>
-       <button class="seq-btn primary" id="seq-next">Siguiente paso ▶</button>
-       <button class="seq-btn" id="seq-reset" title="Reiniciar">↺</button>
+       <span class="seq-step-n seq-stepn">0 / ${M}</span>
+       <div class="seq-dots">${steps.map((_,i)=>`<span class="d" data-d="${i+1}"></span>`).join('')}</div>
+       <button class="seq-btn seq-prev">◀ Atrás</button>
+       <button class="seq-btn primary seq-next">Siguiente paso ▶</button>
+       <button class="seq-btn seq-reset" title="Reiniciar">↺</button>
      </div>`;
   root.appendChild(foot);
 
-  let cur = 0; // 0 = nada mostrado; 1..M
-  const patEl = foot.querySelector('#seq-pat');
-  const txtEl = foot.querySelector('#seq-txt');
-  const stepnEl = foot.querySelector('#seq-stepn');
-  const prevBtn = foot.querySelector('#seq-prev');
-  const nextBtn = foot.querySelector('#seq-next');
-  const resetBtn = foot.querySelector('#seq-reset');
+  let cur = 0;
+  const patEl   = foot.querySelector('.seq-pat');
+  const txtEl   = foot.querySelector('.seq-txt');
+  const stepnEl = foot.querySelector('.seq-stepn');
+  const prevBtn = foot.querySelector('.seq-prev');
+  const nextBtn = foot.querySelector('.seq-next');
+  const resetBtn = foot.querySelector('.seq-reset');
 
-  function render(){
+  function render() {
     msgs.querySelectorAll('.seq-msg').forEach(m => {
       m.classList.toggle('show', +m.dataset.step <= cur);
     });
@@ -217,14 +180,13 @@ document.querySelectorAll('.cmp-tab').forEach(tab => {
       d.classList.toggle('done', n <= cur);
       d.classList.toggle('cur', n === cur);
     });
-    // highlight live actors + lifelines for current step
     const live = cur > 0 ? [steps[cur-1].from, steps[cur-1].to] : [];
     head.querySelectorAll('.seq-actor').forEach(a => a.classList.toggle('live', live.includes(+a.dataset.actor)));
     lines.querySelectorAll('.ll').forEach(l => l.classList.toggle('live', live.includes(+l.dataset.ll)));
 
     if (cur === 0) {
       patEl.textContent = 'Diagrama de secuencia';
-      txtEl.textContent = 'Seguí el flujo de un envío a través de los patrones. Pulsá “Siguiente paso” para empezar.';
+      txtEl.textContent = initTxt;
     } else {
       patEl.textContent = `Paso ${cur} · ${steps[cur-1].pat}`;
       txtEl.textContent = steps[cur-1].txt;
@@ -234,15 +196,120 @@ document.querySelectorAll('.cmp-tab').forEach(tab => {
     nextBtn.disabled = cur === M;
   }
 
-  const next = () => { if (cur < M) { cur++; render(); } };
-  const prev = () => { if (cur > 0) { cur--; render(); } };
-  const reset = () => { cur = 0; render(); };
+  function next()  { if (cur < M) { cur++; render(); } }
+  function prev()  { if (cur > 0) { cur--; render(); } }
+  function reset() { cur = 0; render(); }
 
   nextBtn.addEventListener('click', next);
   prevBtn.addEventListener('click', prev);
   resetBtn.addEventListener('click', reset);
-  // click en el lienzo avanza (no en los botones)
   canvas.addEventListener('click', next);
 
   render();
-})();
+}
+
+/* ·· Flujo integral — crearEnvío a través de las 5 capas ·· */
+buildSequence('seq-root',
+  [
+    { nm: 'Cliente',      role: 'actor' },
+    { nm: 'Facade',       role: 'ServicioLogística' },
+    { nm: 'Builder',      role: 'EnvioBuilder' },
+    { nm: 'Validadores',  role: 'CadenaValidadores' },
+    { nm: 'Strategy',     role: 'EstrategiaCosto' },
+    { nm: 'Proceso',      role: 'ProcesoNacional' },
+    { nm: 'Envío',        role: 'State' },
+    { nm: 'Observers',    role: 'suscriptores' },
+  ],
+  [
+    { from:0, to:1, label:'crearEnvio()', pat:'Facade',
+      txt:'El cliente llama un único método. La fachada orquesta todos los subsistemas internos sin exponerlos.' },
+    { from:1, to:2, label:'new EnvioBuilder()…build()', pat:'Builder',
+      txt:'La fachada arma el Envío paso a paso —tipo, peso, origen, destino— de forma legible y segura.' },
+    { from:2, to:1, ret:true, label:'Envio', pat:'Builder',
+      txt:'El Builder devuelve un Envío ya construido y consistente.' },
+    { from:1, to:3, label:'validarEnvio(envio)', pat:'Chain of Responsibility', chip:'Chain',
+      txt:'El envío pasa por 5 validadores en orden de costo. Si uno falla, corta la cadena (fail-fast).' },
+    { from:3, to:1, ret:true, label:'true', pat:'Chain of Responsibility', chip:'Chain',
+      txt:'Todos los validadores pasaron: el envío es válido y la cadena devuelve el control.' },
+    { from:1, to:4, label:'calcular(envio)', pat:'Strategy',
+      txt:'Se inyecta la estrategia adecuada (ej. Híbrida). El algoritmo de costo es intercambiable en runtime.' },
+    { from:4, to:1, ret:true, label:'costo', pat:'Strategy',
+      txt:'La estrategia devuelve el costo sin que la fachada conozca la fórmula interna.' },
+    { from:1, to:5, label:'procesarEnvio(envio)', pat:'Template Method',
+      txt:'El proceso ejecuta un esqueleto fijo y final: validar → calcular → cobrar → notificar.' },
+    { from:5, to:6, label:'cambiarEstado(EstadoEnTransito)', pat:'State',
+      txt:'Confirmado el pago, el Envío transiciona. Delega la lógica al objeto de estado actual.' },
+    { from:6, to:7, label:'notificarObservadores()', pat:'Observer',
+      txt:'cambiarEstado() llama internamente a notificarObservadores(). El dashboard, la auditoría y el SMS reciben el evento automáticamente.' },
+  ],
+  'Seguí el flujo de un envío a través de los patrones. Pulsá "Siguiente paso" para empezar.'
+);
+
+/* ·· CU-04 — asignarRuta: seis patrones en un método ·· */
+buildSequence('seq-root-cu04',
+  [
+    { nm: 'Operador',    role: 'OperadorLogístico' },
+    { nm: 'Controller',  role: 'LogiSmartController' },
+    { nm: 'Rol',         role: 'Information Expert' },
+    { nm: 'Memento',     role: 'MementoEnvio' },
+    { nm: 'Vehículo',    role: 'AsignadorDeVehiculos' },
+    { nm: 'Ruta',        role: 'CalculadorDeRuta' },
+    { nm: 'State',       role: 'Envio.estado' },
+    { nm: 'Observer',    role: 'Dashboard · SMS' },
+  ],
+  [
+    { from:0, to:1, label:'asignarRuta()', pat:'GRASP Controller', chip:'Controller',
+      txt:'El OperadorLogístico delega al Controller. Punto de entrada único: toda la lógica se orquesta desde aquí, sin lógica en el dominio del usuario.' },
+    { from:1, to:2, label:'puedeAsignarRuta()', pat:'Information Expert', chip:'Info Expert',
+      txt:'Rol conoce su propia matriz de permisos. El Controller le pregunta al experto — GRASP Information Expert: cada clase conoce sus propios datos.' },
+    { from:2, to:1, ret:true, label:'true', pat:'Information Expert', chip:'Info Expert',
+      txt:'El rol tiene permiso. El Controller puede continuar con la asignación.' },
+    { from:1, to:3, label:'snapshot()', pat:'Memento',
+      txt:'Antes de modificar nada, Memento guarda un snapshot inmutable del envío. Si algo falla, el estado se puede restaurar.' },
+    { from:1, to:4, label:'asignar(flota, envio)', pat:'Strategy',
+      txt:'Strategy 1: AsignadorDeVehiculos. El algoritmo es intercambiable en runtime — PorCapacidad o PorDisponibilidad — sin tocar el Controller.' },
+    { from:4, to:1, ret:true, label:'vehiculo', pat:'Strategy',
+      txt:'La estrategia devuelve el vehículo óptimo según el criterio configurado.' },
+    { from:1, to:5, label:'calcular(envio, rutas)', pat:'Strategy',
+      txt:'Strategy 2: CalculadorDeRuta. Elige entre rutas candidatas con criterio intercambiable: MasCercana, MasBarata o MenosCongestionada.' },
+    { from:5, to:1, ret:true, label:'ruta', pat:'Strategy',
+      txt:'La segunda estrategia devuelve la ruta óptima entre las candidatas.' },
+    { from:1, to:6, label:'cambiarEstado(EN_TRÁNSITO)', pat:'State',
+      txt:'State valida que la transición sea legal desde el estado actual. Cada estado decide sus propias transiciones — sin switch gigante.' },
+    { from:6, to:7, label:'notificarObservadores()', pat:'Observer',
+      txt:'cambiarEstado() llama a notificarObservadores() automáticamente. Dashboard, SMS y auditoría reciben el evento — el Envío ni sabe quién escucha.' },
+  ],
+  'Seguí asignarRuta() paso a paso: seis patrones en un solo método real. Pulsá "Siguiente paso" para empezar.'
+);
+
+/* ·· CU-07 — seguimiento en vivo: State dispara Observer ·· */
+buildSequence('seq-root-cu07',
+  [
+    { nm: 'Transportista', role: 'GPS' },
+    { nm: 'Tracking',      role: 'Decorator' },
+    { nm: 'Envío',         role: 'base' },
+    { nm: 'Estado',        role: 'EstadoEnCurso' },
+    { nm: 'Dashboard',     role: 'Observer 1' },
+    { nm: 'Email/SMS',     role: 'Observer 2' },
+    { nm: 'Centro',        role: 'Observer 3' },
+  ],
+  [
+    { from:0, to:1, label:'reportarPosicion(gps)', pat:'Decorator',
+      txt:'El transportista reporta su posición GPS. El servicio de tracking envuelve al Envío con Decorator — apila funcionalidad sin modificar la clase base.' },
+    { from:1, to:2, label:'actualizarPosicion(envio)', pat:'Decorator',
+      txt:'El Decorator delega en el Envío subyacente. La interfaz es idéntica al Envío original; la capa extra es transparente para el resto del sistema.' },
+    { from:2, to:3, label:'cambiarEstado(EN_REPARTO)', pat:'State',
+      txt:'El Envío delega la transición en su objeto de estado actual. EstadoEnCurso valida que la transición sea legal.' },
+    { from:3, to:2, ret:true, label:'ok', pat:'State',
+      txt:'La transición es válida. State actualiza el estado del Envío sin un switch gigante — cada estado decide sus propias reglas.' },
+    { from:2, to:4, label:'update(evento)', pat:'Observer',
+      txt:'notificarObservadores() propaga el evento al Dashboard. El mapa y el ETA se refrescan automáticamente.' },
+    { from:2, to:5, label:'update(evento)', pat:'Observer',
+      txt:'El mismo evento llega al servicio de Email/SMS. El cliente recibe la notificación automáticamente — Envío no lo sabe.' },
+    { from:2, to:6, label:'update(evento)', pat:'Observer',
+      txt:'El Centro de Distribución actualiza su ocupación. Tres suscriptores distintos, un solo notificar — abierto a extensión, cerrado a modificación.' },
+    { from:2, to:1, ret:true, label:'(done)', pat:'Decorator',
+      txt:'El control regresa al Decorator. El tracking procesó la posición sin alterar el comportamiento base del Envío.' },
+  ],
+  'Seguí el seguimiento en vivo: State valida, Observer fan-out. Pulsá "Siguiente paso" para empezar.'
+);
