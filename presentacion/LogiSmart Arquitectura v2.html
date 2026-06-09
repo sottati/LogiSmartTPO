@@ -257,7 +257,7 @@
       <div class="arch-rail">
         <div class="rid">05</div>
         <div class="rname">Infraestructura</div>
-        <div class="rrole">Capa transversal: aloja patrones de comportamiento, estructurales y de persistencia, además de la integración con sistemas externos. La usan todas las demás.</div>
+        <div class="rrole">Provee las implementaciones concretas: patrones GoF, integración con sistemas externos y persistencia. La capa de aplicación la cablea con el dominio.</div>
         <div class="rail-qas">
           <div class="band-qa">Interoperabilidad</div>
           <div class="band-qa">Elasticidad</div>
@@ -618,7 +618,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
 <section data-label="Interoperabilidad" data-screen-label="14 Infraestructura · Interoperabilidad">
   <div class="frame">
     <div class="head" style="margin-bottom:18px">
-      <div class="eyebrow">Capa 05 · Infraestructura — transversal</div>
+      <div class="eyebrow">Capa 05 · Infraestructura</div>
       <h2 class="title">Hablar con el mundo externo y operar en dos países</h2>
       <div class="qa-badge"><span class="pin">Atributos</span><b>Interoperabilidad</b> + <b>Elasticidad regional</b></div>
     </div>
@@ -668,7 +668,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
         </div></div>
       </div>
     </div>
-    <div class="layer-foot"><span class="arrow">+</span> También transversal: <strong>Factory Method</strong> · <strong>Singleton</strong></div>
+    <div class="layer-foot"><span class="arrow">+</span> También en esta capa: <strong>Factory Method</strong> · <strong>Singleton</strong></div>
   </div>
 </section>
 
@@ -971,7 +971,7 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
   "Nuestro cliente es una PyME que hoy gestiona la logística a mano: carga los pedidos del e-commerce uno por uno, arma las rutas a ojo —sin tráfico ni ventanas horarias— y el cliente final tiene que llamar para saber dónde está su paquete. LogiSmart centraliza todo eso en una sola plataforma multitenant: importa pedidos solo, arma rutas óptimas con tráfico real, y deja al cliente final seguir su envío en un mapa con ETA real.",
   "El MVP gira sobre tres casos de uso. CU-01, importar pedidos: sincroniza con TiendaNube o MercadoShops y trae las órdenes. CU-03, planificar rutas óptimas: analiza pedidos, vehículos y tráfico, y devuelve la secuencia de paradas más eficiente respetando ventanas horarias. Y CU-07, seguir el envío en vivo: el cliente final entra por un enlace y ve al chofer en el mapa con el ETA.",
   "Definimos cinco atributos de calidad, y cada uno apunta a una capa. Alta disponibilidad, crítica: si LogiSmart se cae, se frena la PyME. Aislamiento de datos: que ninguna PyME vea la info de otra. Interoperabilidad: integrarnos con e-commerce, mapas y pagos sin contaminar el dominio. Elasticidad: adaptar recursos por demanda y región. Y eficiencia de respuesta en rutas y tracking.",
-  "La arquitectura son cinco capas, y cada una hospeda un atributo. Presentación recibe la petición, autoriza y delega, sin lógica de negocio. Aplicación orquesta los casos de uso entre subsistemas sin que nada quede a medias. Dominio es el corazón: las reglas del negocio, todo gira en torno a Envío y su ciclo de vida. Persistencia aísla el almacenamiento: el dominio nunca toca SQL. E Infraestructura es transversal: crea los objetos e integra con el mundo externo.",
+  "La arquitectura son cinco capas, y cada una hospeda un atributo. Presentación recibe la petición, autoriza y delega, sin lógica de negocio. Aplicación orquesta los casos de uso entre subsistemas sin que nada quede a medias. Dominio es el corazón: las reglas del negocio, todo gira en torno a Envío y su ciclo de vida. Persistencia aísla el almacenamiento: el dominio nunca toca SQL. E Infraestructura provee las implementaciones concretas: patrones GoF, integración con sistemas externos y persistencia — la capa de aplicación la cablea con el dominio.",
   "",
   "En Presentación el atributo es aislamiento de datos. Acá vive el Controller: una sola puerta de entrada que valida quién pide qué y delega; recibe las solicitudes, chequea permisos e inyecta dependencias, pero no calcula ni persiste. Y los permisos no los resolvemos con if frágiles sino con polimorfismo: un enum Rol que centraliza la matriz de permisos cinco por cinco.",
   "Esta es una de las decisiones de las que estamos más orgullosos. Antes teníamos veinticinco booleanos de permisos repartidos en cinco clases —cada rol repetía sus permisos a mano. Lo refactorizamos a un único enum Rol que es la fuente de verdad: cada rol es una fila con sus cinco permisos. Esto es GRASP Information Expert. ¿La ganancia? Agregar un permiso antes eran cinco archivos; ahora es una columna más en el enum.",
