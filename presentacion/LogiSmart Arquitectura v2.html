@@ -876,55 +876,291 @@ visitar(CentroRegional centro)</pre>
   </div>
 </section>
 
-<!-- ════════ 16 · FLUJO ENTRE CAPAS (secuencia) ════════ -->
-<section data-label="El flujo de un envío" data-screen-label="16 Flujo de una petición">
+<!-- ════════ 16 · FLUJO INTEGRAL ════════ -->
+<section data-label="Flujo integral" data-screen-label="16 Flujo integral">
   <div class="frame">
     <div class="head" style="margin-bottom:20px">
-      <div class="eyebrow">Las capas colaborando · diagrama de secuencia</div>
-      <h2 class="title">El flujo de un envío, capa por capa</h2>
+      <div class="eyebrow">Flujo integral · cinco capas colaborando en ejecución</div>
+      <h2 class="title">Una petición que cruza las cinco capas</h2>
     </div>
-    <div id="seq-root" class="seq"></div>
+    <div class="arch-stack" style="flex:1;gap:10px">
+
+      <div class="band">
+        <div class="band-id" style="font-size:38px;min-width:44px">01</div>
+        <div style="flex:1">
+          <div class="band-name">Presentación</div>
+          <div class="band-role"><code>Controller</code> recibe la petición · <code>Rol.puedeCrear()</code> verifica permisos antes de delegar</div>
+        </div>
+        <div class="band-tags" style="margin-top:0;justify-content:flex-end">
+          <span class="band-tag">Controller</span><span class="band-tag">Information Expert</span>
+        </div>
+      </div>
+
+      <div class="band">
+        <div class="band-id" style="font-size:38px;min-width:44px">02</div>
+        <div style="flex:1">
+          <div class="band-name">Aplicación</div>
+          <div class="band-role"><code>ServicioLogisticaFacade</code> orquesta los subsistemas · <code>Chain</code> valida en orden de costo, fail-fast</div>
+        </div>
+        <div class="band-tags" style="margin-top:0;justify-content:flex-end">
+          <span class="band-tag">Facade</span><span class="band-tag">Chain of Responsibility</span>
+        </div>
+      </div>
+
+      <div class="band" style="border-left-color:var(--cat-crea)">
+        <div class="band-id" style="font-size:38px;min-width:44px;color:var(--cat-crea)">05</div>
+        <div style="flex:1">
+          <div class="band-name">Infraestructura</div>
+          <div class="band-role"><code>AbstractFactory</code> crea el <code>Envio</code> regional · <code>Adapter</code> traduce al protocolo del carrier</div>
+        </div>
+        <div class="band-tags" style="margin-top:0;justify-content:flex-end">
+          <span class="band-tag" style="color:var(--cat-crea);background:var(--cat-crea-tint);border-color:oklch(0.85 0.08 50)">Abstract Factory</span>
+          <span class="band-tag" style="color:var(--cat-crea);background:var(--cat-crea-tint);border-color:oklch(0.85 0.08 50)">Adapter</span>
+        </div>
+      </div>
+
+      <div class="band heart">
+        <div class="band-id" style="font-size:38px;min-width:44px">03</div>
+        <div style="flex:1">
+          <div class="band-name">Dominio · el corazón</div>
+          <div class="band-role"><code>Envio.cambiarEstado()</code> transiciona con <code>State</code> · el cambio dispara <code>Observer</code> automáticamente</div>
+        </div>
+        <div class="band-tags" style="margin-top:0;justify-content:flex-end">
+          <span class="band-tag">State</span><span class="band-tag">Observer</span>
+        </div>
+      </div>
+
+      <div class="band" style="border-left-color:var(--cat-estr)">
+        <div class="band-id" style="font-size:38px;min-width:44px;color:var(--cat-estr)">04</div>
+        <div style="flex:1">
+          <div class="band-name">Persistencia</div>
+          <div class="band-role"><code>Proxy</code> cachea las lecturas frecuentes · <code>Repository</code> guarda objetos sin que el dominio toque SQL</div>
+        </div>
+        <div class="band-tags" style="margin-top:0;justify-content:flex-end">
+          <span class="band-tag" style="color:var(--cat-estr);background:var(--cat-estr-tint);border-color:oklch(0.85 0.06 222)">Proxy</span>
+          <span class="band-tag" style="color:var(--cat-estr);background:var(--cat-estr-tint);border-color:oklch(0.85 0.06 222)">Repository</span>
+        </div>
+      </div>
+
+    </div>
   </div>
 </section>
 
-<!-- ════════ 17 · POR QUÉ CADA COSA ESTÁ DONDE ESTÁ ════════ -->
-<section data-label="Por qué cada cosa está donde está" data-screen-label="17 Por qué cada cosa está donde está">
+<!-- ════════ 17 · CU-03 — STRATEGY ════════ -->
+<section data-label="CU-03 Strategy" data-screen-label="17 CU-03 — Planificar ruta óptima">
+  <div class="frame">
+    <div class="head" style="margin-bottom:28px">
+      <div class="eyebrow">CU-03 · Strategy · dos algoritmos intercambiables</div>
+      <h2 class="title">Planificar la ruta óptima: dos Strategy encadenadas</h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 56px 1fr 56px 1fr;gap:0;flex:1;align-items:start">
+
+      <!-- Col 1: Controller -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="panel" style="text-align:center">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Entrada</div>
+          <div class="h3"><code style="font-size:26px">Controller</code></div>
+          <div style="font-size:23px;color:var(--body);margin-top:12px;line-height:1.4">recibe el pedido de planificación y delega sin elegir el algoritmo</div>
+        </div>
+        <div class="callout info">
+          <div class="ic">i</div>
+          <div>La firma <code>planificarRuta(pedido)</code> nunca cambia aunque el criterio sí.</div>
+        </div>
+      </div>
+
+      <!-- Arrow 1 -->
+      <div style="display:flex;align-items:flex-start;justify-content:center;padding-top:54px">
+        <svg width="56" height="28" viewBox="0 0 56 28" fill="none"><line x1="0" y1="14" x2="42" y2="14" stroke="var(--accent-line)" stroke-width="2.5"/><polygon points="40,6 56,14 40,22" fill="var(--accent-line)"/></svg>
+      </div>
+
+      <!-- Col 2: Dos Strategy -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="panel panel-tint" style="position:relative">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:8px">Strategy 1</div>
+          <div class="h3" style="font-size:26px"><code>AsignadorDeVehiculos</code></div>
+          <div style="font-size:23px;color:var(--body);margin-top:10px;line-height:1.35">Elige el vehículo según el criterio configurado</div>
+          <div class="band-tags" style="margin-top:12px">
+            <span class="band-tag">PorCapacidad</span>
+            <span class="band-tag">PorDisponibilidad</span>
+          </div>
+        </div>
+        <div class="panel panel-tint">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:8px">Strategy 2</div>
+          <div class="h3" style="font-size:26px"><code>CalculadorDeRuta</code></div>
+          <div style="font-size:23px;color:var(--body);margin-top:10px;line-height:1.35">Elige la ruta óptima entre candidatas</div>
+          <div class="band-tags" style="margin-top:12px">
+            <span class="band-tag">MasBarata</span>
+            <span class="band-tag">MasCercana</span>
+            <span class="band-tag">MenosCongestionada</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arrow 2 -->
+      <div style="display:flex;align-items:flex-start;justify-content:center;padding-top:54px">
+        <svg width="56" height="28" viewBox="0 0 56 28" fill="none"><line x1="0" y1="14" x2="42" y2="14" stroke="var(--accent-line)" stroke-width="2.5"/><polygon points="40,6 56,14 40,22" fill="var(--accent-line)"/></svg>
+      </div>
+
+      <!-- Col 3: Ruta Expert -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="panel" style="text-align:center">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">GRASP Expert</div>
+          <div class="h3"><code style="font-size:26px">Ruta</code></div>
+          <div style="font-size:23px;color:var(--body);margin-top:12px;line-height:1.4">conoce su propio recorrido · calcula <strong>distancia</strong> y <strong>costo</strong></div>
+        </div>
+        <div class="callout info">
+          <div class="ic">→</div>
+          <div>Cambiar el criterio de ruta = enchufar otra <code>Strategy</code>, <strong>sin tocar el Controller</strong>.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════ 18 · CU-04 — ASIGNAR HOJA DE RUTA ════════ -->
+<section data-label="CU-04 asignarRuta" data-screen-label="18 CU-04 — Asignar hoja de ruta">
   <div class="frame">
     <div class="head" style="margin-bottom:24px">
-      <div class="eyebrow">Arquitectura consciente — las decisiones de ubicación</div>
-      <h2 class="title">Por qué cada patrón está en esa capa y no en otra</h2>
+      <div class="eyebrow">CU-04 · código real del Controller · seis patrones</div>
+      <h2 class="title"><code style="font-size:inherit">asignarRuta</code>: seis patrones en un solo método</h2>
     </div>
-    <div class="dec-grid" style="flex:1">
-      <div class="dec-card">
-        <div class="dec-pat">Controller · Rol · IPermisos</div>
-        <div class="dec-layer">Presentación</div>
-        <div class="dec-why">El check de permisos vive arriba para que el dominio quede <strong>testeable en aislamiento</strong> — sin infraestructura de seguridad.</div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1;align-content:start">
+
+      <div class="panel" style="display:flex;gap:16px;align-items:flex-start">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">1</div>
+        <div>
+          <div class="h3" style="font-size:24px">Verificar permiso</div>
+          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>Rol.puedeAsignar()</code> — el dominio nunca ve la lógica de seguridad</div>
+          <div class="band-tags" style="margin-top:10px"><span class="band-tag">Information Expert</span></div>
+        </div>
       </div>
-      <div class="dec-card">
-        <div class="dec-pat">Facade · Chain of Responsibility</div>
-        <div class="dec-layer">Aplicación</div>
-        <div class="dec-why">La orquestación del orden de los subsistemas es responsabilidad de la aplicación — <strong>ni el cliente ni el dominio</strong> deben conocer ese orden.</div>
+
+      <div class="panel" style="display:flex;gap:16px;align-items:flex-start">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">2</div>
+        <div>
+          <div class="h3" style="font-size:24px">Snapshot de seguridad</div>
+          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>Memento.snapshot()</code> guarda el estado del envío antes de cualquier cambio</div>
+          <div class="band-tags" style="margin-top:10px"><span class="band-tag">Memento</span></div>
+        </div>
       </div>
-      <div class="dec-card">
-        <div class="dec-pat">Flyweight · Ubicacion</div>
-        <div class="dec-layer">Infraestructura</div>
-        <div class="dec-why">El pool de objetos compartidos es una optimización técnica — <strong>no es una regla de negocio</strong>. El dominio no sabe que existe.</div>
+
+      <div class="panel" style="display:flex;gap:16px;align-items:flex-start">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">3</div>
+        <div>
+          <div class="h3" style="font-size:24px">Elegir vehículo</div>
+          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>AsignadorDeVehiculos</code> selecciona por capacidad o disponibilidad</div>
+          <div class="band-tags" style="margin-top:10px"><span class="band-tag">Strategy</span></div>
+        </div>
       </div>
-      <div class="dec-card">
-        <div class="dec-pat">Repository · Data Mapper</div>
-        <div class="dec-layer">Persistencia</div>
-        <div class="dec-why">El dominio pide <strong>objetos</strong>, nunca filas SQL. Si mañana cambia la base de datos, el dominio no cambia.</div>
+
+      <div class="panel" style="display:flex;gap:16px;align-items:flex-start">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">4</div>
+        <div>
+          <div class="h3" style="font-size:24px">Calcular ruta</div>
+          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>CalculadorDeRuta</code> elige la ruta óptima entre candidatas</div>
+          <div class="band-tags" style="margin-top:10px"><span class="band-tag">Strategy</span></div>
+        </div>
       </div>
-      <div class="dec-card">
-        <div class="dec-pat">Abstract Factory</div>
-        <div class="dec-layer">Infraestructura</div>
-        <div class="dec-why">La creación de objetos regionales es <strong>transversal a todas las capas</strong>. La coherencia AR/BR no es una regla de negocio — es una restricción de configuración.</div>
+
+      <div class="panel panel-tint" style="display:flex;gap:16px;align-items:flex-start">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">5</div>
+        <div>
+          <div class="h3" style="font-size:24px">Transición de estado</div>
+          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>envio.setEstado(EN_TRÁNSITO)</code> — la transición es validada por el estado actual</div>
+          <div class="band-tags" style="margin-top:10px"><span class="band-tag">State</span></div>
+        </div>
       </div>
+
+      <div class="panel panel-tint" style="display:flex;gap:16px;align-items:flex-start">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--accent);line-height:1;flex:0 0 auto">6</div>
+        <div>
+          <div class="h3" style="font-size:24px">Notificar + persistir</div>
+          <div style="font-size:23px;color:var(--body);margin-top:6px;line-height:1.4"><code>Observer</code> propaga el ETA · <code>Repository</code> + <code>UnitOfWork</code> confirman juntos</div>
+          <div class="band-tags" style="margin-top:10px"><span class="band-tag">Observer</span><span class="band-tag">Repository</span><span class="band-tag">Unit of Work</span></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- ════════ 18 · LO QUE DECIDIMOS NO HACER ════════ -->
+<!-- ════════ 19 · CU-07 — SEGUIR EL ENVÍO ════════ -->
+<section data-label="CU-07 State+Observer" data-screen-label="19 CU-07 — Seguir el envío en vivo">
+  <div class="frame">
+    <div class="head" style="margin-bottom:28px">
+      <div class="eyebrow">CU-07 · State + Observer · el envío ni sabe quién escucha</div>
+      <h2 class="title">Seguimiento en vivo: State dispara Observer</h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 56px 1fr 56px 1fr;gap:0;flex:1;align-items:center">
+
+      <!-- Col 1: Trigger -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="panel" style="text-align:center">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Disparador</div>
+          <div class="h3" style="font-size:26px">Transportista</div>
+          <div style="font-size:23px;color:var(--body);margin-top:10px;line-height:1.4">reporta su posición GPS en el sistema</div>
+        </div>
+        <div class="panel" style="background:oklch(0.99 0.015 88 / .5);border-color:oklch(0.88 0.06 50)">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.04em;text-transform:uppercase;color:oklch(0.5 0.14 145);margin-bottom:6px">Decorator</div>
+          <div style="font-size:23px;color:var(--body);line-height:1.35">El servicio GPS se <strong>apila sobre Envio</strong> con Decorator, sin modificar la clase base</div>
+        </div>
+      </div>
+
+      <!-- Arrow 1 -->
+      <div style="display:flex;align-items:center;justify-content:center">
+        <svg width="56" height="28" viewBox="0 0 56 28" fill="none"><line x1="0" y1="14" x2="42" y2="14" stroke="var(--accent-line)" stroke-width="2.5"/><polygon points="40,6 56,14 40,22" fill="var(--accent-line)"/></svg>
+      </div>
+
+      <!-- Col 2: State -->
+      <div class="panel panel-tint" style="text-align:center">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:10px">State</div>
+        <div class="h3" style="font-size:26px"><code>Envio.cambiarEstado()</code></div>
+        <div style="font-size:23px;color:var(--body);margin-top:12px;line-height:1.4">valida que la transición sea legal desde el estado actual · luego llama a <code>notificarObservadores()</code></div>
+        <div class="band-tags" style="margin-top:16px;justify-content:center">
+          <span class="band-tag">EN_PREPARACION</span>
+          <span class="band-tag">EN_TRÁNSITO</span>
+          <span class="band-tag">EN_REPARTO</span>
+        </div>
+      </div>
+
+      <!-- Arrow 2 -->
+      <div style="display:flex;align-items:center;justify-content:center">
+        <svg width="56" height="28" viewBox="0 0 56 28" fill="none"><line x1="0" y1="14" x2="42" y2="14" stroke="var(--accent-line)" stroke-width="2.5"/><polygon points="40,6 56,14 40,22" fill="var(--accent-line)"/></svg>
+      </div>
+
+      <!-- Col 3: Observer fan-out -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px">Observer — tres suscriptores</div>
+        <div class="panel" style="display:flex;gap:14px;align-items:center">
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--accent);flex:0 0 auto">01</div>
+          <div>
+            <div style="font-size:24px;font-weight:600;color:var(--ink)">Dashboard</div>
+            <div style="font-size:22px;color:var(--body)">refresca el mapa y el ETA en tiempo real</div>
+          </div>
+        </div>
+        <div class="panel" style="display:flex;gap:14px;align-items:center">
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--accent);flex:0 0 auto">02</div>
+          <div>
+            <div style="font-size:24px;font-weight:600;color:var(--ink)">Cliente final</div>
+            <div style="font-size:22px;color:var(--body)">recibe email o SMS con ETA actualizado</div>
+          </div>
+        </div>
+        <div class="panel" style="display:flex;gap:14px;align-items:center">
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--accent);flex:0 0 auto">03</div>
+          <div>
+            <div style="font-size:24px;font-weight:600;color:var(--ink)">Centro de distribución</div>
+            <div style="font-size:22px;color:var(--body)">actualiza su ocupación y capacidad disponible</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
 
 <!-- ════════ 20 · CIERRE ════════ -->
 <section class="closing" data-label="Cierre" data-screen-label="20 Cierre">
@@ -973,6 +1209,33 @@ visitar(CentroRegional centro)</pre>
 </section>
 
 </deck-stage>
+
+<script type="application/json" id="speaker-notes">
+[
+  "Buenas, somos Rosario y Simón, comisión Belgrano. Les presentamos LogiSmart, una plataforma SaaS de logística para PyMEs. La idea que queremos que se lleven de toda la defensa es esta: primero el negocio, después la arquitectura. Cada decisión de diseño existe para sostener una necesidad concreta del negocio, no porque sí. Vamos a recorrer el sistema capa por capa: cinco capas, cinco atributos de calidad, treinta y seis patrones y los tests en verde.",
+  "Nuestro cliente es una PyME que hoy gestiona la logística a mano: carga los pedidos del e-commerce uno por uno, arma las rutas a ojo —sin tráfico ni ventanas horarias— y el cliente final tiene que llamar para saber dónde está su paquete. LogiSmart centraliza todo eso en una sola plataforma multitenant: importa pedidos solo, arma rutas óptimas con tráfico real, y deja al cliente final seguir su envío en un mapa con ETA real.",
+  "El MVP gira sobre tres casos de uso. CU-01, importar pedidos: sincroniza con TiendaNube o MercadoShops y trae las órdenes. CU-03, planificar rutas óptimas: analiza pedidos, vehículos y tráfico, y devuelve la secuencia de paradas más eficiente respetando ventanas horarias. Y CU-07, seguir el envío en vivo: el cliente final entra por un enlace y ve al chofer en el mapa con el ETA.",
+  "Definimos cinco atributos de calidad, y cada uno apunta a una capa. Alta disponibilidad, crítica: si LogiSmart se cae, se frena la PyME. Aislamiento de datos: que ninguna PyME vea la info de otra. Interoperabilidad: integrarnos con e-commerce, mapas y pagos sin contaminar el dominio. Elasticidad: adaptar recursos por demanda y región. Y eficiencia de respuesta en rutas y tracking.",
+  "La arquitectura son cinco capas, y cada una hospeda un atributo. Presentación recibe la petición, autoriza y delega, sin lógica de negocio. Aplicación orquesta los casos de uso entre subsistemas sin que nada quede a medias. Dominio es el corazón: las reglas del negocio, todo gira en torno a Envío y su ciclo de vida. Persistencia aísla el almacenamiento: el dominio nunca toca SQL. E Infraestructura es transversal: crea los objetos e integra con el mundo externo.",
+  "",
+  "En Presentación el atributo es aislamiento de datos. Acá vive el Controller: una sola puerta de entrada que valida quién pide qué y delega; recibe las solicitudes, chequea permisos e inyecta dependencias, pero no calcula ni persiste. Y los permisos no los resolvemos con if frágiles sino con polimorfismo: un enum Rol que centraliza la matriz de permisos cinco por cinco.",
+  "Esta es una de las decisiones de las que estamos más orgullosos. Antes teníamos veinticinco booleanos de permisos repartidos en cinco clases —cada rol repetía sus permisos a mano. Lo refactorizamos a un único enum Rol que es la fuente de verdad: cada rol es una fila con sus cinco permisos. Esto es GRASP Information Expert. ¿La ganancia? Agregar un permiso antes eran cinco archivos; ahora es una columna más en el enum.",
+  "En Aplicación el atributo es alta disponibilidad: que una operación compleja no quede a medias. La sostienen dos patrones. Primero un Facade, ServicioLogisticaFacade: una sola llamada, crearEnvio, que orquesta inventario, pago, rastreo, notificación y reportes en el orden correcto —el cliente no conoce ese orden. Segundo, Chain of Responsibility: cinco validadores en orden de costo —datos, inventario, pago, seguridad, capacidad— que cortan apenas uno falla, fail-fast.",
+  "Esta es la deuda técnica que liquidamos. La firma de los validadores se volvía frágil con cada campo nuevo: agregar un parámetro rompía toda la cadena. Creamos ContextoValidacion como Value Object, aplicando Protected Variations. Ahora los validadores ya no saben cómo crece el contexto.",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Retomo yo. Hasta acá vimos cada capa y cada patrón por separado. Ahora veámoslos colaborando en flujos reales del sistema. Una sola petición que cruza las cinco capas. Entra por Presentación: el Controller valida los permisos del rol. Baja a Aplicación: el Facade orquesta y la Chain valida fail-fast. Infraestructura crea el envío con Factory y lo despacha al carrier traduciendo con Adapter. En el Dominio, cambia de estado con State y eso notifica solo con Observer. Y Persistencia lo guarda, con el Proxy cacheando las lecturas, sin que el dominio toque SQL. Una petición, cinco capas, los patrones colaborando en ejecución — no en abstracto.",
+  "Primer caso de uso: planificar la ruta óptima. El Controller recibe el pedido y delega. Acá entran dos Strategy encadenadas: primero AsignadorDeVehiculos elige el vehículo —por capacidad o disponibilidad— y después CalculadorDeRuta elige la ruta entre las candidatas, con un criterio intercambiable: más barata, más cercana o menos congestionada. Finalmente Ruta, que es el Expert de su propio recorrido, calcula distancia y costo. Cambiar el criterio de ruta es enchufar otra Strategy, sin tocar el Controller.",
+  "Este es el método más rico de todo el sistema, y es código real del Controller: asignarRuta. Miren cuántos patrones colaboran en una sola operación. Primero valida el permiso del rol. Antes de tocar nada, saca un snapshot con Memento. Después, dos Strategy: una elige el vehículo y otra la ruta —el detalle que acabamos de ver recién. Valida la asignación, transiciona el estado a EN_TRÁNSITO con State, y ese cambio notifica al dashboard y al cliente con Observer, actualizando el ETA. Y al final persiste con Unit of Work y Repository, que agrupan los cambios y confirman de una. Seis patrones, un solo método —y todo es código real, no un demo.",
+  "Cuando el transportista reporta su posición y el envío avanza, Envío.cambiarEstado hace la transición con State. Y ese cambio dispara solo a Observer: notificarObservadores propaga el evento a todos los suscriptos —el dashboard refresca el mapa y el ETA, al cliente final le llega un email o SMS, y el centro actualiza su ocupación. El envío ni sabe quién está escuchando. Y ese servicio de tracking GPS, de hecho, se le había agregado al envío apilándolo con Decorator.",
+  "Para cerrar volvemos a lo que prometimos: importar pedidos, planificar rutas y seguir el envío en vivo —los CU. Y lo que cumplimos: trece hitos, cinco capas, treinta y seis patrones y la batería de tests en verde como evidencia de un proceso disciplinado. La frase con la que abrimos y cerramos es la misma: en LogiSmart, primero el negocio; cada patrón existe para sostener una necesidad concreta. Gracias, quedamos para sus preguntas."
+]
+</script>
 
 <script src="deck-stage.js"></script>
 <script src="deck.js"></script>
