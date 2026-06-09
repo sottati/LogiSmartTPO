@@ -456,20 +456,21 @@ public class MementoEnvio {
 <pre>// Originator - métodos en Envio
 public MementoEnvio crearMemento() {
     return new MementoEnvio(
-        estado, origen, destino, peso, costo
+        estadoGoF.obtenerNombre(), origen, destino, peso, costo
     );
 }
 
 public void restaurarDesdeMemento(MementoEnvio m) {
-    this.estado  = m.obtenerEstado();
-    this.origen  = m.obtenerOrigen();
-    this.destino = m.obtenerDestino();
-    this.peso    = m.obtenerPeso();
-    this.costo   = m.obtenerCosto();
+    this.estadoGoF = EstadoEnvio.fromNombre(m.obtenerEstado()); // reconstruye el objeto GoF
+    this.origen    = m.obtenerOrigen();
+    this.destino   = m.obtenerDestino();
+    this.peso      = m.obtenerPeso();
+    this.costo     = m.obtenerCosto();
 }
 
-public void cambiarEstado(String nuevoEstado) {
-    this.estado = nuevoEstado;
+// No existe cambiarEstado(String): el estado siempre se cambia via cambiarEstado(EstadoEnvio)
+public void cambiarEstado(EstadoEnvio nuevoEstado) {
+    this.estadoGoF = nuevoEstado;
     notificarObservadores(); // integración con Observer
 }</pre>
         </div>
@@ -581,17 +582,18 @@ private void notificarObservadores() {
     for (ObservadorEnvio o : observadores)
         o.actualizar(this);
 }
-public void cambiarEstado(String nuevoEstado) {
-    this.estado = nuevoEstado;
+// getEstado() delega en estadoGoF; no existe campo String paralelo
+public String getEstado() { return estadoGoF.obtenerNombre(); }
+
+public void cambiarEstado(EstadoEnvio nuevoEstado) {
+    this.estadoGoF = nuevoEstado;
     notificarObservadores();
 }
 public void iniciar() {
-    this.estado = "EN_CURSO";
-    notificarObservadores();
+    cambiarEstado(new EstadoEnCurso()); // delega al estado GoF
 }
 public void cancelar() {
-    this.estado = "CANCELADO";
-    notificarObservadores();
+    estadoGoF.cancelar(this); // el estado decide si puede cancelarse
 }</pre>
         </div>
 
@@ -910,7 +912,7 @@ public void procesarEnvios(List&lt;Envio&gt; envios) {
 <pre class="mermaid">classDiagram
   class Envio {
     &lt;&lt;Originator&gt;&gt;
-    -estado: String
+    -estadoGoF: EstadoEnvio
     -origen: String
     -destino: String
     -peso: double
@@ -918,7 +920,8 @@ public void procesarEnvios(List&lt;Envio&gt; envios) {
     -observadores: List~ObservadorEnvio~
     +crearMemento() MementoEnvio
     +restaurarDesdeMemento(MementoEnvio)
-    +cambiarEstado(String)
+    +cambiarEstado(EstadoEnvio)
+    +getEstado() String
     +obtenerEstado() String
   }
   class MementoEnvio {
@@ -959,11 +962,12 @@ public void procesarEnvios(List&lt;Envio&gt; envios) {
   }
   class Envio {
     &lt;&lt;Subject&gt;&gt;
+    -estadoGoF: EstadoEnvio
     -observadores: List~ObservadorEnvio~
     +adjuntarObservador(ObservadorEnvio)
     +desadjuntarObservador(ObservadorEnvio)
     -notificarObservadores()
-    +cambiarEstado(String)
+    +cambiarEstado(EstadoEnvio)
     +iniciar()
     +cancelar()
   }

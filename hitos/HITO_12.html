@@ -89,7 +89,7 @@
         <table>
           <thead><tr><th>Sección</th><th>Archivos</th><th>Evidencia</th></tr></thead>
           <tbody>
-            <tr><td>State</td><td><code>state/EstadoEnvio</code>, 6 estados, <code>Envio.estadoGoF</code></td><td>10 verificaciones de flujo e inválidas.</td></tr>
+            <tr><td>State</td><td><code>state/EstadoEnvio</code>, 9 estados, <code>Envio.estadoGoF</code></td><td>10 verificaciones de flujo e inválidas.</td></tr>
             <tr><td>Strategy</td><td><code>strategy/EstrategiaCalculoCosto</code>, 5 estrategias</td><td>7 verificaciones, cálculo determinista.</td></tr>
             <tr><td>Template Method</td><td><code>template/ProcesoEnvio</code>, 3 procesos</td><td>7 verificaciones, orden de pasos.</td></tr>
             <tr><td>Visitor</td><td><code>visitor/*</code></td><td>8 verificaciones, doble dispatch y recorrido.</td></tr>
@@ -268,7 +268,7 @@ Sistema->>Visitor: aceptar(red)</pre>
         <table>
           <thead><tr><th>Ventajas</th><th>Desventajas</th></tr></thead>
           <tbody>
-            <tr><td>Elimina los condicionales por texto de estado (<code>if estado.equals("EN_TRANSITO")</code>): cada estado encapsula su propio comportamiento.</td><td>Genera una clase por estado (6 estados = 6 clases), aumentando el número de archivos a mantener.</td></tr>
+            <tr><td>Elimina los condicionales por texto de estado (<code>if estado.equals("EN_TRANSITO")</code>): cada estado encapsula su propio comportamiento.</td><td>Genera una clase por estado (9 estados = 9 clases), aumentando el número de archivos a mantener.</td></tr>
             <tr><td>Las transiciones inválidas se manejan localmente en cada estado, haciendo la máquina explícita y verificable.</td><td>La lógica de transición queda dispersa entre las clases de estado; ver el flujo completo exige recorrer varias clases.</td></tr>
             <tr><td>Agregar un estado nuevo no rompe los existentes; <code>Envio</code> solo delega en <code>estadoGoF</code>.</td><td>El contexto y los estados quedan acoplados: cada estado necesita conocer a qué estados puede transicionar.</td></tr>
           </tbody>
