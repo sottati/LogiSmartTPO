@@ -472,41 +472,48 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
   </div>
 </section>
 
-<!-- ════════ 09b · CHAIN + CONTEXTOVALIDACION ════════ -->
-<section data-label="Chain + ContextoValidacion" data-screen-label="09b Chain — la deuda que liquidamos">
+<!-- ════════ 10 · DOMINIO · ENVÍO EL CORAZÓN ════════ -->
+<section data-label="Envío, el corazón" data-screen-label="10 Dominio · Envío el corazón">
   <div class="frame">
-    <div class="head" style="margin-bottom:20px">
-      <div class="eyebrow">Chain of Responsibility + Value Object + Protected Variations</div>
-      <h2 class="title">Un patrón, una deuda técnica, una corrección</h2>
+    <div class="head" style="margin-bottom:6px">
+      <div class="eyebrow">Capa 03 · Dominio</div>
+      <h2 class="title"><code style="background:none;padding:0;color:var(--accent)">Envio</code>, el corazón del negocio</h2>
     </div>
-    <div class="cols c2" style="flex:1;gap:24px;margin-bottom:18px">
-      <div class="panel" style="display:flex;flex-direction:column;gap:14px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
-          <span style="background:oklch(0.55 0.18 30);color:#fff;font-size:13px;font-weight:700;padding:3px 11px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em">Antes · deuda</span>
+    <div style="display:flex;justify-content:center;margin:0">
+      <div style="position:relative;width:1180px;height:500px">
+        <svg class="heart-svg" viewBox="0 0 1180 500" preserveAspectRatio="xMidYMid meet">
+          <line class="heart-edge" x1="590" y1="250" x2="255" y2="100"/>
+          <line class="heart-edge" x1="590" y1="250" x2="925" y2="100"/>
+          <line class="heart-edge" x1="590" y1="250" x2="120" y2="278"/>
+          <line class="heart-edge" x1="590" y1="250" x2="1060" y2="278"/>
+          <line class="heart-edge" x1="590" y1="250" x2="290" y2="438"/>
+          <line class="heart-edge" x1="590" y1="250" x2="890" y2="438"/>
+        </svg>
+        <div class="heart-core" style="position:absolute;left:590px;top:250px;transform:translate(-50%,-50%)">
+          <div class="hc-l">dominio · entidad</div>
+          <div class="hc-n">Envio</div>
         </div>
-        <pre class="dp-pre" style="flex:1">// Firma frágil: cada campo nuevo
-// obliga a modificar TODOS los nodos
-boolean validar(Envio envio, Cobro cobro) {
-    …
-}</pre>
-        <div style="font-size:22px;color:var(--body);line-height:1.35">Con el quinto validador (Hito 10) la firma creció. Agregar un campo cascadea a toda la cadena — la deuda acumula intereses.</div>
-      </div>
-      <div class="panel" style="display:flex;flex-direction:column;gap:14px;background:var(--cat-comp-tint);border-color:var(--cat-comp)">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
-          <span style="background:var(--cat-comp);color:#fff;font-size:13px;font-weight:700;padding:3px 11px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em">Después · liquidada</span>
-        </div>
-        <pre class="dp-pre" style="flex:1">// ContextoValidacion = Value Object
-// Los nodos no cambian cuando el
-// contexto crece
-boolean validar(ContextoValidacion ctx) {
-    ctx.getEnvio(); ctx.getCobro();
-}</pre>
-        <div style="font-size:22px;color:var(--body);line-height:1.35"><code>ContextoValidacion</code> encapsula el contexto completo. Los validadores son <strong>Protected Variations</strong>: inmunes a cómo crezca el contexto mañana.</div>
+        <div class="heart-sat" data-hpat="builder"   style="left:255px;top:100px"><div class="hs-p">Builder</div><div class="hs-d">se construye paso a paso</div></div>
+        <div class="heart-sat" data-hpat="prototype" style="left:925px;top:100px"><div class="hs-p">Prototype</div><div class="hs-d">se clona en lotes</div></div>
+        <div class="heart-sat" data-hpat="state"     style="left:120px;top:278px"><div class="hs-p">State</div><div class="hs-d">evoluciona de estado</div></div>
+        <div class="heart-sat" data-hpat="strategy"  style="left:1060px;top:278px"><div class="hs-p">Strategy</div><div class="hs-d">calcula su costo</div></div>
+        <div class="heart-sat" data-hpat="memento"   style="left:290px;top:438px"><div class="hs-p">Memento</div><div class="hs-d">guarda su historial</div></div>
+        <div class="heart-sat" data-hpat="observer"  style="left:890px;top:438px"><div class="hs-p">Observer</div><div class="hs-d">notifica sus cambios</div></div>
       </div>
     </div>
-    <div class="callout info" style="margin:0">
-      <span class="ic">▸</span>
-      <div>Agregar el quinto validador fue una clase nueva. Liquidar la deuda fue un refactor acotado a un solo punto. <strong>Open/Closed en acción</strong> — la cadena creció sin tocar los nodos existentes.</div>
+    <div class="heart-detail" id="heart-detail">
+      <div class="hd-idle">
+        <span class="ic">▸</span>
+        <div>Seleccioná un patrón para ver su rol en <code>Envio</code> — o seguí al slide siguiente para ver State, Observer y Memento en detalle.</div>
+      </div>
+      <div class="hd-active">
+        <div class="hd-left">
+          <div class="hd-name"></div>
+          <div class="hd-cls"></div>
+          <div class="hd-desc"></div>
+        </div>
+        <div class="hd-code"><pre class="hd-pre"></pre></div>
+      </div>
     </div>
   </div>
 </section>
@@ -606,39 +613,6 @@ boolean validar(ContextoValidacion ctx) {
   </div>
 </section>
 
-<!-- ════════ 13 · H7 SEMBRÓ · H13 COSECHÓ ════════ -->
-<section data-label="H7 sembró H13 cosechó" data-screen-label="13 H7 sembró H13 cosechó">
-  <div class="frame">
-    <div class="head" style="margin-bottom:24px">
-      <div class="eyebrow">RUP iterativo en acción — Hito 7 → Hito 13</div>
-      <h2 class="title">Una decisión de H7 que no sabía lo que hacía por H13</h2>
-    </div>
-    <div class="cols c2" style="flex:1;gap:36px">
-      <div class="panel">
-        <div class="eyebrow" style="font-size:24px;margin-bottom:14px">Hito 7 — Builder para el dominio</div>
-        <p style="font-size:24px;color:var(--body);line-height:1.4;margin-bottom:16px">El Builder se diseñó para construir <code>Envio</code> con 12 atributos de forma legible. La motivación era el dominio — no la persistencia.</p>
-        <pre class="dp-pre">// FabricaDeEnvios.java — H7
-Envio envio = new Envio.EnvioBuilder("e-001")
-    .origen("BUE").destino("COR")
-    .peso(12.5).tipo("EXPRESS")
-    .build();</pre>
-      </div>
-      <div class="panel panel-tint">
-        <div class="eyebrow" style="font-size:24px;margin-bottom:14px;color:var(--accent-strong)">Hito 13 — el mismo Builder, para persistencia</div>
-        <p style="font-size:24px;color:var(--body);line-height:1.4;margin-bottom:16px">El Data Mapper necesitaba reconstruir <code>Envio</code> desde la base de datos. El Builder ya existía. <strong>No hubo refactoring.</strong></p>
-        <pre class="dp-pre">// EnvioMapperSQL.java — H13
-Envio envio = new Envio.EnvioBuilder(row.id)
-    .origen(row.origen).destino(row.destino)
-    .peso(row.peso).tipo(row.tipo)
-    .build(); // ← mismo Builder, 6 hitos después</pre>
-      </div>
-    </div>
-    <div class="callout info" style="margin-top:20px">
-      <span class="ic">▸</span>
-      <div>Lo sembrado en el Hito 7 se cosechó en el Hito 13. Así funciona el enfoque iterativo: las decisiones de diseño tempranas pagan dividendos iteraciones después — si están bien pensadas.</div>
-    </div>
-  </div>
-</section>
 
 <!-- ════════ 14 · INFRAESTRUCTURA → INTEROPERABILIDAD ════════ -->
 <section data-label="Interoperabilidad" data-screen-label="14 Infraestructura · Interoperabilidad">
@@ -698,93 +672,7 @@ Envio envio = new Envio.EnvioBuilder(row.id)
   </div>
 </section>
 
-<!-- ════════ 15 · ABSTRACT FACTORY COMO DECISIÓN DE NEGOCIO ════════ -->
-<section data-label="Abstract Factory de negocio" data-screen-label="15 Abstract Factory decisión de negocio">
-  <div class="frame">
-    <div class="head" style="margin-bottom:22px">
-      <div class="eyebrow">Capa 05 · Infraestructura — la decisión detrás del patrón</div>
-      <h2 class="title">Dos países, dos reglas de negocio — nunca mezcladas</h2>
-    </div>
-    <div class="cols c2" style="flex:1;gap:28px">
-      <div class="panel" style="display:flex;flex-direction:column;gap:16px">
-        <div class="h3" style="color:var(--cat-crea)">🇦🇷 FactoryArgentina</div>
-        <ul class="kvs">
-          <li><strong>Vehículo:</strong> Auto</li>
-          <li><strong>Calculador:</strong> IVA 21% sobre base</li>
-          <li><strong>Mapas:</strong> Google Maps Argentina</li>
-        </ul>
-        <pre class="dp-pre" style="flex:1">new LogiSmartFactoryArgentina()
-    .crearVehiculo()       // → Auto
-    .crearCalculador()     // → IVA 21%
-    .crearProveedorMapas() // → GoogleMaps AR</pre>
-      </div>
-      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:16px">
-        <div class="h3" style="color:var(--cat-estr)">🇧🇷 FactoryBrasil</div>
-        <ul class="kvs">
-          <li><strong>Vehículo:</strong> Moto</li>
-          <li><strong>Calculador:</strong> ICMS 12% sobre base</li>
-          <li><strong>Mapas:</strong> HERE Maps Brasil</li>
-        </ul>
-        <pre class="dp-pre" style="flex:1">new LogiSmartFactoryBrasil()
-    .crearVehiculo()       // → Moto
-    .crearCalculador()     // → ICMS 12%
-    .crearProveedorMapas() // → HERE Maps BR</pre>
-      </div>
-    </div>
-    <div style="display:flex;gap:20px;margin-top:18px">
-      <div class="callout warn" style="flex:1;margin:0">
-        <span class="ic">!</span>
-        <div><strong>Sin el patrón:</strong> un auto argentino con cálculo brasileño (ICMS 12%) produce costos incorrectos silenciosamente. No hay error en compilación — solo un número mal.</div>
-      </div>
-      <div class="callout info" style="flex:1;margin:0">
-        <span class="ic">▸</span>
-        <div>La Factory garantiza que los objetos de una región son <strong>siempre coherentes entre sí</strong>. Nunca un Auto argentino con HereMaps brasileño.</div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- ════════ 15b · COMPOSITE + VISITOR ════════ -->
-<section data-label="Composite + Visitor" data-screen-label="15b Composite y Visitor — el mismo árbol">
-  <div class="frame">
-    <div class="head" style="margin-bottom:20px">
-      <div class="eyebrow">Dominio · Infraestructura — dos patrones, un árbol, trade-offs inversos</div>
-      <h2 class="title">Composite facilita agregar nodos &nbsp;·&nbsp; Visitor facilita agregar operaciones</h2>
-    </div>
-    <div class="cols c2" style="flex:1;gap:24px;margin-bottom:18px">
-      <div class="panel" style="display:flex;flex-direction:column;gap:14px;border-color:var(--cat-estr)">
-        <div class="h3" style="color:var(--cat-estr)">Composite — la estructura</div>
-        <pre class="dp-pre">CentroRegional            // Composite
-├── SucursalEntrega       // Leaf
-└── SucursalEntrega       // Leaf
-
-aceptar(visitor)  ← punto de unión</pre>
-        <ul class="kvs" style="flex:1">
-          <li>✓ Nuevo nodo → 1 clase nueva, árbol listo</li>
-          <li>✓ Cliente trata árbol y hoja igual (<em>transparencia</em>)</li>
-          <li>✗ Nueva operación → habría que tocar la interfaz</li>
-        </ul>
-      </div>
-      <div class="panel" style="display:flex;flex-direction:column;gap:14px;background:var(--cat-comp-tint);border-color:var(--cat-comp)">
-        <div class="h3" style="color:var(--cat-comp)">Visitor — las operaciones</div>
-        <pre class="dp-pre">VisitorCalculoOcupacion
-VisitorCostoOperativo
-VisitorBusquedaCriticos
-  ↓ double dispatch
-visitar(CentroRegional centro)</pre>
-        <ul class="kvs" style="flex:1">
-          <li>✓ Nueva operación → 1 Visitor nuevo, nodos intactos</li>
-          <li>✓ 3 operaciones sumadas sin modificar el árbol</li>
-          <li>✗ Nuevo tipo de nodo → actualizar todos los Visitors</li>
-        </ul>
-      </div>
-    </div>
-    <div class="callout info" style="margin:0">
-      <span class="ic">▸</span>
-      <div>La estructura del árbol de centros es <strong>estable</strong> (regional + puntos de entrega). Las <em>operaciones</em> crecieron hito a hito. Por eso Visitor fue la decisión correcta: el árbol absorbió tres nuevas operaciones sin tocar un solo nodo existente.</div>
-    </div>
-  </div>
-</section>
 
 <!-- ════════ 16 · FLUJO INTEGRAL ════════ -->
 <section data-label="Flujo integral" data-screen-label="16 Flujo integral">
