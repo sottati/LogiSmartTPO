@@ -814,37 +814,6 @@ visitar(NodoCentroRegional nodo)</pre>
 </section>
 
 <!-- ════════ 18 · LO QUE DECIDIMOS NO HACER ════════ -->
-<section data-label="Lo que decidimos no hacer" data-screen-label="18 Lo que decidimos no hacer">
-  <div class="frame">
-    <div class="head" style="margin-bottom:22px">
-      <div class="eyebrow">Madurez de ingeniería — sacrificios deliberados y deuda que liquidamos</div>
-      <h2 class="title">Lo que decidimos <em>no</em> hacer — y lo que nos obligamos a corregir</h2>
-    </div>
-    <div class="sac-list" style="flex:1">
-      <div class="sac-item">
-        <div class="sac-what">Distancia fija de <strong>500 km</strong> en EstrategiaHibrida</div>
-        <div class="sac-arr">→</div>
-        <div class="sac-why">Sacrificamos variabilidad realista para tener <strong>tests deterministas</strong>. Un test que depende de <code>Math.random()</code> no es un test confiable.</div>
-      </div>
-      <div class="sac-item">
-        <div class="sac-what">Naming del <strong>Visitor</strong> con prefijo <code>Nodo</code></div>
-        <div class="sac-arr">→</div>
-        <div class="sac-why">Sacrificamos brevedad para evitar <strong>colisión semántica</strong> con el Composite de centros. Dos patrones en el mismo árbol exigen nombres que no se confundan.</div>
-      </div>
-      <div class="sac-item">
-        <div class="sac-what">Desfasaje: dominio <strong>jerárquico</strong> (Composite) vs. persistencia <strong>plana</strong></div>
-        <div class="sac-arr">→</div>
-        <div class="sac-why">Aceptamos el desfasaje estructural y lo neutralizamos declarando el Composite como <strong>única fuente de verdad</strong>. El costo de un mapeo perfecto era mayor al riesgo.</div>
-      </div>
-      <div class="sac-separator">Deuda técnica — los intereses que decidimos no seguir pagando</div>
-      <div class="sac-item debt">
-        <div class="sac-what"><code>ContextoValidacion</code> — Value Object en Chain of Responsibility</div>
-        <div class="sac-arr">✓</div>
-        <div class="sac-why">La Chain original pasaba <code>Envio</code> y <code>Cobro</code> por separado. Al agregar el quinto validador, la firma se volvió frágil — cada nuevo parámetro habría cascadeado a todos los nodos. Creamos <code>ContextoValidacion</code> (Value Object) y aplicamos <strong>Protected Variations</strong>: los validadores no saben cómo crece el contexto.</div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ════════ 21 · ACTORES Y EMPRESA ════════ -->
 <section data-label="Actores y empresa" data-screen-label="21 Actores y empresa">
