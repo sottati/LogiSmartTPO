@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 14: Patrones de Acceso a Datos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            min-height: 90vh;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 3px solid #667eea;
+        }
+        
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+        
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .sidebar a:hover {
+            background: #667eea;
+            padding-left: 15px;
+        }
+        
+        .sidebar a.active {
+            background: #667eea;
+            font-weight: bold;
+            border-left: 3px solid #f39c12;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+        
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 24px;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #2c3e50;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        p {
+            line-height: 1.8;
+            color: #34495e;
+            margin-bottom: 15px;
+        }
+        
+        code {
+            background: #ecf0f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+        }
+        
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        pre code {
+            background: none;
+            color: #ecf0f1;
+            padding: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .diagram {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        
+        .warning {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .duration {
+            background: #e8f4f8;
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 10px 0;
+            font-weight: bold;
+            color: #17a2b8;
+        }
+        
+        .example-box {
+            background: #f0f4ff;
+            border: 1px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .comparison-table {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>📚 Clase 14</h2>
+            <ul>
+                <li><a onclick="mostrarSeccion('intro')" class="active">🎯 Introducción</a></li>
+                <li><a onclick="mostrarSeccion('data-mapper')">🗺️ Data Mapper</a></li>
+                <li><a onclick="mostrarSeccion('repository')">📦 Repository</a></li>
+                <li><a onclick="mostrarSeccion('unit-of-work')">⚙️ Unit of Work</a></li>
+                <li><a onclick="mostrarSeccion('lazy-load')">⏱️ Lazy Load</a></li>
+                <li><a onclick="mostrarSeccion('arquitectura')">🏗️ Arquitectura Lógica</a></li>
+                <li><a onclick="mostrarSeccion('comparacion')">📊 Comparación</a></li>
+                <li><a onclick="mostrarSeccion('casos-reales')">💼 Casos Reales</a></li>
+                <li><a onclick="mostrarSeccion('resumen')">✅ Resumen</a></li>
+            </ul>
+        </div>
+        
+        <div class="content">
+            <!-- INTRODUCCIÓN -->
+            <div id="intro" class="section active">
+                <h1>🎯 Introducción</h1>
+                <p><strong>Objetivo de la clase:</strong> Entender patrones de acceso a datos y cómo diseñar una arquitectura lógica que separe la lógica de negocio de la persistencia.</p>
+                
+                <h2>¿Por qué patrones de acceso a datos?</h2>
+                <p>Los patrones de acceso a datos resuelven un problema fundamental en aplicaciones empresariales: <strong>cómo interactúan los objetos en memoria con datos persistentes en bases de datos</strong>.</p>
+                
+                <div class="info">
+                    <strong>Problema:</strong> Sin estos patrones, el código de negocio se mezcla con SQL, lo que causa:
+                    <ul>
+                        <li>Código difícil de probar (tests requieren BD real)</li>
+                        <li>Cambios en BD afectan toda la aplicación</li>
+                        <li>Imposible cambiar de BD sin reescribir código</li>
+                        <li>Duplicación de lógica de persistencia</li>
+                    </ul>
+                </div>
+                
+                <h2>Patrones que cubriremos</h2>
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Propósito</th>
+                        <th>Cuándo usar</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Mapper</strong></td>
+                        <td>Mapear objetos a tablas</td>
+                        <td>Cuando necesitas independencia entre modelo de objetos y BD</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Repository</strong></td>
+                        <td>Acceso uniforme a datos</td>
+                        <td>Cuando necesitas abstraer la fuente de datos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unit of Work</strong></td>
+                        <td>Gestionar transacciones</td>
+                        <td>Cuando necesitas coordinar múltiples cambios</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lazy Load</strong></td>
+                        <td>Cargar datos bajo demanda</td>
+                        <td>Cuando necesitas optimizar rendimiento</td>
+                    </tr>
+                </table>
+                
+                <div class="duration">⏱️ Duración total: 90 minutos</div>
+                
+                <h2>Estructura de la clase</h2>
+                <ul>
+                    <li><strong>Data Mapper:</strong> 20 minutos</li>
+                    <li><strong>Repository:</strong> 20 minutos</li>
+                    <li><strong>Unit of Work:</strong> 20 minutos</li>
+                    <li><strong>Lazy Load:</strong> 15 minutos</li>
+                    <li><strong>Arquitectura Lógica:</strong> 10 minutos</li>
+                    <li><strong>Comparación:</strong> 5 minutos</li>
+                </ul>
+            </div>
+            
+            <!-- DATA MAPPER -->
+            <div id="data-mapper" class="section">
+                <h1>🗺️ Data Mapper</h1>
+                <p><strong>Data Mapper</strong> es un patrón que mapea objetos de dominio a registros de base de datos de forma independiente.</p>
+                
+                <h2>Problema</h2>
+                <p>¿Cómo mantener objetos de dominio independientes de la estructura de la BD?</p>
+                
+                <div class="diagram">
+┌─────────────────────────────────────────────────┐
+│ SIN Data Mapper (Acoplamiento)                  │
+├─────────────────────────────────────────────────┤
+│ Objeto Envio                                    │
+│ ├─ id                                           │
+│ ├─ origen                                       │
+│ ├─ destino                                      │
+│ ├─ peso                                         │
+│ └─ save() → SQL directo                         │
+│                                                 │
+│ Problema: Cambio en BD = Cambio en objeto      │
+└─────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────┐
+│ CON Data Mapper (Desacoplamiento)               │
+├─────────────────────────────────────────────────┤
+│ Objeto Envio (Puro)                             │
+│ ├─ id                                           │
+│ ├─ origen                                       │
+│ ├─ destino                                      │
+│ └─ peso                                         │
+│                                                 │
+│ EnvioMapper                                     │
+│ ├─ insert(envio) → SQL                          │
+│ ├─ update(envio) → SQL                          │
+│ ├─ delete(envio) → SQL                          │
+│ └─ findById(id) → Envio                         │
+│                                                 │
+│ Ventaja: Objeto puro, BD independiente         │
+└─────────────────────────────────────────────────┘
+                </div>
+                
+                <h2>Solución</h2>
+                <p>Crear un <strong>Mapper</strong> que traduce entre objetos de dominio y registros de BD.</p>
+                
+                <h3>Paso 1: Objeto de Dominio (Puro)</h3>
+                <pre><code>public class Envio {
+    private int id;
+    private String origen;
+    private String destino;
+    private double peso;
+    
+    public Envio(int id, String origen, String destino, double peso) {
+        this.id = id;
+        this.origen = origen;
+        this.destino = destino;
+        this.peso = peso;
+    }
+    
+    // Getters
+    public int getId() { return id; }
+    public String getOrigen() { return origen; }
+    public String getDestino() { return destino; }
+    public double getPeso() { return peso; }
+}</code></pre>
+                
+                <h3>Paso 2: Data Mapper</h3>
+                <pre><code>public class EnvioMapper {
+    private Connection conexion;
+    
+    public EnvioMapper(Connection conexion) {
+        this.conexion = conexion;
+    }
+    
+    // Insertar
+    public void insert(Envio envio) {
+        String sql = "INSERT INTO envios (id, origen, destino, peso) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+            stmt.setInt(1, envio.getId());
+            stmt.setString(2, envio.getOrigen());
+            stmt.setString(3, envio.getDestino());
+            stmt.setDouble(4, envio.getPeso());
+            stmt.executeUpdate();
+            System.out.println("✓ Envío insertado");
+        } catch (SQLException e) {
+            System.out.println("✗ Error al insertar: " + e.getMessage());
+        }
+    }
+    
+    // Actualizar
+    public void update(Envio envio) {
+        String sql = "UPDATE envios SET origen=?, destino=?, peso=? WHERE id=?";
+        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+            stmt.setString(1, envio.getOrigen());
+            stmt.setString(2, envio.getDestino());
+            stmt.setDouble(3, envio.getPeso());
+            stmt.setInt(4, envio.getId());
+            stmt.executeUpdate();
+            System.out.println("✓ Envío actualizado");
+        } catch (SQLException e) {
+            System.out.println("✗ Error al actualizar: " + e.getMessage());
+        }
+    }
+    
+    // Eliminar
+    public void delete(Envio envio) {
+        String sql = "DELETE FROM envios WHERE id=?";
+        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+            stmt.setInt(1, envio.getId());
+            stmt.executeUpdate();
+            System.out.println("✓ Envío eliminado");
+        } catch (SQLException e) {
+            System.out.println("✗ Error al eliminar: " + e.getMessage());
+        }
+    }
+    
+    // Buscar por ID
+    public Envio findById(int id) {
+        String sql = "SELECT * FROM envios WHERE id=?";
+        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Envio(
+                    rs.getInt("id"),
+                    rs.getString("origen"),
+                    rs.getString("destino"),
+                    rs.getDouble("peso")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("✗ Error al buscar: " + e.getMessage());
+        }
+        return null;
+    }
+}</code></pre>
+                
+                <h2>Ventajas</h2>
+                <ul>
+                    <li>✅ Objeto de dominio puro (sin SQL)</li>
+                    <li>✅ Fácil de testear (mock del mapper)</li>
+                    <li>✅ Cambios en BD no afectan objeto</li>
+                    <li>✅ Reutilizable para diferentes BD</li>
+                </ul>
+                
+                <h2>Desventajas</h2>
+                <ul>
+                    <li>❌ Más código (mapper adicional)</li>
+                    <li>❌ Overhead de traducción</li>
+                    <li>❌ Duplicación de propiedades</li>
+                </ul>
+            </div>
+            
+            <!-- REPOSITORY -->
+            <div id="repository" class="section">
+                <h1>📦 Repository</h1>
+                <p><strong>Repository</strong> es un patrón que proporciona una interfaz uniforme para acceder a datos, ocultando los detalles de persistencia.</p>
+                
+                <h2>Problema</h2>
+                <p>¿Cómo proporcionar una interfaz consistente para acceder a datos sin exponer detalles de persistencia?</p>
+                
+                <div class="diagram">
+┌─────────────────────────────────────────────────┐
+│ SIN Repository (Acoplamiento a BD)              │
+├─────────────────────────────────────────────────┤
+│ Lógica de Negocio                               │
+│ ├─ new EnvioMapper()                            │
+│ ├─ mapper.findById(1)                           │
+│ ├─ mapper.insert(envio)                         │
+│ └─ mapper.update(envio)                         │
+│                                                 │
+│ Problema: Lógica acoplada a mapper              │
+└─────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────┐
+│ CON Repository (Desacoplamiento)                │
+├─────────────────────────────────────────────────┤
+│ Lógica de Negocio                               │
+│ ├─ repository.obtener(1)                        │
+│ ├─ repository.guardar(envio)                    │
+│ └─ repository.eliminar(envio)                   │
+│                                                 │
+│ EnvioRepository (Interfaz)                      │
+│ ├─ obtener(id)                                  │
+│ ├─ guardar(envio)                               │
+│ ├─ eliminar(envio)                              │
+│ └─ obtenerTodos()                               │
+│                                                 │
+│ EnvioRepositorySQL (Implementación)             │
+│ └─ Usa EnvioMapper internamente                 │
+│                                                 │
+│ Ventaja: Lógica agnóstica a persistencia        │
+└─────────────────────────────────────────────────┘
+                </div>
+                
+                <h2>Solución</h2>
+                <p>Crear una <strong>interfaz Repository</strong> que define operaciones genéricas.</p>
+                
+                <h3>Paso 1: Interfaz Repository</h3>
+                <pre><code>public interface RepositorioEnvio {
+    void guardar(Envio envio);
+    void actualizar(Envio envio);
+    void eliminar(Envio envio);
+    Envio obtener(int id);
+    List<Envio> obtenerTodos();
+    List<Envio> buscar(String criterio);
+}</code></pre>
+                
+                <h3>Paso 2: Implementación SQL</h3>
+                <pre><code>public class RepositorioEnvioSQL implements RepositorioEnvio {
+    private EnvioMapper mapper;
+    
+    public RepositorioEnvioSQL(Connection conexion) {
+        this.mapper = new EnvioMapper(conexion);
+    }
+    
+    @Override
+    public void guardar(Envio envio) {
+        mapper.insert(envio);
+    }
+    
+    @Override
+    public void actualizar(Envio envio) {
+        mapper.update(envio);
+    }
+    
+    @Override
+    public void eliminar(Envio envio) {
+        mapper.delete(envio);
+    }
+    
+    @Override
+    public Envio obtener(int id) {
+        return mapper.findById(id);
+    }
+    
+    @Override
+    public List<Envio> obtenerTodos() {
+        // Implementación
+        return new ArrayList<>();
+    }
+    
+    @Override
+    public List<Envio> buscar(String criterio) {
+        // Implementación
+        return new ArrayList<>();
+    }
+}</code></pre>
+                
+                <h3>Paso 3: Implementación en Memoria (para tests)</h3>
+                <pre><code>public class RepositorioEnvioMemoria implements RepositorioEnvio {
+    private Map<Integer, Envio> almacen = new HashMap<>();
+    
+    @Override
+    public void guardar(Envio envio) {
+        almacen.put(envio.getId(), envio);
+        System.out.println("✓ Envío guardado en memoria");
+    }
+    
+    @Override
+    public Envio obtener(int id) {
+        return almacen.get(id);
+    }
+    
+    @Override
+    public List<Envio> obtenerTodos() {
+        return new ArrayList<>(almacen.values());
+    }
+    
+    // Otros métodos...
+}</code></pre>
+                
+                <h3>Paso 4: Uso en Lógica de Negocio</h3>
+                <pre><code>public class ServicioEnvios {
+    private RepositorioEnvio repositorio;
+    
+    public ServicioEnvios(RepositorioEnvio repositorio) {
+        this.repositorio = repositorio;
+    }
+    
+    public void procesarEnvio(Envio envio) {
+        // Lógica de negocio
+        repositorio.guardar(envio);
+        System.out.println("✓ Envío procesado");
+    }
+    
+    public Envio obtenerEnvio(int id) {
+        return repositorio.obtener(id);
+    }
+}</code></pre>
+                
+                <h2>Ventajas</h2>
+                <ul>
+                    <li>✅ Interfaz consistente</li>
+                    <li>✅ Fácil cambiar implementación</li>
+                    <li>✅ Testeable (mock repository)</li>
+                    <li>✅ Lógica agnóstica a persistencia</li>
+                </ul>
+                
+                <h2>Desventajas</h2>
+                <ul>
+                    <li>❌ Interfaz genérica puede ser limitante</li>
+                    <li>❌ Overhead de abstracción</li>
+                </ul>
+            </div>
+            
+            <!-- UNIT OF WORK -->
+            <div id="unit-of-work" class="section">
+                <h1>⚙️ Unit of Work</h1>
+                <p><strong>Unit of Work</strong> es un patrón que gestiona transacciones y coordina múltiples cambios en objetos.</p>
+                
+                <h2>Problema</h2>
+                <p>¿Cómo coordinar múltiples cambios en objetos y asegurar consistencia transaccional?</p>
+                
+                <div class="diagram">
+┌─────────────────────────────────────────────────┐
+│ SIN Unit of Work (Inconsistencia)               │
+├─────────────────────────────────────────────────┤
+│ repositorio.guardar(envio1)  ✓                  │
+│ repositorio.guardar(envio2)  ✓                  │
+│ repositorio.guardar(envio3)  ✗ Error            │
+│                                                 │
+│ Problema: envio1 y envio2 guardados, envio3 no │
+│ BD inconsistente                                │
+└─────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────┐
+│ CON Unit of Work (Consistencia)                 │
+├─────────────────────────────────────────────────┤
+│ unitOfWork.registrar(envio1)                    │
+│ unitOfWork.registrar(envio2)                    │
+│ unitOfWork.registrar(envio3)                    │
+│ unitOfWork.commit()  ← Todo o nada              │
+│                                                 │
+│ Ventaja: Transacción atómica                    │
+└─────────────────────────────────────────────────┘
+                </div>
+                
+                <h2>Solución</h2>
+                <p>Crear un <strong>Unit of Work</strong> que gestione transacciones.</p>
+                
+                <h3>Paso 1: Unit of Work</h3>
+                <pre><code>public class UnitOfWork {
+    private Connection conexion;
+    private List<Envio> nuevos = new ArrayList<>();
+    private List<Envio> modificados = new ArrayList<>();
+    private List<Envio> eliminados = new ArrayList<>();
+    private RepositorioEnvio repositorio;
+    
+    public UnitOfWork(Connection conexion, RepositorioEnvio repositorio) {
+        this.conexion = conexion;
+        this.repositorio = repositorio;
+    }
+    
+    // Registrar nuevo
+    public void registrarNuevo(Envio envio) {
+        nuevos.add(envio);
+        System.out.println("✓ Registrado como nuevo: " + envio.getId());
+    }
+    
+    // Registrar modificado
+    public void registrarModificado(Envio envio) {
+        modificados.add(envio);
+        System.out.println("✓ Registrado como modificado: " + envio.getId());
+    }
+    
+    // Registrar eliminado
+    public void registrarEliminado(Envio envio) {
+        eliminados.add(envio);
+        System.out.println("✓ Registrado como eliminado: " + envio.getId());
+    }
+    
+    // Commit (transacción)
+    public void commit() {
+        try {
+            conexion.setAutoCommit(false);
+            
+            // Insertar nuevos
+            for (Envio envio : nuevos) {
+                repositorio.guardar(envio);
+            }
+            
+            // Actualizar modificados
+            for (Envio envio : modificados) {
+                repositorio.actualizar(envio);
+            }
+            
+            // Eliminar eliminados
+            for (Envio envio : eliminados) {
+                repositorio.eliminar(envio);
+            }
+            
+            conexion.commit();
+            System.out.println("✓ Transacción completada");
+            limpiar();
+        } catch (SQLException e) {
+            try {
+                conexion.rollback();
+                System.out.println("✗ Transacción revertida: " + e.getMessage());
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    // Rollback
+    public void rollback() {
+        try {
+            conexion.rollback();
+            System.out.println("✓ Cambios revertidos");
+            limpiar();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // Limpiar
+    private void limpiar() {
+        nuevos.clear();
+        modificados.clear();
+        eliminados.clear();
+    }
+}</code></pre>
+                
+                <h3>Paso 2: Uso</h3>
+                <pre><code>// Crear Unit of Work
+UnitOfWork unitOfWork = new UnitOfWork(conexion, repositorio);
+
+// Registrar cambios
+Envio envio1 = new Envio(1, "Buenos Aires", "Córdoba", 5.0);
+Envio envio2 = new Envio(2, "Mendoza", "San Juan", 3.0);
+Envio envio3 = new Envio(3, "La Plata", "Mar del Plata", 2.0);
+
+unitOfWork.registrarNuevo(envio1);
+unitOfWork.registrarNuevo(envio2);
+unitOfWork.registrarNuevo(envio3);
+
+// Commit (todo o nada)
+unitOfWork.commit();</code></pre>
+                
+                <h2>Ventajas</h2>
+                <ul>
+                    <li>✅ Consistencia transaccional</li>
+                    <li>✅ Rollback automático en errores</li>
+                    <li>✅ Agrupa múltiples cambios</li>
+                </ul>
+                
+                <h2>Desventajas</h2>
+                <ul>
+                    <li>❌ Complejidad adicional</li>
+                    <li>❌ Requiere gestión manual</li>
+                </ul>
+            </div>
+            
+            <!-- LAZY LOAD -->
+            <div id="lazy-load" class="section">
+                <h1>⏱️ Lazy Load</h1>
+                <p><strong>Lazy Load</strong> es un patrón que carga datos bajo demanda, mejorando rendimiento.</p>
+                
+                <h2>Problema</h2>
+                <p>¿Cómo evitar cargar datos innecesarios que pueden no ser usados?</p>
+                
+                <div class="diagram">
+┌─────────────────────────────────────────────────┐
+│ SIN Lazy Load (Carga Inmediata)                 │
+├─────────────────────────────────────────────────┤
+│ Envio envio = repositorio.obtener(1)            │
+│ ├─ Carga envio                                  │
+│ ├─ Carga cliente                                │
+│ ├─ Carga historial (1000 registros)             │
+│ └─ Carga documentos (100 archivos)              │
+│                                                 │
+│ Problema: Carga TODO aunque solo necesites ID   │
+└─────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────┐
+│ CON Lazy Load (Carga Bajo Demanda)              │
+├─────────────────────────────────────────────────┤
+│ Envio envio = repositorio.obtener(1)            │
+│ ├─ Carga envio                                  │
+│ ├─ cliente = lazy (no cargado)                  │
+│ ├─ historial = lazy (no cargado)                │
+│ └─ documentos = lazy (no cargado)               │
+│                                                 │
+│ if (necesitas cliente)                          │
+│   cliente.obtenerNombre()  ← Carga aquí         │
+│                                                 │
+│ Ventaja: Carga solo lo necesario                │
+└─────────────────────────────────────────────────┘
+                </div>
+                
+                <h2>Solución</h2>
+                <p>Crear un <strong>Proxy</strong> que carga datos bajo demanda.</p>
+                
+                <h3>Paso 1: Objeto Real</h3>
+                <pre><code>public class Cliente {
+    private int id;
+    private String nombre;
+    private String email;
+    
+    public Cliente(int id, String nombre, String email) {
+        this.id = id;
+        this.nombre = nombre;
+        this.email = email;
+    }
+    
+    public String getNombre() { return nombre; }
+    public String getEmail() { return email; }
+}</code></pre>
+                
+                <h3>Paso 2: Proxy Lazy Load</h3>
+                <pre><code>public class ClienteLazyProxy {
+    private int id;
+    private Cliente cliente;
+    private RepositorioCliente repositorio;
+    private boolean cargado = false;
+    
+    public ClienteLazyProxy(int id, RepositorioCliente repositorio) {
+        this.id = id;
+        this.repositorio = repositorio;
+    }
+    
+    private void cargar() {
+        if (!cargado) {
+            this.cliente = repositorio.obtener(id);
+            this.cargado = true;
+            System.out.println("✓ Cliente cargado desde BD");
+        }
+    }
+    
+    public String getNombre() {
+        cargar();
+        return cliente.getNombre();
+    }
+    
+    public String getEmail() {
+        cargar();
+        return cliente.getEmail();
+    }
+}</code></pre>
+                
+                <h3>Paso 3: Uso</h3>
+                <pre><code>// Crear proxy (sin cargar)
+ClienteLazyProxy cliente = new ClienteLazyProxy(1, repositorio);
+System.out.println("Proxy creado, cliente NO cargado");
+
+// Usar (carga aquí)
+String nombre = cliente.getNombre();  // ← Carga desde BD
+System.out.println("Nombre: " + nombre);</code></pre>
+                
+                <h2>Ventajas</h2>
+                <ul>
+                    <li>✅ Mejora rendimiento</li>
+                    <li>✅ Carga bajo demanda</li>
+                    <li>✅ Transparente para cliente</li>
+                </ul>
+                
+                <h2>Desventajas</h2>
+                <ul>
+                    <li>❌ Puede causar N+1 queries</li>
+                    <li>❌ Complejidad adicional</li>
+                </ul>
+            </div>
+            
+            <!-- ARQUITECTURA LÓGICA -->
+            <div id="arquitectura" class="section">
+                <h1>🏗️ Arquitectura Lógica</h1>
+                <p>Cómo integrar todos los patrones en una arquitectura coherente.</p>
+                
+                <h2>Capas de una Arquitectura Típica</h2>
+                <div class="diagram">
+┌─────────────────────────────────────────────────┐
+│ Capa de Presentación                            │
+│ (Interfaz de Usuario)                           │
+└─────────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────────┐
+│ Capa de Aplicación                              │
+│ (Servicios, Casos de Uso)                       │
+└─────────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────────┐
+│ Capa de Dominio                                 │
+│ (Lógica de Negocio, Entidades)                  │
+└─────────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────────┐
+│ Capa de Persistencia                            │
+│ (Repository, Unit of Work, Data Mapper)         │
+└─────────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────────┐
+│ Capa de Datos                                   │
+│ (Base de Datos)                                 │
+└─────────────────────────────────────────────────┘
+                </div>
+                
+                <h2>Flujo de Interacción</h2>
+                <pre><code>1. Usuario solicita crear envío
+   ↓
+2. Controlador recibe solicitud
+   ↓
+3. Servicio (ServicioEnvios) procesa
+   ↓
+4. Servicio usa Repository
+   ↓
+5. Repository usa Unit of Work
+   ↓
+6. Unit of Work usa Data Mapper
+   ↓
+7. Data Mapper traduce a SQL
+   ↓
+8. SQL ejecuta en BD
+   ↓
+9. Resultado regresa por capas
+   ↓
+10. Usuario recibe respuesta</code></pre>
+                
+                <h2>Ejemplo Completo</h2>
+                <pre><code>// 1. Capa de Presentación
+public class ControladorEnvios {
+    private ServicioEnvios servicio;
+    
+    public void crearEnvio(String origen, String destino, double peso) {
+        servicio.procesarEnvio(origen, destino, peso);
+    }
+}
+
+// 2. Capa de Aplicación
+public class ServicioEnvios {
+    private RepositorioEnvio repositorio;
+    private UnitOfWork unitOfWork;
+    
+    public void procesarEnvio(String origen, String destino, double peso) {
+        // Lógica de negocio
+        Envio envio = new Envio(1, origen, destino, peso);
+        
+        // Persistencia
+        unitOfWork.registrarNuevo(envio);
+        unitOfWork.commit();
+    }
+}
+
+// 3. Capa de Dominio
+public class Envio {
+    // Entidad de negocio pura
+}
+
+// 4. Capa de Persistencia
+public class RepositorioEnvioSQL implements RepositorioEnvio {
+    private EnvioMapper mapper;
+    
+    public void guardar(Envio envio) {
+        mapper.insert(envio);
+    }
+}
+
+// 5. Capa de Datos
+// Base de datos SQL</code></pre>
+                
+                <h2>Principios Clave</h2>
+                <ul>
+                    <li><strong>Separación de Responsabilidades:</strong> Cada capa tiene un propósito</li>
+                    <li><strong>Independencia:</strong> Cambios en BD no afectan lógica</li>
+                    <li><strong>Testabilidad:</strong> Cada capa puede testearse independientemente</li>
+                    <li><strong>Mantenibilidad:</strong> Código organizado y fácil de entender</li>
+                </ul>
+            </div>
+            
+            <!-- COMPARACIÓN -->
+            <div id="comparacion" class="section">
+                <h1>📊 Comparación de Patrones</h1>
+                
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Propósito</th>
+                        <th>Complejidad</th>
+                        <th>Cuándo Usar</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Mapper</strong></td>
+                        <td>Mapear objetos a BD</td>
+                        <td>Media</td>
+                        <td>Cuando necesitas independencia objeto-BD</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Repository</strong></td>
+                        <td>Acceso uniforme a datos</td>
+                        <td>Media</td>
+                        <td>Cuando necesitas abstraer persistencia</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unit of Work</strong></td>
+                        <td>Gestionar transacciones</td>
+                        <td>Alta</td>
+                        <td>Cuando necesitas consistencia transaccional</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lazy Load</strong></td>
+                        <td>Cargar bajo demanda</td>
+                        <td>Media</td>
+                        <td>Cuando necesitas optimizar rendimiento</td>
+                    </tr>
+                </table>
+                
+                <h2>Matriz de Decisión</h2>
+                <table>
+                    <tr>
+                        <th>Escenario</th>
+                        <th>Patrón Recomendado</th>
+                    </tr>
+                    <tr>
+                        <td>Aplicación pequeña, BD simple</td>
+                        <td>Repository</td>
+                    </tr>
+                    <tr>
+                        <td>Aplicación empresarial, múltiples BD</td>
+                        <td>Data Mapper + Repository</td>
+                    </tr>
+                    <tr>
+                        <td>Operaciones complejas con múltiples cambios</td>
+                        <td>Unit of Work</td>
+                    </tr>
+                    <tr>
+                        <td>Datos grandes que pueden no usarse</td>
+                        <td>Lazy Load</td>
+                    </tr>
+                    <tr>
+                        <td>Aplicación completa</td>
+                        <td>Todos combinados</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!-- CASOS REALES -->
+            <div id="casos-reales" class="section">
+                <h1>💼 Casos Reales</h1>
+                
+                <h2>Caso 1: Sistema de E-commerce</h2>
+                <p><strong>Requisitos:</strong> Múltiples tipos de productos, carrito de compras, historial de pedidos.</p>
+                <p><strong>Patrones:</strong> Repository (para productos), Unit of Work (para carrito), Lazy Load (para historial).</p>
+                
+                <h2>Caso 2: Sistema Bancario</h2>
+                <p><strong>Requisitos:</strong> Transacciones atómicas, múltiples cuentas, auditoría.</p>
+                <p><strong>Patrones:</strong> Unit of Work (transacciones), Data Mapper (múltiples tipos de cuenta), Repository (acceso uniforme).</p>
+                
+                <h2>Caso 3: Red Social</h2>
+                <p><strong>Requisitos:</strong> Millones de usuarios, posts, comentarios, notificaciones.</p>
+                <p><strong>Patrones:</strong> Lazy Load (cargar comentarios bajo demanda), Repository (acceso uniforme), Data Mapper (mapeo complejo).</p>
+                
+                <h2>Caso 4: Sistema de Gestión de Logística (LogiSmart)</h2>
+                <p><strong>Requisitos:</strong> Envíos, centros de distribución, reportes, múltiples operaciones.</p>
+                <p><strong>Patrones:</strong> Repository (acceso a envíos), Unit of Work (procesar múltiples envíos), Data Mapper (mapeo de entidades), Lazy Load (cargar detalles bajo demanda).</p>
+            </div>
+            
+            <!-- RESUMEN -->
+            <div id="resumen" class="section">
+                <h1>✅ Resumen</h1>
+                
+                <h2>Conceptos Clave</h2>
+                <ul>
+                    <li><strong>Data Mapper:</strong> Traduce entre objetos y registros de BD</li>
+                    <li><strong>Repository:</strong> Proporciona interfaz uniforme para acceso a datos</li>
+                    <li><strong>Unit of Work:</strong> Gestiona transacciones y coordina cambios</li>
+                    <li><strong>Lazy Load:</strong> Carga datos bajo demanda para optimizar rendimiento</li>
+                </ul>
+                
+                <h2>Arquitectura Lógica</h2>
+                <ul>
+                    <li>Separar presentación, aplicación, dominio, persistencia y datos</li>
+                    <li>Cada capa tiene responsabilidades claras</li>
+                    <li>Cambios en una capa no afectan otras</li>
+                    <li>Fácil de testear y mantener</li>
+                </ul>
+                
+                <h2>Beneficios</h2>
+                <ul>
+                    <li>✅ Código más limpio y organizado</li>
+                    <li>✅ Fácil de testear</li>
+                    <li>✅ Fácil de cambiar BD</li>
+                    <li>✅ Mejor rendimiento</li>
+                    <li>✅ Mantenimiento más fácil</li>
+                </ul>
+                
+                <h2>Próximos Pasos</h2>
+                <ul>
+                    <li>Implementar estos patrones en tu proyecto</li>
+                    <li>Practicar con diferentes escenarios</li>
+                    <li>Combinar patrones según necesidad</li>
+                    <li>Estudiar frameworks que implementan estos patrones (Hibernate, JPA, Spring Data)</li>
+                </ul>
+                
+                <div class="success">
+                    <strong>¡Felicidades!</strong> Has completado la Clase 14. Ahora tienes las herramientas para diseñar arquitecturas de acceso a datos profesionales.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function mostrarSeccion(id) {
+            // Ocultar todas las secciones
+            const secciones = document.querySelectorAll('.section');
+            secciones.forEach(s => s.classList.remove('active'));
+            
+            // Mostrar sección seleccionada
+            document.getElementById(id).classList.add('active');
+            
+            // Actualizar sidebar
+            const links = document.querySelectorAll('.sidebar a');
+            links.forEach(l => l.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

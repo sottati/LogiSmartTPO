@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 11: Patrones de Comportamiento I - Chain of Responsibility, Command, Interpreter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: #667eea;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #667eea;
+            border-left: 3px solid #fff;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background: white;
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .example-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .diagram {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+
+        .sequence-diagram {
+            background: #f0f8ff;
+            border: 2px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 11px;
+        }
+
+        .comparison-table {
+            margin: 20px 0;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .pros, .cons {
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .pros {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .cons {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .pros h4, .cons h4 {
+            margin-bottom: 10px;
+        }
+
+        .pros ul, .cons ul {
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>📚 Clase 11</h2>
+            <div class="nav-item active" onclick="showSection('intro')">🎯 Introducción</div>
+            <div class="nav-item" onclick="showSection('chain')">⛓️ Chain of Responsibility</div>
+            <div class="nav-item" onclick="showSection('command')">📋 Command</div>
+            <div class="nav-item" onclick="showSection('interpreter')">🔤 Interpreter</div>
+            <div class="nav-item" onclick="showSection('secuencia')">📊 Diagramas de Secuencia</div>
+            <div class="nav-item" onclick="showSection('comparacion')">📈 Comparación</div>
+            <div class="nav-item" onclick="showSection('casos')">💼 Casos Reales</div>
+            <div class="nav-item" onclick="showSection('resumen')">✅ Resumen</div>
+        </aside>
+
+        <main class="main-content">
+            <!-- INTRODUCCIÓN -->
+            <section id="intro" class="section active">
+                <h1>🎯 Clase 11: Patrones de Comportamiento I</h1>
+                <h2>Chain of Responsibility, Command, Interpreter</h2>
+
+                <h2>Objetivo de la Clase</h2>
+                <p>Estudiar patrones que definen cómo los objetos interactúan y distribuyen responsabilidades:</p>
+                <ul>
+                    <li>Pasar solicitudes a través de una cadena de manejadores</li>
+                    <li>Encapsular solicitudes como objetos</li>
+                    <li>Definir lenguajes específicos del dominio</li>
+                </ul>
+
+                <h2>¿Qué son Patrones de Comportamiento?</h2>
+                <p>Los patrones de comportamiento se ocupan de la comunicación efectiva entre objetos y la asignación de responsabilidades. A diferencia de los patrones estructurales (que se ocupan de la composición de clases y objetos), los patrones de comportamiento caracterizan los flujos complejos de control que son difíciles de seguir en tiempo de ejecución.</p>
+
+                <h2>Categorías de Patrones de Comportamiento</h2>
+                <table>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Patrones</th>
+                        <th>Enfoque</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Responsabilidad</strong></td>
+                        <td>Chain of Responsibility, Command, Interpreter</td>
+                        <td>Cómo distribuir responsabilidades entre objetos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Encapsulación</strong></td>
+                        <td>Iterator, Mediator, Memento, Observer, State, Strategy, Template Method, Visitor</td>
+                        <td>Cómo encapsular comportamiento</td>
+                    </tr>
+                </table>
+
+                <h2>Duración de la Clase</h2>
+                <ul>
+                    <li><strong>Introducción:</strong> 5 minutos</li>
+                    <li><strong>Chain of Responsibility:</strong> 25 minutos</li>
+                    <li><strong>Command:</strong> 25 minutos</li>
+                    <li><strong>Interpreter:</strong> 20 minutos</li>
+                    <li><strong>Diagramas de Secuencia:</strong> 10 minutos</li>
+                    <li><strong>Comparación y Casos Reales:</strong> 5 minutos</li>
+                    <li><strong>Total:</strong> 90 minutos</li>
+                </ul>
+
+                <div class="highlight">
+                    <h3>Pregunta Central</h3>
+                    <p>¿Cómo puedo pasar solicitudes a través de múltiples objetos? ¿Cómo encapsulo una solicitud como un objeto? ¿Cómo defino un lenguaje específico?</p>
+                </div>
+            </section>
+
+            <!-- CHAIN OF RESPONSIBILITY -->
+            <section id="chain" class="section">
+                <h1>⛓️ Chain of Responsibility</h1>
+
+                <h2>Problema: Múltiples Manejadores</h2>
+                <p>Un envío en LogiSmart necesita ser aprobado por múltiples niveles:</p>
+                <ul>
+                    <li>Validador de Datos (verifica que los datos sean correctos)</li>
+                    <li>Validador de Inventario (verifica que hay stock)</li>
+                    <li>Validador de Pago (verifica que el pago es válido)</li>
+                    <li>Validador de Seguridad (verifica que no hay restricciones)</li>
+                </ul>
+
+                <p><strong>Problema:</strong> ¿Quién maneja cada validación? ¿En qué orden?</p>
+
+                <div class="diagram">
+Cliente
+  │
+  ├─→ ¿Datos válidos?
+  │     ├─→ No → Error
+  │     └─→ Sí → Siguiente
+  │
+  ├─→ ¿Stock disponible?
+  │     ├─→ No → Error
+  │     └─→ Sí → Siguiente
+  │
+  ├─→ ¿Pago válido?
+  │     ├─→ No → Error
+  │     └─→ Sí → Siguiente
+  │
+  └─→ ¿Seguridad OK?
+        ├─→ No → Error
+        └─→ Sí → Aprobado
+                </div>
+
+                <h2>Solución: Chain of Responsibility</h2>
+                <p>Crea una cadena de manejadores donde cada uno decide si procesa la solicitud o la pasa al siguiente.</p>
+
+                <div class="diagram">
+┌──────────────────────────────────────────────────────────┐
+│ Cliente                                                  │
+└──────────────────────────────────────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────────────────────────────┐
+│ ValidadorDatos                                           │
+│ - Valida datos                                           │
+│ - Si OK, pasa al siguiente                              │
+│ - Si error, rechaza                                      │
+└──────────────────────────────────────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────────────────────────────┐
+│ ValidadorInventario                                      │
+│ - Verifica stock                                         │
+│ - Si OK, pasa al siguiente                              │
+│ - Si error, rechaza                                      │
+└──────────────────────────────────────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────────────────────────────┐
+│ ValidadorPago                                            │
+│ - Verifica pago                                          │
+│ - Si OK, pasa al siguiente                              │
+│ - Si error, rechaza                                      │
+└──────────────────────────────────────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────────────────────────────┐
+│ ValidadorSeguridad                                       │
+│ - Verifica restricciones                                │
+│ - Si OK, aprueba                                        │
+│ - Si error, rechaza                                      │
+└──────────────────────────────────────────────────────────┘
+                </div>
+
+                <h2>Implementación</h2>
+
+                <h3>Paso 1: Interfaz del Manejador</h3>
+                <pre class="code-block"><code>public abstract class ValidadorEnvio {
+    protected ValidadorEnvio siguiente;
+    
+    public void setSiguiente(ValidadorEnvio siguiente) {
+        this.siguiente = siguiente;
+    }
+    
+    /**
+     * Procesa la solicitud o la pasa al siguiente
+     */
+    public abstract boolean validar(Envio envio);
+}</code></pre>
+
+                <h3>Paso 2: Manejadores Concretos</h3>
+                <pre class="code-block"><code>// Validador 1: Datos
+public class ValidadorDatos extends ValidadorEnvio {
+    @Override
+    public boolean validar(Envio envio) {
+        System.out.println("[ValidadorDatos] Validando datos...");
+        
+        if (envio.getOrigen() == null || envio.getDestino() == null) {
+            System.err.println("✗ Datos inválidos");
+            return false;
+        }
+        
+        System.out.println("✓ Datos válidos");
+        
+        if (siguiente != null) {
+            return siguiente.validar(envio);
+        }
+        return true;
+    }
+}
+
+// Validador 2: Inventario
+public class ValidadorInventario extends ValidadorEnvio {
+    @Override
+    public boolean validar(Envio envio) {
+        System.out.println("[ValidadorInventario] Verificando stock...");
+        
+        if (envio.getPeso() > 100) { // Simulación
+            System.err.println("✗ Stock insuficiente");
+            return false;
+        }
+        
+        System.out.println("✓ Stock disponible");
+        
+        if (siguiente != null) {
+            return siguiente.validar(envio);
+        }
+        return true;
+    }
+}
+
+// Validador 3: Pago
+public class ValidadorPago extends ValidadorEnvio {
+    @Override
+    public boolean validar(Envio envio) {
+        System.out.println("[ValidadorPago] Verificando pago...");
+        
+        if (envio.getCosto() <= 0) {
+            System.err.println("✗ Pago inválido");
+            return false;
+        }
+        
+        System.out.println("✓ Pago válido");
+        
+        if (siguiente != null) {
+            return siguiente.validar(envio);
+        }
+        return true;
+    }
+}
+
+// Validador 4: Seguridad
+public class ValidadorSeguridad extends ValidadorEnvio {
+    @Override
+    public boolean validar(Envio envio) {
+        System.out.println("[ValidadorSeguridad] Verificando restricciones...");
+        
+        if (envio.getDestino().contains("Restringido")) {
+            System.err.println("✗ Destino restringido");
+            return false;
+        }
+        
+        System.out.println("✓ Seguridad OK");
+        
+        if (siguiente != null) {
+            return siguiente.validar(envio);
+        }
+        return true;
+    }
+}</code></pre>
+
+                <h3>Paso 3: Construcción de la Cadena</h3>
+                <pre class="code-block"><code>// Crear validadores
+ValidadorEnvio validador1 = new ValidadorDatos();
+ValidadorEnvio validador2 = new ValidadorInventario();
+ValidadorEnvio validador3 = new ValidadorPago();
+ValidadorEnvio validador4 = new ValidadorSeguridad();
+
+// Construir cadena
+validador1.setSiguiente(validador2);
+validador2.setSiguiente(validador3);
+validador3.setSiguiente(validador4);
+
+// Usar la cadena
+Envio envio = new Envio("Buenos Aires", "Córdoba", 5.0, 150.0);
+if (validador1.validar(envio)) {
+    System.out.println("✓ Envío aprobado");
+} else {
+    System.out.println("✗ Envío rechazado");
+}</code></pre>
+
+                <h2>Ventajas</h2>
+                <ul>
+                    <li><strong>Desacoplamiento:</strong> Cliente no conoce los manejadores específicos</li>
+                    <li><strong>Flexibilidad:</strong> Fácil agregar, remover o reordenar manejadores</li>
+                    <li><strong>Responsabilidad Única:</strong> Cada manejador hace una cosa</li>
+                </ul>
+
+                <h2>Desventajas</h2>
+                <ul>
+                    <li><strong>Debugging Difícil:</strong> Difícil seguir el flujo</li>
+                    <li><strong>Sin Garantía:</strong> La solicitud podría no ser manejada</li>
+                    <li><strong>Rendimiento:</strong> Múltiples llamadas pueden ser lentas</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 25 minutos</div>
+            </section>
+
+            <!-- COMMAND -->
+            <section id="command" class="section">
+                <h1>📋 Command Pattern</h1>
+
+                <h2>Problema: Solicitudes como Parámetros</h2>
+                <p>LogiSmart necesita encolar, deshacer y registrar operaciones:</p>
+                <ul>
+                    <li>Crear envío</li>
+                    <li>Cancelar envío</li>
+                    <li>Actualizar estado</li>
+                    <li>Generar reporte</li>
+                </ul>
+
+                <p><strong>Problema:</strong> ¿Cómo encapsular estas operaciones para poder encolarlas, deshacerlas o registrarlas?</p>
+
+                <h2>Solución: Command</h2>
+                <p>Encapsula una solicitud como un objeto que puede ser parametrizado, encolado, registrado y deshecho.</p>
+
+                <div class="diagram">
+┌──────────────────────────────────────────────────────────┐
+│ Cliente                                                  │
+│ - Crea comandos                                          │
+│ - Los encola                                             │
+└──────────────────────────────────────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────────────────────────────┐
+│ Comando (Interfaz)                                       │
+│ - ejecutar()                                             │
+│ - deshacer()                                             │
+└──────────────────────────────────────────────────────────┘
+         │
+    ┌────┴────┬────────────┬──────────────┐
+    ▼         ▼            ▼              ▼
+┌─────────┐ ┌──────────┐ ┌────────────┐ ┌──────────────┐
+│CrearEnv │ │CancelarEn│ │ActualizarEs│ │GenerarReport │
+│         │ │          │ │            │ │              │
+└─────────┘ └──────────┘ └────────────┘ └──────────────┘
+                </div>
+
+                <h2>Implementación</h2>
+
+                <h3>Paso 1: Interfaz Comando</h3>
+                <pre class="code-block"><code>public interface Comando {
+    void ejecutar();
+    void deshacer();
+    String obtenerDescripcion();
+}</code></pre>
+
+                <h3>Paso 2: Comandos Concretos</h3>
+                <pre class="code-block"><code>// Comando: Crear Envío
+public class ComandoCrearEnvio implements Comando {
+    private ServicioEnvios servicio;
+    private Envio envio;
+    private String numeroSeguimiento;
+    
+    public ComandoCrearEnvio(ServicioEnvios servicio, Envio envio) {
+        this.servicio = servicio;
+        this.envio = envio;
+    }
+    
+    @Override
+    public void ejecutar() {
+        System.out.println("[Comando] Creando envío...");
+        numeroSeguimiento = servicio.crearEnvio(envio);
+        System.out.println("✓ Envío creado: " + numeroSeguimiento);
+    }
+    
+    @Override
+    public void deshacer() {
+        System.out.println("[Comando] Deshaciendo: Cancelando envío...");
+        servicio.cancelarEnvio(numeroSeguimiento);
+        System.out.println("✓ Envío cancelado");
+    }
+    
+    @Override
+    public String obtenerDescripcion() {
+        return "Crear envío de " + envio.getOrigen() + " a " + envio.getDestino();
+    }
+}
+
+// Comando: Cancelar Envío
+public class ComandoCancelarEnvio implements Comando {
+    private ServicioEnvios servicio;
+    private String numeroSeguimiento;
+    
+    public ComandoCancelarEnvio(ServicioEnvios servicio, String numeroSeguimiento) {
+        this.servicio = servicio;
+        this.numeroSeguimiento = numeroSeguimiento;
+    }
+    
+    @Override
+    public void ejecutar() {
+        System.out.println("[Comando] Cancelando envío: " + numeroSeguimiento);
+        servicio.cancelarEnvio(numeroSeguimiento);
+        System.out.println("✓ Envío cancelado");
+    }
+    
+    @Override
+    public void deshacer() {
+        System.out.println("[Comando] Deshaciendo: Reactivando envío...");
+        servicio.reactivarEnvio(numeroSeguimiento);
+        System.out.println("✓ Envío reactivado");
+    }
+    
+    @Override
+    public String obtenerDescripcion() {
+        return "Cancelar envío: " + numeroSeguimiento;
+    }
+}
+
+// Comando: Actualizar Estado
+public class ComandoActualizarEstado implements Comando {
+    private ServicioEnvios servicio;
+    private String numeroSeguimiento;
+    private String nuevoEstado;
+    private String estadoAnterior;
+    
+    public ComandoActualizarEstado(ServicioEnvios servicio, String numeroSeguimiento, String nuevoEstado) {
+        this.servicio = servicio;
+        this.numeroSeguimiento = numeroSeguimiento;
+        this.nuevoEstado = nuevoEstado;
+    }
+    
+    @Override
+    public void ejecutar() {
+        System.out.println("[Comando] Actualizando estado a: " + nuevoEstado);
+        estadoAnterior = servicio.obtenerEstado(numeroSeguimiento);
+        servicio.actualizarEstado(numeroSeguimiento, nuevoEstado);
+        System.out.println("✓ Estado actualizado");
+    }
+    
+    @Override
+    public void deshacer() {
+        System.out.println("[Comando] Deshaciendo: Restaurando estado anterior...");
+        servicio.actualizarEstado(numeroSeguimiento, estadoAnterior);
+        System.out.println("✓ Estado restaurado: " + estadoAnterior);
+    }
+    
+    @Override
+    public String obtenerDescripcion() {
+        return "Actualizar estado a: " + nuevoEstado;
+    }
+}</code></pre>
+
+                <h3>Paso 3: Invocador (Cola de Comandos)</h3>
+                <pre class="code-block"><code>public class ColaComandos {
+    private List<Comando> historial = new ArrayList<>();
+    private int indiceActual = -1;
+    
+    /**
+     * Ejecuta un comando y lo agrega al historial
+     */
+    public void ejecutar(Comando comando) {
+        // Eliminar comandos deshacidos
+        while (indiceActual < historial.size() - 1) {
+            historial.remove(historial.size() - 1);
+        }
+        
+        comando.ejecutar();
+        historial.add(comando);
+        indiceActual++;
+    }
+    
+    /**
+     * Deshace el último comando
+     */
+    public void deshacer() {
+        if (indiceActual >= 0) {
+            Comando comando = historial.get(indiceActual);
+            comando.deshacer();
+            indiceActual--;
+            System.out.println("✓ Deshecho: " + comando.obtenerDescripcion());
+        }
+    }
+    
+    /**
+     * Rehace el comando deshacido
+     */
+    public void rehacer() {
+        if (indiceActual < historial.size() - 1) {
+            indiceActual++;
+            Comando comando = historial.get(indiceActual);
+            comando.ejecutar();
+            System.out.println("✓ Rehecho: " + comando.obtenerDescripcion());
+        }
+    }
+    
+    /**
+     * Muestra el historial
+     */
+    public void mostrarHistorial() {
+        System.out.println("\n=== Historial de Comandos ===");
+        for (int i = 0; i < historial.size(); i++) {
+            String marca = i == indiceActual ? "→" : " ";
+            System.out.println(marca + " " + (i + 1) + ". " + historial.get(i).obtenerDescripcion());
+        }
+    }
+}</code></pre>
+
+                <h3>Paso 4: Uso del Command</h3>
+                <pre class="code-block"><code>ColaComandos cola = new ColaComandos();
+ServicioEnvios servicio = new ServicioEnvios();
+
+// Crear envío
+Envio envio = new Envio("Buenos Aires", "Córdoba", 5.0, 150.0);
+Comando cmd1 = new ComandoCrearEnvio(servicio, envio);
+cola.ejecutar(cmd1);
+
+// Actualizar estado
+Comando cmd2 = new ComandoActualizarEstado(servicio, "ENV-001", "EN TRÁNSITO");
+cola.ejecutar(cmd2);
+
+// Actualizar estado nuevamente
+Comando cmd3 = new ComandoActualizarEstado(servicio, "ENV-001", "ENTREGADO");
+cola.ejecutar(cmd3);
+
+cola.mostrarHistorial();
+
+// Deshacer
+cola.deshacer(); // Vuelve a "EN TRÁNSITO"
+cola.deshacer(); // Vuelve a "CONFIRMADO"
+
+// Rehacer
+cola.rehacer(); // Vuelve a "EN TRÁNSITO"</code></pre>
+
+                <h2>Ventajas</h2>
+                <ul>
+                    <li><strong>Desacoplamiento:</strong> Separar objeto que invoca de quien ejecuta</li>
+                    <li><strong>Undo/Redo:</strong> Fácil implementar deshacer/rehacer</li>
+                    <li><strong>Cola de Operaciones:</strong> Encolar, registrar, ejecutar después</li>
+                    <li><strong>Macros:</strong> Combinar comandos en secuencias</li>
+                </ul>
+
+                <h2>Desventajas</h2>
+                <ul>
+                    <li><strong>Complejidad:</strong> Muchas clases pequeñas</li>
+                    <li><strong>Memoria:</strong> Historial puede consumir mucha memoria</li>
+                    <li><strong>Overhead:</strong> Pequeña sobrecarga por encapsulación</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 25 minutos</div>
+            </section>
+
+            <!-- INTERPRETER -->
+            <section id="interpreter" class="section">
+                <h1>🔤 Interpreter Pattern</h1>
+
+                <h2>Problema: Lenguajes Específicos del Dominio</h2>
+                <p>LogiSmart necesita un lenguaje para definir reglas de envío:</p>
+                <div class="code-block">ORIGEN = "Buenos Aires" AND DESTINO = "Córdoba" AND PESO < 10
+ORIGEN = "Rosario" OR DESTINO = "Mendoza"
+COSTO > 100 AND PRIORIDAD = "ALTA"</div>
+
+                <p><strong>Problema:</strong> ¿Cómo interpretar y evaluar estas expresiones?</p>
+
+                <h2>Solución: Interpreter</h2>
+                <p>Define una representación gramatical para el lenguaje y un intérprete para procesarlo.</p>
+
+                <div class="diagram">
+Expresión: "ORIGEN = 'Buenos Aires' AND PESO < 10"
+                │
+                ▼
+        ┌───────────────────┐
+        │   Parser          │
+        │ (Análisis)        │
+        └───────────────────┘
+                │
+                ▼
+        ┌───────────────────┐
+        │  Árbol de Sintaxis│
+        │                   │
+        │    AND            │
+        │   /   \           │
+        │  =     <          │
+        │ / \   / \         │
+        │O   B P   10       │
+        └───────────────────┘
+                │
+                ▼
+        ┌───────────────────┐
+        │  Intérprete       │
+        │  (Evaluación)     │
+        └───────────────────┘
+                │
+                ▼
+        Resultado: true/false
+                </div>
+
+                <h2>Implementación</h2>
+
+                <h3>Paso 1: Interfaz Expresión</h3>
+                <pre class="code-block"><code>public interface Expresion {
+    boolean evaluar(Envio envio);
+}
+
+// Contexto (datos a evaluar)
+public class ContextoEnvio {
+    private Envio envio;
+    
+    public ContextoEnvio(Envio envio) {
+        this.envio = envio;
+    }
+    
+    public Envio obtenerEnvio() {
+        return envio;
+    }
+}</code></pre>
+
+                <h3>Paso 2: Expresiones Terminales</h3>
+                <pre class="code-block"><code>// Expresión: ORIGEN = valor
+public class ExpresionOrigen implements Expresion {
+    private String valor;
+    
+    public ExpresionOrigen(String valor) {
+        this.valor = valor;
+    }
+    
+    @Override
+    public boolean evaluar(Envio envio) {
+        return envio.getOrigen().equals(valor);
+    }
+}
+
+// Expresión: DESTINO = valor
+public class ExpresionDestino implements Expresion {
+    private String valor;
+    
+    public ExpresionDestino(String valor) {
+        this.valor = valor;
+    }
+    
+    @Override
+    public boolean evaluar(Envio envio) {
+        return envio.getDestino().equals(valor);
+    }
+}
+
+// Expresión: PESO < valor
+public class ExpresionPeso implements Expresion {
+    private double valor;
+    private String operador; // "<", ">", "="
+    
+    public ExpresionPeso(double valor, String operador) {
+        this.valor = valor;
+        this.operador = operador;
+    }
+    
+    @Override
+    public boolean evaluar(Envio envio) {
+        switch (operador) {
+            case "<": return envio.getPeso() < valor;
+            case ">": return envio.getPeso() > valor;
+            case "=": return envio.getPeso() == valor;
+            default: return false;
+        }
+    }
+}</code></pre>
+
+                <h3>Paso 3: Expresiones No-Terminales (Operadores)</h3>
+                <pre class="code-block"><code>// Expresión: AND
+public class ExpresionAND implements Expresion {
+    private Expresion izquierda;
+    private Expresion derecha;
+    
+    public ExpresionAND(Expresion izquierda, Expresion derecha) {
+        this.izquierda = izquierda;
+        this.derecha = derecha;
+    }
+    
+    @Override
+    public boolean evaluar(Envio envio) {
+        return izquierda.evaluar(envio) && derecha.evaluar(envio);
+    }
+}
+
+// Expresión: OR
+public class ExpresionOR implements Expresion {
+    private Expresion izquierda;
+    private Expresion derecha;
+    
+    public ExpresionOR(Expresion izquierda, Expresion derecha) {
+        this.izquierda = izquierda;
+        this.derecha = derecha;
+    }
+    
+    @Override
+    public boolean evaluar(Envio envio) {
+        return izquierda.evaluar(envio) || derecha.evaluar(envio);
+    }
+}
+
+// Expresión: NOT
+public class ExpresionNOT implements Expresion {
+    private Expresion expresion;
+    
+    public ExpresionNOT(Expresion expresion) {
+        this.expresion = expresion;
+    }
+    
+    @Override
+    public boolean evaluar(Envio envio) {
+        return !expresion.evaluar(envio);
+    }
+}</code></pre>
+
+                <h3>Paso 4: Uso del Interpreter</h3>
+                <pre class="code-block"><code>// Crear expresiones
+Expresion origen = new ExpresionOrigen("Buenos Aires");
+Expresion peso = new ExpresionPeso(10, "<");
+Expresion expresion1 = new ExpresionAND(origen, peso);
+
+// Evaluar
+Envio envio1 = new Envio("Buenos Aires", "Córdoba", 5.0, 150.0);
+Envio envio2 = new Envio("Rosario", "Córdoba", 15.0, 200.0);
+
+System.out.println("Envío 1 cumple regla: " + expresion1.evaluar(envio1)); // true
+System.out.println("Envío 2 cumple regla: " + expresion1.evaluar(envio2)); // false
+
+// Expresión más compleja
+Expresion destino = new ExpresionDestino("Córdoba");
+Expresion expresion2 = new ExpresionOR(
+    new ExpresionAND(origen, peso),
+    destino
+);
+
+System.out.println("Envío 1 cumple expresión 2: " + expresion2.evaluar(envio1)); // true
+System.out.println("Envío 2 cumple expresión 2: " + expresion2.evaluar(envio2)); // true</code></pre>
+
+                <h2>Ventajas</h2>
+                <ul>
+                    <li><strong>Flexibilidad:</strong> Fácil agregar nuevas reglas</li>
+                    <li><strong>Separación:</strong> Lógica de negocio separada de interpretación</li>
+                    <li><strong>Reutilización:</strong> Las expresiones pueden reutilizarse</li>
+                </ul>
+
+                <h2>Desventajas</h2>
+                <ul>
+                    <li><strong>Complejidad:</strong> Muchas clases para gramáticas complejas</li>
+                    <li><strong>Rendimiento:</strong> Interpretación puede ser lenta</li>
+                    <li><strong>Mantenimiento:</strong> Cambios en la gramática requieren cambios en código</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 20 minutos</div>
+            </section>
+
+            <!-- DIAGRAMAS DE SECUENCIA -->
+            <section id="secuencia" class="section">
+                <h1>📊 Diagramas de Secuencia Aplicados</h1>
+
+                <h2>¿Qué es un Diagrama de Secuencia?</h2>
+                <p>Un diagrama de secuencia muestra cómo los objetos interactúan en una secuencia temporal. Es especialmente útil para visualizar patrones de comportamiento.</p>
+
+                <h2>Chain of Responsibility - Diagrama de Secuencia</h2>
+                <div class="sequence-diagram">
+Cliente          ValidadorDatos    ValidadorInventario    ValidadorPago
+  │                   │                    │                   │
+  │─ validar(env) ──→ │                    │                   │
+  │                   │ ✓ OK               │                   │
+  │                   │─ validar(env) ───→ │                   │
+  │                   │                    │ ✓ OK              │
+  │                   │                    │─ validar(env) ──→ │
+  │                   │                    │                   │ ✓ OK
+  │                   │                    │                   │ return true
+  │                   │                    │ return true       │
+  │                   │ return true        │                   │
+  │ return true       │                    │                   │
+  │                   │                    │                   │
+                </div>
+
+                <h2>Command - Diagrama de Secuencia</h2>
+                <div class="sequence-diagram">
+Cliente        ColaComandos    ComandoCrearEnvio    ServicioEnvios
+  │                 │                  │                  │
+  │─ ejecutar() ──→ │                  │                  │
+  │                 │─ ejecutar() ────→ │                  │
+  │                 │                  │─ crearEnvio() ──→ │
+  │                 │                  │                  │ crear
+  │                 │                  │ return numero    │
+  │                 │ agregar historial │                  │
+  │ return          │                  │                  │
+  │                 │                  │                  │
+  │─ deshacer() ───→ │                  │                  │
+  │                 │─ deshacer() ─────→ │                  │
+  │                 │                  │─ cancelar() ────→ │
+  │                 │                  │                  │ cancelar
+  │                 │ actualizar índice │                  │
+  │ return          │                  │                  │
+                </div>
+
+                <h2>Interpreter - Diagrama de Secuencia</h2>
+                <div class="sequence-diagram">
+Cliente        ExpresionAND    ExpresionOrigen    ExpresionPeso
+  │                 │               │                  │
+  │─ evaluar() ────→ │               │                  │
+  │                 │─ evaluar() ───→ │                  │
+  │                 │                 │ return true     │
+  │                 │─ evaluar() ──────────────────────→ │
+  │                 │                                   │ return true
+  │                 │ true && true = true               │
+  │ return true     │                                   │
+  │                 │                                   │
+                </div>
+
+                <h2>Comparación de Flujos</h2>
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Flujo</th>
+                        <th>Característica</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Chain</strong></td>
+                        <td>Lineal (A → B → C → D)</td>
+                        <td>Cada manejador decide si continúa</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Command</strong></td>
+                        <td>Ramificado (ejecutar/deshacer)</td>
+                        <td>Encapsula operaciones reversibles</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Interpreter</strong></td>
+                        <td>Árbol (recursivo)</td>
+                        <td>Evalúa expresiones complejas</td>
+                    </tr>
+                </table>
+
+                <div class="footer">Tiempo estimado: 10 minutos</div>
+            </section>
+
+            <!-- COMPARACIÓN -->
+            <section id="comparacion" class="section">
+                <h1>📈 Comparación de Patrones</h1>
+
+                <h2>Tabla Comparativa</h2>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Propósito</th>
+                        <th>Cuándo Usar</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Chain of Responsibility</strong></td>
+                        <td>Pasar solicitud a través de cadena de manejadores</td>
+                        <td>Múltiples objetos pueden manejar una solicitud</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Command</strong></td>
+                        <td>Encapsular solicitud como objeto</td>
+                        <td>Necesitas undo/redo, cola de operaciones, logging</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Interpreter</strong></td>
+                        <td>Definir lenguaje específico del dominio</td>
+                        <td>Necesitas evaluar expresiones complejas</td>
+                    </tr>
+                </table>
+
+                <h2>Matriz de Decisión</h2>
+                <ul>
+                    <li><strong>¿Múltiples manejadores en cadena?</strong> → Chain of Responsibility</li>
+                    <li><strong>¿Necesitas undo/redo?</strong> → Command</li>
+                    <li><strong>¿Lenguaje específico del dominio?</strong> → Interpreter</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 5 minutos</div>
+            </section>
+
+            <!-- CASOS REALES -->
+            <section id="casos" class="section">
+                <h1>💼 Casos de Aplicación en Sistemas Reales</h1>
+
+                <h2>Chain of Responsibility</h2>
+                <ul>
+                    <li><strong>Middleware Web:</strong> Express.js, Django (cadena de middleware)</li>
+                    <li><strong>Manejo de Excepciones:</strong> Try-catch-finally en Java</li>
+                    <li><strong>Logging:</strong> Log4j (múltiples appenders)</li>
+                    <li><strong>Aprobaciones:</strong> Workflows de aprobación en sistemas empresariales</li>
+                </ul>
+
+                <h2>Command</h2>
+                <ul>
+                    <li><strong>Undo/Redo:</strong> Editores de texto (Word, Photoshop)</li>
+                    <li><strong>Colas de Tareas:</strong> Celery, RabbitMQ</li>
+                    <li><strong>Macros:</strong> Grabación de secuencias de comandos</li>
+                    <li><strong>Transacciones:</strong> Bases de datos (ACID)</li>
+                </ul>
+
+                <h2>Interpreter</h2>
+                <ul>
+                    <li><strong>Lenguajes de Consulta:</strong> SQL, XPath, SPARQL</li>
+                    <li><strong>Expresiones Regulares:</strong> Regex engines</li>
+                    <li><strong>Motores de Reglas:</strong> Drools, Jess</li>
+                    <li><strong>Lenguajes de Scripting:</strong> Python, JavaScript</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 5 minutos</div>
+            </section>
+
+            <!-- RESUMEN -->
+            <section id="resumen" class="section">
+                <h1>✅ Resumen de la Clase</h1>
+
+                <h2>Conceptos Clave</h2>
+
+                <h3>Chain of Responsibility</h3>
+                <ul>
+                    <li>Cadena de manejadores que procesan solicitudes</li>
+                    <li>Cada manejador decide si procesa o pasa al siguiente</li>
+                    <li>Desacoplamiento entre cliente y manejadores</li>
+                </ul>
+
+                <h3>Command</h3>
+                <ul>
+                    <li>Encapsula solicitud como objeto</li>
+                    <li>Permite undo/redo, cola de operaciones, logging</li>
+                    <li>Separación entre quien invoca y quien ejecuta</li>
+                </ul>
+
+                <h3>Interpreter</h3>
+                <ul>
+                    <li>Define gramática para lenguaje específico</li>
+                    <li>Evalúa expresiones complejas</li>
+                    <li>Árbol de sintaxis abstracta (AST)</li>
+                </ul>
+
+                <h2>Patrones de Comportamiento I</h2>
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Clase</th>
+                        <th>Propósito</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Chain of Responsibility</strong></td>
+                        <td>11</td>
+                        <td>Cadena de manejadores</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Command</strong></td>
+                        <td>11</td>
+                        <td>Encapsular solicitudes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Interpreter</strong></td>
+                        <td>11</td>
+                        <td>Lenguaje específico del dominio</td>
+                    </tr>
+                </table>
+
+                <h2>Diagramas de Secuencia</h2>
+                <p>Los diagramas de secuencia son herramientas visuales poderosas para entender cómo los patrones de comportamiento funcionan en tiempo de ejecución. Muestran el flujo de mensajes entre objetos.</p>
+
+                <h2>Preguntas de Reflexión</h2>
+                <ul>
+                    <li>¿Cuándo usarías Chain vs Command?</li>
+                    <li>¿Cómo implementarías undo/redo en una aplicación?</li>
+                    <li>¿Qué ventajas tiene Interpreter sobre if-else?</li>
+                </ul>
+
+                <h2>Próximos Pasos</h2>
+                <ul>
+                    <li><strong>Hito 10 (Práctica):</strong> Aplicar patrones de comportamiento I</li>
+                    <li><strong>Clase 12:</strong> Patrones de Comportamiento II</li>
+                </ul>
+
+                <h2>Recursos</h2>
+                <ul>
+                    <li><strong>Refactoring Guru:</strong> https://refactoring.guru/design-patterns/behavioral-patterns</li>
+                    <li><strong>Design Patterns: Elements of Reusable Object-Oriented Software</strong> - Gang of Four</li>
+                    <li><strong>Head First Design Patterns</strong> - Freeman & Freeman</li>
+                </ul>
+
+                <div class="highlight">
+                    <h3>Duración Total de la Clase</h3>
+                    <p>90 minutos de teoría, cubriendo Chain of Responsibility (25 min), Command (25 min), Interpreter (20 min), Diagramas de Secuencia (10 min), Comparación y Casos Reales (10 min).</p>
+                </div>
+
+                <p style="margin-top: 40px; text-align: center; font-style: italic;">La práctica del Hito 10 se realiza en una sesión separada con enunciado específico.</p>
+
+                <div class="footer">Fin de la Clase 11</div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

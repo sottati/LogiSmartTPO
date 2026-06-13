@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 12: Patrones de Comportamiento II - Iterator, Mediator, Memento, Observer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: #667eea;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #667eea;
+            border-left: 3px solid #fff;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background: white;
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .example-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .diagram {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+
+        .comparison-table {
+            margin: 20px 0;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .pros, .cons {
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .pros {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .cons {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .pros h4, .cons h4 {
+            margin-bottom: 10px;
+        }
+
+        .pros ul, .cons ul {
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>📚 Clase 12</h2>
+            <div class="nav-item active" onclick="showSection('intro')">🎯 Introducción</div>
+            <div class="nav-item" onclick="showSection('iterator')">🔄 Iterator</div>
+            <div class="nav-item" onclick="showSection('mediator')">🤝 Mediator</div>
+            <div class="nav-item" onclick="showSection('memento')">💾 Memento</div>
+            <div class="nav-item" onclick="showSection('observer')">👁️ Observer</div>
+            <div class="nav-item" onclick="showSection('eventdriven')">⚡ Event-Driven</div>
+            <div class="nav-item" onclick="showSection('comparacion')">📈 Comparación</div>
+            <div class="nav-item" onclick="showSection('casos')">💼 Casos Reales</div>
+            <div class="nav-item" onclick="showSection('resumen')">✅ Resumen</div>
+        </aside>
+
+        <main class="main-content">
+            <!-- INTRODUCCIÓN -->
+            <section id="intro" class="section active">
+                <h1>🎯 Clase 12: Patrones de Comportamiento II</h1>
+                <h2>Iterator, Mediator, Memento, Observer</h2>
+
+                <h2>Objetivo de la Clase</h2>
+                <p>Estudiar patrones que definen cómo los objetos interactúan y comunican cambios:</p>
+                <ul>
+                    <li>Acceder a elementos de una colección sin exponer su estructura</li>
+                    <li>Centralizar la comunicación entre objetos</li>
+                    <li>Capturar y restaurar el estado de un objeto</li>
+                    <li>Notificar múltiples objetos sobre cambios</li>
+                </ul>
+
+                <h2>Diferencia con Clase 11</h2>
+                <table>
+                    <tr>
+                        <th>Clase 11</th>
+                        <th>Clase 12</th>
+                    </tr>
+                    <tr>
+                        <td>Chain of Responsibility</td>
+                        <td>Iterator</td>
+                    </tr>
+                    <tr>
+                        <td>Command</td>
+                        <td>Mediator</td>
+                    </tr>
+                    <tr>
+                        <td>Interpreter</td>
+                        <td>Memento</td>
+                    </tr>
+                    <tr>
+                        <td>-</td>
+                        <td>Observer</td>
+                    </tr>
+                </table>
+
+                <h2>Duración de la Clase</h2>
+                <ul>
+                    <li><strong>Introducción:</strong> 5 minutos</li>
+                    <li><strong>Iterator:</strong> 20 minutos</li>
+                    <li><strong>Mediator:</strong> 20 minutos</li>
+                    <li><strong>Memento:</strong> 15 minutos</li>
+                    <li><strong>Observer:</strong> 15 minutos</li>
+                    <li><strong>Event-Driven Architecture:</strong> 10 minutos</li>
+                    <li><strong>Comparación y Casos Reales:</strong> 5 minutos</li>
+                    <li><strong>Total:</strong> 90 minutos</li>
+                </ul>
+
+                <div class="highlight">
+                    <h3>Pregunta Central</h3>
+                    <p>¿Cómo accedo a elementos sin exponer estructura? ¿Cómo centralizo comunicación? ¿Cómo capturo estado? ¿Cómo notifico cambios?</p>
+                </div>
+            </section>
+
+            <!-- ITERATOR -->
+            <section id="iterator" class="section">
+                <h1>🔄 Iterator Pattern</h1>
+
+                <h2>Problema: Acceso a Colecciones</h2>
+                <p>LogiSmart tiene diferentes estructuras de datos para almacenar envíos:</p>
+                <ul>
+                    <li>Array de envíos</li>
+                    <li>Lista enlazada de envíos</li>
+                    <li>Árbol de envíos por región</li>
+                    <li>Tabla hash de envíos por ID</li>
+                </ul>
+
+                <p><strong>Problema:</strong> ¿Cómo iterar sobre ellas sin conocer su estructura interna?</p>
+
+                <h2>Solución: Iterator</h2>
+                <p>Proporciona una forma de acceder secuencialmente a los elementos de una colección sin exponer su estructura.</p>
+
+                <div class="diagram">
+┌─────────────────────────────────────┐
+│ Cliente                             │
+└─────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────┐
+│ Iterator (Interfaz)                 │
+│ - siguiente()                       │
+│ - tieneSiguiente()                  │
+│ - obtenerActual()                   │
+└─────────────────────────────────────┘
+         │
+    ┌────┴────┬──────────┬────────────┐
+    ▼         ▼          ▼            ▼
+┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
+│Array   │ │Lista   │ │Árbol   │ │Hash    │
+│Iterator│ │Iterator│ │Iterator│ │Iterator│
+└────────┘ └────────┘ └────────┘ └────────┘
+                </div>
+
+                <h2>Implementación</h2>
+
+                <h3>Paso 1: Interfaz Iterator</h3>
+                <div class="code-block">public interface IteradorEnvios {
+    boolean tieneSiguiente();
+    Envio obtenerSiguiente();
+    void reiniciar();
+}</div>
+
+                <h3>Paso 2: Interfaz Colección</h3>
+                <div class="code-block">public interface ColeccionEnvios {
+    IteradorEnvios crearIterador();
+    void agregar(Envio envio);
+    void remover(Envio envio);
+}</div>
+
+                <h3>Paso 3: Implementaciones Concretas</h3>
+                <div class="code-block">// Colección: Array
+public class ColeccionArray implements ColeccionEnvios {
+    private Envio[] envios = new Envio[100];
+    private int tamaño = 0;
+    
+    @Override
+    public IteradorEnvios crearIterador() {
+        return new IteradorArray();
+    }
+    
+    @Override
+    public void agregar(Envio envio) {
+        envios[tamaño++] = envio;
+    }
+    
+    private class IteradorArray implements IteradorEnvios {
+        private int indice = 0;
+        
+        @Override
+        public boolean tieneSiguiente() {
+            return indice < tamaño;
+        }
+        
+        @Override
+        public Envio obtenerSiguiente() {
+            return envios[indice++];
+        }
+        
+        @Override
+        public void reiniciar() {
+            indice = 0;
+        }
+    }
+}
+
+// Colección: Lista Enlazada
+public class ColeccionLista implements ColeccionEnvios {
+    private Nodo cabeza;
+    private int tamaño = 0;
+    
+    @Override
+    public IteradorEnvios crearIterador() {
+        return new IteradorLista();
+    }
+    
+    @Override
+    public void agregar(Envio envio) {
+        Nodo nuevoNodo = new Nodo(envio);
+        if (cabeza == null) {
+            cabeza = nuevoNodo;
+        } else {
+            Nodo actual = cabeza;
+            while (actual.siguiente != null) {
+                actual = actual.siguiente;
+            }
+            actual.siguiente = nuevoNodo;
+        }
+        tamaño++;
+    }
+    
+    private class IteradorLista implements IteradorEnvios {
+        private Nodo actual = cabeza;
+        
+        @Override
+        public boolean tieneSiguiente() {
+            return actual != null;
+        }
+        
+        @Override
+        public Envio obtenerSiguiente() {
+            Envio envio = actual.envio;
+            actual = actual.siguiente;
+            return envio;
+        }
+        
+        @Override
+        public void reiniciar() {
+            actual = cabeza;
+        }
+    }
+    
+    private class Nodo {
+        Envio envio;
+        Nodo siguiente;
+        
+        Nodo(Envio envio) {
+            this.envio = envio;
+        }
+    }
+}</div>
+
+                <h3>Paso 4: Uso del Iterator</h3>
+                <div class="code-block">// Usar colección sin conocer su estructura
+ColeccionEnvios coleccion = new ColeccionArray();
+coleccion.agregar(new Envio("Buenos Aires", "Córdoba", 5.0, 150.0, "TARJETA", "PROD-001"));
+coleccion.agregar(new Envio("Rosario", "Mendoza", 8.0, 200.0, "EFECTIVO", "PROD-002"));
+
+// Iterar
+IteradorEnvios iterador = coleccion.crearIterador();
+while (iterador.tieneSiguiente()) {
+    Envio envio = iterador.obtenerSiguiente();
+    System.out.println(envio.getOrigen() + " → " + envio.getDestino());
+}</div>
+
+                <h2>Ventajas</h2>
+                <ul>
+                    <li><strong>Encapsulación:</strong> Estructura interna oculta</li>
+                    <li><strong>Flexibilidad:</strong> Cambiar estructura sin afectar cliente</li>
+                    <li><strong>Múltiples Iteradores:</strong> Varios iteradores simultáneos</li>
+                </ul>
+
+                <h2>Desventajas</h2>
+                <ul>
+                    <li><strong>Complejidad:</strong> Más clases</li>
+                    <li><strong>Rendimiento:</strong> Pequeña sobrecarga</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 20 minutos</div>
+            </section>
+
+            <!-- MEDIATOR -->
+            <section id="mediator" class="section">
+                <h1>🤝 Mediator Pattern</h1>
+
+                <h2>Problema: Comunicación Compleja</h2>
+                <p>En LogiSmart, múltiples componentes necesitan comunicarse:</p>
+                <ul>
+                    <li>Centro de distribución comunica con validador</li>
+                    <li>Validador comunica con sistema de pago</li>
+                    <li>Sistema de pago comunica con notificador</li>
+                    <li>Notificador comunica con centro</li>
+                </ul>
+
+                <p><strong>Problema:</strong> Cada componente conoce a todos los demás → acoplamiento alto</p>
+
+                <div class="diagram">
+Sin Mediator (Acoplamiento Alto):
+    Centro ←→ Validador
+      ↕         ↕
+    Pago  ←→ Notificador
+
+Con Mediator (Desacoplamiento):
+    Centro
+      ↓
+    Mediator ← Validador
+      ↑
+    Pago → Notificador
+                </div>
+
+                <h2>Solución: Mediator</h2>
+                <p>Centraliza la comunicación entre objetos en un mediador.</p>
+
+                <h2>Implementación</h2>
+
+                <h3>Paso 1: Interfaz Mediator</h3>
+                <div class="code-block">public interface MediadorEnvios {
+    void registrarCentro(CentroDistribucion centro);
+    void registrarValidador(ValidadorEnvio validador);
+    void registrarPago(SistemaPago pago);
+    void registrarNotificador(SistemaNotificacion notificador);
+    
+    void notificar(String evento, Object datos);
+}</div>
+
+                <h3>Paso 2: Mediator Concreto</h3>
+                <div class="code-block">public class MediadorEnviosConcreto implements MediadorEnvios {
+    private CentroDistribucion centro;
+    private ValidadorEnvio validador;
+    private SistemaPago pago;
+    private SistemaNotificacion notificador;
+    
+    @Override
+    public void registrarCentro(CentroDistribucion centro) {
+        this.centro = centro;
+    }
+    
+    @Override
+    public void registrarValidador(ValidadorEnvio validador) {
+        this.validador = validador;
+    }
+    
+    @Override
+    public void registrarPago(SistemaPago pago) {
+        this.pago = pago;
+    }
+    
+    @Override
+    public void registrarNotificador(SistemaNotificacion notificador) {
+        this.notificador = notificador;
+    }
+    
+    @Override
+    public void notificar(String evento, Object datos) {
+        switch (evento) {
+            case "ENVIO_CREADO":
+                Envio envio = (Envio) datos;
+                System.out.println("[Mediator] Envío creado: " + envio.getId());
+                validador.validar(envio);
+                break;
+                
+            case "VALIDACION_OK":
+                System.out.println("[Mediator] Validación OK");
+                pago.procesarPago((Envio) datos);
+                break;
+                
+            case "PAGO_CONFIRMADO":
+                System.out.println("[Mediator] Pago confirmado");
+                notificador.enviarConfirmacion((Envio) datos);
+                break;
+                
+            case "NOTIFICACION_ENVIADA":
+                System.out.println("[Mediator] Notificación enviada");
+                centro.registrarEnvio((Envio) datos);
+                break;
+        }
+    }
+}</div>
+
+                <h3>Paso 3: Componentes que Usan Mediator</h3>
+                <div class="code-block">// Centro de Distribución
+public class CentroDistribucion {
+    private MediadorEnvios mediador;
+    
+    public CentroDistribucion(MediadorEnvios mediador) {
+        this.mediador = mediador;
+    }
+    
+    public void crearEnvio(Envio envio) {
+        System.out.println("[Centro] Creando envío...");
+        mediador.notificar("ENVIO_CREADO", envio);
+    }
+    
+    public void registrarEnvio(Envio envio) {
+        System.out.println("[Centro] Registrando envío en sistema");
+    }
+}
+
+// Validador
+public class ValidadorEnvio {
+    private MediadorEnvios mediador;
+    
+    public ValidadorEnvio(MediadorEnvios mediador) {
+        this.mediador = mediador;
+    }
+    
+    public void validar(Envio envio) {
+        System.out.println("[Validador] Validando envío...");
+        if (envio.getCosto() > 0) {
+            System.out.println("[Validador] ✓ Válido");
+            mediador.notificar("VALIDACION_OK", envio);
+        }
+    }
+}
+
+// Sistema de Pago
+public class SistemaPago {
+    private MediadorEnvios mediador;
+    
+    public SistemaPago(MediadorEnvios mediador) {
+        this.mediador = mediador;
+    }
+    
+    public void procesarPago(Envio envio) {
+        System.out.println("[Pago] Procesando pago...");
+        System.out.println("[Pago] ✓ Pago confirmado");
+        mediador.notificar("PAGO_CONFIRMADO", envio);
+    }
+}
+
+// Sistema de Notificación
+public class SistemaNotificacion {
+    private MediadorEnvios mediador;
+    
+    public SistemaNotificacion(MediadorEnvios mediador) {
+        this.mediador = mediador;
+    }
+    
+    public void enviarConfirmacion(Envio envio) {
+        System.out.println("[Notificador] Enviando confirmación...");
+        System.out.println("[Notificador] ✓ Confirmación enviada");
+        mediador.notificar("NOTIFICACION_ENVIADA", envio);
+    }
+}</div>
+
+                <h3>Paso 4: Uso del Mediator</h3>
+                <div class="code-block">// Crear mediador
+MediadorEnvios mediador = new MediadorEnviosConcreto();
+
+// Crear componentes
+CentroDistribucion centro = new CentroDistribucion(mediador);
+ValidadorEnvio validador = new ValidadorEnvio(mediador);
+SistemaPago pago = new SistemaPago(mediador);
+SistemaNotificacion notificador = new SistemaNotificacion(mediador);
+
+// Registrar componentes
+mediador.registrarCentro(centro);
+mediador.registrarValidador(validador);
+mediador.registrarPago(pago);
+mediador.registrarNotificador(notificador);
+
+// Usar
+Envio envio = new Envio("Buenos Aires", "Córdoba", 5.0, 150.0, "TARJETA", "PROD-001");
+centro.crearEnvio(envio);</div>
+
+                <h2>Ventajas</h2>
+                <ul>
+                    <li><strong>Desacoplamiento:</strong> Componentes no se conocen entre sí</li>
+                    <li><strong>Centralización:</strong> Lógica de comunicación en un lugar</li>
+                    <li><strong>Reutilización:</strong> Componentes reutilizables</li>
+                </ul>
+
+                <h2>Desventajas</h2>
+                <ul>
+                    <li><strong>Complejidad:</strong> Mediator puede volverse complejo</li>
+                    <li><strong>Punto Único de Fallo:</strong> Si mediator falla, todo falla</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 20 minutos</div>
+            </section>
+
+            <!-- MEMENTO -->
+            <section id="memento" class="section">
+                <h1>💾 Memento Pattern</h1>
+
+                <h2>Problema: Capturar Estado</h2>
+                <p>LogiSmart necesita guardar el estado de un envío en diferentes momentos:</p>
+                <ul>
+                    <li>Estado inicial (CONFIRMADO)</li>
+                    <li>Estado en tránsito (EN_TRANSITO)</li>
+                    <li>Estado entregado (ENTREGADO)</li>
+                </ul>
+
+                <p><strong>Problema:</strong> ¿Cómo guardar y restaurar estados sin violar encapsulación?</p>
+
+                <h2>Solución: Memento</h2>
+                <p>Captura el estado interno de un objeto sin violar su encapsulación.</p>
+
+                <div class="diagram">
+┌──────────────────────────────────────┐
+│ Envio (Originador)                   │
+│ - estado                             │
+│ - crearMemento()                     │
+│ - restaurarDesdeMemento()            │
+└──────────────────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────────┐
+│ Memento (Snapshot)                   │
+│ - estado (privado)                   │
+│ - obtenerEstado()                    │
+└──────────────────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────────┐
+│ Cuidador (Historial)                 │
+│ - mementos[]                         │
+│ - guardar()                          │
+│ - restaurar()                        │
+└──────────────────────────────────────┘
+                </div>
+
+                <h2>Implementación</h2>
+
+                <h3>Paso 1: Memento</h3>
+                <div class="code-block">public class MementoEnvio {
+    private String estado;
+    private String origen;
+    private String destino;
+    private double peso;
+    private double costo;
+    private long timestamp;
+    
+    public MementoEnvio(String estado, String origen, String destino, 
+                        double peso, double costo) {
+        this.estado = estado;
+        this.origen = origen;
+        this.destino = destino;
+        this.peso = peso;
+        this.costo = costo;
+        this.timestamp = System.currentTimeMillis();
+    }
+    
+    public String obtenerEstado() { return estado; }
+    public String obtenerOrigen() { return origen; }
+    public String obtenerDestino() { return destino; }
+    public double obtenerPeso() { return peso; }
+    public double obtenerCosto() { return costo; }
+    public long obtenerTimestamp() { return timestamp; }
+}</div>
+
+                <h3>Paso 2: Originador</h3>
+                <div class="code-block">public class Envio {
+    private String id;
+    private String estado;
+    private String origen;
+    private String destino;
+    private double peso;
+    private double costo;
+    
+    public Envio(String id, String origen, String destino, double peso, double costo) {
+        this.id = id;
+        this.origen = origen;
+        this.destino = destino;
+        this.peso = peso;
+        this.costo = costo;
+        this.estado = "CONFIRMADO";
+    }
+    
+    /**
+     * Crea un memento del estado actual
+     */
+    public MementoEnvio crearMemento() {
+        return new MementoEnvio(estado, origen, destino, peso, costo);
+    }
+    
+    /**
+     * Restaura el estado desde un memento
+     */
+    public void restaurarDesdeMemento(MementoEnvio memento) {
+        this.estado = memento.obtenerEstado();
+        this.origen = memento.obtenerOrigen();
+        this.destino = memento.obtenerDestino();
+        this.peso = memento.obtenerPeso();
+        this.costo = memento.obtenerCosto();
+    }
+    
+    public void cambiarEstado(String nuevoEstado) {
+        this.estado = nuevoEstado;
+    }
+    
+    public String obtenerEstado() { return estado; }
+    public String getId() { return id; }
+}</div>
+
+                <h3>Paso 3: Cuidador</h3>
+                <div class="code-block">public class HistorialEnvios {
+    private List<MementoEnvio> historial = new ArrayList<>();
+    private int indiceActual = -1;
+    
+    /**
+     * Guarda el estado actual
+     */
+    public void guardarEstado(Envio envio) {
+        // Eliminar estados posteriores
+        while (indiceActual < historial.size() - 1) {
+            historial.remove(historial.size() - 1);
+        }
+        
+        historial.add(envio.crearMemento());
+        indiceActual++;
+        System.out.println("✓ Estado guardado: " + envio.obtenerEstado());
+    }
+    
+    /**
+     * Restaura a un estado anterior
+     */
+    public void irAlEstadoAnterior(Envio envio) {
+        if (indiceActual > 0) {
+            indiceActual--;
+            envio.restaurarDesdeMemento(historial.get(indiceActual));
+            System.out.println("✓ Restaurado a: " + envio.obtenerEstado());
+        }
+    }
+    
+    /**
+     * Restaura a un estado posterior
+     */
+    public void irAlEstadoSiguiente(Envio envio) {
+        if (indiceActual < historial.size() - 1) {
+            indiceActual++;
+            envio.restaurarDesdeMemento(historial.get(indiceActual));
+            System.out.println("✓ Restaurado a: " + envio.obtenerEstado());
+        }
+    }
+    
+    /**
+     * Muestra el historial
+     */
+    public void mostrarHistorial() {
+        System.out.println("\n=== Historial de Estados ===");
+        for (int i = 0; i < historial.size(); i++) {
+            MementoEnvio m = historial.get(i);
+            String marca = i == indiceActual ? "→" : " ";
+            System.out.println(marca + " " + (i + 1) + ". " + m.obtenerEstado());
+        }
+    }
+}</div>
+
+                <h3>Paso 4: Uso del Memento</h3>
+                <div class="code-block">Envio envio = new Envio("ENV-001", "Buenos Aires", "Córdoba", 5.0, 150.0);
+HistorialEnvios historial = new HistorialEnvios();
+
+// Guardar estado inicial
+historial.guardarEstado(envio);
+
+// Cambiar estado
+envio.cambiarEstado("EN_TRANSITO");
+historial.guardarEstado(envio);
+
+// Cambiar estado nuevamente
+envio.cambiarEstado("ENTREGADO");
+historial.guardarEstado(envio);
+
+historial.mostrarHistorial();
+
+// Ir al estado anterior
+historial.irAlEstadoAnterior(envio);
+historial.mostrarHistorial();</div>
+
+                <h2>Ventajas</h2>
+                <ul>
+                    <li><strong>Encapsulación:</strong> Estado interno protegido</li>
+                    <li><strong>Historial:</strong> Fácil navegar por estados</li>
+                    <li><strong>Undo/Redo:</strong> Implementación natural</li>
+                </ul>
+
+                <h2>Desventajas</h2>
+                <ul>
+                    <li><strong>Memoria:</strong> Puede consumir mucha memoria</li>
+                    <li><strong>Complejidad:</strong> Más clases</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 15 minutos</div>
+            </section>
+
+            <!-- OBSERVER -->
+            <section id="observer" class="section">
+                <h1>👁️ Observer Pattern</h1>
+
+                <h2>Problema: Notificación de Cambios</h2>
+                <p>LogiSmart necesita notificar a múltiples objetos cuando cambia el estado de un envío:</p>
+                <ul>
+                    <li>Centro de distribución</li>
+                    <li>Sistema de notificación</li>
+                    <li>Sistema de auditoría</li>
+                    <li>Dashboard en tiempo real</li>
+                </ul>
+
+                <p><strong>Problema:</strong> ¿Cómo notificar sin acoplamiento?</p>
+
+                <h2>Solución: Observer</h2>
+                <p>Define una relación uno-a-muchos donde cuando un objeto cambia, todos sus observadores son notificados automáticamente.</p>
+
+                <div class="diagram">
+┌──────────────────────────────────────┐
+│ Sujeto (Envio)                       │
+│ - observadores[]                     │
+│ - adjuntarObservador()               │
+│ - desadjuntarObservador()            │
+│ - notificarObservadores()            │
+└──────────────────────────────────────┘
+         │
+    ┌────┴────┬──────────┬────────────┐
+    ▼         ▼          ▼            ▼
+┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
+│Centro  │ │Notif   │ │Auditoría│ │Dashboard│
+│        │ │        │ │        │ │        │
+└────────┘ └────────┘ └────────┘ └────────┘
+                </div>
+
+                <h2>Implementación</h2>
+
+                <h3>Paso 1: Interfaz Observador</h3>
+                <div class="code-block">public interface ObservadorEnvio {
+    void actualizar(Envio envio);
+}</div>
+
+                <h3>Paso 2: Sujeto (Observable)</h3>
+                <div class="code-block">public class Envio {
+    private String id;
+    private String estado;
+    private List<ObservadorEnvio> observadores = new ArrayList<>();
+    
+    public Envio(String id, String estado) {
+        this.id = id;
+        this.estado = estado;
+    }
+    
+    /**
+     * Adjunta un observador
+     */
+    public void adjuntarObservador(ObservadorEnvio observador) {
+        observadores.add(observador);
+        System.out.println("✓ Observador adjuntado");
+    }
+    
+    /**
+     * Desadjunta un observador
+     */
+    public void desadjuntarObservador(ObservadorEnvio observador) {
+        observadores.remove(observador);
+        System.out.println("✓ Observador desadjuntado");
+    }
+    
+    /**
+     * Notifica a todos los observadores
+     */
+    private void notificarObservadores() {
+        for (ObservadorEnvio observador : observadores) {
+            observador.actualizar(this);
+        }
+    }
+    
+    /**
+     * Cambia el estado y notifica
+     */
+    public void cambiarEstado(String nuevoEstado) {
+        this.estado = nuevoEstado;
+        System.out.println("[Envio] Estado cambiado a: " + nuevoEstado);
+        notificarObservadores();
+    }
+    
+    public String obtenerEstado() { return estado; }
+    public String getId() { return id; }
+}</div>
+
+                <h3>Paso 3: Observadores Concretos</h3>
+                <div class="code-block">// Observador: Centro de Distribución
+public class CentroDistribucionObservador implements ObservadorEnvio {
+    @Override
+    public void actualizar(Envio envio) {
+        System.out.println("[Centro] Envío " + envio.getId() + 
+                          " cambió a: " + envio.obtenerEstado());
+    }
+}
+
+// Observador: Sistema de Notificación
+public class SistemaNotificacionObservador implements ObservadorEnvio {
+    @Override
+    public void actualizar(Envio envio) {
+        System.out.println("[Notificador] Enviando email sobre cambio de estado...");
+        System.out.println("[Notificador] Email enviado para envío: " + envio.getId());
+    }
+}
+
+// Observador: Sistema de Auditoría
+public class SistemaAuditoriaObservador implements ObservadorEnvio {
+    @Override
+    public void actualizar(Envio envio) {
+        System.out.println("[Auditoría] Registrando cambio de estado en log...");
+        System.out.println("[Auditoría] Envío: " + envio.getId() + 
+                          " | Estado: " + envio.obtenerEstado());
+    }
+}
+
+// Observador: Dashboard en Tiempo Real
+public class DashboardObservador implements ObservadorEnvio {
+    @Override
+    public void actualizar(Envio envio) {
+        System.out.println("[Dashboard] Actualizando interfaz en tiempo real...");
+        System.out.println("[Dashboard] Envío: " + envio.getId() + 
+                          " | Estado: " + envio.obtenerEstado());
+    }
+}</div>
+
+                <h3>Paso 4: Uso del Observer</h3>
+                <div class="code-block">// Crear envío
+Envio envio = new Envio("ENV-001", "CONFIRMADO");
+
+// Crear observadores
+ObservadorEnvio centro = new CentroDistribucionObservador();
+ObservadorEnvio notificador = new SistemaNotificacionObservador();
+ObservadorEnvio auditoria = new SistemaAuditoriaObservador();
+ObservadorEnvio dashboard = new DashboardObservador();
+
+// Adjuntar observadores
+envio.adjuntarObservador(centro);
+envio.adjuntarObservador(notificador);
+envio.adjuntarObservador(auditoria);
+envio.adjuntarObservador(dashboard);
+
+// Cambiar estado (notifica a todos)
+envio.cambiarEstado("EN_TRANSITO");
+System.out.println();
+envio.cambiarEstado("ENTREGADO");</div>
+
+                <h2>Ventajas</h2>
+                <ul>
+                    <li><strong>Desacoplamiento:</strong> Sujeto no conoce observadores específicos</li>
+                    <li><strong>Notificación Automática:</strong> Cambios se propagan automáticamente</li>
+                    <li><strong>Escalabilidad:</strong> Fácil agregar nuevos observadores</li>
+                </ul>
+
+                <h2>Desventajas</h2>
+                <ul>
+                    <li><strong>Orden Impredecible:</strong> Orden de notificación no garantizado</li>
+                    <li><strong>Memoria:</strong> Observadores pueden acumular referencias</li>
+                    <li><strong>Debugging Difícil:</strong> Flujo de control no obvio</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 15 minutos</div>
+            </section>
+
+            <!-- EVENT-DRIVEN -->
+            <section id="eventdriven" class="section">
+                <h1>⚡ Arquitecturas Event-Driven</h1>
+
+                <h2>¿Qué es Event-Driven?</h2>
+                <p>Una arquitectura event-driven es un patrón arquitectónico donde los componentes se comunican a través de eventos.</p>
+
+                <h2>Componentes Principales</h2>
+                <ul>
+                    <li><strong>Productor de Eventos:</strong> Genera eventos</li>
+                    <li><strong>Evento:</strong> Representa algo que sucedió</li>
+                    <li><strong>Consumidor de Eventos:</strong> Reacciona a eventos</li>
+                    <li><strong>Bus de Eventos:</strong> Distribuye eventos</li>
+                </ul>
+
+                <h2>Implementación con Observer</h2>
+                <div class="code-block">// Evento
+public class EventoEnvio {
+    private String tipo;
+    private Envio envio;
+    private long timestamp;
+    
+    public EventoEnvio(String tipo, Envio envio) {
+        this.tipo = tipo;
+        this.envio = envio;
+        this.timestamp = System.currentTimeMillis();
+    }
+    
+    public String obtenerTipo() { return tipo; }
+    public Envio obtenerEnvio() { return envio; }
+    public long obtenerTimestamp() { return timestamp; }
+}
+
+// Bus de Eventos
+public class BusEventos {
+    private List<ConsumidorEventos> consumidores = new ArrayList<>();
+    
+    public void registrarConsumidor(ConsumidorEventos consumidor) {
+        consumidores.add(consumidor);
+    }
+    
+    public void publicarEvento(EventoEnvio evento) {
+        System.out.println("[Bus] Publicando evento: " + evento.obtenerTipo());
+        for (ConsumidorEventos consumidor : consumidores) {
+            consumidor.procesarEvento(evento);
+        }
+    }
+}
+
+// Consumidor de Eventos
+public interface ConsumidorEventos {
+    void procesarEvento(EventoEnvio evento);
+}
+
+// Consumidor Concreto
+public class ConsumidorNotificacion implements ConsumidorEventos {
+    @Override
+    public void procesarEvento(EventoEnvio evento) {
+        if ("ENVIO_ENTREGADO".equals(evento.obtenerTipo())) {
+            System.out.println("[Notificación] Enviando confirmación de entrega...");
+        }
+    }
+}</div>
+
+                <h2>Ventajas de Event-Driven</h2>
+                <ul>
+                    <li><strong>Desacoplamiento Total:</strong> Productores y consumidores no se conocen</li>
+                    <li><strong>Escalabilidad:</strong> Fácil agregar nuevos consumidores</li>
+                    <li><strong>Asincronía:</strong> Procesamiento no bloqueante</li>
+                    <li><strong>Auditabilidad:</strong> Todos los eventos se registran</li>
+                </ul>
+
+                <h2>Casos de Uso</h2>
+                <ul>
+                    <li>Sistemas de notificación en tiempo real</li>
+                    <li>Procesamiento de transacciones</li>
+                    <li>Integración de sistemas</li>
+                    <li>IoT y sensores</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 10 minutos</div>
+            </section>
+
+            <!-- COMPARACIÓN -->
+            <section id="comparacion" class="section">
+                <h1>📈 Comparación de Patrones</h1>
+
+                <h2>Tabla Comparativa</h2>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Propósito</th>
+                        <th>Cuándo Usar</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Iterator</strong></td>
+                        <td>Acceder a elementos sin exponer estructura</td>
+                        <td>Múltiples colecciones con diferentes estructuras</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mediator</strong></td>
+                        <td>Centralizar comunicación entre objetos</td>
+                        <td>Muchos objetos que necesitan comunicarse</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memento</strong></td>
+                        <td>Capturar y restaurar estado</td>
+                        <td>Necesitas undo/redo o historial</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Observer</strong></td>
+                        <td>Notificar múltiples objetos de cambios</td>
+                        <td>Un objeto cambia y otros necesitan reaccionar</td>
+                    </tr>
+                </table>
+
+                <h2>Matriz de Decisión</h2>
+                <ul>
+                    <li><strong>¿Múltiples colecciones?</strong> → Iterator</li>
+                    <li><strong>¿Comunicación compleja?</strong> → Mediator</li>
+                    <li><strong>¿Necesitas historial?</strong> → Memento</li>
+                    <li><strong>¿Cambios que notificar?</strong> → Observer</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 5 minutos</div>
+            </section>
+
+            <!-- CASOS REALES -->
+            <section id="casos" class="section">
+                <h1>💼 Casos de Aplicación en Sistemas Reales</h1>
+
+                <h2>Iterator</h2>
+                <ul>
+                    <li><strong>Java Collections:</strong> ArrayList, LinkedList, HashSet</li>
+                    <li><strong>Bases de Datos:</strong> Cursores, ResultSet</li>
+                    <li><strong>Streaming:</strong> Iteradores de datos</li>
+                </ul>
+
+                <h2>Mediator</h2>
+                <ul>
+                    <li><strong>Frameworks Web:</strong> Controladores MVC</li>
+                    <li><strong>Chat Rooms:</strong> Servidor central</li>
+                    <li><strong>Air Traffic Control:</strong> Torre de control</li>
+                </ul>
+
+                <h2>Memento</h2>
+                <ul>
+                    <li><strong>Editores:</strong> Undo/Redo (Word, Photoshop)</li>
+                    <li><strong>Bases de Datos:</strong> Snapshots, Checkpoints</li>
+                    <li><strong>Videojuegos:</strong> Save/Load</li>
+                </ul>
+
+                <h2>Observer</h2>
+                <ul>
+                    <li><strong>Eventos GUI:</strong> Botones, formularios</li>
+                    <li><strong>Publicador-Suscriptor:</strong> RabbitMQ, Kafka</li>
+                    <li><strong>Cambios de Modelo:</strong> MVC, MVVM</li>
+                    <li><strong>Notificaciones en Tiempo Real:</strong> WebSockets</li>
+                </ul>
+
+                <div class="footer">Tiempo estimado: 5 minutos</div>
+            </section>
+
+            <!-- RESUMEN -->
+            <section id="resumen" class="section">
+                <h1>✅ Resumen de la Clase</h1>
+
+                <h2>Conceptos Clave</h2>
+
+                <h3>Iterator</h3>
+                <ul>
+                    <li>Accede a elementos sin exponer estructura interna</li>
+                    <li>Múltiples iteradores simultáneos</li>
+                    <li>Encapsulación de estructura</li>
+                </ul>
+
+                <h3>Mediator</h3>
+                <ul>
+                    <li>Centraliza comunicación entre objetos</li>
+                    <li>Reduce acoplamiento</li>
+                    <li>Lógica de comunicación en un lugar</li>
+                </ul>
+
+                <h3>Memento</h3>
+                <ul>
+                    <li>Captura estado sin violar encapsulación</li>
+                    <li>Historial de estados</li>
+                    <li>Undo/Redo natural</li>
+                </ul>
+
+                <h3>Observer</h3>
+                <ul>
+                    <li>Notificación automática de cambios</li>
+                    <li>Desacoplamiento total</li>
+                    <li>Base para arquitecturas event-driven</li>
+                </ul>
+
+                <h2>Patrones de Comportamiento II</h2>
+                <table>
+                    <tr>
+                        <th>Patrón</th>
+                        <th>Clase</th>
+                        <th>Propósito</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Iterator</strong></td>
+                        <td>12</td>
+                        <td>Acceso secuencial a elementos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mediator</strong></td>
+                        <td>12</td>
+                        <td>Comunicación centralizada</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memento</strong></td>
+                        <td>12</td>
+                        <td>Captura de estado</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Observer</strong></td>
+                        <td>12</td>
+                        <td>Notificación de cambios</td>
+                    </tr>
+                </table>
+
+                <h2>Arquitecturas Event-Driven</h2>
+                <p>Observer es la base de arquitecturas event-driven modernas que permiten comunicación asincrónica y desacoplada entre componentes.</p>
+
+                <h2>Preguntas de Reflexión</h2>
+                <ul>
+                    <li>¿Cuándo usarías Iterator vs Mediator?</li>
+                    <li>¿Cómo combinarías Memento con Observer?</li>
+                    <li>¿Qué ventajas tiene event-driven sobre arquitectura tradicional?</li>
+                </ul>
+
+                <h2>Próximos Pasos</h2>
+                <ul>
+                    <li><strong>Hito 11 (Práctica):</strong> Aplicar patrones de comportamiento II</li>
+                    <li><strong>Clase 13:</strong> Patrones Arquitectónicos</li>
+                </ul>
+
+                <h2>Recursos</h2>
+                <ul>
+                    <li><strong>Refactoring Guru:</strong> https://refactoring.guru/design-patterns/behavioral-patterns</li>
+                    <li><strong>Design Patterns: Elements of Reusable Object-Oriented Software</strong> - Gang of Four</li>
+                    <li><strong>Event-Driven Architecture:</strong> https://www.nginx.com/blog/event-driven-data-management-1/</li>
+                </ul>
+
+                <div class="highlight">
+                    <h3>Duración Total de la Clase</h3>
+                    <p>90 minutos de teoría, cubriendo Iterator (20 min), Mediator (20 min), Memento (15 min), Observer (15 min), Event-Driven (10 min), Comparación y Casos Reales (10 min).</p>
+                </div>
+
+                <p style="margin-top: 40px; text-align: center; font-style: italic;">La práctica del Hito 11 se realiza en una sesión separada con enunciado específico.</p>
+
+                <div class="footer">Fin de la Clase 12</div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
