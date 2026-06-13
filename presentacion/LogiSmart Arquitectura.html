@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
@@ -257,12 +257,123 @@
       <div class="arch-rail">
         <div class="rid">05</div>
         <div class="rname">Infraestructura</div>
-        <div class="rrole">Capa transversal: aloja patrones de comportamiento, estructurales y de persistencia, además de la integración con sistemas externos. La usan todas las demás.</div>
+        <div class="rrole">Provee las implementaciones concretas: patrones GoF, integración con sistemas externos y persistencia. La capa de aplicación la cablea con el dominio.</div>
         <div class="rail-qas">
           <div class="band-qa">Interoperabilidad</div>
           <div class="band-qa">Elasticidad</div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ 06 · MODELO DE NEGOCIO (resumen) ════════ -->
+<section data-label="Modelo de negocio" data-screen-label="06 Modelo de negocio">
+  <div class="frame">
+    <div class="head" style="margin-bottom:16px">
+      <div class="eyebrow">Contexto de negocio — antes de entrar a las capas</div>
+      <h2 class="title">Un SaaS multi-tenant para PyMEs logísticas</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;flex:1;min-height:0">
+
+      <!-- Columna 1: Actores -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:var(--accent-strong);text-transform:uppercase;letter-spacing:.07em">Actores · 5 roles</div>
+        <div class="panel" style="padding:11px 14px;display:flex;align-items:baseline;gap:10px">
+          <span style="font-weight:700;font-size:.85em;color:var(--accent-strong);flex:0 0 140px">Admin. Plataforma</span>
+          <span style="font-size:.74em;opacity:.55">LogiSmart · acceso total</span>
+        </div>
+        <div class="panel" style="padding:11px 14px;display:flex;align-items:baseline;gap:10px">
+          <span style="font-weight:700;font-size:.85em;color:var(--accent-strong);flex:0 0 140px">Operador Logístico</span>
+          <span style="font-size:.74em;opacity:.55">PyME · usuario principal</span>
+        </div>
+        <div class="panel" style="padding:11px 14px;display:flex;align-items:baseline;gap:10px">
+          <span style="font-weight:700;font-size:.85em;color:var(--accent-strong);flex:0 0 140px">Admin. Empresa</span>
+          <span style="font-size:.74em;opacity:.55">PyME · dueño / gerente</span>
+        </div>
+        <div class="panel" style="padding:11px 14px;display:flex;align-items:baseline;gap:10px">
+          <span style="font-weight:700;font-size:.85em;color:var(--accent-strong);flex:0 0 140px">Transportista</span>
+          <span style="font-size:.74em;opacity:.55">PyME · chofer</span>
+        </div>
+        <div class="panel" style="padding:11px 14px;display:flex;align-items:baseline;gap:10px">
+          <span style="font-weight:700;font-size:.85em;color:var(--muted);flex:0 0 140px">Cliente Final</span>
+          <span style="font-size:.74em;opacity:.55">Externo · CU-07</span>
+        </div>
+        <div class="callout info" style="margin:0;flex:1;align-items:flex-start">
+          <span class="ic">▸</span>
+          <div style="font-size:.82em">Cada PyME es un <strong>tenant</strong> con su <strong>Suscripción</strong>. Los permisos salen de la matriz 5×5 del enum <code>Rol</code>.</div>
+        </div>
+      </div>
+
+      <!-- Columna 2: Envío -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:var(--accent-strong);text-transform:uppercase;letter-spacing:.07em">Envío · la entidad central</div>
+        <div class="panel" style="padding:14px 16px">
+          <div style="font-weight:700;font-size:.82em;color:var(--accent-strong);margin-bottom:8px">Ciclo de vida (State)</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:.78em;color:var(--body);line-height:1.75">
+            CONFIRMADO → EN_TRANSITO<br/>→ EN_REPARTO → ENTREGADO<br/>
+            <span style="opacity:.45">↳ CANCELADO · RETENIDO desde intermedios</span>
+          </div>
+        </div>
+        <div class="panel" style="padding:14px 16px">
+          <div style="font-weight:700;font-size:.82em;color:var(--accent-strong);margin-bottom:8px">Tipos de proceso (Template Method)</div>
+          <ul class="kvs" style="font-size:.8em">
+            <li><strong>Nacional</strong> · peso × $100</li>
+            <li><strong>Internacional</strong> · peso × $250 + $1.000</li>
+            <li><strong>Urgente</strong> · peso × $180 + $500</li>
+          </ul>
+        </div>
+        <div class="panel" style="padding:14px 16px;flex:1">
+          <div style="font-weight:700;font-size:.82em;color:var(--cat-estr);margin-bottom:8px">Estrategias de costo (Strategy · 6)</div>
+          <div style="font-size:.78em;color:var(--body)">Peso · Distancia · Urgencia · Volumen · Fijo · Híbrida</div>
+          <div style="font-weight:700;font-size:.82em;color:var(--cat-estr);margin:10px 0 6px">Servicios adicionales (Decorator)</div>
+          <div style="font-size:.78em;color:var(--body)">GPS tracking +$50 · Seguro +15 %</div>
+        </div>
+      </div>
+
+      <!-- Columna 3: Flota y regiones -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:var(--accent-strong);text-transform:uppercase;letter-spacing:.07em">Flota · 3 vehículos · 2 regiones</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div class="panel" style="padding:12px 10px;text-align:center">
+            <div style="font-weight:700;font-size:.88em;color:var(--cat-crea)">Moto</div>
+            <div style="font-size:.72em;opacity:.65;margin-top:5px;line-height:1.5">100 kg<br/>$0.90/km</div>
+          </div>
+          <div class="panel" style="padding:12px 10px;text-align:center">
+            <div style="font-weight:700;font-size:.88em;color:var(--accent-strong)">Auto</div>
+            <div style="font-size:.72em;opacity:.65;margin-top:5px;line-height:1.5">500 kg<br/>$1.00/km</div>
+          </div>
+          <div class="panel" style="padding:12px 10px;text-align:center">
+            <div style="font-weight:700;font-size:.88em;color:var(--cat-comp)">Camión</div>
+            <div style="font-size:.72em;opacity:.65;margin-top:5px;line-height:1.5">5.000 kg<br/>$1.80/km</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1">
+          <div class="panel" style="padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+            <div style="font-weight:700;font-size:.88em;color:var(--cat-crea)">🇦🇷 Argentina</div>
+            <ul class="kvs" style="font-size:.8em">
+              <li><strong>Default:</strong> Auto</li>
+              <li><strong>IVA</strong> 21 %</li>
+              <li>Google Maps</li>
+              <li style="opacity:.6">($100 + peso×$15) × 1.21</li>
+            </ul>
+          </div>
+          <div class="panel" style="padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+            <div style="font-weight:700;font-size:.88em;color:var(--cat-estr)">🇧🇷 Brasil</div>
+            <ul class="kvs" style="font-size:.8em">
+              <li><strong>Default:</strong> Moto</li>
+              <li><strong>ICMS</strong> 12 %</li>
+              <li>HERE Maps</li>
+              <li style="opacity:.6">($80 + peso×$12) × 1.12</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout info" style="margin:0">
+          <span class="ic">▸</span>
+          <div style="font-size:.82em"><code>crearFactory(region)</code> — el único punto del sistema con fábricas concretas. El resto del código solo ve <code>LogiSmartFactory</code>.</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -282,7 +393,7 @@
         <div class="pcard-name">Controller</div>
         <div class="pcard-idea">Una sola puerta de entrada que valida quién pide qué, y delega.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">aplicacion/ · LogiSmartController</div>
+          <div class="pcard-classes">LogiSmartController</div>
           <div class="pcard-why">Recibe las solicitudes de la interfaz, <strong>valida permisos</strong> e inyecta dependencias por constructor. No calcula ni persiste.</div>
           <div class="pcard-trade"><b>Trade-off:</b> la capa queda deliberadamente delgada — exige disciplina para no filtrar lógica de negocio hacia arriba.</div>
         </div></div>
@@ -293,7 +404,7 @@
         <div class="pcard-name">Rol · Polymorphism</div>
         <div class="pcard-idea">El acceso de cada rol resuelto con polimorfismo, no con condicionales.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">dominio/ · Rol (enum) · IPermisos</div>
+          <div class="pcard-classes">Rol (enum) · IPermisos</div>
           <div class="pcard-why">El enum <code>Rol</code> centraliza la matriz de permisos <strong>5×5</strong> y elimina 25 booleanos duplicados. Evita <code>instanceof</code> y <code>switch</code>.</div>
           <div class="pcard-trade"><b>Trade-off:</b> la matriz vive en un único enum; un rol radicalmente nuevo obliga a extenderla — aceptable porque los 5 roles del SaaS son estables.</div>
         </div></div>
@@ -320,54 +431,9 @@ CLIENTE (false, false, false, false, false);    // mismo método → distinto re
   </div>
 </section>
 
-<!-- ════════ 08 · ROL ENUM · 25 BOOLEANOS → UNA LÍNEA ════════ -->
-<section data-label="El Rol enum" data-screen-label="08 El Rol enum">
-  <div class="frame">
-    <div class="head" style="margin-bottom:16px">
-      <div class="eyebrow">Decisión de refactoring — GRASP Information Expert</div>
-      <h2 class="title">25 booleanos dispersos, un enum centralizado</h2>
-    </div>
-    <div style="display:flex;gap:28px;align-items:center;margin-bottom:20px">
-      <div class="dp-metric">
-        <div class="dp-num" style="color:var(--cat-crea)">25</div>
-        <div class="dp-label">booleanos<br/>en 5 clases</div>
-      </div>
-      <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent)">→</div>
-      <div class="dp-metric">
-        <div class="dp-num" style="color:var(--ok)">1</div>
-        <div class="dp-label">enum · fuente<br/>de verdad única</div>
-      </div>
-      <div class="callout info" style="flex:1;margin:0">
-        <span class="ic">▸</span>
-        <div>Un permiso nuevo: antes, <strong>5 archivos</strong> a editar. Ahora, <strong>una columna más en el enum</strong>. El cambio se realizó con la batería de tests en verde — sin miedo a romper nada.</div>
-      </div>
-    </div>
-    <div class="cols c2" style="flex:1;gap:20px">
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="h3" style="color:var(--muted)">Antes — duplicado en 5 clases</div>
-        <pre class="dp-pre" style="flex:1">// AdminEmpresa.java
-private boolean puedeCrearEnvio    = true;
-private boolean puedeAsignarRuta   = false;
-private boolean puedeVerReportes   = true;
-// ídem en Transportista, ClienteFinal…
-// → 5 clases × 5 permisos = 25 booleans</pre>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="h3" style="color:var(--accent-strong)">Después — GRASP Expert centralizado</div>
-        <pre class="dp-pre" style="flex:1">// Rol.java — única fuente de verdad
-//                crear  asig  rep   flota  admin
-OPERADOR         (true,  true,  true,  true,  false),
-ADMIN_EMPRESA    (true,  false, true,  false, false),
-ADMIN_PLATAFORMA (true,  true,  true,  true,  true ),
-CLIENTE          (false, false, false, false, false),
-TRANSPORTISTA    (false, false, false, false, false);</pre>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ════════ 09 · APLICACIÓN → ALTA DISPONIBILIDAD ════════ -->
-<section data-label="Alta disponibilidad" data-screen-label="09 Aplicación · Alta disponibilidad">
+<section data-label="Alta disponibilidad" data-screen-label="08 Aplicación · Alta disponibilidad">
   <div class="frame">
     <div class="head" style="margin-bottom:18px">
       <div class="eyebrow">Capa 02 · Aplicación</div>
@@ -379,10 +445,10 @@ TRANSPORTISTA    (false, false, false, false, false);</pre>
         <div class="pcard-toggle">›</div>
         <div class="pcard-need"><span class="cat-dot" style="background:var(--accent)"></span>Una llamada para una operación compleja</div>
         <div class="pcard-name">Facade</div>
-        <div class="pcard-idea">Una interfaz simple sobre cinco subsistemas que se coordinan en orden.</div>
+        <div class="pcard-idea">Una interfaz simple para subsistema que coordina operaciones en orden.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">aplicacion/ · ServicioLogisticaFacade</div>
-          <div class="pcard-why"><code>crearEnvio()</code> orquesta inventario, pago, rastreo, notificación y reportes en el orden correcto. El cliente no conoce ese orden.</div>
+          <div class="pcard-classes">FacadeProveedoresExternos</div>
+          <div class="pcard-why">El Controller delega en la Facade para acceder a DHL, FedEx, UPS, PayPal y Stripe.</div>
           <div class="pcard-trade"><b>Trade-off:</b> riesgo de «God Object» — por eso la fachada <strong>solo coordina y delega</strong>, nunca calcula ni valida ella misma.</div>
         </div></div>
       </div>
@@ -392,7 +458,7 @@ TRANSPORTISTA    (false, false, false, false, false);</pre>
         <div class="pcard-name">Chain of Responsibility</div>
         <div class="pcard-idea">Validación en cadena que corta en el primer rechazo.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">chain/ · CadenaValidadores</div>
+          <div class="pcard-classes">CadenaValidadores</div>
           <div class="pcard-why">5 validadores en orden de costo: datos → inventario → pago → seguridad → capacidad. Corta apenas uno falla (fail-fast).</div>
           <div class="pcard-trade"><b>Trade-off:</b> el orden importa — agregar un validador es una clase nueva, pero hay que ubicarlo bien en la cadena.</div>
         </div></div>
@@ -402,51 +468,12 @@ TRANSPORTISTA    (false, false, false, false, false);</pre>
         <p style="font-size:24px;line-height:1.4;color:var(--body)">Es la capa que más se apoya en GRASP: <strong>bajo acoplamiento y alta cohesión</strong>. La lógica real siempre baja al dominio.</p>
       </div>
     </div>
-    <div class="layer-foot"><span class="arrow">+</span> En esta capa también: <strong>Command</strong> · <strong>Mediator</strong> · <strong>Template Method</strong></div>
-  </div>
-</section>
-
-<!-- ════════ 09b · CHAIN + CONTEXTOVALIDACION ════════ -->
-<section data-label="Chain + ContextoValidacion" data-screen-label="09b Chain — la deuda que liquidamos">
-  <div class="frame">
-    <div class="head" style="margin-bottom:20px">
-      <div class="eyebrow">Chain of Responsibility + Value Object + Protected Variations</div>
-      <h2 class="title">Un patrón, una deuda técnica, una corrección</h2>
-    </div>
-    <div class="cols c2" style="flex:1;gap:24px;margin-bottom:18px">
-      <div class="panel" style="display:flex;flex-direction:column;gap:14px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
-          <span style="background:oklch(0.55 0.18 30);color:#fff;font-size:13px;font-weight:700;padding:3px 11px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em">Antes · deuda</span>
-        </div>
-        <pre class="dp-pre" style="flex:1">// Firma frágil: cada campo nuevo
-// obliga a modificar TODOS los nodos
-boolean validar(Envio envio, Cobro cobro) {
-    …
-}</pre>
-        <div style="font-size:22px;color:var(--body);line-height:1.35">Con el quinto validador (Hito 10) la firma creció. Agregar un campo cascadea a toda la cadena — la deuda acumula intereses.</div>
-      </div>
-      <div class="panel" style="display:flex;flex-direction:column;gap:14px;background:var(--cat-comp-tint);border-color:var(--cat-comp)">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
-          <span style="background:var(--cat-comp);color:#fff;font-size:13px;font-weight:700;padding:3px 11px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em">Después · liquidada</span>
-        </div>
-        <pre class="dp-pre" style="flex:1">// ContextoValidacion = Value Object
-// Los nodos no cambian cuando el
-// contexto crece
-boolean validar(ContextoValidacion ctx) {
-    ctx.getEnvio(); ctx.getCobro();
-}</pre>
-        <div style="font-size:22px;color:var(--body);line-height:1.35"><code>ContextoValidacion</code> encapsula el contexto completo. Los validadores son <strong>Protected Variations</strong>: inmunes a cómo crezca el contexto mañana.</div>
-      </div>
-    </div>
-    <div class="callout info" style="margin:0">
-      <span class="ic">▸</span>
-      <div>Agregar el quinto validador fue una clase nueva. Liquidar la deuda fue un refactor acotado a un solo punto. <strong>Open/Closed en acción</strong> — la cadena creció sin tocar los nodos existentes.</div>
-    </div>
+    <div class="layer-foot"><span class="arrow">+</span> En esta capa también: <strong>Template Method</strong></div>
   </div>
 </section>
 
 <!-- ════════ 10 · DOMINIO · ENVÍO EL CORAZÓN ════════ -->
-<section data-label="Envío, el corazón" data-screen-label="10 Dominio · Envío el corazón">
+<section data-label="Envío, el corazón" data-screen-label="09 Dominio · Envío el corazón">
   <div class="frame">
     <div class="head" style="margin-bottom:6px">
       <div class="eyebrow">Capa 03 · Dominio</div>
@@ -491,8 +518,9 @@ boolean validar(ContextoValidacion ctx) {
   </div>
 </section>
 
+
 <!-- ════════ 11 · DOMINIO → SEGUIMIENTO EN TIEMPO REAL ════════ -->
-<section data-label="Tiempo real" data-screen-label="11 Dominio · Seguimiento en tiempo real">
+<section data-label="Tiempo real" data-screen-label="10 Dominio · Seguimiento en tiempo real">
   <div class="frame">
     <div class="head" style="margin-bottom:18px">
       <div class="eyebrow">Capa 03 · Dominio</div>
@@ -506,7 +534,7 @@ boolean validar(ContextoValidacion ctx) {
         <div class="pcard-name">State</div>
         <div class="pcard-idea">El envío evoluciona solo, siguiendo su máquina de estados.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">state/ · Confirmado → EnTránsito → EnReparto → Entregado</div>
+          <div class="pcard-classes">Confirmado → EnTránsito → EnReparto → Entregado</div>
           <div class="pcard-why">Cada estado decide sus transiciones válidas; las inválidas se rechazan solas. Sin State, <code>entregar()</code> sería un <code>switch</code> gigante.</div>
           <div class="pcard-trade"><b>Trade-off:</b> más clases que un condicional, pero las reglas quedan explícitas y agregar «EN_ADUANA» es una clase nueva.</div>
         </div></div>
@@ -517,8 +545,8 @@ boolean validar(ContextoValidacion ctx) {
         <div class="pcard-name">Observer</div>
         <div class="pcard-idea">Al cambiar de estado, el envío notifica a sus suscriptores.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">observer/ · Dashboard · Auditoría · Notificaciones</div>
-          <div class="pcard-why">El cambio <code>CONFIRMADO → EN_TRÁNSITO</code> avisa solo. Agregar «notificar al teléfono» es suscribir un observador, sin tocar <code>Envio</code>.</div>
+          <div class="pcard-classes">Dashboard · Auditoría · Notificaciones</div>
+          <div class="pcard-why">El cambio <code>CONFIRMADO → EN_TRANSITO</code> avisa solo. Agregar «notificar al teléfono» es suscribir un observador, sin tocar <code>Envio</code>.</div>
           <div class="pcard-trade"><b>Trade-off:</b> un observador que falla puede cortar al resto — se aísla cada notificación y, a escala, se haría asíncrona.</div>
         </div></div>
       </div>
@@ -528,7 +556,7 @@ boolean validar(ContextoValidacion ctx) {
         <div class="pcard-name">Memento</div>
         <div class="pcard-idea">Una foto inmutable del envío para restaurar o comparar.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">memento/ · MementoEnvio · HistorialEnvios</div>
+          <div class="pcard-classes">MementoEnvio · HistorialEnvios</div>
           <div class="pcard-why">Snapshot de solo lectura (estado, origen, destino, costo, timestamp) sin exponer los campos privados de <code>Envio</code>.</div>
           <div class="pcard-trade"><b>Trade-off:</b> guardar historial cuesta memoria — se conserva solo lo necesario para auditar y reconstruir.</div>
         </div></div>
@@ -539,7 +567,7 @@ boolean validar(ContextoValidacion ctx) {
 </section>
 
 <!-- ════════ 12 · PERSISTENCIA → EFICIENCIA ════════ -->
-<section data-label="Eficiencia" data-screen-label="12 Persistencia · Eficiencia de respuesta">
+<section data-label="Eficiencia" data-screen-label="11 Persistencia · Eficiencia de respuesta">
   <div class="frame">
     <div class="head" style="margin-bottom:18px">
       <div class="eyebrow">Capa 04 · Persistencia</div>
@@ -553,7 +581,7 @@ boolean validar(ContextoValidacion ctx) {
         <div class="pcard-name">Repository + Data Mapper</div>
         <div class="pcard-idea">Acceso uniforme que esconde si el dato viene de memoria o de SQL.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">persistencia/ · RepositorioEnvios · EnvioMapper</div>
+          <div class="pcard-classes">RepositorioEnvios · EnvioMapper</div>
           <div class="pcard-why">El <code>Envio</code> se reconstruye vía <strong>Builder</strong>, reutilizando el dominio existente. Cambiar el backend no afecta al negocio.</div>
           <div class="pcard-trade"><b>Trade-off:</b> reutilizar el dominio vs un registro plano introduce desfasaje — mitigado declarando el Composite como única fuente de verdad.</div>
         </div></div>
@@ -564,7 +592,7 @@ boolean validar(ContextoValidacion ctx) {
         <div class="pcard-name">Proxy + Lazy Load</div>
         <div class="pcard-idea">Cachea consultas y difiere la carga hasta que se necesita.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">proxy/ · ProxyRepositorioEnvios</div>
+          <div class="pcard-classes">ProxyRepositorioEnvios</div>
           <div class="pcard-why">Consultar el mismo envío 10 veces no debe pegarle 10 veces a la base. Es transparente: el cliente no lo distingue del real.</div>
           <div class="pcard-trade"><b>Trade-off:</b> la caché puede quedar obsoleta — aceptable para lecturas de tracking; se invalida en cada escritura.</div>
         </div></div>
@@ -575,7 +603,7 @@ boolean validar(ContextoValidacion ctx) {
         <div class="pcard-name">Unit of Work</div>
         <div class="pcard-idea">Agrupa los cambios y los confirma en una transacción atómica.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">persistencia/ · UnitOfWork</div>
+          <div class="pcard-classes">UnitOfWork</div>
           <div class="pcard-why">Confirma todos los cambios juntos o ninguno. Garantiza coherencia ante un fallo a mitad de una operación.</div>
           <div class="pcard-trade"><b>Trade-off:</b> mantener la unidad de trabajo agrega bookkeeping — justificado por la criticidad del dato logístico.</div>
         </div></div>
@@ -585,45 +613,12 @@ boolean validar(ContextoValidacion ctx) {
   </div>
 </section>
 
-<!-- ════════ 13 · H7 SEMBRÓ · H13 COSECHÓ ════════ -->
-<section data-label="H7 sembró H13 cosechó" data-screen-label="13 H7 sembró H13 cosechó">
-  <div class="frame">
-    <div class="head" style="margin-bottom:24px">
-      <div class="eyebrow">RUP iterativo en acción — Hito 7 → Hito 13</div>
-      <h2 class="title">Una decisión de H7 que no sabía lo que hacía por H13</h2>
-    </div>
-    <div class="cols c2" style="flex:1;gap:36px">
-      <div class="panel">
-        <div class="eyebrow" style="font-size:24px;margin-bottom:14px">Hito 7 — Builder para el dominio</div>
-        <p style="font-size:24px;color:var(--body);line-height:1.4;margin-bottom:16px">El Builder se diseñó para construir <code>Envio</code> con 12 atributos de forma legible. La motivación era el dominio — no la persistencia.</p>
-        <pre class="dp-pre">// FabricaDeEnvios.java — H7
-Envio envio = new Envio.EnvioBuilder("e-001")
-    .origen("BUE").destino("COR")
-    .peso(12.5).tipo("EXPRESS")
-    .build();</pre>
-      </div>
-      <div class="panel panel-tint">
-        <div class="eyebrow" style="font-size:24px;margin-bottom:14px;color:var(--accent-strong)">Hito 13 — el mismo Builder, para persistencia</div>
-        <p style="font-size:24px;color:var(--body);line-height:1.4;margin-bottom:16px">El Data Mapper necesitaba reconstruir <code>Envio</code> desde la base de datos. El Builder ya existía. <strong>No hubo refactoring.</strong></p>
-        <pre class="dp-pre">// EnvioMapperSQL.java — H13
-Envio envio = new Envio.EnvioBuilder(row.id)
-    .origen(row.origen).destino(row.destino)
-    .peso(row.peso).tipo(row.tipo)
-    .build(); // ← mismo Builder, 6 hitos después</pre>
-      </div>
-    </div>
-    <div class="callout info" style="margin-top:20px">
-      <span class="ic">▸</span>
-      <div>Lo sembrado en el Hito 7 se cosechó en el Hito 13. Así funciona el enfoque iterativo: las decisiones de diseño tempranas pagan dividendos iteraciones después — si están bien pensadas.</div>
-    </div>
-  </div>
-</section>
 
 <!-- ════════ 14 · INFRAESTRUCTURA → INTEROPERABILIDAD ════════ -->
-<section data-label="Interoperabilidad" data-screen-label="14 Infraestructura · Interoperabilidad">
+<section data-label="Interoperabilidad" data-screen-label="12 Infraestructura · Interoperabilidad">
   <div class="frame">
     <div class="head" style="margin-bottom:18px">
-      <div class="eyebrow">Capa 05 · Infraestructura — transversal</div>
+      <div class="eyebrow">Capa 05 · Infraestructura</div>
       <h2 class="title">Hablar con el mundo externo y operar en dos países</h2>
       <div class="qa-badge"><span class="pin">Atributos</span><b>Interoperabilidad</b> + <b>Elasticidad regional</b></div>
     </div>
@@ -634,7 +629,7 @@ Envio envio = new Envio.EnvioBuilder(row.id)
         <div class="pcard-name">Adapter</div>
         <div class="pcard-idea">Traduce APIs externas incompatibles a un contrato propio.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">adapter/ · DHL · FedEx · UPS · PayPal · Stripe</div>
+          <div class="pcard-classes">DHL · FedEx · UPS · PayPal · Stripe</div>
           <div class="pcard-why">Las APIs externas son cajas negras con firmas y unidades distintas. El adapter las lleva a <code>ProveedorEnvio</code> / <code>ProveedorPago</code>.</div>
           <div class="pcard-trade"><b>Trade-off:</b> cada proveedor nuevo es un adapter nuevo — pero el dominio nunca cambia al cambiar de proveedor.</div>
         </div></div>
@@ -645,7 +640,7 @@ Envio envio = new Envio.EnvioBuilder(row.id)
         <div class="pcard-name">Abstract Factory</div>
         <div class="pcard-idea">Familias de objetos compatibles, nunca piezas mezcladas.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">abstractfactory/ · FactoryArgentina · FactoryBrasil</div>
+          <div class="pcard-classes">FactoryArgentina · FactoryBrasil</div>
           <div class="pcard-why">Cada fábrica produce un trío coherente: vehículo + calculador (IVA 21% vs ICMS 12%) + proveedor de mapas. Nunca un auto argentino con cálculo brasileño.</div>
           <div class="pcard-trade"><b>Trade-off:</b> agregar una región es una familia entera nueva — el costo de garantizar coherencia regional.</div>
         </div></div>
@@ -656,7 +651,7 @@ Envio envio = new Envio.EnvioBuilder(row.id)
         <div class="pcard-name">Bridge</div>
         <div class="pcard-idea">Separa qué se reporta del cómo se formatea.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">bridge/ · ReporteEnvios · ReporteIngresos · ReporteDesempeno · PDF · Excel · JSON · CSV</div>
+          <div class="pcard-classes">ReporteEnvios · ReporteIngresos · ReporteDesempeno · PDF · Excel · JSON · CSV</div>
           <div class="pcard-why"><code>Reporte</code> define el contenido; <code>GeneradorReporte</code> define el formato. Agregar XML es 1 clase nueva. Agregar Auditoría es 1 clase nueva. Sin Bridge serían 12 subclases combinadas.</div>
           <div class="pcard-trade"><b>Trade-off:</b> indirección extra — el reporte delega el formateo en lugar de producir la salida directamente.</div>
         </div></div>
@@ -667,343 +662,141 @@ Envio envio = new Envio.EnvioBuilder(row.id)
         <div class="pcard-name">Flyweight</div>
         <div class="pcard-idea">Comparte ubicaciones inmutables que se repiten muchísimo.</div>
         <div class="pcard-body"><div class="inner">
-          <div class="pcard-classes">flyweight/ · Ubicacion · FabricaUbicaciones</div>
+          <div class="pcard-classes">Ubicacion · FabricaUbicaciones</div>
           <div class="pcard-why">Origen y destino se repiten («Buenos Aires», «Córdoba»). 10.000 envíos a 3 ciudades = 3 instancias compartidas.</div>
           <div class="pcard-trade"><b>Trade-off:</b> exige inmutabilidad estricta (campos <code>final</code>) para ser seguro de compartir entre hilos.</div>
         </div></div>
       </div>
     </div>
-    <div class="layer-foot"><span class="arrow">+</span> También transversal: <strong>Factory Method</strong> · <strong>Singleton</strong></div>
+    <div class="layer-foot"><span class="arrow">+</span> También en esta capa: <strong>Factory Method</strong> · <strong>Singleton</strong></div>
   </div>
 </section>
 
-<!-- ════════ 15 · ABSTRACT FACTORY COMO DECISIÓN DE NEGOCIO ════════ -->
-<section data-label="Abstract Factory de negocio" data-screen-label="15 Abstract Factory decisión de negocio">
-  <div class="frame">
-    <div class="head" style="margin-bottom:22px">
-      <div class="eyebrow">Capa 05 · Infraestructura — la decisión detrás del patrón</div>
-      <h2 class="title">Dos países, dos reglas de negocio — nunca mezcladas</h2>
-    </div>
-    <div class="cols c2" style="flex:1;gap:28px">
-      <div class="panel" style="display:flex;flex-direction:column;gap:16px">
-        <div class="h3" style="color:var(--cat-crea)">🇦🇷 FactoryArgentina</div>
-        <ul class="kvs">
-          <li><strong>Vehículo:</strong> Auto</li>
-          <li><strong>Calculador:</strong> IVA 21% sobre base</li>
-          <li><strong>Mapas:</strong> Google Maps Argentina</li>
-        </ul>
-        <pre class="dp-pre" style="flex:1">new LogiSmartFactoryArgentina()
-    .crearVehiculo()       // → Auto
-    .crearCalculador()     // → IVA 21%
-    .crearProveedorMapas() // → GoogleMaps AR</pre>
-      </div>
-      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:16px">
-        <div class="h3" style="color:var(--cat-estr)">🇧🇷 FactoryBrasil</div>
-        <ul class="kvs">
-          <li><strong>Vehículo:</strong> Moto</li>
-          <li><strong>Calculador:</strong> ICMS 12% sobre base</li>
-          <li><strong>Mapas:</strong> HERE Maps Brasil</li>
-        </ul>
-        <pre class="dp-pre" style="flex:1">new LogiSmartFactoryBrasil()
-    .crearVehiculo()       // → Moto
-    .crearCalculador()     // → ICMS 12%
-    .crearProveedorMapas() // → HERE Maps BR</pre>
-      </div>
-    </div>
-    <div style="display:flex;gap:20px;margin-top:18px">
-      <div class="callout warn" style="flex:1;margin:0">
-        <span class="ic">!</span>
-        <div><strong>Sin el patrón:</strong> un auto argentino con cálculo brasileño (ICMS 12%) produce costos incorrectos silenciosamente. No hay error en compilación — solo un número mal.</div>
-      </div>
-      <div class="callout info" style="flex:1;margin:0">
-        <span class="ic">▸</span>
-        <div>La Factory garantiza que los objetos de una región son <strong>siempre coherentes entre sí</strong>. Nunca un Auto argentino con HereMaps brasileño.</div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- ════════ 15b · COMPOSITE + VISITOR ════════ -->
-<section data-label="Composite + Visitor" data-screen-label="15b Composite y Visitor — el mismo árbol">
-  <div class="frame">
-    <div class="head" style="margin-bottom:20px">
-      <div class="eyebrow">Dominio · Infraestructura — dos patrones, un árbol, trade-offs inversos</div>
-      <h2 class="title">Composite facilita agregar nodos &nbsp;·&nbsp; Visitor facilita agregar operaciones</h2>
-    </div>
-    <div class="cols c2" style="flex:1;gap:24px;margin-bottom:18px">
-      <div class="panel" style="display:flex;flex-direction:column;gap:14px;border-color:var(--cat-estr)">
-        <div class="h3" style="color:var(--cat-estr)">Composite — la estructura</div>
-        <pre class="dp-pre">CentroRegional            // Composite
-├── SucursalEntrega       // Leaf
-└── SucursalEntrega       // Leaf
 
-aceptar(visitor)  ← punto de unión</pre>
-        <ul class="kvs" style="flex:1">
-          <li>✓ Nuevo nodo → 1 clase nueva, árbol listo</li>
-          <li>✓ Cliente trata árbol y hoja igual (<em>transparencia</em>)</li>
-          <li>✗ Nueva operación → habría que tocar la interfaz</li>
-        </ul>
-      </div>
-      <div class="panel" style="display:flex;flex-direction:column;gap:14px;background:var(--cat-comp-tint);border-color:var(--cat-comp)">
-        <div class="h3" style="color:var(--cat-comp)">Visitor — las operaciones</div>
-        <pre class="dp-pre">VisitorCalculoOcupacion
-VisitorCostoOperativo
-VisitorBusquedaCriticos
-  ↓ double dispatch
-visitar(CentroRegional centro)</pre>
-        <ul class="kvs" style="flex:1">
-          <li>✓ Nueva operación → 1 Visitor nuevo, nodos intactos</li>
-          <li>✓ 3 operaciones sumadas sin modificar el árbol</li>
-          <li>✗ Nuevo tipo de nodo → actualizar todos los Visitors</li>
-        </ul>
-      </div>
-    </div>
-    <div class="callout info" style="margin:0">
-      <span class="ic">▸</span>
-      <div>La estructura del árbol de centros es <strong>estable</strong> (regional + puntos de entrega). Las <em>operaciones</em> crecieron hito a hito. Por eso Visitor fue la decisión correcta: el árbol absorbió tres nuevas operaciones sin tocar un solo nodo existente.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ════════ 16 · FLUJO ENTRE CAPAS (secuencia) ════════ -->
-<section data-label="El flujo de un envío" data-screen-label="16 Flujo de una petición">
-  <div class="frame">
-    <div class="head" style="margin-bottom:20px">
-      <div class="eyebrow">Las capas colaborando · diagrama de secuencia</div>
-      <h2 class="title">El flujo de un envío, capa por capa</h2>
-    </div>
-    <div id="seq-root" class="seq"></div>
-  </div>
-</section>
-
-<!-- ════════ 17 · POR QUÉ CADA COSA ESTÁ DONDE ESTÁ ════════ -->
-<section data-label="Por qué cada cosa está donde está" data-screen-label="17 Por qué cada cosa está donde está">
+<!-- ════════ 16 · FLUJO INTEGRAL ════════ -->
+<section data-label="Flujo integral" data-screen-label="13 Flujo integral">
   <div class="frame">
     <div class="head" style="margin-bottom:24px">
-      <div class="eyebrow">Arquitectura consciente — las decisiones de ubicación</div>
-      <h2 class="title">Por qué cada patrón está en esa capa y no en otra</h2>
+      <div class="eyebrow">Flujo integral · cinco capas colaborando en ejecución</div>
+      <h2 class="title">Una petición que cruza las cinco capas</h2>
     </div>
-    <div class="dec-grid" style="flex:1">
-      <div class="dec-card">
-        <div class="dec-pat">Controller · Rol · IPermisos</div>
-        <div class="dec-layer">Presentación</div>
-        <div class="dec-why">El check de permisos vive arriba para que el dominio quede <strong>testeable en aislamiento</strong> — sin infraestructura de seguridad.</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;flex:1;align-content:start">
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">1</div>
+        <div class="h3" style="font-size:24px">Presentación</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>Controller</code> recibe · <code>Rol.puedeCrear()</code> autoriza antes de delegar — sin lógica de negocio</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Controller</span>
+          <span class="band-tag">Info Expert</span>
+        </div>
       </div>
-      <div class="dec-card">
-        <div class="dec-pat">Facade · Chain of Responsibility</div>
-        <div class="dec-layer">Aplicación</div>
-        <div class="dec-why">La orquestación del orden de los subsistemas es responsabilidad de la aplicación — <strong>ni el cliente ni el dominio</strong> deben conocer ese orden.</div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--cat-comp);line-height:1;letter-spacing:-.04em">2</div>
+        <div class="h3" style="font-size:24px">Aplicación</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>Facade</code> orquesta los subsistemas · <code>Chain</code> valida en orden de costo, fail-fast</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag" style="color:var(--cat-comp);background:var(--cat-comp-tint);border-color:oklch(0.85 0.07 152)">Facade</span>
+          <span class="band-tag" style="color:var(--cat-comp);background:var(--cat-comp-tint);border-color:oklch(0.85 0.07 152)">Chain</span>
+        </div>
       </div>
-      <div class="dec-card">
-        <div class="dec-pat">Flyweight · Ubicacion</div>
-        <div class="dec-layer">Infraestructura</div>
-        <div class="dec-why">El pool de objetos compartidos es una optimización técnica — <strong>no es una regla de negocio</strong>. El dominio no sabe que existe.</div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--cat-crea);line-height:1;letter-spacing:-.04em">3</div>
+        <div class="h3" style="font-size:24px">Infraestructura</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>Factory</code> crea el <code>Envio</code> regional · <code>Adapter</code> traduce al protocolo del carrier</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag" style="color:var(--cat-crea);background:var(--cat-crea-tint);border-color:oklch(0.85 0.08 50)">Abstract Factory</span>
+          <span class="band-tag" style="color:var(--cat-crea);background:var(--cat-crea-tint);border-color:oklch(0.85 0.08 50)">Adapter</span>
+        </div>
       </div>
-      <div class="dec-card">
-        <div class="dec-pat">Repository · Data Mapper</div>
-        <div class="dec-layer">Persistencia</div>
-        <div class="dec-why">El dominio pide <strong>objetos</strong>, nunca filas SQL. Si mañana cambia la base de datos, el dominio no cambia.</div>
+
+      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">4</div>
+        <div class="h3" style="font-size:24px">Dominio · el corazón</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>Envio.cambiarEstado()</code> transiciona con <code>State</code> · el cambio dispara <code>Observer</code> automáticamente</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">State</span>
+          <span class="band-tag">Observer</span>
+        </div>
       </div>
-      <div class="dec-card">
-        <div class="dec-pat">Abstract Factory</div>
-        <div class="dec-layer">Infraestructura</div>
-        <div class="dec-why">La creación de objetos regionales es <strong>transversal a todas las capas</strong>. La coherencia AR/BR no es una regla de negocio — es una restricción de configuración.</div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--cat-estr);line-height:1;letter-spacing:-.04em">5</div>
+        <div class="h3" style="font-size:24px">Persistencia</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>Proxy</code> cachea las lecturas frecuentes · <code>Repository</code> guarda objetos sin que el dominio toque SQL</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag" style="color:var(--cat-estr);background:var(--cat-estr-tint);border-color:oklch(0.85 0.06 222)">Proxy</span>
+          <span class="band-tag" style="color:var(--cat-estr);background:var(--cat-estr-tint);border-color:oklch(0.85 0.06 222)">Repository</span>
+        </div>
       </div>
+
     </div>
   </div>
 </section>
 
-<!-- ════════ 18 · LO QUE DECIDIMOS NO HACER ════════ -->
-
-<!-- ════════ 21 · ACTORES Y EMPRESA ════════ -->
-<section data-label="Actores y empresa" data-screen-label="21 Actores y empresa">
+<!-- ════════ 17 · CU-04 — ASIGNAR HOJA DE RUTA ════════ -->
+<section data-label="CU-04 asignarRuta" data-screen-label="14 CU-04 — Asignar hoja de ruta">
   <div class="frame">
-    <div class="head" style="margin-bottom:16px">
-      <div class="eyebrow">Modelo de negocio — Usuarios</div>
-      <h2 class="title">5 roles, 1 empresa-tenant, 1 suscripci&oacute;n SaaS</h2>
+    <div class="head" style="margin-bottom:20px">
+      <div class="eyebrow">Controller · Strategy · State · Observer · Unit of Work</div>
+      <h2 class="title">Asignar hoja de ruta</h2>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;flex:1">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1;align-content:start">
 
-      <div class="panel" style="background:oklch(0.96 0.03 250/.7);display:flex;flex-direction:column;gap:6px;padding:16px 14px">
-        <div style="font-weight:700;font-size:.9em;color:var(--accent-strong)">Admin. Plataforma</div>
-        <div style="font-size:.74em;opacity:.6;margin-bottom:6px">LogiSmart &middot; acceso total</div>
-        <ul class="kvs" style="gap:8px;font-size:.78em">
-          <li>Crear env&iacute;os</li><li>Asignar rutas</li><li>Ver reportes</li><li>Gestionar flota</li><li><strong>Administrar empresas</strong></li>
-        </ul>
-      </div>
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:6px;padding:16px 14px">
-        <div style="font-weight:700;font-size:.9em;color:var(--accent-strong)">Operador Log&iacute;stico</div>
-        <div style="font-size:.74em;opacity:.6;margin-bottom:6px">PyME &middot; usuario principal</div>
-        <ul class="kvs" style="gap:8px;font-size:.78em">
-          <li>Crear env&iacute;os</li><li>Asignar rutas</li><li>Ver reportes</li><li>Gestionar flota</li>
-        </ul>
-      </div>
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:6px;padding:16px 14px">
-        <div style="font-weight:700;font-size:.9em;color:var(--accent-strong)">Admin. Empresa</div>
-        <div style="font-size:.74em;opacity:.6;margin-bottom:6px">PyME &middot; due&ntilde;o / gerente</div>
-        <ul class="kvs" style="gap:8px;font-size:.78em">
-          <li>Crear env&iacute;os</li><li>Ver reportes</li><li>Gestiona la suscripci&oacute;n</li>
-        </ul>
-      </div>
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:6px;padding:16px 14px">
-        <div style="font-weight:700;font-size:.9em;color:var(--accent-strong)">Transportista</div>
-        <div style="font-size:.74em;opacity:.6;margin-bottom:6px">PyME &middot; chofer</div>
-        <ul class="kvs" style="gap:8px;font-size:.78em">
-          <li>Ejecuta rutas</li><li>Reporta posici&oacute;n GPS</li><li>Registra entregas</li><li>Sin permisos de gesti&oacute;n (matriz Rol)</li>
-        </ul>
-      </div>
-
-      <div class="panel" style="display:flex;flex-direction:column;gap:6px;padding:16px 14px">
-        <div style="font-weight:700;font-size:.9em;color:var(--accent-strong)">Cliente Final</div>
-        <div style="font-size:.74em;opacity:.6;margin-bottom:6px">Externo &middot; destinatario</div>
-        <ul class="kvs" style="gap:8px;font-size:.78em">
-          <li>Sigue su env&iacute;o en vivo (CU-07)</li><li>Sin acceso al sistema de gesti&oacute;n</li>
-        </ul>
-      </div>
-
-    </div>
-    <div class="callout info" style="margin-top:14px">
-      <span class="ic">&#9654;</span>
-      <div>Cada PyME es un <strong>tenant</strong> con una <strong>Suscripci&oacute;n</strong> (fee mensual por cantidad de env&iacute;os). Los permisos salen de la matriz 5&times;5 del enum <code>Rol</code> — la misma de la slide 08.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ════════ 22 · FLOTA, VEHÍCULOS Y REGIONES ════════ -->
-<section data-label="Flota, vehículos y regiones" data-screen-label="22 Flota, vehículos y regiones">
-  <div class="frame">
-    <div class="head" style="margin-bottom:16px">
-      <div class="eyebrow">Modelo de negocio — Flota</div>
-      <h2 class="title">3 tipos de vehículo · 2 regiones con reglas distintas</h2>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px">
-      <div class="panel" style="display:flex;flex-direction:column;gap:8px;padding:16px 18px">
-        <div style="font-weight:700;font-size:.95em;color:var(--cat-crea)">Moto</div>
-        <ul class="kvs" style="font-size:.82em">
-          <li><strong>Carga máx.:</strong> 100 kg</li>
-          <li><strong>Costo/km:</strong> $0.90</li>
-          <li><strong>Default región:</strong> Brasil (Factory)</li>
-          <li><strong>Creación directa:</strong> VehiculoFactory</li>
-        </ul>
-      </div>
-      <div class="panel" style="display:flex;flex-direction:column;gap:8px;padding:16px 18px">
-        <div style="font-weight:700;font-size:.95em;color:var(--accent-strong)">Auto</div>
-        <ul class="kvs" style="font-size:.82em">
-          <li><strong>Carga máx.:</strong> 500 kg</li>
-          <li><strong>Costo/km:</strong> $1.00</li>
-          <li><strong>Default región:</strong> Argentina (Factory)</li>
-          <li><strong>Creación directa:</strong> VehiculoFactory</li>
-        </ul>
-      </div>
-      <div class="panel" style="display:flex;flex-direction:column;gap:8px;padding:16px 18px">
-        <div style="font-weight:700;font-size:.95em;color:var(--cat-comp)">Camión</div>
-        <ul class="kvs" style="font-size:.82em">
-          <li><strong>Carga máx.:</strong> 5.000 kg</li>
-          <li><strong>Costo/km:</strong> $1.80</li>
-          <li><strong>Default región:</strong> ninguna</li>
-          <li><strong>Creación:</strong> solo VehiculoFactory</li>
-        </ul>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-      <div class="panel" style="display:flex;flex-direction:column;gap:8px;padding:16px 18px">
-        <div style="font-weight:700;font-size:.9em;color:var(--cat-crea)">Argentina</div>
-        <ul class="kvs" style="font-size:.82em">
-          <li><strong>Vehículo default:</strong> Auto</li>
-          <li><strong>Impuesto:</strong> IVA 21 %</li>
-          <li><strong>Fórmula:</strong> ($100 + peso×$15) × 1.21</li>
-          <li><strong>Mapas:</strong> Google Maps</li>
-          <li><strong>Ej. 10 kg:</strong> $302.50</li>
-        </ul>
-      </div>
-      <div class="panel" style="display:flex;flex-direction:column;gap:8px;padding:16px 18px">
-        <div style="font-weight:700;font-size:.9em;color:var(--cat-estr)">Brasil</div>
-        <ul class="kvs" style="font-size:.82em">
-          <li><strong>Vehículo default:</strong> Moto</li>
-          <li><strong>Impuesto:</strong> ICMS 12 %</li>
-          <li><strong>Fórmula:</strong> ($80 + peso×$12) × 1.12</li>
-          <li><strong>Mapas:</strong> HERE Maps</li>
-          <li><strong>Ej. 10 kg:</strong> R$224.00</li>
-        </ul>
-      </div>
-    </div>
-    <div class="callout info" style="margin:0">
-      <span class="ic">▸</span>
-      <div>La selección de región ocurre en <code>LogiSmartApp.crearFactory(region)</code> — único punto del sistema con nombres de fábricas concretas. El resto del código solo ve <code>LogiSmartFactory</code>.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ════════ 23 · CICLO DE VIDA DEL ENVÍO ════════ -->
-<section data-label="Ciclo de vida del envío" data-screen-label="23 Ciclo de vida del envío">
-  <div class="frame">
-    <div class="head" style="margin-bottom:14px">
-      <div class="eyebrow">Modelo de negocio — Envío</div>
-      <h2 class="title">El ciclo de vida completo de un envío</h2>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;flex:1;min-height:0">
-
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="panel" style="padding:14px 16px">
-          <div style="font-weight:700;font-size:.85em;color:var(--accent-strong);margin-bottom:8px">Estado del envío (State)</div>
-          <div style="font-size:.78em;color:var(--body);line-height:1.6">
-            CONFIRMADO → EN_TRANSITO<br/>→ EN_REPARTO → ENTREGADO<br/>
-            <span style="opacity:.55">↳ CANCELADO · RETENIDO desde estados intermedios</span>
-          </div>
-        </div>
-        <div class="panel" style="padding:14px 16px;flex:1">
-          <div style="font-weight:700;font-size:.85em;color:var(--accent-strong);margin-bottom:8px">Tipos de proceso (Template Method)</div>
-          <ul class="kvs" style="font-size:.78em">
-            <li><strong>Nacional:</strong> peso × $100</li>
-            <li><strong>Internacional:</strong> peso × $250 + $1.000</li>
-            <li><strong>Urgente:</strong> peso × $180 + $500</li>
-          </ul>
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">1</div>
+        <div class="h3" style="font-size:24px">Controller</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1">Recibe <code>asignarRuta()</code> y orquesta — punto de entrada único, sin lógica en el dominio del usuario</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">GRASP Controller</span>
         </div>
       </div>
 
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="panel" style="padding:14px 16px">
-          <div style="font-weight:700;font-size:.85em;color:var(--cat-comp);margin-bottom:8px">Validaciones (Chain · 5 pasos)</div>
-          <ul class="kvs" style="font-size:.78em">
-            <li>1 · Datos (origen, destino, peso)</li>
-            <li>2 · Inventario (stock)</li>
-            <li>3 · Pago (cobro válido)</li>
-            <li>4 · Seguridad (destino no restringido)</li>
-            <li>5 · Capacidad (vehículo disponible)</li>
-          </ul>
-        </div>
-        <div class="panel" style="padding:14px 16px;flex:1">
-          <div style="font-weight:700;font-size:.85em;color:var(--cat-comp);margin-bottom:8px">Notificaciones (Observer)</div>
-          <ul class="kvs" style="font-size:.78em">
-            <li>Dashboard operativo en tiempo real</li>
-            <li>Email / SMS al cliente final</li>
-            <li>Centro de distribución</li>
-          </ul>
+      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">2</div>
+        <div class="h3" style="font-size:24px">Elegir vehículo</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>AsignadorDeVehiculos</code> selecciona el vehículo para la ruta — criterio intercambiable: PorCapacidad o PorDisponibilidad</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Strategy</span>
         </div>
       </div>
 
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="panel" style="padding:14px 16px">
-          <div style="font-weight:700;font-size:.85em;color:var(--cat-estr);margin-bottom:8px">Estrategias de costo (Strategy · 6)</div>
-          <ul class="kvs" style="font-size:.78em">
-            <li><strong>Peso:</strong> kg × $5</li>
-            <li><strong>Distancia:</strong> km × $500</li>
-            <li><strong>Urgencia:</strong> $500 / $300 / $100</li>
-            <li><strong>Volumen:</strong> m³ × $4</li>
-            <li><strong>Fijo:</strong> monto configurable</li>
-            <li><strong>Híbrida:</strong> 40 % dist + 30 % peso + 30 % urg</li>
-          </ul>
+      <div class="panel panel-tint" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">3</div>
+        <div class="h3" style="font-size:24px">Elegir ruta</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>CalculadorDeRuta</code> elige la ruta y le asigna el vehículo — la ruta lo necesita para calcular su costo por km</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Strategy</span>
         </div>
-        <div class="panel" style="padding:14px 16px;flex:1">
-          <div style="font-weight:700;font-size:.85em;color:var(--cat-estr);margin-bottom:8px">Servicios adicionales (Decorator)</div>
-          <ul class="kvs" style="font-size:.78em">
-            <li><strong>GPS tracking:</strong> +$50 fijo</li>
-            <li><strong>Seguro:</strong> +15 % sobre total</li>
-            <li style="opacity:.55;font-style:italic">El orden de decoradores importa</li>
-          </ul>
+      </div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">4</div>
+        <div class="h3" style="font-size:24px">Transición</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>cambiarEstado()</code> fuerza EN_TRANSITO — la validación vive en los métodos de comportamiento</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">State</span>
+        </div>
+      </div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">5</div>
+        <div class="h3" style="font-size:24px">Notificar</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>cambiarEstado()</code> dispara <code>notificarObservadores()</code> — Dashboard, SMS y auditoría reciben el evento automáticamente</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Observer</span>
+        </div>
+      </div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;letter-spacing:-.04em">6</div>
+        <div class="h3" style="font-size:24px">Persistir</div>
+        <div style="font-size:22px;color:var(--body);line-height:1.45;flex:1"><code>unitOfWork.commit()</code> persiste el envío modificado — si algo falló antes, <code>rollback()</code> deshace todo atomicamente</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:auto">
+          <span class="band-tag">Unit of Work</span>
         </div>
       </div>
 
@@ -1011,8 +804,9 @@ visitar(CentroRegional centro)</pre>
   </div>
 </section>
 
-<!-- ════════ 20 · CIERRE ════════ -->
-<section class="closing" data-label="Cierre" data-screen-label="20 Cierre">
+<!-- ════════ 18 · CU-07 — SEGUIR EL ENVÍO ════════ -->
+<!-- ════════ 16 · CIERRE ════════ -->
+<section class="closing" data-label="Cierre" data-screen-label="15 Cierre">
   <div class="grid-tex"></div>
   <div class="frame" style="display:flex;flex-direction:column;justify-content:center;gap:44px">
 
@@ -1058,6 +852,32 @@ visitar(CentroRegional centro)</pre>
 </section>
 
 </deck-stage>
+
+<script type="application/json" id="speaker-notes">
+[
+  "Buenas, somos Rosario y Simón, comisión Belgrano. Les presentamos LogiSmart, una plataforma SaaS de logística para PyMEs. La idea que queremos que se lleven de toda la defensa es esta: primero el negocio, después la arquitectura. Cada decisión de diseño existe para sostener una necesidad concreta del negocio, no porque sí. Vamos a recorrer el sistema capa por capa: cinco capas, cinco atributos de calidad, treinta y seis patrones y los tests en verde.",
+  "Nuestro cliente es una PyME que hoy gestiona la logística a mano: carga los pedidos del e-commerce uno por uno, arma las rutas a ojo —sin tráfico ni ventanas horarias— y el cliente final tiene que llamar para saber dónde está su paquete. LogiSmart centraliza todo eso en una sola plataforma multitenant: importa pedidos solo, arma rutas óptimas con tráfico real, y deja al cliente final seguir su envío en un mapa con ETA real.",
+  "El MVP gira sobre tres casos de uso. CU-01, importar pedidos: sincroniza con TiendaNube o MercadoShops y trae las órdenes. CU-03, planificar rutas óptimas: analiza pedidos, vehículos y tráfico, y devuelve la secuencia de paradas más eficiente respetando ventanas horarias. Y CU-07, seguir el envío en vivo: el cliente final entra por un enlace y ve al chofer en el mapa con el ETA.",
+  "Definimos cinco atributos de calidad, y cada uno apunta a una capa. Alta disponibilidad, crítica: si LogiSmart se cae, se frena la PyME. Aislamiento de datos: que ninguna PyME vea la info de otra. Interoperabilidad: integrarnos con e-commerce, mapas y pagos sin contaminar el dominio. Elasticidad: adaptar recursos por demanda y región. Y eficiencia de respuesta en rutas y tracking.",
+  "La arquitectura son cinco capas, y cada una hospeda un atributo. Presentación recibe la petición, autoriza y delega, sin lógica de negocio. Aplicación orquesta los casos de uso entre subsistemas sin que nada quede a medias. Dominio es el corazón: las reglas del negocio, todo gira en torno a Envío y su ciclo de vida. Persistencia aísla el almacenamiento: el dominio nunca toca SQL. E Infraestructura provee las implementaciones concretas: patrones GoF, integración con sistemas externos y persistencia — la capa de aplicación la cablea con el dominio.",
+  "",
+  "En Presentación el atributo es aislamiento de datos. Acá vive el Controller: una sola puerta de entrada que valida quién pide qué y delega; recibe las solicitudes, chequea permisos e inyecta dependencias, pero no calcula ni persiste. Y los permisos no los resolvemos con if frágiles sino con polimorfismo: un enum Rol que centraliza la matriz de permisos cinco por cinco.",
+  "Esta es una de las decisiones de las que estamos más orgullosos. Antes teníamos veinticinco booleanos de permisos repartidos en cinco clases —cada rol repetía sus permisos a mano. Lo refactorizamos a un único enum Rol que es la fuente de verdad: cada rol es una fila con sus cinco permisos. Esto es GRASP Information Expert. ¿La ganancia? Agregar un permiso antes eran cinco archivos; ahora es una columna más en el enum.",
+  "En Aplicación el atributo es alta disponibilidad: que una operación compleja no quede a medias. La sostienen dos patrones. Primero un Facade, FacadeProveedoresExternos: el Controller delega en ella para acceder a DHL, FedEx, UPS, PayPal y Stripe sin conocer qué adaptador concreto se usa. Segundo, Chain of Responsibility: cinco validadores en orden de costo —datos, inventario, pago, seguridad, capacidad— que cortan apenas uno falla, fail-fast.",
+  "Esta es la deuda técnica que liquidamos. La firma de los validadores se volvía frágil con cada campo nuevo: agregar un parámetro rompía toda la cadena. Creamos ContextoValidacion como Value Object, aplicando Protected Variations. Ahora los validadores ya no saben cómo crece el contexto.",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Retomo yo. Hasta acá vimos cada capa y cada patrón por separado. Ahora veámoslos colaborando en flujos reales del sistema. Una sola petición que cruza las cinco capas. Entra por Presentación: el Controller valida los permisos del rol. Baja a Aplicación: el Facade orquesta y la Chain valida fail-fast. Infraestructura crea el envío con Factory y lo despacha al carrier traduciendo con Adapter. En el Dominio, cambia de estado con State y eso notifica solo con Observer. Y Persistencia lo guarda, con el Proxy cacheando las lecturas, sin que el dominio toque SQL. Una petición, cinco capas, los patrones colaborando en ejecución — no en abstracto.",
+  "Este es el método más rico de todo el sistema, y es código real del Controller: asignarRuta. Miren cuántos patrones colaboran en una sola operación. Primero valida el permiso del rol con Information Expert. Antes de tocar nada, Memento saca un snapshot. Dos Strategy encadenadas: AsignadorDeVehiculos elige el vehículo y CalculadorDeRuta elige la ruta. Luego State transiciona el envío a EN_TRANSITO, y ese cambio dispara automáticamente a Observer: dashboard, SMS y auditoría. Seis patrones, un solo método — todo código real.",
+  "Cuando el transportista reporta su posición, el servicio de tracking se apila sobre Envío con Decorator — sin tocar la clase base. El Envío delega la transición en su objeto de estado con State: EstadoEnCurso valida que la transición sea legal. Y ese cambio dispara solo a los tres suscriptores con Observer: el Dashboard refresca el mapa, el cliente recibe un SMS y el Centro actualiza su ocupación. El envío ni sabe quién está escuchando.",
+  "Para cerrar volvemos a lo que prometimos: importar pedidos, planificar rutas y seguir el envío en vivo —los CU. Y lo que cumplimos: trece hitos, cinco capas, treinta y seis patrones y la batería de tests en verde como evidencia de un proceso disciplinado. La frase con la que abrimos y cerramos es la misma: en LogiSmart, primero el negocio; cada patrón existe para sostener una necesidad concreta. Gracias, quedamos para sus preguntas."
+]
+</script>
 
 <script src="deck-stage.js"></script>
 <script src="deck.js"></script>
