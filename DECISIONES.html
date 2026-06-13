@@ -263,6 +263,7 @@
       <a class="sb-link" href="#h10"><span class="num">H10</span> Comportamiento</a>
       <a class="sb-link" href="#h12"><span class="num">H12</span> Composite + Visitor</a>
       <a class="sb-link" href="#h13"><span class="num">H13</span> Persistencia</a>
+      <a class="sb-link" href="#descartados"><span class="num">—</span> Descartados</a>
       <div class="sb-sep"></div>
       <div class="sb-section-label">Leyenda</div>
       <a class="sb-link" href="#"><span class="tag tag-to">TRADE-OFF</span></a>
@@ -663,7 +664,7 @@
       <section class="hito-section" id="h10">
         <div class="hito-header">
           <span class="hito-pill-lg">Hito 10</span>
-          <span class="hito-name">GoF Comportamiento — State, Strategy, Observer, Memento, Command, Template Method</span>
+          <span class="hito-name">GoF Comportamiento — State, Strategy, Observer, Memento</span>
         </div>
         <div class="cards">
 
@@ -968,6 +969,185 @@
                 <span class="qa-pill qa-gain">Fiabilidad</span>
                 <span class="qa-pill qa-gain">Integridad referencial</span>
                 <span class="qa-pill qa-cost">Flexibilidad de ordenamiento</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════ PATRONES DESCARTADOS ══════════════ -->
+      <section class="hito-section" id="descartados">
+        <div class="hito-header">
+          <span class="hito-pill-lg">Descartados</span>
+          <span class="hito-name">Patrones descartados — justificación de exclusión</span>
+        </div>
+        <div class="cards">
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Command — descartado en favor de UnitOfWork + Memento</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text"><code>UnitOfWork</code> cubre atomicidad transaccional y <code>Memento</code> cubre reversibilidad de estado sin necesidad de una cola de comandos.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Command: encapsular cada operación como objeto ejecutable con soporte de historial undo/redo gestionado por una <code>ColaComandos</code>.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Análisis:</strong> <code>UnitOfWork + Memento</code> cubren atomicidad y reversibilidad sin la complejidad de una cola de comandos. El historial undo/redo artificial no existe en ningún caso de uso real del dominio — no hay ningún actor que revoque operaciones pasadas en secuencia. Agregar Command habría introducido infraestructura sin respaldo en requisitos.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Simplicidad</span>
+                <span class="qa-pill qa-gain">Mantenibilidad</span>
+                <span class="qa-pill qa-cost">Extensibilidad para undo/redo futuro</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Interpreter — descartado en favor de Chain of Responsibility</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">Chain of Responsibility cubre todas las reglas de validación de negocio reales mediante validadores encadenados con criterios concretos y directos.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Interpreter: representar reglas como un árbol AST de expresiones booleanas combinables (<code>AND</code>, <code>OR</code>, <code>NOT</code>) evaluadas recursivamente.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Análisis:</strong> la cadena de validación (Chain of Responsibility) cubre todas las reglas de negocio reales. Un árbol de expresiones booleanas resultaba artificial sin un lenguaje de consulta real en el dominio — no existe ningún actor que construya filtros dinámicos en runtime. La complejidad de un intérprete de AST no encuentra justificación en los casos de uso documentados.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Simplicidad</span>
+                <span class="qa-pill qa-gain">Legibilidad</span>
+                <span class="qa-pill qa-cost">Composibilidad de reglas en runtime</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Iterator — descartado por redundancia con la plataforma Java</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">Usar <code>java.util.Iterator</code> e <code>Iterable</code> provistos de forma nativa por la plataforma, disponibles en todas las colecciones estándar.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Reimplementar Iterator con interfaces propias (<code>IteradorEnvios</code>, <code>ColeccionEnvios</code>) sobre colecciones propias (<code>ColeccionArray</code>, <code>ColeccionLista</code>, <code>ColeccionHash</code>).</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Análisis:</strong> Java provee <code>java.util.Iterator</code> e <code>Iterable</code> de forma nativa. Reimplementarlo sobre colecciones estándar es redundante y no agrega valor al diseño — solo duplica lo que la JDK ya garantiza. Incluirlo como patrón propio habría violado el principio de no reinventar infraestructura que la plataforma resuelve mejor.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Simplicidad</span>
+                <span class="qa-pill qa-gain">Compatibilidad con el ecosistema Java</span>
+                <span class="qa-pill qa-cost">Control granular del recorrido</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Mediator — descartado por duplicación con Observer</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">Observer centraliza las notificaciones de cambio de estado del envío a todos los suscriptores sin necesidad de un mediador adicional.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Mediator: un objeto intermediario (<code>MediadorEnviosConcreto</code>) que centraliza la comunicación entre todos los componentes del pipeline.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Análisis:</strong> Observer ya centraliza las notificaciones de cambio de estado. Un mediador adicional entre componentes creaba una duplicación de responsabilidades sin caso de uso que lo justifique — dos patrones resolviendo el mismo problema de coordinación. La presencia simultánea de ambos habría requerido decidir cuándo usar cada uno, sin criterio claro en el dominio.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Cohesión</span>
+                <span class="qa-pill qa-gain">Claridad de responsabilidades</span>
+                <span class="qa-pill qa-cost">Orquestación explícita de pipelines</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Template Method — descartado en favor de Strategy</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">Strategy cubre todos los casos de variación de algoritmo (cálculo de costos, rutas) mediante composición: la estrategia se inyecta en <code>Envio</code> en runtime.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Template Method: una clase abstracta <code>ProcesoEnvio</code> que fija el esqueleto del algoritmo y delega pasos específicos a subclases concretas mediante herencia.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Análisis:</strong> Strategy cubre todos los casos de variación de algoritmo (cálculo de costos, rutas). Template Method requeriría herencia donde Strategy con composición es más flexible y testeable — permite cambiar la estrategia en runtime y facilita los tests unitarios al no depender de una jerarquía de clases. La composición sobre la herencia es una preferencia explícita de diseño en este proyecto.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Testabilidad</span>
+                <span class="qa-pill qa-gain">Flexibilidad runtime</span>
+                <span class="qa-pill qa-cost">Estructura algorítmica explícita en la jerarquía</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-to">Trade-off</span>
+              <span class="card-head-title">Visitor — descartado por sobreingeniería sobre Composite</span>
+            </div>
+            <div class="card-body">
+              <div class="to-grid">
+                <div class="to-col decided">
+                  <div class="to-col-label">Decisión tomada</div>
+                  <div class="to-col-text">Las operaciones sobre el árbol de centros de distribución (Composite) son simples y accesibles directamente desde los nodos mediante sus métodos propios.</div>
+                </div>
+                <div class="to-col alt">
+                  <div class="to-col-label">Alternativa descartada</div>
+                  <div class="to-col-text">Visitor: agregar double-dispatch sobre <code>CentroRegional</code> y <code>SucursalEntrega</code> para implementar operaciones externas (costo operativo, ocupación, reporte, puntos críticos).</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Análisis:</strong> las operaciones sobre el árbol de centros de distribución (Composite) son simples y accesibles directamente. Agregar double-dispatch sin una familia de operaciones creciente era sobreingeniería — Visitor se justifica cuando la familia de operaciones externas crece independientemente de los nodos, condición que no se cumple en el dominio actual. Los cuatro métodos identificados se implementan directamente en los nodos del Composite.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Simplicidad</span>
+                <span class="qa-pill qa-gain">Mantenibilidad</span>
+                <span class="qa-pill qa-cost">Extensibilidad para operaciones externas futuras</span>
               </div>
             </div>
           </div>

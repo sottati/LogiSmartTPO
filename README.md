@@ -1,6 +1,16 @@
 # LogiSmart — TPO Proceso de Desarrollo de Software · UADE 2026
 
-Plataforma SaaS de logística para PyMEs, desarrollada en Java como trabajo práctico obligatorio. El proyecto se construyó de forma acumulada a lo largo de 13 hitos, aplicando 36 patrones de diseño (GRASP, GoF y persistencia).
+Plataforma SaaS de logística para PyMEs, desarrollada en Java como trabajo práctico obligatorio. El proyecto se construyó de forma acumulada a lo largo de 14 hitos, explorando patrones de diseño GRASP, GoF y persistencia.
+
+## Entregables
+
+| Carpeta | Descripción |
+|---|---|
+| **[`final-productivo/`](final-productivo/README.md)** | **Entregable productivo final** — arquitectura en 5 capas, 20 patrones activos (11 GoF núcleo + 9 secundarios), 8 CUs implementados, 125/125 tests. Ver `final-productivo/README.md`. |
+| `src/` | Evidencia académica de los 14 hitos acumulados (código de proceso, 36 patrones explorados). No es el entregable productivo. |
+| `hitos/` | Documentación de proceso: `HITO_1.html` … `HITO_13.html` con explicación, código y diagramas de cada hito. |
+| `index.html` | Página de presentación del TPO (patrones, arquitectura, atributos de calidad). |
+| `DECISIONES.html` | Justificaciones de diseño y descartes de patrones. |
 
 ## Requisitos
 
@@ -81,14 +91,16 @@ aplicacion/
 - El Controller es el único conocedor de `FacadeProveedoresExternos`; los servicios de `servicios/` son utilizados solo por el Controller
 - Si necesitás agregar una nueva operación de negocio: primero modelá en `dominio/`, implementá la lógica en `infraestructura/`, y conectá a través del Controller
 
-## Dónde encontrar cada patrón
+## Dónde encontrar cada patrón (inventario académico — `src/`)
+
+> Esta tabla refleja el **inventario académico completo** explorado en los 14 hitos del `src/` de proceso. La versión productiva (`final-productivo/`) **conserva 20 patrones** (11 núcleo + 9 secundarios) y **descarta 6** (Command, Interpreter, Iterator, Mediator, Template Method, Visitor) reemplazándolos por alternativas más simples. Ver justificaciones en [DECISIONES.html](DECISIONES.html).
 
 | Familia | Patrones | Hitos | Ubicación principal |
 |---|---|---|---|
 | GRASP | Expert · Creator · Controller · Low Coupling · High Cohesion · Polymorphism · Pure Fabrication · Indirection · Protected Variations | 4–5 | transversal a `dominio/` y `aplicacion/` |
 | GoF Creacionales | Singleton · Factory Method · Abstract Factory · Builder · Prototype | 6–7 | `infraestructura/estructural/singleton/`, `fabrica/`, `abstractfactory/` · Builder y Prototype en `dominio/envio/Envio.java` |
 | GoF Estructurales | Adapter · Bridge · Composite · Decorator · Facade · Flyweight · Proxy | 8–9 | `infraestructura/estructural/adapter/`, `bridge/`, `composite/`, `decorator/`, `flyweight/`, `proxy/` · Facade en `aplicacion/` |
-| GoF Comportamiento | Chain of Responsibility · Command · Interpreter · Iterator · Mediator · Memento · Observer · State · Strategy · Template Method · Visitor | 10–12 | `infraestructura/comportamiento/` |
+| GoF Comportamiento *(explorados en hitos 10–12; 6 descartados en la versión productiva)* | Chain of Responsibility · Command · Interpreter · Iterator · Mediator · Memento · Observer · State · Strategy · Template Method · Visitor | 10–12 | `infraestructura/comportamiento/` |
 | Persistencia (PoEAA) | Repository · Data Mapper · Unit of Work · Lazy Load | 13 | `infraestructura/persistencia/` |
 
 ## Cómo navegar el proyecto

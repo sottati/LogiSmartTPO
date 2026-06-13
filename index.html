@@ -715,7 +715,7 @@
               <div class="hito-body">
                 <div class="hito-label">Hito 10</div>
                 <div class="hito-title">Patrones de Comportamiento I</div>
-                <div class="hito-desc">Chain of Responsibility · Command · Interpreter</div>
+                <div class="hito-desc">Chain of Responsibility</div>
               </div>
               <div class="hito-arrow">›</div>
             </a>
@@ -724,7 +724,7 @@
               <div class="hito-body">
                 <div class="hito-label">Hito 11</div>
                 <div class="hito-title">Patrones de Comportamiento II</div>
-                <div class="hito-desc">Iterator · Mediator · Memento · Observer</div>
+                <div class="hito-desc">Memento · Observer</div>
               </div>
               <div class="hito-arrow">›</div>
             </a>
@@ -733,7 +733,7 @@
               <div class="hito-body">
                 <div class="hito-label">Hito 12</div>
                 <div class="hito-title">Patrones de Comportamiento III</div>
-                <div class="hito-desc">State · Strategy · Template Method · Visitor</div>
+                <div class="hito-desc">State · Strategy</div>
               </div>
               <div class="hito-arrow">›</div>
             </a>
@@ -997,26 +997,6 @@
           </table>
           <p style="font-size:.76rem;color:var(--muted);margin-top:.35rem"><strong>Criterio de selección:</strong> la estrategia se inyecta en <code>Envio</code> vía <code>establecerEstrategia()</code> — la elige el Operador Logístico al crear el envío; el dominio nunca la decide solo.</p>
 
-          <!-- Operaciones sobre el árbol de centros (Visitor) -->
-          <h4 style="font-size:.85rem;font-weight:700;color:var(--heading);margin:1.25rem 0 .5rem">Operaciones sobre el árbol de centros <span style="font-weight:400;color:var(--muted);font-size:.75rem">— Visitor (Hito 12)</span></h4>
-          <table style="width:100%;border-collapse:collapse;font-size:.78rem;line-height:1.4">
-            <thead>
-              <tr style="background:var(--bg)">
-                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Visitor</th>
-                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">En SucursalEntrega</th>
-                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">En CentroRegional</th>
-                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Resultado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">VisitorCalculoCostoOperativo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoTotal += obtenerCostoOperativo()</code></td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>costoTotal += $1.000</code> (fijo por centro)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>obtenerCostoTotal()</code></td></tr>
-              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">VisitorCalculoOcupacion</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Acumula paquetes y capacidad</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Solo cuenta el nodo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>(paquetes × 100) / capacidad</code> → %</td></tr>
-              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">VisitorBusquedaPuntosCriticos</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Agrega al listado si ocupación ≥ 90 %</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">Solo cuenta el nodo</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>List&lt;String&gt;</code> de nombres críticos</td></tr>
-              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">VisitorGeneradorReporte</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">"Punto: nombre paquetes=X"</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">"Centro: nombre"</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)"><code>String</code> reporte del árbol completo</td></tr>
-            </tbody>
-          </table>
-          <p style="font-size:.76rem;color:var(--muted);margin-top:.35rem"><strong>Criterio de activación:</strong> se llama a <code>nodo.aceptar(visitor)</code> en la raíz; el <em>double dispatch</em> enruta al <code>visitar()</code> correcto sin <code>instanceof</code>. La elección del Visitor la hace el llamador según la consulta que necesita.</p>
-
           <!-- Proveedores externos (Adapter) -->
           <h4 style="font-size:.85rem;font-weight:700;color:var(--heading);margin:1.25rem 0 .5rem">Tarifas de carriers externos <span style="font-weight:400;color:var(--muted);font-size:.75rem">— Adapter (Hito 8)</span></h4>
           <table style="width:100%;border-collapse:collapse;font-size:.78rem;line-height:1.4">
@@ -1054,25 +1034,6 @@
             </tbody>
           </table>
 
-          <!-- Filtros de consulta (Interpreter) -->
-          <h4 style="font-size:.85rem;font-weight:700;color:var(--heading);margin:1.25rem 0 .5rem">Filtros de consulta de envíos <span style="font-weight:400;color:var(--muted);font-size:.75rem">— Interpreter (Hito 10)</span></h4>
-          <p style="font-size:.82rem;color:var(--muted);margin-bottom:.5rem">Las expresiones son combinables con AND / OR / NOT, formando árboles arbitrariamente complejos.</p>
-          <table style="width:100%;border-collapse:collapse;font-size:.78rem;line-height:1.4">
-            <thead>
-              <tr style="background:var(--bg)">
-                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Expresión</th>
-                <th style="text-align:left;padding:5px 8px;border:1px solid var(--border);color:var(--muted)">Criterio</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">ExpresionOrigen(ciudad)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">origen del envío coincide exactamente</td></tr>
-              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">ExpresionDestino(ciudad)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">destino del envío coincide exactamente</td></tr>
-              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">ExpresionPeso(val, op)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">peso satisface el operador (&lt; &gt; =)</td></tr>
-              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">ExpresionCosto(val, op)</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">costo satisface el operador (&lt; &gt; =)</td></tr>
-              <tr><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">ExpresionRestringido</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">destino contiene "Restringido"</td></tr>
-              <tr style="background:var(--bg)"><td style="padding:4px 8px;border:1px solid var(--border);font-family:monospace">ExpresionAND / OR / NOT</td><td style="padding:4px 8px;border:1px solid var(--border);color:var(--muted)">álgebra booleana sobre sub-expresiones</td></tr>
-            </tbody>
-          </table>
         </div>
 
         <!-- ── Arquitectura ── -->
@@ -1127,7 +1088,7 @@
             </li>
             <li>
               <span class="pkg-name">com.logismart.infraestructura.comportamiento</span>
-              <span class="pkg-desc">Patrones de Hito 10, Hito 11 y Hito 12: chain, command, interpreter, iterator, mediator, memento, observer, state, strategy, template method y visitor.</span>
+              <span class="pkg-desc">Patrones de comportamiento de Hitos 10–12: Chain of Responsibility, Memento, Observer, State y Strategy.</span>
             </li>
             <li>
               <span class="pkg-name">com.logismart.infraestructura.{costo,tiempo,ruta,vehiculo}</span>
@@ -1396,46 +1357,6 @@
             </div>
 
             <div class="p-card">
-              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 10</span></div>
-              <div class="p-name">Command</div>
-              <div class="p-intent">Encapsular acciones sobre envios como objetos ejecutables con soporte de deshacer y rehacer.</div>
-              <div class="p-applied-label">Implementado en</div>
-              <div class="p-applied">
-                <code>ColaComandos</code> ejecuta comandos de crear, cancelar, actualizar estado, cambiar pago y agregar servicios.
-              </div>
-            </div>
-
-            <div class="p-card">
-              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 10</span></div>
-              <div class="p-name">Interpreter</div>
-              <div class="p-intent">Representar reglas de negocio como expresiones combinables y evaluables sobre envios.</div>
-              <div class="p-applied-label">Implementado en</div>
-              <div class="p-applied">
-                <code>ExpresionOrigen</code>, <code>ExpresionDestino</code>, <code>ExpresionPeso</code>, <code>ExpresionCosto</code>, <code>AND</code>, <code>OR</code> y <code>NOT</code> forman reglas compuestas.
-              </div>
-            </div>
-
-            <div class="p-card">
-              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 11</span></div>
-              <div class="p-name">Iterator</div>
-              <div class="p-intent">Proveer un modo de acceso secuencial a los elementos de una coleccion sin exponer su representacion interna.</div>
-              <div class="p-applied-label">Implementado en</div>
-              <div class="p-applied">
-                <code>ColeccionArray</code>, <code>ColeccionLista</code> y <code>ColeccionHash</code> exponen la misma interfaz <code>ColeccionEnvios</code>; cada una crea su propio <code>IteradorEnvios</code> interno.
-              </div>
-            </div>
-
-            <div class="p-card">
-              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 11</span></div>
-              <div class="p-name">Mediator</div>
-              <div class="p-intent">Centralizar la comunicacion entre componentes en un objeto intermediario para eliminar referencias cruzadas.</div>
-              <div class="p-applied-label">Implementado en</div>
-              <div class="p-applied">
-                <code>MediadorEnviosConcreto</code> orquesta el pipeline Centro→Validador→Pago→Notificacion→Auditoria via eventos String. Ningun componente referencia directamente a otro.
-              </div>
-            </div>
-
-            <div class="p-card">
               <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 11</span></div>
               <div class="p-name">Memento</div>
               <div class="p-intent">Capturar y externalizar el estado interno de un objeto para poder restaurarlo posteriormente sin violar el encapsulamiento.</div>
@@ -1475,25 +1396,6 @@
               </div>
             </div>
 
-            <div class="p-card">
-              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 12</span></div>
-              <div class="p-name">Template Method</div>
-              <div class="p-intent">Definir el esqueleto de un algoritmo y dejar que subclases redefinan pasos especificos.</div>
-              <div class="p-applied-label">Implementado en</div>
-              <div class="p-applied">
-                <code>ProcesoEnvio</code> fija validar, calcular costo, procesar pago y notificar. Nacional, internacional y urgente especializan los pasos.
-              </div>
-            </div>
-
-            <div class="p-card">
-              <div class="p-header"><span class="p-tag tag-gof">GoF</span><span class="p-hito">Hito 12</span></div>
-              <div class="p-name">Visitor</div>
-              <div class="p-intent">Agregar operaciones sobre una estructura de objetos sin modificar las clases de esa estructura.</div>
-              <div class="p-applied-label">Implementado en</div>
-              <div class="p-applied">
-                <code>VisitorCentro</code> opera sobre <code>CentroRegional</code> y <code>SucursalEntrega</code> para ocupacion, reporte, costo operativo y puntos criticos.
-              </div>
-            </div>
 
           </div>
         </div>
@@ -1534,7 +1436,7 @@
                 <td>Alta Disponibilidad</td>
                 <td>Confiabilidad</td>
                 <td><span class="qa-badge qa-media">Media</span></td>
-                <td>Command (H10) · Observer (H11) · State (H12)</td>
+                <td>Memento (H11) · Observer (H11) · State (H12)</td>
               </tr>
               <tr>
                 <td>Elasticidad</td>
@@ -1614,8 +1516,8 @@
               <p class="qa-lead">El sistema debe garantizar 99,9% de uptime sin puntos únicos de falla. Los patrones aportan resiliencia a nivel de diseño; la redundancia cloud es infraestructural.</p>
               <div class="qa-patterns">
                 <div class="qa-row">
-                  <span class="qa-hito-badge">H10</span>
-                  <div><strong>Command</strong> - <span class="qa-muted">El historial undo/redo permite revertir operaciones si una falla a mitad del flujo, aportando resiliencia ante errores parciales.</span></div>
+                  <span class="qa-hito-badge">H11</span>
+                  <div><strong>Memento</strong> - <span class="qa-muted">Los snapshots inmutables de <code>MementoEnvio</code> permiten restaurar el estado anterior de un envío si una operación falla a mitad del flujo, aportando resiliencia ante errores parciales.</span></div>
                 </div>
                 <div class="qa-row">
                   <span class="qa-hito-badge">H11</span>

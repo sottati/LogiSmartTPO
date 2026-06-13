@@ -961,72 +961,11 @@ CadenaValidadores --&gt; ValidadorEnvio
 CadenaValidadores --&gt; SistemaInventarioChain
 CadenaValidadores --&gt; SistemaCapacidad
 
-class Comando {
-  &lt;&lt;interface&gt;&gt;
-  +ejecutar()
-  +deshacer()
-  +obtenerDescripcion() String
-}
-class ColaComandos {
-  -historial List~Comando~
-  -indiceActual int
-  +ejecutar(comando)
-  +deshacer()
-  +rehacer()
-}
-class ServicioEnvios
-class ComandoCrearEnvio
-class ComandoCancelarEnvio
-class ComandoActualizarEstado
-class ComandoCambiarMetodoPago
-class ComandoAgregarServicio
-ComandoCrearEnvio ..|&gt; Comando
-ComandoCancelarEnvio ..|&gt; Comando
-ComandoActualizarEstado ..|&gt; Comando
-ComandoCambiarMetodoPago ..|&gt; Comando
-ComandoAgregarServicio ..|&gt; Comando
-ColaComandos o-- Comando
-ComandoCrearEnvio --&gt; ServicioEnvios
-ComandoCancelarEnvio --&gt; ServicioEnvios
-ComandoActualizarEstado --&gt; ServicioEnvios
-ComandoCambiarMetodoPago --&gt; ServicioEnvios
-ComandoAgregarServicio --&gt; ServicioEnvios
-
-class Expresion {
-  &lt;&lt;interface&gt;&gt;
-  +evaluar(envio) boolean
-}
-class ExpresionOrigen
-class ExpresionDestino
-class ExpresionPeso
-class ExpresionCosto
-class ExpresionRestringido
-class ExpresionAND
-class ExpresionOR
-class ExpresionNOT
-ExpresionOrigen ..|&gt; Expresion
-ExpresionDestino ..|&gt; Expresion
-ExpresionPeso ..|&gt; Expresion
-ExpresionCosto ..|&gt; Expresion
-ExpresionRestringido ..|&gt; Expresion
-ExpresionAND ..|&gt; Expresion
-ExpresionOR ..|&gt; Expresion
-ExpresionNOT ..|&gt; Expresion
-ExpresionAND o-- Expresion
-ExpresionOR o-- Expresion
-ExpresionNOT o-- Expresion
-
 class H10SistemaLogisticaCompleto {
   -validadores CadenaValidadores
-  -cola ColaComandos
-  -servicio ServicioEnvios
-  -reglas Map~String,Expresion~
   +procesarEnvio(envio) String
 }
 H10SistemaLogisticaCompleto --&gt; CadenaValidadores
-H10SistemaLogisticaCompleto --&gt; ColaComandos
-H10SistemaLogisticaCompleto --&gt; ServicioEnvios
-H10SistemaLogisticaCompleto --&gt; Expresion
 H10SistemaLogisticaCompleto ..&gt; Envio
 
 %% ---- GOF: COMPORTAMIENTO II (Hito 11) ----
@@ -1052,36 +991,6 @@ class HistorialEnvios {
   +irAlEstado(int,envio)
   +obtenerTamaño() int
 }
-class IteradorEnvios {
-  &lt;&lt;interface&gt;&gt;
-  +tieneSiguiente() bool
-  +obtenerSiguiente() Envio
-  +reiniciar()
-}
-class ColeccionEnvios {
-  &lt;&lt;interface&gt;&gt;
-  +crearIterador() IteradorEnvios
-  +agregar(envio)
-  +remover(envio)
-  +obtenerTamaño() int
-}
-class ColeccionArray
-class ColeccionLista
-class ColeccionHash
-class MediadorEnvios {
-  &lt;&lt;interface&gt;&gt;
-  +notificar(String, Object)
-}
-class MediadorEnviosConcreto
-class CentroDistribucionMediator
-class ValidadorEnvioMediator
-class SistemaPagoMediator
-class SistemaNotificacionMediator
-class SistemaAuditoria {
-  -logs List~String~
-  +registrar(String, Object)
-  +contarEventos(String) int
-}
 class CentroDistribucionObservador
 class SistemaNotificacionObservador
 class SistemaAuditoriaObservador
@@ -1098,20 +1007,6 @@ ObservadorEnvio &lt;|.. DashboardObservador
 Envio --&gt; ObservadorEnvio : notifica
 Envio ..&gt; MementoEnvio : crea
 HistorialEnvios --&gt; MementoEnvio
-MediadorEnvios &lt;|.. MediadorEnviosConcreto
-CentroDistribucionMediator --&gt; MediadorEnvios
-ValidadorEnvioMediator --&gt; MediadorEnvios
-SistemaPagoMediator --&gt; MediadorEnvios
-SistemaNotificacionMediator --&gt; MediadorEnvios
-MediadorEnviosConcreto --&gt; SistemaAuditoria
-ColeccionEnvios &lt;|.. ColeccionArray
-ColeccionEnvios &lt;|.. ColeccionLista
-ColeccionEnvios &lt;|.. ColeccionHash
-ColeccionArray ..&gt; IteradorEnvios
-ColeccionLista ..&gt; IteradorEnvios
-ColeccionHash ..&gt; IteradorEnvios
-SistemaLogisticaEventDriven --&gt; MediadorEnvios
-SistemaLogisticaEventDriven --&gt; ColeccionEnvios
 SistemaLogisticaEventDriven --&gt; HistorialEnvios
 
 %% ---- GOF: COMPORTAMIENTO III (Hito 12) ----
@@ -1156,29 +1051,8 @@ EstrategiaCalculoCosto &lt;|.. EstrategiaVolumen
 EstrategiaCalculoCosto &lt;|.. EstrategiaHibrida
 Envio --&gt; EstrategiaCalculoCosto : estrategia
 
-class ProcesoEnvio {
-  &lt;&lt;abstract&gt;&gt;
-  +procesarEnvio(envio) final
-  #validar(envio)
-  #calcularCosto(envio)
-  #procesarPago(envio)
-  #notificar(envio)
-}
-class ProcesoNacional
-class ProcesoInternacional
-class ProcesoUrgente
-ProcesoEnvio &lt;|-- ProcesoNacional
-ProcesoEnvio &lt;|-- ProcesoInternacional
-ProcesoEnvio &lt;|-- ProcesoUrgente
-
-class VisitorCentro {
-  &lt;&lt;interface&gt;&gt;
-  +visitar(punto)
-  +visitar(centro)
-}
 class ElementoDistribucion {
   &lt;&lt;interface&gt;&gt;
-  +aceptar(visitor)
   +obtenerNombre() String
 }
 class CentroDistribucionComposite {
@@ -1186,7 +1060,6 @@ class CentroDistribucionComposite {
   #nombre String
   +obtenerCapacidad() int
   +obtenerOcupacion() int
-  +aceptar(visitor)
 }
 class CentroRegional {
   -subcentros List~CentroDistribucionComposite~
@@ -1199,29 +1072,19 @@ class SucursalEntrega {
   +obtenerPaquetes() int
   +obtenerCostoOperativo() double
 }
-class VisitorCalculoOcupacion
-class VisitorGeneradorReporte
-class VisitorCalculoCostoOperativo
-class VisitorBusquedaPuntosCriticos
 ElementoDistribucion &lt;|.. CentroDistribucionComposite
 CentroDistribucionComposite &lt;|-- CentroRegional
 CentroDistribucionComposite &lt;|-- SucursalEntrega
 CentroRegional o-- CentroDistribucionComposite : subcentros
-VisitorCentro &lt;|.. VisitorCalculoOcupacion
-VisitorCentro &lt;|.. VisitorGeneradorReporte
-VisitorCentro &lt;|.. VisitorCalculoCostoOperativo
-VisitorCentro &lt;|.. VisitorBusquedaPuntosCriticos
-ElementoDistribucion --&gt; VisitorCentro : acepta
 
 class SistemaLogisticaAvanzada {
   -redDistribucion CentroRegional
-  +procesarEnvio(envio, estrategia, proceso) double
+  +procesarEnvio(envio, estrategia) double
   +calcularOcupacionRed() double
   +calcularCostoOperativoRed() double
 }
 SistemaLogisticaAvanzada --&gt; EstadoEnvio
 SistemaLogisticaAvanzada --&gt; EstrategiaCalculoCosto
-SistemaLogisticaAvanzada --&gt; ProcesoEnvio
 SistemaLogisticaAvanzada --&gt; CentroRegional
           </pre>
         </div>
@@ -1623,30 +1486,10 @@ SistemaLogisticaAvanzada --&gt; CentroRegional
             <div class="pattern">
               <div class="pattern-name">
                 <span class="pattern-tag tag-gof">GoF</span>
-                Command
-              </div>
-              <div class="pattern-desc">
-                <code>ColaComandos</code> mantiene historial reversible sobre <code>ServicioEnvios</code> con crear, cancelar, actualizar, cambiar pago y agregar servicios.
-              </div>
-            </div>
-
-            <div class="pattern">
-              <div class="pattern-name">
-                <span class="pattern-tag tag-gof">GoF</span>
-                Interpreter
-              </div>
-              <div class="pattern-desc">
-                <code>Expresion</code> y sus implementaciones forman reglas compuestas con origen, destino, peso, costo, AND, OR y NOT.
-              </div>
-            </div>
-
-            <div class="pattern">
-              <div class="pattern-name">
-                <span class="pattern-tag tag-gof">GoF</span>
                 Integracion
               </div>
               <div class="pattern-desc">
-                <code>aplicacion.hito10.SistemaLogisticaCompleto</code> combina Chain + Command + Interpreter en el procesamiento de un envio.
+                <code>aplicacion.hito10.SistemaLogisticaCompleto</code> integra Chain of Responsibility en el procesamiento de un envio.
               </div>
             </div>
           </div>
@@ -1660,26 +1503,6 @@ SistemaLogisticaAvanzada --&gt; CentroRegional
               <div>
                 <h2>Hito 11</h2>
                 <span>GoF - Comportamiento II</span>
-              </div>
-            </div>
-
-            <div class="pattern">
-              <div class="pattern-name">
-                <span class="pattern-tag tag-gof">GoF</span>
-                Iterator
-              </div>
-              <div class="pattern-desc">
-                <code>ColeccionArray</code>, <code>ColeccionLista</code> y <code>ColeccionHash</code> exponen la misma interfaz <code>ColeccionEnvios</code>; el cliente itera sin conocer la estructura interna.
-              </div>
-            </div>
-
-            <div class="pattern">
-              <div class="pattern-name">
-                <span class="pattern-tag tag-gof">GoF</span>
-                Mediator
-              </div>
-              <div class="pattern-desc">
-                <code>MediadorEnviosConcreto</code> orquesta el pipeline Centro→Validador→Pago→Notificacion→Auditoria via eventos String; ningun componente referencia a otro.
               </div>
             </div>
 
@@ -1709,7 +1532,7 @@ SistemaLogisticaAvanzada --&gt; CentroRegional
                 Integracion
               </div>
               <div class="pattern-desc">
-                <code>SistemaLogisticaEventDriven</code> combina los 4 patrones en un pipeline event-driven: Memento + Iterator + Observer + Mediator colaboran en cada ciclo de procesamiento.
+                <code>SistemaLogisticaEventDriven</code> combina Memento y Observer en un pipeline reactivo: snapshots de estado y notificaciones automaticas en cada ciclo de procesamiento.
               </div>
             </div>
           </div>
@@ -1749,30 +1572,10 @@ SistemaLogisticaAvanzada --&gt; CentroRegional
             <div class="pattern">
               <div class="pattern-name">
                 <span class="pattern-tag tag-gof">GoF</span>
-                Template Method
-              </div>
-              <div class="pattern-desc">
-                <code>ProcesoEnvio</code> fija el algoritmo de procesamiento y <code>ProcesoNacional</code>, <code>ProcesoInternacional</code> y <code>ProcesoUrgente</code> especializan los pasos.
-              </div>
-            </div>
-
-            <div class="pattern">
-              <div class="pattern-name">
-                <span class="pattern-tag tag-gof">GoF</span>
-                Visitor
-              </div>
-              <div class="pattern-desc">
-                <code>VisitorCentro</code> agrega operaciones sobre <code>CentroRegional</code> y <code>SucursalEntrega</code> sin modificar la estructura.
-              </div>
-            </div>
-
-            <div class="pattern">
-              <div class="pattern-name">
-                <span class="pattern-tag tag-gof">GoF</span>
                 Integracion
               </div>
               <div class="pattern-desc">
-                <code>SistemaLogisticaAvanzada</code> combina State + Strategy + Template Method + Visitor en un flujo unico con 36 verificaciones ejecutables.
+                <code>SistemaLogisticaAvanzada</code> combina State + Strategy en un flujo unico con transiciones de estado y calculo de costos intercambiable.
               </div>
             </div>
           </div>
