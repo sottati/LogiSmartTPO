@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
 public class TestsPresentacion {
 
@@ -38,6 +39,7 @@ public class TestsPresentacion {
         testCU07();
         testCU08();
         testCU06EndToEnd();
+        testTenantGuard();
 
         System.out.println("\n========================================");
         System.out.println(total + " casos ejecutados, " + ok + " OK");
@@ -251,6 +253,33 @@ public class TestsPresentacion {
         ctrl.registrarEntrega(transportista, "ENV-E2E");
         assertar("CU-06 E2E: Observer disparado en CU-06 (ENTREGADO)",   disparos[0] >= 3);
         assertar("CU-06 E2E: ultimo estado notificado es ENTREGADO",      "ENTREGADO".equals(ultimoEstado[0]));
+    }
+
+    // ── Tenant Guard (multi-tenant isolation) ─────────────────────────────────
+
+    static void testTenantGuard() {
+        System.out.println("\n--- Tenant Guard (multi-tenant isolation) ---");
+        LogiSmartController ctrl = new LogiSmartController();
+
+        // Operador con empresaId enlazado en el tipo — el Controller lo deriva de actor.getEmpresaId()
+        OperadorLogistico opEmpresa1 = new OperadorLogistico("U-TG1","tg1","tg1@t.com","hash","ACTIVO");
+        opEmpresa1.setEmpresaId("EMP-01");
+
+        // Misma empresa → lista no null (puede estar vacía si no hay envíos de esa empresa)
+        List<Envio> mismaEmpresa = ctrl.consultarEnviosPorEmpresa(opEmpresa1, "EMP-01");
+        assertar("Tenant Guard: misma empresa → retorna lista no null", mismaEmpresa != null);
+
+        // Empresa diferente → denegado: lista vacía
+        List<Envio> otraEmpresa = ctrl.consultarEnviosPorEmpresa(opEmpresa1, "EMP-02");
+        assertar("Tenant Guard: empresa diferente → lista vacía", otraEmpresa != null && otraEmpresa.isEmpty());
+
+        // AdminPlataforma → puede acceder a cualquier empresa (puedeAdministrarEmpresas=true)
+        List<Envio> adminAcceso = ctrl.consultarEnviosPorEmpresa(adminPlat, "EMP-01");
+        assertar("Tenant Guard: AdminPlataforma accede a cualquier empresa → no null", adminAcceso != null);
+
+        // Cliente sin permiso puedeVerReportes → denegado
+        List<Envio> clienteAcceso = ctrl.consultarEnviosPorEmpresa(cliente, "EMP-01");
+        assertar("Tenant Guard: ClienteFinal sin permiso → lista vacía", clienteAcceso != null && clienteAcceso.isEmpty());
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

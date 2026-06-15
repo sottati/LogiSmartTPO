@@ -1,6 +1,7 @@
 package com.logismart.presentacion;
 
-import com.logismart.aplicacion.FacadeProveedoresExternos;
+import com.logismart.aplicacion.facade.FacadeProveedoresExternos;
+import com.logismart.aplicacion.facade.FachadaReportes;
 import com.logismart.aplicacion.PedidoEcommerce;
 import com.logismart.aplicacion.ServicioImportacion;
 import com.logismart.dominio.empresa.Cobro;
@@ -15,7 +16,7 @@ import com.logismart.aplicacion.cadena.CadenaValidadores;
 import com.logismart.aplicacion.cadena.ContextoValidacion;
 import com.logismart.aplicacion.cadena.SistemaCapacidad;
 import com.logismart.aplicacion.cadena.SistemaInventario;
-import com.logismart.infraestructura.estrategia.EstrategiaDistancia;
+import com.logismart.infraestructura.fabrica.CalculadorCostos;
 import com.logismart.infraestructura.fabrica.LogiSmartFactory;
 import com.logismart.infraestructura.fabrica.LogiSmartFactoryArgentina;
 import com.logismart.infraestructura.flyweight.FabricaUbicaciones;
@@ -42,24 +43,33 @@ import java.util.Map;
  */
 public class LogiSmartController {
 
-    private final Logger                    log      = Logger.obtenerInstancia();
-    private final FacadeProveedoresExternos facade   = new FacadeProveedoresExternos();
+    private final Logger                    log             = Logger.obtenerInstancia();
+    private final FacadeProveedoresExternos facade          = new FacadeProveedoresExternos();
+    private final FachadaReportes           fachadaReportes = new FachadaReportes();
     private final CadenaValidadores         cadena;
     private final ProxyRepositorioEnvio     repositorio;
     private final UnitOfWork                uow;
     private final LogiSmartFactory          factory;
+    private final String                    region;
     private final ServicioImportacion       servicioImportacion;
 
-    private final Map<String, Vehiculo> flota = new HashMap<>();
-    private final Map<String, Ruta>     rutas = new HashMap<>();
+    private final Map<String, Vehiculo>        flota      = new HashMap<>();
+    private final Map<String, Ruta>            rutas      = new HashMap<>();
+    private final Map<String, HistorialEnvios> historiales = new HashMap<>();
 
     public LogiSmartController() {
+        this(new LogiSmartFactoryArgentina(), "AR");
+    }
+
+    /** Constructor configurable para multi-región (Abstract Factory + region ISO-3166). */
+    public LogiSmartController(LogiSmartFactory factory, String region) {
         RepositorioEnvioMemoria base = new RepositorioEnvioMemoria();
         EnvioMapperMemoria   mapper  = new EnvioMapperMemoria();
         this.repositorio            = new ProxyRepositorioEnvio(base);
         this.uow                    = new UnitOfWork(repositorio, mapper);
         this.cadena                 = new CadenaValidadores(new SistemaInventario(), new SistemaCapacidad(10_000));
-        this.factory                = new LogiSmartFactoryArgentina();
+        this.factory                = factory;
+        this.region                 = region;
         this.servicioImportacion    = new ServicioImportacion(cadena, uow);
     }
 
@@ -111,9 +121,10 @@ public class LogiSmartController {
     /**
      * Genera el recorrido más eficiente para un envío dado.
      * Flujo real de patrones:
-     *   – ProveedorMapas (Abstract Factory): referencia externa de distancia.
+     *   – ProveedorMapas (Abstract Factory): distancia de referencia entre origen y destino.
+     *   – CalculadorCostos (Abstract Factory): costo logístico regional (distancia + peso).
+     *   – EstrategiaCalculoCosto (Strategy): encapsula el calculador regional en el Envío.
      *   – Ruta.optimizar(): ordena paradas y recalcula distancia total con Haversine.
-     *   – EstrategiaDistancia (Strategy): calcula costo logístico del envío.
      *
      * @return Ruta planificada, o null si sin permiso o envío no encontrado.
      */
@@ -123,13 +134,16 @@ public class LogiSmartController {
             return null;
         }
         return repositorio.obtener(envioId).map(envio -> {
-            // Strategy: calcula costo logístico del envío usando la distancia planificada
-            envio.establecerEstrategia(new EstrategiaDistancia());
+            // Abstract Factory: proveedor de mapas regional para distancia de referencia
+            double distRef = factory.crearProveedorMapas()
+                    .calcularDistancia(envio.getOrigen(), envio.getDestino());
+
+            // Abstract Factory + Strategy: calculador regional envuelto como estrategia de costo
+            CalculadorCostos calc = factory.crearCalculadorCostos();
+            envio.establecerEstrategia(e -> calc.calcular(distRef, e.getPeso()));
             double costoLogistico = envio.calcularCosto();
 
             // Ruta: construye y optimiza el recorrido usando Haversine (PosicionGPS)
-            double distRef = factory.crearProveedorMapas()
-                    .calcularDistancia(envio.getOrigen(), envio.getDestino());
             Ruta ruta = new Ruta("R-" + envioId, distRef, (int)(distRef * 2), "PLANIFICADA");
             paradas.forEach(ruta::agregarParada);
             ruta.optimizar();   // ordena por orden + recalcula con Haversine
@@ -137,7 +151,8 @@ public class LogiSmartController {
             rutas.put(ruta.getId(), ruta);
             log.log("CU-03: ruta " + ruta.getId() + " planificada — "
                     + String.format("%.1f", ruta.getDistanciaKm()) + " km"
-                    + " | costo estimado $" + String.format("%.2f", costoLogistico));
+                    + " | costo estimado $" + String.format("%.2f", costoLogistico)
+                    + " (" + calc.obtenerNombreRegion() + ")");
             return ruta;
         }).orElse(null);
     }
@@ -148,6 +163,7 @@ public class LogiSmartController {
     /**
      * Vincula la ruta planificada a un transportista y avanza el envío a EN_TRANSITO.
      * Usa Memento para guardar el estado anterior; si el commit falla, lo restaura.
+     * El historial persiste entre llamadas para auditoría completa del ciclo de vida.
      */
     public boolean asignarHojaDeRuta(IPermisos actor, String envioId, String transportistaId) {
         if (!actor.puedeAsignarRuta()) {
@@ -155,7 +171,7 @@ public class LogiSmartController {
             return false;
         }
         return repositorio.obtener(envioId).map(envio -> {
-            HistorialEnvios historial = new HistorialEnvios();
+            HistorialEnvios historial = obtenerHistorial(envioId);
             historial.guardarEstado(envio);                 // Memento: snapshot previo
             adjuntarObserversIfNone(envio);
             try {
@@ -186,7 +202,7 @@ public class LogiSmartController {
             return false;
         }
         return repositorio.obtener(envioId).map(envio -> {
-            HistorialEnvios historial = new HistorialEnvios();
+            HistorialEnvios historial = obtenerHistorial(envioId);
             historial.guardarEstado(envio);
             try {
                 envio.entregar();                           // State: EN_TRANSITO → EN_REPARTO → notifica observers
@@ -222,7 +238,7 @@ public class LogiSmartController {
             return false;
         }
         return repositorio.obtener(envioId).map(envio -> {  // Proxy: cache TTL
-            HistorialEnvios historial = new HistorialEnvios();
+            HistorialEnvios historial = obtenerHistorial(envioId);
             historial.guardarEstado(envio);                 // Memento: guarda estado previo (EN_REPARTO)
 
             try {
@@ -261,7 +277,7 @@ public class LogiSmartController {
         }
         return repositorio.obtener(envioId).map(envio -> {
             Ubicacion ubi = FabricaUbicaciones.obtener(    // Flyweight: instancia compartida
-                    envio.getDestino(), "AR", "0000");
+                    envio.getDestino(), this.region, "0000");
             String info = "Envio " + envioId
                     + " | estado: " + envio.getEstado()
                     + " | destino: " + ubi.getCiudad()
@@ -301,10 +317,10 @@ public class LogiSmartController {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    // Operación de soporte (no es un CU numerado)
+    // Operaciones de soporte (no son CU numerados)
     // ══════════════════════════════════════════════════════════════════════════
 
-    /** Crea un envío individual y lo persiste con observers adjuntos. */
+    /** Crea un envío individual, lo valida con la cadena y lo persiste con observers adjuntos. */
     public String crearEnvio(IPermisos actor, Envio envio, Cobro cobro) {
         if (!actor.puedeCrearEnvio()) {
             log.log("crearEnvio denegado: sin permiso"); return null;
@@ -317,12 +333,40 @@ public class LogiSmartController {
         return uow.commit() ? envio.getId() : null;
     }
 
-    /** Genera reporte de envíos (usado para billing y auditoría interna). */
+    /** Genera reporte de envíos en el formato indicado (compatibilidad hacia atrás). */
     public String generarReporteAdmin(IPermisos actor, String formato) {
+        return generarReporteAdmin(actor, "ENVIOS", formato);
+    }
+
+    /** Genera reporte del tipo y formato indicados (ENVIOS | INGRESOS | DESEMPENO) × (PDF | JSON | EXCEL | CSV). */
+    public String generarReporteAdmin(IPermisos actor, String tipo, String formato) {
         if (!actor.puedeVerReportes()) {
             log.log("generarReporte denegado: sin permiso"); return null;
         }
-        return facade.generarReporteEnvios(repositorio.obtenerTodos(), formato);
+        return fachadaReportes.generarReporte(repositorio.obtenerTodos(), tipo, formato);
+    }
+
+    /**
+     * Devuelve los envíos de una empresa aplicando aislamiento multi-tenant.
+     * La empresa del actor se obtiene de {@link IPermisos#getEmpresaId()} — no la suministra
+     * el caller, lo que garantiza el bound a nivel de tipo.
+     * Solo el actor de la misma empresa (o ADMIN_PLATAFORMA) puede acceder;
+     * cualquier otro intento retorna lista vacía y queda logueado.
+     */
+    public List<Envio> consultarEnviosPorEmpresa(IPermisos actor, String empresaIdSolicitada) {
+        if (!actor.puedeVerReportes() && !actor.puedeAdministrarEmpresas()) {
+            log.log("consultarEnviosPorEmpresa denegado: sin permiso");
+            return new ArrayList<>();
+        }
+        if (!actor.puedeAdministrarEmpresas()) {
+            String empresaIdActor = actor.getEmpresaId();
+            if (!empresaIdSolicitada.equals(empresaIdActor)) {
+                log.log("TENANT GUARD: acceso denegado — actor empresa=" + empresaIdActor
+                        + " solicitó empresa=" + empresaIdSolicitada);
+                return new ArrayList<>();
+            }
+        }
+        return repositorio.buscarPorEmpresa(empresaIdSolicitada);
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -337,7 +381,16 @@ public class LogiSmartController {
         }
     }
 
-    public ProxyRepositorioEnvio getRepositorio() { return repositorio; }
-    public Map<String, Vehiculo>  getFlota()       { return flota; }
-    public Map<String, Ruta>      getRutas()       { return rutas; }
+    private HistorialEnvios obtenerHistorial(String envioId) {
+        return historiales.computeIfAbsent(envioId, id -> new HistorialEnvios());
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // Accessors para tests
+    // ══════════════════════════════════════════════════════════════════════════
+
+    public ProxyRepositorioEnvio       getRepositorio()              { return repositorio; }
+    public Map<String, Vehiculo>       getFlota()                    { return flota; }
+    public Map<String, Ruta>           getRutas()                    { return rutas; }
+    public HistorialEnvios             getHistorial(String envioId)  { return historiales.get(envioId); }
 }

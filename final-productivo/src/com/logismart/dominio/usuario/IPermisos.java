@@ -8,4 +8,5 @@ public interface IPermisos {
     boolean puedeAdministrarEmpresas();
     boolean puedeRegistrarEntregas();
     boolean puedeConsultarUbicacion();
+    default String getEmpresaId() { return null; }
 }

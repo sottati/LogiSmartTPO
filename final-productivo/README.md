@@ -10,7 +10,9 @@ LogiSmart es una plataforma SaaS de logística para PyMEs que permite gestionar 
 presentacion/   LogiSmartController — GRASP Controller; único punto de entrada.
                 Recibe eventos, verifica permisos (IPermisos/Polymorphism) y delega.
 
-aplicacion/     FacadeProveedoresExternos — orquesta adapters y bridge.
+aplicacion/     FacadeProveedoresExternos — orquesta Adapters de envío (DHL/FedEx/UPS) y pago (PayPal/Stripe).
+                FachadaReportes          — Facade sobre el subsistema Bridge; genera reportes
+                                          (Envíos/Ingresos/Desempeño × PDF/JSON/Excel/CSV).
                 ServicioImportacion      — flujo CU-01 (Prototype + validación + UoW).
                 cadena/                  — Chain of Responsibility: reglas de negocio
                                           (ValidadorDatos → Inventario → Pago → Seguridad → Capacidad).
@@ -28,7 +30,7 @@ persistencia/   RepositorioEnvio + RepositorioEnvioMemoria — Repository.
                 UnitOfWork                                — transaccionalidad atómica.
 
 infraestructura/ adapter/   — Adapter: DHL/FedEx/UPS, PayPal/Stripe.
-                 bridge/    — Bridge: GeneradorPDF / GeneradorJSON × Reporte.
+                 bridge/    — Bridge: (PDF/JSON/Excel/CSV) × (Envíos/Ingresos/Desempeño) — 3×4 = 12 combinaciones, 7 clases.
                  decorator/ — Decorator: Seguro, Prioritario, RastreoGPS.
                  estrategia/— Strategy: Distancia, Peso, Urgencia, Híbrida.
                  fabrica/   — Abstract Factory (AR/BR) + Factory Method (UsuarioFactory).
@@ -51,7 +53,7 @@ Criterio de clasificación: **núcleo** = sin estos patrones al menos un CU no p
 |---|---|---|
 | Controller + Polymorphism (IPermisos) | GRASP | Todos los CUs: `LogiSmartController` es el único punto de entrada; `IPermisos`/`Rol` despacha permisos por tipo de actor sin `instanceof` |
 | Chain of Responsibility | GoF Comportamiento | CU-01/crearEnvio: datos → inventario → pago → seguridad → capacidad; falla rápido en el primer rechazo |
-| Facade | GoF Estructural | Todos los CUs: `FacadeProveedoresExternos` unifica adapters de envío, pago y reportes en una interfaz simple |
+| Facade | GoF Estructural | Todos los CUs: `FacadeProveedoresExternos` (envío+pago) y `FachadaReportes` (Bridge) simplifican subsistemas complejos al Controller |
 | Abstract Factory | GoF Creacional | CU-02: `LogiSmartFactoryArgentina/Brasil` crea `Vehiculo` + `CalculadorCostos` + `ProveedorMapas` coherentes por región |
 | Strategy | GoF Comportamiento | CU-03: `EstrategiaDistancia`/`Peso`/`Urgencia`/`Híbrida` intercambiables en runtime para calcular el costo de ruta |
 | State | GoF Comportamiento | CU-04/05/06: `CONFIRMADO → EN_TRANSITO → EN_REPARTO → ENTREGADO`; cada estado concreto decide qué transiciones son válidas |
@@ -69,7 +71,7 @@ Criterio de clasificación: **núcleo** = sin estos patrones al menos un CU no p
 | Memento | GoF Comportamiento | CU-04/05/06: `HistorialEnvios` guarda snapshot antes de cada transición; revierte si `UoW.commit()` falla |
 | Prototype | GoF Creacional | CU-01: `prototipo.clone()` por cada `PedidoEcommerce`; preserva origen/empresa sin reconstruir desde cero |
 | Singleton | GoF Creacional | Sistema: `Logger` y `ConexionBD` garantizan instancia única thread-safe en toda la aplicación |
-| Bridge | GoF Estructural | `generarReporteAdmin`: desacopla tipo de reporte (`ReporteEnvios`/`ReporteIngresos`) de formato de salida (`PDF`/`JSON`) |
+| Bridge | GoF Estructural | `FachadaReportes.generarReporte`: desacopla tipo (`ReporteEnvios`/`ReporteIngresos`/`ReporteDesempeno`) de formato (`PDF`/`JSON`/`Excel`/`CSV`) — 3×4 combinaciones sin subclases |
 | Decorator | GoF Estructural | Servicios opcionales sobre `Envio` (Seguro ×1.15, Prioritario ×1.30, GPS +$50) sin explotar subclases |
 | Composite | GoF Estructural | CU-02/04: `CentroRegional` y `SucursalEntrega` forman árbol de distribución con capacidad y ocupación recursivas |
 | Flyweight | GoF Estructural | CU-07: `FabricaUbicaciones` comparte instancias de ciudad/provincia; evita duplicados por consulta de ubicación |

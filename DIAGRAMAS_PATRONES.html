@@ -817,9 +817,13 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-bridge"></div></div>
           <div class="pat-classes">
             <span class="class-chip">Reporte</span>
-            <span class="class-chip">GeneradorReporte</span>
             <span class="class-chip">ReporteEnvios</span>
+            <span class="class-chip">ReporteIngresos</span>
+            <span class="class-chip">ReporteDesempeno</span>
+            <span class="class-chip">GeneradorReporte</span>
             <span class="class-chip">GeneradorPDF</span>
+            <span class="class-chip">GeneradorJSON</span>
+            <span class="class-chip">GeneradorExcel</span>
             <span class="class-chip">GeneradorCSV</span>
           </div>
         </div>
@@ -914,7 +918,7 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">19</span> Facade</div>
-            <div class="pat-desc"><code>FacadeProveedoresExternos</code> orquesta validación, creación, persistencia y notificación en una sola llamada. El Controller nunca conoce los subsistemas internos.</div>
+            <div class="pat-desc">Dos fachadas de responsabilidad única: <code>FacadeProveedoresExternos</code> orquesta los Adapters de envío (DHL/FedEx/UPS) y pago (PayPal/Stripe); <code>FachadaReportes</code> orquesta el subsistema Bridge. El Controller delega a cada una sin conocer sus detalles internos.</div>
           </div>
           <span class="hito-pill">Hito 9</span>
         </div>
@@ -922,10 +926,10 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-facade"></div></div>
           <div class="pat-classes">
             <span class="class-chip">FacadeProveedoresExternos</span>
-            <span class="class-chip">CadenaValidadores</span>
-            <span class="class-chip">FabricaDeEnvios</span>
-            <span class="class-chip">RepositorioEnvio</span>
-            <span class="class-chip">Notificador</span>
+            <span class="class-chip">FachadaReportes</span>
+            <span class="class-chip">ProveedorEnvio</span>
+            <span class="class-chip">ProveedorPago</span>
+            <span class="class-chip">GeneradorReporte</span>
           </div>
         </div>
       </div>
@@ -1545,19 +1549,21 @@ const DIAGRAMS = {
     Note over A: Mismo contrato ProveedorEnvio<br/>para DHL, FedEx y UPS`,
 
 'bridge': `sequenceDiagram
-    participant C as Servicio
-    participant R as ReporteEnvios
+    participant F as Facade
+    participant RE as ReporteEnvios
+    participant RD as ReporteDesempeno
     participant GP as GeneradorPDF
+    participant GX as GeneradorExcel
     participant GC as GeneradorCSV
-    C->>R: new ReporteEnvios(generadorPDF)
-    C->>R: generar(datos)
-    R->>GP: renderizar(datos)
-    GP-->>R: PDF
-    R-->>C: reporte PDF
-    C->>R: new ReporteEnvios(generadorCSV)
-    C->>R: generar(datos)
-    R->>GC: renderizar(datos)
-    GC-->>C: reporte CSV
+    F->>RE: new ReporteEnvios(generadorPDF)
+    RE->>GP: formatear(contenido)
+    GP-->>RE: %PDF-1.4...
+    RE-->>F: reporte PDF
+    F->>RD: new ReporteDesempeno(generadorExcel)
+    RD->>GX: formatear(contenido)
+    GX-->>RD: Workbook XML
+    RD-->>F: reporte XLSX
+    Note over F,GC: 3 tipos x 4 formatos = 12 combinaciones, 7 clases
     Note over R,GC: 3 reportes x 4 formatos<br/>= 7 clases, no 12`,
 
 'composite': `flowchart TD
@@ -1609,20 +1615,24 @@ const DIAGRAMS = {
 
 'facade': `sequenceDiagram
     participant C as LogiSmartController
-    participant F as FacadeProveedoresExternos
-    participant V as CadenaValidadores
-    participant B as FabricaDeEnvios
-    participant R as RepositorioEnvio
-    participant N as Notificador
-    C->>F: crearEnvio(ctx)
-    F->>V: validarEnvio(ctx)
-    V-->>F: OK
-    F->>B: crearEnvio(tipo, empresa, fecha)
-    B-->>F: envio
-    F->>R: guardar(envio)
-    F->>N: notificar(envio)
-    F-->>C: envio
-    Note over F: 5 subsistemas, 1 llamada`,
+    participant FP as FacadeProveedoresExternos
+    participant FR as FachadaReportes
+    participant A as ProveedorEnvio
+    participant P as ProveedorPago
+    participant G as GeneradorReporte
+    C->>FP: registrarEnvioExterno(envio, prov)
+    FP->>A: crearEnvio(envio)
+    A-->>FP: tracking
+    FP-->>C: tracking
+    C->>FP: procesarPago(monto, ref, prov)
+    FP->>P: procesarPago(monto, ref)
+    P-->>FP: txnId
+    FP-->>C: txnId
+    C->>FR: generarReporte(envios, tipo, fmt)
+    FR->>G: formatear(contenido)
+    G-->>FR: output
+    FR-->>C: reporte
+    Note over FP,FR: Responsabilidad única por fachada`,
 
 'flyweight': `sequenceDiagram
     participant E1 as Envio ENV-001

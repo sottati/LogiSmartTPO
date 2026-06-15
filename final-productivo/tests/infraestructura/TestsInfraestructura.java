@@ -8,8 +8,11 @@ import com.logismart.infraestructura.adapter.envio.ProveedorEnvio;
 import com.logismart.infraestructura.adapter.pago.AdapterPayPal;
 import com.logismart.infraestructura.adapter.pago.AdapterStripe;
 import com.logismart.infraestructura.adapter.pago.ProveedorPago;
+import com.logismart.infraestructura.bridge.GeneradorCSV;
+import com.logismart.infraestructura.bridge.GeneradorExcel;
 import com.logismart.infraestructura.bridge.GeneradorJSON;
 import com.logismart.infraestructura.bridge.GeneradorPDF;
+import com.logismart.infraestructura.bridge.ReporteDesempeno;
 import com.logismart.infraestructura.bridge.ReporteEnvios;
 import com.logismart.infraestructura.bridge.ReporteIngresos;
 import com.logismart.infraestructura.decorator.ComponenteEnvio;
@@ -139,6 +142,36 @@ public class TestsInfraestructura {
         Envio eRI = new Envio.EnvioBuilder("E-RI","A","B").peso(1.0).costo(100.0).build();
         assertar("Bridge: ReporteIngresos JSON",
                 new ReporteIngresos(new GeneradorJSON(), Arrays.asList(eRI)).generar().contains("\"reporte\""));
+
+        // ── Nuevos formatos: Excel y CSV ──────────────────────────────────────
+        assertar("Bridge: GeneradorExcel extension xlsx", new GeneradorExcel().obtenerExtension().equals("xlsx"));
+        assertar("Bridge: GeneradorCSV   extension csv",  new GeneradorCSV().obtenerExtension().equals("csv"));
+
+        String excelOut = new GeneradorExcel().formatear("datos");
+        assertar("Bridge: GeneradorExcel contiene Workbook", excelOut.contains("Workbook"));
+
+        String csvOut = new GeneradorCSV().formatear("col1\ncol2");
+        assertar("Bridge: GeneradorCSV envuelve en comillas", csvOut.contains("\""));
+
+        // ── Nuevo tipo: ReporteDesempeno ──────────────────────────────────────
+        List<Envio> mixto = Arrays.asList(
+                new Envio.EnvioBuilder("E-D01","BsAs","Cba").peso(2.0).estado("ENTREGADO").costo(100.0).build(),
+                new Envio.EnvioBuilder("E-D02","BsAs","Mdza").peso(4.0).costo(200.0).build()
+        );
+        String desPdf = new ReporteDesempeno(new GeneradorPDF(),  mixto).generar();
+        String desCsv = new ReporteDesempeno(new GeneradorCSV(),  mixto).generar();
+        String desXls = new ReporteDesempeno(new GeneradorExcel(),mixto).generar();
+        assertar("Bridge: ReporteDesempeno PDF header",          desPdf.startsWith("%PDF-1.4"));
+        assertar("Bridge: ReporteDesempeno CSV contiene comillas", desCsv.contains("\""));
+        assertar("Bridge: ReporteDesempeno Excel contiene Workbook", desXls.contains("Workbook"));
+
+        // ── Cruce: ReporteIngresos × Excel ────────────────────────────────────
+        assertar("Bridge: ReporteIngresos Excel contiene Workbook",
+                new ReporteIngresos(new GeneradorExcel(), Arrays.asList(eRI)).generar().contains("Workbook"));
+
+        // ── Cruce: ReporteEnvios × CSV ────────────────────────────────────────
+        assertar("Bridge: ReporteEnvios CSV contiene comillas",
+                new ReporteEnvios(new GeneradorCSV(), envios).generar().contains("\""));
     }
 
     // ── Decorator ─────────────────────────────────────────────────────────────

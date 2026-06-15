@@ -743,20 +743,20 @@ GeneradorExcel ..|&gt; GeneradorReporte
 GeneradorJSON ..|&gt; GeneradorReporte
 GeneradorCSV ..|&gt; GeneradorReporte
 
-class ReporteBridge {
+class Reporte {
   &lt;&lt;abstract&gt;&gt;
   #generador GeneradorReporte
   +generarContenido() String
   +generar() String
   +setGenerador(generador)
 }
-class ReporteEnviosBridge
-class ReporteIngresosBridge
-class ReporteDesempenoProveedores
-ReporteEnviosBridge --|&gt; ReporteBridge
-ReporteIngresosBridge --|&gt; ReporteBridge
-ReporteDesempenoProveedores --|&gt; ReporteBridge
-ReporteBridge o-- GeneradorReporte
+class ReporteEnvios
+class ReporteIngresos
+class ReporteDesempeno
+ReporteEnvios --|&gt; Reporte
+ReporteIngresos --|&gt; Reporte
+ReporteDesempeno --|&gt; Reporte
+Reporte o-- GeneradorReporte
 
 class CentroDistribucion {
   &lt;&lt;abstract&gt;&gt;
@@ -774,14 +774,16 @@ SucursalEntrega --|&gt; CentroDistribucion
 CentroRegional o-- CentroDistribucion
 
 class FacadeProveedoresExternos {
-  -proveedoresEnvio Map~String, ProveedorEnvio~
-  -proveedoresPago Map~String, ProveedorPago~
-  -centroDistribucion CentroDistribucion
-  -enviosRegistrados List~Envio~
-  +crearEnvio(nombreProveedor, envio) boolean
-  +procesarPago(nombreProveedor, monto, referencia) boolean
-  +generarReporte(tipoReporte, formato) ReporteBridge
-  +obtenerCentroDistribucion() CentroDistribucion
+  -dhl ProveedorEnvio
+  -fedex ProveedorEnvio
+  -ups ProveedorEnvio
+  -paypal ProveedorPago
+  -stripe ProveedorPago
+  +registrarEnvioExterno(envio, proveedor) String
+  +procesarPago(monto, referencia, proveedor) String
+}
+class FachadaReportes {
+  +generarReporte(envios, tipo, formato) String
 }
 
 %% ---- RELACIONES ----
@@ -849,8 +851,8 @@ EnvioBuilder ..&gt; Envio : construye
 FacadeProveedoresExternos --&gt; ProveedorEnvio
 FacadeProveedoresExternos --&gt; ProveedorPago
 FacadeProveedoresExternos --&gt; CentroDistribucion
-FacadeProveedoresExternos --&gt; ReporteBridge
-FacadeProveedoresExternos ..&gt; GeneradorReporte
+FachadaReportes --&gt; Reporte
+FachadaReportes ..&gt; GeneradorReporte
 
 %% ---- GOF: ESTRUCTURALES (Hito 9) ----
 class EnvioDecoradorContrato {
@@ -1393,7 +1395,7 @@ SistemaLogisticaAvanzada --&gt; CentroRegional
                 Integración
               </div>
               <div class="pattern-desc">
-                <code>FacadeProveedoresExternos</code> orquesta Adapter + Bridge + Composite en un flujo único.
+                <code>FacadeProveedoresExternos</code> orquesta Adapters de envío y pago; <code>FachadaReportes</code> orquesta el Bridge de reportes.
               </div>
             </div>
           </div>

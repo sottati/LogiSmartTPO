@@ -1,4 +1,4 @@
-package dominio;
+package tests.dominio;
 
 import com.logismart.dominio.centro.CentroRegional;
 import com.logismart.dominio.centro.SucursalEntrega;
@@ -83,8 +83,9 @@ public class TestsDominio {
         Envio e = buildEnvio("E-003");
         e.cancelar();
         ok("State — CONFIRMADO → CANCELADO", "CANCELADO".equals(e.getEstado()));
-        e.cancelar();
-        ok("State — CANCELADO no cambia en re-cancelar", "CANCELADO".equals(e.getEstado()));
+        boolean threwISE = false;
+        try { e.cancelar(); } catch (IllegalStateException ex) { threwISE = true; }
+        ok("State — CANCELADO lanza ISE en re-cancelar", threwISE);
     }
 
     static void testStateRetener() {

@@ -53,6 +53,7 @@ public class Envio implements Cloneable {
 
     private Envio(EnvioBuilder b) {
         this.id                    = b.id;
+        this.empresa               = b.empresa;
         this.origen                = b.origen;
         this.destino               = b.destino;
         this.descripcion           = b.descripcion;
@@ -76,6 +77,7 @@ public class Envio implements Cloneable {
         private final String id;
         private final String origen;
         private final String destino;
+        private Empresa empresa    = null;
         private String estado      = "CONFIRMADO";
         private String descripcion = "";
         private double peso        = 0.0;
@@ -96,6 +98,7 @@ public class Envio implements Cloneable {
             this.destino = destino;
         }
 
+        public EnvioBuilder empresa(Empresa v)             { this.empresa = v; return this; }
         public EnvioBuilder estado(String v)               { this.estado = v; return this; }
         public EnvioBuilder descripcion(String v)          { this.descripcion = v; return this; }
         public EnvioBuilder peso(double v)                 { this.peso = v; return this; }
@@ -186,7 +189,6 @@ public class Envio implements Cloneable {
     public void            setId(String id)            { this.id = id; }
     public Empresa         getEmpresa()                { return empresa; }
     public String          getEstado()                 { return estado.obtenerNombre(); }
-    public String          obtenerEstado()             { return estado.obtenerNombre(); }
     public String          getPrioridad()              { return prioridad; }
     public LocalDateTime   getFechaProgramada()        { return fechaProgramada; }
     public String          getOrigen()                 { return origen; }

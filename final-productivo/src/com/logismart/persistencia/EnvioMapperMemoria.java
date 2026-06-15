@@ -39,7 +39,16 @@ public class EnvioMapperMemoria extends EnvioMapper {
     @Override
     public Optional<Envio> buscarPorId(String id) {
         super.buscarPorId(id);
-        return Optional.empty();
+        Map<String, Object> fila = tabla.get(id);
+        if (fila == null) return Optional.empty();
+        Envio e = new Envio.EnvioBuilder(id,
+                (String) fila.get("origen"),
+                (String) fila.get("destino"))
+                .estado((String) fila.get("estado"))
+                .peso((double)   fila.get("peso"))
+                .costo((double)  fila.get("costo"))
+                .build();
+        return Optional.of(e);
     }
 
     public boolean existe(String id)        { return tabla.containsKey(id); }

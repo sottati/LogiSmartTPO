@@ -1,6 +1,7 @@
 package tests.aplicacion;
 
-import com.logismart.aplicacion.FacadeProveedoresExternos;
+import com.logismart.aplicacion.facade.FacadeProveedoresExternos;
+import com.logismart.aplicacion.facade.FachadaReportes;
 import com.logismart.aplicacion.PedidoEcommerce;
 import com.logismart.aplicacion.ServicioImportacion;
 import com.logismart.dominio.empresa.Cobro;
@@ -26,7 +27,8 @@ public class TestsAplicacion {
 
     public static void main(String[] args) {
         testCadena();
-        testFacade();
+        testFacadeProveedores();
+        testFachadaReportes();
         testServicioImportacion();
 
         System.out.println("\n========================================");
@@ -51,25 +53,39 @@ public class TestsAplicacion {
         assertar("Cadena: destino restringido rechazado", !cadena.validar(new ContextoValidacion(restringido, cobro)));
     }
 
-    // ── Facade (capa aplicacion) ──────────────────────────────────────────────
+    // ── FacadeProveedoresExternos (envío y pago) ──────────────────────────────
 
-    static void testFacade() {
+    static void testFacadeProveedores() {
         System.out.println("\n--- Facade (FacadeProveedoresExternos) ---");
         FacadeProveedoresExternos facade = new FacadeProveedoresExternos();
         Envio env = new Envio.EnvioBuilder("FA-01","BsAs","Rosario").peso(3.0).build();
 
-        // Envío externo: DHL (default), FedEx, UPS
         assertar("Facade: DHL tracking empieza DHL-",   facade.registrarEnvioExterno(env,"DHL").startsWith("DHL-"));
         assertar("Facade: FedEx tracking empieza FX-",  facade.registrarEnvioExterno(env,"FEDEX").startsWith("FX-"));
         assertar("Facade: UPS tracking empieza UPS-",   facade.registrarEnvioExterno(env,"UPS").startsWith("UPS-"));
+        assertar("Facade: PayPal txn PP-TXN",           facade.procesarPago(500.0,"REF-PAY","PAYPAL").startsWith("PP-TXN"));
+        assertar("Facade: Stripe txn ch_",              facade.procesarPago(500.0,"REF-STR","STRIPE").startsWith("ch_"));
+    }
 
-        // Pago externo: PayPal y Stripe
-        assertar("Facade: PayPal txn PP-TXN",   facade.procesarPago(500.0,"REF-PAY","PAYPAL").startsWith("PP-TXN"));
-        assertar("Facade: Stripe txn ch_",       facade.procesarPago(500.0,"REF-STR","STRIPE").startsWith("ch_"));
+    // ── FachadaReportes (Bridge) ──────────────────────────────────────────────
 
-        // Reporte via Bridge
-        String json = facade.generarReporteEnvios(Arrays.asList(env),"JSON");
-        assertar("Facade: reporte JSON contiene llave reporte", json.contains("\"reporte\""));
+    static void testFachadaReportes() {
+        System.out.println("\n--- FachadaReportes (Bridge) ---");
+        FachadaReportes fachada = new FachadaReportes();
+        Envio env = new Envio.EnvioBuilder("FR-01","BsAs","Cordoba").peso(2.0).costo(150.0).build();
+        List<Envio> envios = Arrays.asList(env);
+
+        String json = fachada.generarReporte(envios, "ENVIOS", "JSON");
+        assertar("FachadaReportes: ReporteEnvios JSON contiene llave", json.contains("\"reporte\""));
+
+        String pdf = fachada.generarReporte(envios, "INGRESOS", "PDF");
+        assertar("FachadaReportes: ReporteIngresos PDF header",        pdf.startsWith("%PDF-1.4"));
+
+        String csv = fachada.generarReporte(envios, "DESEMPENO", "CSV");
+        assertar("FachadaReportes: ReporteDesempeno CSV contiene comillas", csv.contains("\""));
+
+        String xlsx = fachada.generarReporte(envios, "ENVIOS", "EXCEL");
+        assertar("FachadaReportes: ReporteEnvios Excel contiene Workbook",  xlsx.contains("Workbook"));
     }
 
     // ── CU-01 ServicioImportacion (Prototype) ─────────────────────────────────

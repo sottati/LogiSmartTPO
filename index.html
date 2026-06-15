@@ -466,7 +466,8 @@
         <div class="cover-date">2026</div>
         <div class="cover-links">
           <a class="cover-link accent-link" href="#documentacion">Leer documentación</a>
-          <a class="cover-link" href="DIAGRAMA_DE_CLASES_ACTUAL.html">Diagrama de clases</a>
+          <a class="cover-link" href="DIAGRAMA_DE_CLASES_ACTUAL.html">Diagrama de clases acumulativo</a>
+          <a class="cover-link" href="DIAGRAMAS_UML.html">UML por patrón</a>
           <a class="cover-link" href="DIAGRAMAS_PATRONES.html">Diagramas de patrones</a>
           <a class="cover-link" href="DECISIONES.html">Trade-offs y Refactorings</a>
         </div>
@@ -620,7 +621,17 @@
               <div class="hito-body">
                 <div class="hito-label">Diagrama acumulativo</div>
                 <div class="hito-title">Diagrama de Clases del Sistema</div>
-                <div class="hito-desc">Todos los patrones GRASP y GoF aplicados a lo largo del TPO</div>
+                <div class="hito-desc">Todas las clases y relaciones del sistema en un único diagrama</div>
+              </div>
+              <div class="hito-arrow">›</div>
+            </a>
+            <a class="hito-card" href="DIAGRAMAS_UML.html"
+               style="border-color: #4c2fa0; background: linear-gradient(135deg, #f3f0ff 0%, var(--surface) 60%);">
+              <div class="hito-number" style="background: #4c2fa0; font-size: 0.9rem; letter-spacing: -0.02em;">UML</div>
+              <div class="hito-body">
+                <div class="hito-label">36 classDiagram individuales</div>
+                <div class="hito-title">Diagramas UML por patrón</div>
+                <div class="hito-desc">Un diagrama de clases UML aislado para cada patrón aplicado</div>
               </div>
               <div class="hito-arrow">›</div>
             </a>
@@ -1052,7 +1063,7 @@
             </li>
             <li>
               <span class="pkg-name">com.logismart.aplicacion</span>
-              <span class="pkg-desc">GRASP Controller (<code>LogiSmartController</code>), Pure Fabrications y servicios de integración: <code>FacadeProveedoresExternos</code> para Hito 8 y <code>aplicacion.hito8</code>/<code>aplicacion.hito9</code>/<code>aplicacion.hito10</code> para evidencia ejecutable.</span>
+              <span class="pkg-desc">GRASP Controller (<code>LogiSmartController</code>), Pure Fabrications y servicios de integración: <code>FacadeProveedoresExternos</code> (envío y pago), <code>FachadaReportes</code> (Bridge de reportes) y <code>aplicacion.hito8</code>/<code>aplicacion.hito9</code>/<code>aplicacion.hito10</code> para evidencia ejecutable.</span>
             </li>
             <li>
               <span class="pkg-name">com.logismart.infraestructura.singleton</span>
@@ -1281,7 +1292,7 @@
                 <code>ProveedorEnvio</code> con <code>AdapterDHL</code>, <code>AdapterFedEx</code> y <code>AdapterUPS</code>.<br>
                 <code>ProveedorPago</code> con <code>AdapterPayPal</code> y <code>AdapterStripe</code>.
               </div>
-              <div class="p-tradeoff"><strong>Evidencia:</strong> <code>CasosDePruebaHito8</code> verifica creación, costos y pagos. <code>FacadeProveedoresExternos</code> consume proveedores por interfaz, no por API externa.</div>
+              <div class="p-tradeoff"><strong>Evidencia:</strong> <code>CasosDePruebaHito8</code> verifica creación, costos y pagos. <code>FacadeProveedoresExternos</code> consume proveedores de envío y pago por interfaz; <code>FachadaReportes</code> orquesta la generación de reportes via Bridge.</div>
             </div>
 
             <div class="p-card">
@@ -1290,7 +1301,7 @@
               <div class="p-intent">Separar tipos de reportes de motores de generación para evitar explosión combinatoria de clases.</div>
               <div class="p-applied-label">Implementado en</div>
               <div class="p-applied">
-                <code>Reporte</code>, <code>ReporteEnvios</code>, <code>ReporteIngresos</code> y <code>ReporteDesempenoProveedores</code> usan <code>GeneradorReporte</code> con PDF, Excel, JSON y CSV.
+                <code>Reporte</code>, <code>ReporteEnvios</code>, <code>ReporteIngresos</code> y <code>ReporteDesempeno</code> usan <code>GeneradorReporte</code> con PDF, Excel, JSON y CSV.
               </div>
               <div class="p-tradeoff"><strong>Evidencia:</strong> Hito 8 prueba generación en distintos formatos y cambio de generador en runtime. La decisión evita 3 tipos x 4 formatos = 12 clases combinadas.</div>
             </div>

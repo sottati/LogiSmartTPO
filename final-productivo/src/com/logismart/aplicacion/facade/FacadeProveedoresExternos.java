@@ -1,4 +1,4 @@
-package com.logismart.aplicacion;
+package com.logismart.aplicacion.facade;
 
 import com.logismart.dominio.envio.Envio;
 import com.logismart.infraestructura.adapter.envio.AdapterDHL;
@@ -8,17 +8,12 @@ import com.logismart.infraestructura.adapter.envio.ProveedorEnvio;
 import com.logismart.infraestructura.adapter.pago.AdapterPayPal;
 import com.logismart.infraestructura.adapter.pago.AdapterStripe;
 import com.logismart.infraestructura.adapter.pago.ProveedorPago;
-import com.logismart.infraestructura.bridge.GeneradorJSON;
-import com.logismart.infraestructura.bridge.GeneradorPDF;
-import com.logismart.infraestructura.bridge.GeneradorReporte;
-import com.logismart.infraestructura.bridge.ReporteEnvios;
 import com.logismart.infraestructura.singleton.Logger;
 
-import java.util.List;
-
 /**
- * Facade: simplifica el acceso a los subsistemas de providers externos.
- * Orquesta Adapters (DHL/FedEx/UPS, PayPal/Stripe) y Bridge (generación de reportes).
+ * Facade sobre los proveedores externos de envío y pago.
+ * Orquesta los Adapters de envío (DHL/FedEx/UPS via ProveedorEnvio)
+ * y los de pago (PayPal/Stripe via ProveedorPago).
  * Pertenece a la capa Aplicación — el Controller es el único cliente directo.
  */
 public class FacadeProveedoresExternos {
@@ -77,14 +72,5 @@ public class FacadeProveedoresExternos {
         ProveedorPago p = "STRIPE".equalsIgnoreCase(proveedor) ? stripe : paypal;
         p.reembolsar(txnId, monto);
         log.log("Facade: reembolso " + p.obtenerNombre() + " txn=" + txnId + " $" + monto);
-    }
-
-    // ── Reportes (Bridge) ─────────────────────────────────────────────────────
-
-    public String generarReporteEnvios(List<Envio> envios, String formato) {
-        GeneradorReporte gen = "PDF".equalsIgnoreCase(formato) ? new GeneradorPDF() : new GeneradorJSON();
-        String resultado = new ReporteEnvios(gen, envios).generar();
-        log.log("Facade: reporte " + formato + " — " + envios.size() + " envios");
-        return resultado;
     }
 }

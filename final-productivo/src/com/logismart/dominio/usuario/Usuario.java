@@ -8,6 +8,7 @@ public class Usuario {
     private String passwordHash;
     private Rol    rol;
     private String estado;
+    private String empresaId;
 
     public Usuario(String id, String username, String email,
                    String passwordHash, Rol rol, String estado) {
@@ -36,6 +37,8 @@ public class Usuario {
     public String getEmail()    { return email; }
     public Rol    getRol()      { return rol; }
     public String getEstado()   { return estado; }
-    public void   setEmail(String email)    { this.email = email; }
-    public void   setEstado(String estado)  { this.estado = estado; }
+    public void   setEmail(String email)      { this.email = email; }
+    public void   setEstado(String estado)    { this.estado = estado; }
+    public String getEmpresaId()              { return empresaId; }
+    public void   setEmpresaId(String empId)  { this.empresaId = empId; }
 }

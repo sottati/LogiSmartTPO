@@ -287,7 +287,7 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">03</span> Controller</div>
-            <div class="pat-desc"><code>LogiSmartController</code> recibe todas las peticiones UI, verifica permisos mediante <code>IPermisos</code> y delega a <code>FacadeProveedoresExternos</code> sin calcular ni persistir.</div>
+            <div class="pat-desc"><code>LogiSmartController</code> recibe todas las peticiones UI, verifica permisos mediante <code>IPermisos</code> y delega a <code>FacadeProveedoresExternos</code> (envío/pago) o <code>FachadaReportes</code> (reportes), sin calcular ni persistir.</div>
           </div>
           <span class="hito-pill">Hito 4</span>
         </div>
@@ -296,6 +296,7 @@
           <div class="pat-classes">
             <span class="class-chip">LogiSmartController</span>
             <span class="class-chip">FacadeProveedoresExternos</span>
+            <span class="class-chip">FachadaReportes</span>
             <span class="class-chip">RepositorioEnvio</span>
           </div>
         </div>
@@ -305,16 +306,17 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">04</span> Low Coupling</div>
-            <div class="pat-desc">El dominio depende de la interfaz <code>ProveedorEntrega</code>, nunca de <code>ServicioEntregaAndreani</code> directamente. Cambiar de proveedor no toca ninguna clase de negocio.</div>
+            <div class="pat-desc">El dominio depende de <code>ProveedorEnvio</code>, nunca de <code>AdapterDHL</code> directamente. Cambiar de courier (DHL → FedEx → UPS) no toca ninguna clase de negocio.</div>
           </div>
           <span class="hito-pill">Hito 5</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-low-coupling"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">ProveedorEntrega</span>
-            <span class="class-chip">ServicioEntregaAndreani</span>
-            <span class="class-chip">ServicioEntregaOCA</span>
+            <span class="class-chip">ProveedorEnvio</span>
+            <span class="class-chip">AdapterDHL</span>
+            <span class="class-chip">AdapterFedEx</span>
+            <span class="class-chip">AdapterUPS</span>
             <span class="class-chip">FacadeProveedoresExternos</span>
           </div>
         </div>
@@ -324,7 +326,7 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">05</span> High Cohesion</div>
-            <div class="pat-desc">Cada servicio tiene una única responsabilidad bien definida: <code>ServicioNotificacion</code> solo notifica, <code>ServicioPago</code> solo cobra, <code>ServicioRutas</code> solo ruteará. <code>FacadeProveedoresExternos</code> solo orquesta.</div>
+            <div class="pat-desc">Cada clase tiene una única responsabilidad: <code>ProveedorEnvio</code> solo despacha, <code>ProveedorPago</code> solo cobra, <code>GeneradorReporte</code> solo formatea. <code>FacadeProveedoresExternos</code> solo orquesta envío+pago; <code>FachadaReportes</code> solo orquesta reportes.</div>
           </div>
           <span class="hito-pill">Hito 5</span>
         </div>
@@ -332,10 +334,10 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-high-cohesion"></div></div>
           <div class="pat-classes">
             <span class="class-chip">FacadeProveedoresExternos</span>
-            <span class="class-chip">ServicioNotificacion</span>
-            <span class="class-chip">ServicioPago</span>
-            <span class="class-chip">ServicioRutas</span>
-            <span class="class-chip">ServicioClientes</span>
+            <span class="class-chip">FachadaReportes</span>
+            <span class="class-chip">ProveedorEnvio</span>
+            <span class="class-chip">ProveedorPago</span>
+            <span class="class-chip">GeneradorReporte</span>
           </div>
         </div>
       </div>
@@ -352,8 +354,9 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-polymorphism"></div></div>
           <div class="pat-classes">
             <span class="class-chip">EstadoEnvio</span>
-            <span class="class-chip">EstadoPendiente</span>
+            <span class="class-chip">EstadoConfirmado</span>
             <span class="class-chip">EstadoEnTransito</span>
+            <span class="class-chip">EstadoEnReparto</span>
             <span class="class-chip">EstadoEntregado</span>
             <span class="class-chip">EstadoCancelado</span>
             <span class="class-chip">EstadoRetenido</span>
@@ -365,17 +368,17 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">07</span> Pure Fabrication</div>
-            <div class="pat-desc"><code>FabricaDeEnvios</code> y <code>FacadeProveedoresExternos</code> no existen en el dominio real: son clases artificiales inventadas para concentrar responsabilidades y mantener alta cohesión.</div>
+            <div class="pat-desc"><code>UsuarioFactory</code>, <code>FacadeProveedoresExternos</code> y <code>FachadaReportes</code> no existen en el dominio real: son clases artificiales inventadas para concentrar responsabilidades de creación y orquestación.</div>
           </div>
           <span class="hito-pill">Hito 5</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-pure-fabrication"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">FabricaDeEnvios</span>
+            <span class="class-chip">UsuarioFactory</span>
             <span class="class-chip">FacadeProveedoresExternos</span>
+            <span class="class-chip">FachadaReportes</span>
             <span class="class-chip">Envio</span>
-            <span class="class-chip">Cliente</span>
           </div>
         </div>
       </div>
@@ -384,16 +387,16 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">08</span> Indirection</div>
-            <div class="pat-desc"><code>AdaptadorAndreani</code> actúa como intermediario entre el dominio y la API externa. El dominio solo ve <code>ProveedorEntrega</code>; los detalles del transporte quedan encapsulados.</div>
+            <div class="pat-desc"><code>AdapterDHL</code> actúa como intermediario entre el dominio y la API externa. El dominio solo ve <code>ProveedorEnvio</code>; los detalles de DHLAPI quedan encapsulados en el adapter.</div>
           </div>
           <span class="hito-pill">Hito 7</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-indirection"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">ProveedorEntrega</span>
-            <span class="class-chip">AdaptadorAndreani</span>
-            <span class="class-chip">ClienteAndreani</span>
+            <span class="class-chip">ProveedorEnvio</span>
+            <span class="class-chip">AdapterDHL</span>
+            <span class="class-chip">DHLAPI</span>
             <span class="class-chip">FacadeProveedoresExternos</span>
           </div>
         </div>
@@ -403,7 +406,7 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">09</span> Protected Variations</div>
-            <div class="pat-desc"><code>EstrategiaCalculoCosto</code> encapsula el punto de variación: agregar una nueva fórmula de cálculo no modifica <code>ServicioCalculoCosto</code> ni ninguna otra clase existente.</div>
+            <div class="pat-desc"><code>EstrategiaCalculoCosto</code> encapsula el punto de variación: agregar una nueva fórmula no modifica <code>Envio</code> ni ninguna otra clase. <code>Envio.establecerEstrategia()</code> inyecta la estrategia en tiempo de ejecución.</div>
           </div>
           <span class="hito-pill">Hito 6</span>
         </div>
@@ -414,7 +417,7 @@
             <span class="class-chip">EstrategiaPeso</span>
             <span class="class-chip">EstrategiaUrgencia</span>
             <span class="class-chip">EstrategiaDistancia</span>
-            <span class="class-chip">ServicioCalculoCosto</span>
+            <span class="class-chip">Envio</span>
           </div>
         </div>
       </div>
@@ -435,14 +438,15 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">10</span> Singleton</div>
-            <div class="pat-desc"><code>LogiSmartController</code> garantiza una única instancia por JVM. Constructor privado + método estático <code>getInstancia()</code>. Toda la UI pasa por el mismo punto de entrada.</div>
+            <div class="pat-desc"><code>Logger</code> y <code>ConexionBD</code> son los Singletons reales: constructor privado, instancia <code>volatile</code> y double-checked locking. Garantizan una única instancia JVM para logging y acceso a BD.</div>
           </div>
           <span class="hito-pill">Hito 4</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-singleton"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">LogiSmartController</span>
+            <span class="class-chip">Logger</span>
+            <span class="class-chip">ConexionBD</span>
           </div>
         </div>
       </div>
@@ -451,18 +455,19 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">11</span> Factory Method</div>
-            <div class="pat-desc"><code>FabricaEnvio</code> declara <code>crearEnvio()</code> como método abstracto. Cada subclase (<code>FabricaEnvioNacional</code>, <code>Internacional</code>, <code>Urgente</code>) decide qué tipo concreto instanciar.</div>
+            <div class="pat-desc"><code>UsuarioFactory.crear(tipo)</code> decide qué subclase concreta de <code>Usuario</code> instanciar según el string recibido: <code>OperadorLogistico</code>, <code>AdminEmpresa</code>, <code>Transportista</code>, etc. Los constructores de cada subtipo nunca se exponen.</div>
           </div>
           <span class="hito-pill">Hito 5</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-factory-method"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">FabricaEnvio</span>
-            <span class="class-chip">FabricaEnvioNacional</span>
-            <span class="class-chip">FabricaEnvioInternacional</span>
-            <span class="class-chip">FabricaEnvioUrgente</span>
-            <span class="class-chip">Envio</span>
+            <span class="class-chip">UsuarioFactory</span>
+            <span class="class-chip">Usuario</span>
+            <span class="class-chip">OperadorLogistico</span>
+            <span class="class-chip">AdminEmpresa</span>
+            <span class="class-chip">Transportista</span>
+            <span class="class-chip">ClienteFinal</span>
           </div>
         </div>
       </div>
@@ -471,18 +476,19 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">12</span> Abstract Factory</div>
-            <div class="pat-desc"><code>FabricaSistemaLogistico</code> crea familias compatibles de objetos: repositorios + mappers coherentes. <code>FabricaSistemaMemoria</code> para tests, <code>FabricaSistemaSQL</code> para producción.</div>
+            <div class="pat-desc"><code>LogiSmartFactory</code> crea familias regionales compatibles: Argentina (<code>Auto</code> + IVA 21% + Google Maps) y Brasil (<code>Camion</code> + IVA 17% + Here Maps). Cambiar de región no requiere modificar ninguna otra clase.</div>
           </div>
-          <span class="hito-pill">Hito 13</span>
+          <span class="hito-pill">Hito 6</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-abstract-factory"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">FabricaSistemaLogistico</span>
-            <span class="class-chip">FabricaSistemaMemoria</span>
-            <span class="class-chip">FabricaSistemaSQL</span>
-            <span class="class-chip">RepositorioEnvio</span>
-            <span class="class-chip">EnvioMapper</span>
+            <span class="class-chip">LogiSmartFactory</span>
+            <span class="class-chip">LogiSmartFactoryArgentina</span>
+            <span class="class-chip">LogiSmartFactoryBrasil</span>
+            <span class="class-chip">Vehiculo</span>
+            <span class="class-chip">CalculadorCostos</span>
+            <span class="class-chip">ProveedorMapas</span>
           </div>
         </div>
       </div>
@@ -498,9 +504,8 @@
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-builder"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">EnvioBuilder</span>
+            <span class="class-chip">Envio.EnvioBuilder</span>
             <span class="class-chip">Envio</span>
-            <span class="class-chip">FabricaDeEnvios</span>
           </div>
         </div>
       </div>
@@ -509,16 +514,15 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">14</span> Prototype</div>
-            <div class="pat-desc"><code>Ruta</code> implementa <code>Cloneable</code> para clonar rutas base y personalizar solo el destino. <code>Envio</code> puede clonarse para crear reenvíos sin recalcular todos los campos desde cero.</div>
+            <div class="pat-desc"><code>Envio</code> implementa <code>java.lang.Cloneable</code> y sobreescribe <code>clone()</code>. En CU-01 (importación masiva desde e-commerce) se clona un prototipo base variando solo el <code>id</code> y el <code>destino</code> de cada orden.</div>
           </div>
           <span class="hito-pill">Hito 6</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-prototype"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">Cloneable</span>
-            <span class="class-chip">Ruta</span>
             <span class="class-chip">Envio</span>
+            <span class="class-chip">ServicioImportacion</span>
           </div>
         </div>
       </div>
@@ -539,18 +543,21 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">15</span> Adapter</div>
-            <div class="pat-desc"><code>AdaptadorAndreani</code> y <code>AdaptadorOCA</code> envuelven APIs externas con contratos incompatibles y las exponen bajo la interfaz <code>ProveedorEntrega</code> que espera el dominio.</div>
+            <div class="pat-desc"><code>AdapterDHL</code>, <code>AdapterFedEx</code> y <code>AdapterUPS</code> envuelven las APIs incompatibles (<code>DHLAPI</code>, <code>FedExAPI</code>, <code>UPSAPI</code>) bajo <code>ProveedorEnvio</code>. <code>AdapterPayPal</code> y <code>AdapterStripe</code> hacen lo mismo bajo <code>ProveedorPago</code>.</div>
           </div>
           <span class="hito-pill">Hito 7</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-adapter"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">ProveedorEntrega</span>
-            <span class="class-chip">AdaptadorAndreani</span>
-            <span class="class-chip">AdaptadorOCA</span>
-            <span class="class-chip">ClienteAndreani</span>
-            <span class="class-chip">ClienteOCA</span>
+            <span class="class-chip">ProveedorEnvio</span>
+            <span class="class-chip">AdapterDHL</span>
+            <span class="class-chip">AdapterFedEx</span>
+            <span class="class-chip">AdapterUPS</span>
+            <span class="class-chip">DHLAPI</span>
+            <span class="class-chip">ProveedorPago</span>
+            <span class="class-chip">AdapterPayPal</span>
+            <span class="class-chip">AdapterStripe</span>
           </div>
         </div>
       </div>
@@ -559,19 +566,22 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">16</span> Bridge</div>
-            <div class="pat-desc">La abstracción (tipo de notificación: creación, entrega) se separa de la implementación (canal: email, SMS). Ambas dimensiones varían de forma independiente mediante <code>CanalNotificacion</code>.</div>
+            <div class="pat-desc">La abstracción (tipo de reporte: envíos, ingresos, desempeño) se separa de la implementación (formato: PDF, JSON, Excel, CSV). 3 tipos × 4 formatos = 12 combinaciones con solo 7 clases. <code>Reporte</code> delega el formateo a <code>GeneradorReporte</code>; ambas jerarquías evolucionan independientes.</div>
           </div>
           <span class="hito-pill">Hito 7</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-bridge"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">ServicioNotificacion</span>
-            <span class="class-chip">NotificacionCreacion</span>
-            <span class="class-chip">NotificacionEntrega</span>
-            <span class="class-chip">CanalNotificacion</span>
-            <span class="class-chip">CanalEmail</span>
-            <span class="class-chip">CanalSMS</span>
+            <span class="class-chip">Reporte</span>
+            <span class="class-chip">ReporteEnvios</span>
+            <span class="class-chip">ReporteIngresos</span>
+            <span class="class-chip">ReporteDesempeno</span>
+            <span class="class-chip">GeneradorReporte</span>
+            <span class="class-chip">GeneradorPDF</span>
+            <span class="class-chip">GeneradorJSON</span>
+            <span class="class-chip">GeneradorExcel</span>
+            <span class="class-chip">GeneradorCSV</span>
           </div>
         </div>
       </div>
@@ -580,7 +590,7 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">17</span> Composite</div>
-            <div class="pat-desc"><code>CentroDistribucion</code> es el componente abstracto. <code>CentroDistribucionComposite</code> (hub, regional) contiene hijos; <code>SucursalEntrega</code> es hoja. El cliente trata a ambos de forma uniforme.</div>
+            <div class="pat-desc"><code>CentroDistribucion</code> es el componente abstracto. <code>CentroRegional</code> (nodo) agrega subcentros y delega recursivamente; <code>SucursalEntrega</code> (hoja) opera directamente sobre su lista de envíos.</div>
           </div>
           <span class="hito-pill">Hito 8</span>
         </div>
@@ -588,7 +598,7 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-composite"></div></div>
           <div class="pat-classes">
             <span class="class-chip">CentroDistribucion</span>
-            <span class="class-chip">CentroDistribucionComposite</span>
+            <span class="class-chip">CentroRegional</span>
             <span class="class-chip">SucursalEntrega</span>
           </div>
         </div>
@@ -598,18 +608,18 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">18</span> Decorator</div>
-            <div class="pat-desc"><code>DecoradorEnvio</code> (abstracto) envuelve otro decorador. Los concretos agregan capas dinámicamente: <code>Seguro</code> → <code>GPS</code> → <code>SMS</code> → <code>Prioritario</code> sobre <code>EnvioBasico</code>.</div>
+            <div class="pat-desc"><code>ComponenteEnvio</code> es la interfaz raíz. <code>DecoradorEnvio</code> (abstracto) envuelve otro <code>ComponenteEnvio</code>. Los concretos agregan capas dinámicamente: <code>Seguro</code> → <code>RastreoGPS</code> → <code>Prioritario</code> sobre <code>EnvioBasico</code>.</div>
           </div>
           <span class="hito-pill">Hito 8</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-decorator"></div></div>
           <div class="pat-classes">
+            <span class="class-chip">ComponenteEnvio</span>
             <span class="class-chip">DecoradorEnvio</span>
             <span class="class-chip">EnvioBasico</span>
             <span class="class-chip">DecoradorSeguro</span>
-            <span class="class-chip">DecoradorGPS</span>
-            <span class="class-chip">DecoradorSMS</span>
+            <span class="class-chip">DecoradorRastreoGPS</span>
             <span class="class-chip">DecoradorPrioritario</span>
           </div>
         </div>
@@ -619,7 +629,7 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">19</span> Facade</div>
-            <div class="pat-desc"><code>FacadeProveedoresExternos</code> expone una interfaz simple al controlador y oculta la complejidad del subsistema: fábrica, cálculo de costos, rutas, pagos y notificaciones.</div>
+            <div class="pat-desc">Dos fachadas de responsabilidad única: <code>FacadeProveedoresExternos</code> orquesta los Adapters de envío (DHL/FedEx/UPS) y pago (PayPal/Stripe); <code>FachadaReportes</code> orquesta el subsistema Bridge (Reporte × GeneradorReporte). El Controller delega a cada una sin conocer sus detalles.</div>
           </div>
           <span class="hito-pill">Hito 5</span>
         </div>
@@ -627,10 +637,11 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-facade"></div></div>
           <div class="pat-classes">
             <span class="class-chip">FacadeProveedoresExternos</span>
-            <span class="class-chip">FabricaDeEnvios</span>
-            <span class="class-chip">ServicioCalculoCosto</span>
-            <span class="class-chip">ServicioPago</span>
-            <span class="class-chip">ServicioNotificacion</span>
+            <span class="class-chip">FachadaReportes</span>
+            <span class="class-chip">ProveedorEnvio</span>
+            <span class="class-chip">ProveedorPago</span>
+            <span class="class-chip">GeneradorReporte</span>
+            <span class="class-chip">Logger</span>
           </div>
         </div>
       </div>
@@ -657,16 +668,16 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">21</span> Proxy</div>
-            <div class="pat-desc"><code>ProxyRepositorioEnvios</code> implementa la misma interfaz que <code>RepositorioEnviosReal</code> e interpone un cache en memoria. Las lecturas repetidas no tocan el repositorio real.</div>
+            <div class="pat-desc"><code>ProxyRepositorioEnvio</code> implementa la misma interfaz que <code>RepositorioEnvioMemoria</code> e interpone un cache. Las lecturas repetidas del mismo ID no acceden al repositorio subyacente.</div>
           </div>
           <span class="hito-pill">Hito 8</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-proxy"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">RepositorioEnvios</span>
-            <span class="class-chip">ProxyRepositorioEnvios</span>
-            <span class="class-chip">RepositorioEnviosReal</span>
+            <span class="class-chip">RepositorioEnvio</span>
+            <span class="class-chip">ProxyRepositorioEnvio</span>
+            <span class="class-chip">RepositorioEnvioMemoria</span>
           </div>
         </div>
       </div>
@@ -697,9 +708,11 @@
             <span class="class-chip">ValidadorEnvio</span>
             <span class="class-chip">CadenaValidadores</span>
             <span class="class-chip">ContextoValidacion</span>
-            <span class="class-chip">ValidadorPeso</span>
-            <span class="class-chip">ValidadorDestino</span>
-            <span class="class-chip">ValidadorCliente</span>
+            <span class="class-chip">ValidadorDatos</span>
+            <span class="class-chip">ValidadorInventario</span>
+            <span class="class-chip">ValidadorPago</span>
+            <span class="class-chip">ValidadorSeguridad</span>
+            <span class="class-chip">ValidadorCapacidad</span>
           </div>
         </div>
       </div>
@@ -726,7 +739,7 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">28</span> Observer</div>
-            <div class="pat-desc"><code>Envio</code> notifica a todos sus observadores cuando cambia de estado. <code>DashboardObservador</code>, <code>CentroDistribucionObservador</code> y <code>SistemaNotificacionObservador</code> reaccionan de forma independiente.</div>
+            <div class="pat-desc"><code>Envio</code> notifica a todos sus observadores cuando cambia de estado. <code>DashboardObservador</code>, <code>AuditoriaObservador</code> y <code>NotificadorClienteObservador</code> reaccionan de forma independiente.</div>
           </div>
           <span class="hito-pill">Hito 11</span>
         </div>
@@ -736,8 +749,8 @@
             <span class="class-chip">ObservadorEnvio</span>
             <span class="class-chip">Envio</span>
             <span class="class-chip">DashboardObservador</span>
-            <span class="class-chip">CentroDistribucionObservador</span>
-            <span class="class-chip">SistemaNotificacionObservador</span>
+            <span class="class-chip">AuditoriaObservador</span>
+            <span class="class-chip">NotificadorClienteObservador</span>
           </div>
         </div>
       </div>
@@ -754,8 +767,9 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-state"></div></div>
           <div class="pat-classes">
             <span class="class-chip">EstadoEnvio</span>
-            <span class="class-chip">EstadoPendiente</span>
+            <span class="class-chip">EstadoConfirmado</span>
             <span class="class-chip">EstadoEnTransito</span>
+            <span class="class-chip">EstadoEnReparto</span>
             <span class="class-chip">EstadoRetenido</span>
             <span class="class-chip">EstadoEntregado</span>
             <span class="class-chip">EstadoCancelado</span>
@@ -768,7 +782,7 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">30</span> Strategy</div>
-            <div class="pat-desc"><code>ServicioCalculoCosto</code> delega la fórmula a la estrategia configurada en tiempo de ejecución. Agregar <code>EstrategiaZonaHoraria</code> o <code>EstrategiaVolumen</code> no toca ninguna clase existente.</div>
+            <div class="pat-desc"><code>Envio.establecerEstrategia()</code> inyecta la estrategia en tiempo de ejecución; <code>calcularCosto()</code> delega a ella. Agregar <code>EstrategiaHibrida</code> no toca ninguna clase existente.</div>
           </div>
           <span class="hito-pill">Hito 6</span>
         </div>
@@ -780,7 +794,7 @@
             <span class="class-chip">EstrategiaUrgencia</span>
             <span class="class-chip">EstrategiaDistancia</span>
             <span class="class-chip">EstrategiaHibrida</span>
-            <span class="class-chip">ServicioCalculoCosto</span>
+            <span class="class-chip">Envio</span>
           </div>
         </div>
       </div>
@@ -802,7 +816,7 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">33</span> Repository</div>
-            <div class="pat-desc">El dominio opera con <code>RepositorioEnvio</code> (interfaz). La misma interfaz tiene <code>RepositorioEnvioMemoria</code> para tests y <code>RepositorioEnvioSQL</code> para producción. Nunca hay SQL en el dominio.</div>
+            <div class="pat-desc">El dominio opera con <code>RepositorioEnvio</code> (extiende <code>Repositorio&lt;Envio&gt;</code>). La implementación real es <code>RepositorioEnvioMemoria</code>. Nunca hay SQL en el dominio.</div>
           </div>
           <span class="hito-pill">Hito 13</span>
         </div>
@@ -812,7 +826,6 @@
             <span class="class-chip">Repositorio</span>
             <span class="class-chip">RepositorioEnvio</span>
             <span class="class-chip">RepositorioEnvioMemoria</span>
-            <span class="class-chip">RepositorioEnvioSQL</span>
           </div>
         </div>
       </div>
@@ -829,9 +842,8 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-data-mapper"></div></div>
           <div class="pat-classes">
             <span class="class-chip">EnvioMapper</span>
-            <span class="class-chip">EnvioMapperSQL</span>
-            <span class="class-chip">ClienteMapper</span>
-            <span class="class-chip">CobroMapper</span>
+            <span class="class-chip">EnvioMapperMemoria</span>
+            <span class="class-chip">ConexionBD</span>
           </div>
         </div>
       </div>
@@ -848,8 +860,9 @@
           <div class="diagram-wrap"><div class="mermaid" id="d-unit-of-work"></div></div>
           <div class="pat-classes">
             <span class="class-chip">UnitOfWork</span>
+            <span class="class-chip">RepositorioEnvio</span>
             <span class="class-chip">EnvioMapper</span>
-            <span class="class-chip">CobroMapper</span>
+            <span class="class-chip">ConexionBD</span>
           </div>
         </div>
       </div>
@@ -858,16 +871,15 @@
         <div class="pat-card-head">
           <div class="pat-card-head-left">
             <div class="pat-name"><span class="pat-num">36</span> Lazy Load</div>
-            <div class="pat-desc"><code>CentroDistribucionLazyProxy</code> retrasa la carga del objeto real hasta el primer acceso. Las consultas que solo necesitan el ID nunca ejecutan la query. Subclasifica el tipo original sin romper el contrato.</div>
+            <div class="pat-desc"><code>ClienteLazyProxy</code> extiende <code>ClienteFinal</code> y retrasa la carga de datos pesados (historial, categoría fidelidad) hasta el primer acceso. Las consultas que solo necesitan el ID nunca llaman a la BD.</div>
           </div>
           <span class="hito-pill">Hito 13</span>
         </div>
         <div class="pat-card-body">
           <div class="diagram-wrap"><div class="mermaid" id="d-lazy-load"></div></div>
           <div class="pat-classes">
-            <span class="class-chip">CentroDistribucionLazyProxy</span>
             <span class="class-chip">ClienteLazyProxy</span>
-            <span class="class-chip">HistorialEnviosLazyProxy</span>
+            <span class="class-chip">ClienteFinal</span>
           </div>
         </div>
       </div>
@@ -967,78 +979,98 @@ const DIAGRAMS = {
 
 'controller': `classDiagram
     class LogiSmartController {
-        <<singleton>>
-        -servicio: FacadeProveedoresExternos
-        +crearEnvio(datos) Envio
-        +cancelarEnvio(id) void
-        +consultarEnvio(id) Envio
-        -verificarPermiso(u, op) void
+        -facade: FacadeProveedoresExternos
+        -fachadaReportes: FachadaReportes
+        +crearEnvio(actor, e, cobro) String
+        +generarReporteAdmin(actor, tipo, fmt) String
+        +consultarEnviosPorEmpresa(actor, empId, solId) List
     }
     class FacadeProveedoresExternos {
-        +crearEnvio(ctx) Envio
-        +calcularCosto(e) double
-        +asignarRuta(e) void
+        +registrarEnvioExterno(e, prov) String
+        +procesarPago(monto, ref, prov) String
+    }
+    class FachadaReportes {
+        +generarReporte(envios, tipo, fmt) String
     }
     class RepositorioEnvio {
         <<interface>>
         +guardar(e) void
-        +buscarPorId(id) Envio
-        +listar() List~Envio~
+        +obtener(id) Optional
+        +obtenerTodos() List
     }
     LogiSmartController --> FacadeProveedoresExternos
-    FacadeProveedoresExternos --> RepositorioEnvio`,
+    LogiSmartController --> FachadaReportes
+    LogiSmartController --> RepositorioEnvio`,
 
 'low-coupling': `classDiagram
-    class ProveedorEntrega {
+    class ProveedorEnvio {
         <<interface>>
-        +realizarEntrega(e) ResultadoEntrega
+        +crearEnvio(e) String
+        +obtenerEstado(tracking) String
         +calcularCosto(e) double
         +obtenerNombre() String
     }
-    class ServicioEntregaAndreani {
-        +realizarEntrega(e) ResultadoEntrega
+    class AdapterDHL {
+        -dhlApi: DHLAPI
+        +crearEnvio(e) String
         +calcularCosto(e) double
         +obtenerNombre() String
     }
-    class ServicioEntregaOCA {
-        +realizarEntrega(e) ResultadoEntrega
+    class AdapterFedEx {
+        -fedexApi: FedExAPI
+        +crearEnvio(e) String
+        +calcularCosto(e) double
+        +obtenerNombre() String
+    }
+    class AdapterUPS {
+        -upsApi: UPSAPI
+        +crearEnvio(e) String
         +calcularCosto(e) double
         +obtenerNombre() String
     }
     class FacadeProveedoresExternos {
-        -proveedor: ProveedorEntrega
-        +setProveedor(p) void
+        -dhl: ProveedorEnvio
+        -fedex: ProveedorEnvio
+        -ups: ProveedorEnvio
+        +registrarEnvioExterno(e, proveedor) String
     }
-    ServicioEntregaAndreani ..|> ProveedorEntrega
-    ServicioEntregaOCA ..|> ProveedorEntrega
-    FacadeProveedoresExternos o-- ProveedorEntrega`,
+    AdapterDHL ..|> ProveedorEnvio
+    AdapterFedEx ..|> ProveedorEnvio
+    AdapterUPS ..|> ProveedorEnvio
+    FacadeProveedoresExternos o-- ProveedorEnvio`,
 
 'high-cohesion': `classDiagram
     class FacadeProveedoresExternos {
-        +crearEnvio(ctx) Envio
-        +rutearEnvio(e) void
+        -dhl: ProveedorEnvio
+        -fedex: ProveedorEnvio
+        -paypal: ProveedorPago
+        -stripe: ProveedorPago
+        +registrarEnvioExterno(e, prov) String
+        +procesarPago(monto, ref, prov) String
     }
-    class ServicioNotificacion {
-        +notificarCreacion(e) void
-        +notificarEntrega(e) void
-        +notificarCancelacion(e) void
+    class FachadaReportes {
+        +generarReporte(envios, tipo, fmt) String
     }
-    class ServicioPago {
-        +procesarCobro(e) Cobro
-        +revertirCobro(c) void
+    class ProveedorEnvio {
+        <<interface>>
+        +crearEnvio(e) String
+        +calcularCosto(e) double
+        +obtenerNombre() String
     }
-    class ServicioRutas {
-        +calcularRuta(o, d) Ruta
-        +optimizarRuta(r) Ruta
+    class ProveedorPago {
+        <<interface>>
+        +procesarPago(monto, ref) String
+        +reembolsar(txnId, monto) void
+        +obtenerNombre() String
     }
-    class ServicioClientes {
-        +buscarCliente(id) Cliente
-        +registrarCliente(c) void
+    class GeneradorReporte {
+        <<interface>>
+        +formatear(contenido) String
+        +obtenerExtension() String
     }
-    FacadeProveedoresExternos --> ServicioNotificacion
-    FacadeProveedoresExternos --> ServicioPago
-    FacadeProveedoresExternos --> ServicioRutas
-    FacadeProveedoresExternos --> ServicioClientes`,
+    FacadeProveedoresExternos --> ProveedorEnvio
+    FacadeProveedoresExternos --> ProveedorPago
+    FachadaReportes --> GeneradorReporte`,
 
 'polymorphism': `classDiagram
     class EstadoEnvio {
@@ -1049,295 +1081,335 @@ const DIAGRAMS = {
         +retener(e) void
         +devolver(e) void
         +reclamar(e) void
+        +obtenerNombre() String
     }
-    class EstadoPendiente {
+    class EstadoConfirmado {
         +validar(e) void
         +cancelar(e) void
+        +retener(e) void
+        +obtenerNombre() String
     }
     class EstadoEnTransito {
         +entregar(e) void
         +retener(e) void
+        +obtenerNombre() String
+    }
+    class EstadoEnReparto {
+        +entregar(e) void
+        +obtenerNombre() String
     }
     class EstadoEntregado {
         +reclamar(e) void
+        +obtenerNombre() String
     }
-    class EstadoCancelado
+    class EstadoCancelado {
+        +obtenerNombre() String
+    }
     class EstadoRetenido {
         +entregar(e) void
         +devolver(e) void
+        +obtenerNombre() String
     }
-    EstadoPendiente ..|> EstadoEnvio
+    EstadoConfirmado ..|> EstadoEnvio
     EstadoEnTransito ..|> EstadoEnvio
+    EstadoEnReparto ..|> EstadoEnvio
     EstadoEntregado ..|> EstadoEnvio
     EstadoCancelado ..|> EstadoEnvio
     EstadoRetenido ..|> EstadoEnvio`,
 
 'pure-fabrication': `classDiagram
-    class FabricaDeEnvios {
-        +crearEnvio(tipo, e, f) Envio
-        +crearEnvioUrgente(e) Envio
-        +crearEnvioInternacional(e) Envio
+    class UsuarioFactory {
+        +crear(tipo, username, email) Usuario
     }
     class FacadeProveedoresExternos {
-        +crearEnvio(ctx) Envio
-        +calcularCosto(e) double
+        +registrarEnvioExterno(e, prov) String
+        +procesarPago(monto, ref, prov) String
+        +generarReporte(envios, tipo, fmt) String
     }
     class Envio {
         -id: String
-        -tipo: TipoEnvio
+        -origen: String
+        -destino: String
         -estado: EstadoEnvio
     }
-    class Cliente {
-        -id: String
-        -nombre: String
-        -empresa: Empresa
-    }
-    FacadeProveedoresExternos ..> FabricaDeEnvios : delega creacion
-    FabricaDeEnvios ..> Envio : crea
-    FacadeProveedoresExternos --> Envio
-    Envio --> Cliente`,
+    UsuarioFactory ..> Envio : no relacionado
+    FacadeProveedoresExternos ..> Envio : orquesta`,
 
 'indirection': `classDiagram
     class FacadeProveedoresExternos {
-        -proveedor: ProveedorEntrega
-        +realizarEntrega(e) void
+        -dhl: ProveedorEnvio
+        +registrarEnvioExterno(e, prov) String
     }
-    class ProveedorEntrega {
+    class ProveedorEnvio {
         <<interface>>
-        +realizarEntrega(e) ResultadoEntrega
+        +crearEnvio(e) String
         +calcularCosto(e) double
+        +obtenerNombre() String
     }
-    class AdaptadorAndreani {
-        -andreani: ClienteAndreani
-        +realizarEntrega(e) ResultadoEntrega
+    class AdapterDHL {
+        -dhlApi: DHLAPI
+        +crearEnvio(e) String
         +calcularCosto(e) double
+        +obtenerNombre() String
     }
-    class ClienteAndreani {
-        +enviar(datos) RespuestaAndreani
-        +cotizar(datos) double
+    class DHLAPI {
+        +shipPackage(data) String
+        +getRate(weight) double
     }
-    FacadeProveedoresExternos --> ProveedorEntrega
-    AdaptadorAndreani ..|> ProveedorEntrega
-    AdaptadorAndreani --> ClienteAndreani`,
+    FacadeProveedoresExternos --> ProveedorEnvio
+    AdapterDHL ..|> ProveedorEnvio
+    AdapterDHL --> DHLAPI`,
 
 'protected-variations': `classDiagram
     class EstrategiaCalculoCosto {
         <<interface>>
         +calcular(e) double
-        +obtenerNombre() String
     }
     class EstrategiaPeso {
         +calcular(e) double
-        +obtenerNombre() String
     }
     class EstrategiaUrgencia {
         +calcular(e) double
-        +obtenerNombre() String
     }
     class EstrategiaDistancia {
         +calcular(e) double
-        +obtenerNombre() String
     }
     class EstrategiaHibrida {
         +calcular(e) double
-        +obtenerNombre() String
     }
-    class ServicioCalculoCosto {
+    class Envio {
         -estrategia: EstrategiaCalculoCosto
-        +setEstrategia(s) void
-        +calcularCosto(e) double
+        +establecerEstrategia(s) void
+        +calcularCosto() double
     }
     EstrategiaPeso ..|> EstrategiaCalculoCosto
     EstrategiaUrgencia ..|> EstrategiaCalculoCosto
     EstrategiaDistancia ..|> EstrategiaCalculoCosto
     EstrategiaHibrida ..|> EstrategiaCalculoCosto
-    ServicioCalculoCosto o-- EstrategiaCalculoCosto`,
+    Envio o-- EstrategiaCalculoCosto`,
 
 'singleton': `classDiagram
-    class LogiSmartController {
+    class Logger {
         <<singleton>>
-        -instancia LogiSmartController
-        -servicio FacadeProveedoresExternos
-        -repositorio RepositorioEnvio
-        -LogiSmartController()
-        +getInstancia() LogiSmartController
-        +crearEnvio(datos) Envio
-        +cancelarEnvio(id) void
-        +consultarEnvio(id) Envio
-        +modificarEnvio(id, datos) void
+        -instancia Logger
+        -Logger()
+        +obtenerInstancia() Logger
+        +log(mensaje) void
+        +logError(ctx, e) void
+    }
+    class ConexionBD {
+        <<singleton>>
+        -instancia ConexionBD
+        -ConexionBD()
+        +obtenerInstancia() ConexionBD
+        +ejecutarQuery(sql) void
     }`,
 
 'factory-method': `classDiagram
-    class FabricaEnvio {
+    class UsuarioFactory {
+        +crear(tipo, username, email) Usuario
+    }
+    class Usuario {
         <<abstract>>
-        +crearEnvio() Envio
-        +procesarEnvio(ctx) Envio
-    }
-    class FabricaEnvioNacional {
-        +crearEnvio() Envio
-    }
-    class FabricaEnvioInternacional {
-        +crearEnvio() Envio
-    }
-    class FabricaEnvioUrgente {
-        +crearEnvio() Envio
-    }
-    class Envio {
         -id: String
-        -tipo: TipoEnvio
-        -peso: double
+        -username: String
+        -email: String
+        -rol: Rol
     }
-    FabricaEnvioNacional --|> FabricaEnvio
-    FabricaEnvioInternacional --|> FabricaEnvio
-    FabricaEnvioUrgente --|> FabricaEnvio
-    FabricaEnvio ..> Envio : crea`,
+    class OperadorLogistico {
+        +obtenerRol() Rol
+    }
+    class AdminEmpresa {
+        +obtenerRol() Rol
+    }
+    class Transportista {
+        -licencia: String
+        +obtenerRol() Rol
+    }
+    class ClienteFinal {
+        +obtenerRol() Rol
+    }
+    OperadorLogistico --|> Usuario
+    AdminEmpresa --|> Usuario
+    Transportista --|> Usuario
+    ClienteFinal --|> Usuario
+    UsuarioFactory ..> Usuario : crea`,
 
 'abstract-factory': `classDiagram
-    class FabricaSistemaLogistico {
+    class LogiSmartFactory {
+        <<interface>>
+        +crearVehiculo() Vehiculo
+        +crearCalculadorCostos() CalculadorCostos
+        +crearProveedorMapas() ProveedorMapas
+    }
+    class LogiSmartFactoryArgentina {
+        +crearVehiculo() Vehiculo
+        +crearCalculadorCostos() CalculadorCostos
+        +crearProveedorMapas() ProveedorMapas
+    }
+    class LogiSmartFactoryBrasil {
+        +crearVehiculo() Vehiculo
+        +crearCalculadorCostos() CalculadorCostos
+        +crearProveedorMapas() ProveedorMapas
+    }
+    class Vehiculo {
         <<abstract>>
-        +crearRepositorioEnvio() RepositorioEnvio
-        +crearRepositorioCliente() RepositorioCliente
-        +crearEnvioMapper() EnvioMapper
+        +obtenerCapacidad() int
+        +obtenerTipo() String
     }
-    class FabricaSistemaMemoria {
-        +crearRepositorioEnvio() RepositorioEnvio
-        +crearRepositorioCliente() RepositorioCliente
-        +crearEnvioMapper() EnvioMapper
-    }
-    class FabricaSistemaSQL {
-        +crearRepositorioEnvio() RepositorioEnvio
-        +crearRepositorioCliente() RepositorioCliente
-        +crearEnvioMapper() EnvioMapper
-    }
-    class RepositorioEnvio {
+    class CalculadorCostos {
         <<interface>>
+        +calcular(peso, distancia) double
     }
-    class EnvioMapper {
+    class ProveedorMapas {
         <<interface>>
+        +calcularDistancia(o, d) double
     }
-    FabricaSistemaMemoria --|> FabricaSistemaLogistico
-    FabricaSistemaSQL --|> FabricaSistemaLogistico
-    FabricaSistemaMemoria ..> RepositorioEnvio
-    FabricaSistemaMemoria ..> EnvioMapper
-    FabricaSistemaSQL ..> RepositorioEnvio
-    FabricaSistemaSQL ..> EnvioMapper`,
+    LogiSmartFactoryArgentina ..|> LogiSmartFactory
+    LogiSmartFactoryBrasil ..|> LogiSmartFactory
+    LogiSmartFactoryArgentina ..> Vehiculo
+    LogiSmartFactoryArgentina ..> CalculadorCostos
+    LogiSmartFactoryArgentina ..> ProveedorMapas
+    LogiSmartFactoryBrasil ..> Vehiculo
+    LogiSmartFactoryBrasil ..> CalculadorCostos
+    LogiSmartFactoryBrasil ..> ProveedorMapas`,
 
 'builder': `classDiagram
+    class Envio {
+        -id: String
+        -origen: String
+        -destino: String
+        -peso: double
+        -tipo: String
+        -prioridad: String
+        -fragil: bool
+        +clone() Envio
+    }
     class EnvioBuilder {
         -id: String
-        -origen: PuntoEntrega
-        -destino: PuntoEntrega
-        -tipo: TipoEnvio
+        -origen: String
+        -destino: String
         -peso: double
-        -empresa: Empresa
-        -fechaEstimada: LocalDate
-        +tipoEnvio(t) EnvioBuilder
-        +conPeso(p) EnvioBuilder
-        +conEmpresa(e) EnvioBuilder
-        +conFecha(f) EnvioBuilder
-        +conOrigen(o) EnvioBuilder
-        +conDestino(d) EnvioBuilder
+        -tipo: String
+        -prioridad: String
+        -fragil: bool
+        +estado(v) EnvioBuilder
+        +peso(v) EnvioBuilder
+        +tipo(v) EnvioBuilder
+        +prioridad(v) EnvioBuilder
+        +fragil(v) EnvioBuilder
         +build() Envio
     }
-    class Envio {
-        -id: String
-        -tipo: TipoEnvio
-        -peso: double
-        -empresa: Empresa
-        -fechaEstimada: LocalDate
-    }
-    class FabricaDeEnvios {
-        +crearEnvio(tipo, e, f) Envio
-    }
-    FabricaDeEnvios ..> EnvioBuilder : configura
-    EnvioBuilder ..> Envio : build`,
+    EnvioBuilder ..> Envio : build
+    Envio *-- EnvioBuilder : contiene`,
 
 'prototype': `classDiagram
-    class Cloneable {
-        <<interface>>
-        +clonar() Object
-    }
-    class Ruta {
-        -origen: PuntoEntrega
-        -destino: PuntoEntrega
-        -distancia: double
-        -waypoints: List~PuntoEntrega~
-        +clonar() Ruta
-        +modificarDestino(d) void
-    }
     class Envio {
         -id: String
-        -tipo: TipoEnvio
-        -ruta: Ruta
-        +clonar() Envio
+        -origen: String
+        -destino: String
+        -peso: double
+        -tipo: String
+        +clone() Envio
     }
-    Ruta ..|> Cloneable
-    Envio ..|> Cloneable
-    Envio --> Ruta`,
+    class ServicioImportacion {
+        +importarPedidos(pedidos, empresa) List~Envio~
+    }
+    ServicioImportacion ..> Envio : clone()`,
 
 'adapter': `classDiagram
-    class ProveedorEntrega {
+    class ProveedorEnvio {
         <<interface>>
-        +realizarEntrega(e) ResultadoEntrega
+        +crearEnvio(e) String
+        +obtenerEstado(tracking) String
         +calcularCosto(e) double
         +obtenerNombre() String
     }
-    class AdaptadorAndreani {
-        -clienteAndreani: ClienteAndreani
-        +realizarEntrega(e) ResultadoEntrega
+    class AdapterDHL {
+        -dhlApi: DHLAPI
+        +crearEnvio(e) String
         +calcularCosto(e) double
         +obtenerNombre() String
     }
-    class AdaptadorOCA {
-        -clienteOCA: ClienteOCA
-        +realizarEntrega(e) ResultadoEntrega
-        +calcularCosto(e) double
+    class AdapterFedEx {
+        -fedexApi: FedExAPI
+        +crearEnvio(e) String
         +obtenerNombre() String
     }
-    class ClienteAndreani {
-        +enviar(datos) RespuestaAndreani
-        +cotizar(datos) double
+    class AdapterUPS {
+        -upsApi: UPSAPI
+        +crearEnvio(e) String
+        +obtenerNombre() String
     }
-    class ClienteOCA {
-        +despachar(datos) ResultadoOCA
-        +calcularTarifa(peso) double
+    class ProveedorPago {
+        <<interface>>
+        +procesarPago(monto, ref) String
+        +reembolsar(txnId, monto) void
+        +obtenerNombre() String
     }
-    AdaptadorAndreani ..|> ProveedorEntrega
-    AdaptadorOCA ..|> ProveedorEntrega
-    AdaptadorAndreani --> ClienteAndreani
-    AdaptadorOCA --> ClienteOCA`,
+    class AdapterPayPal {
+        +procesarPago(monto, ref) String
+        +obtenerNombre() String
+    }
+    class AdapterStripe {
+        +procesarPago(monto, ref) String
+        +obtenerNombre() String
+    }
+    AdapterDHL ..|> ProveedorEnvio
+    AdapterFedEx ..|> ProveedorEnvio
+    AdapterUPS ..|> ProveedorEnvio
+    AdapterPayPal ..|> ProveedorPago
+    AdapterStripe ..|> ProveedorPago`,
 
 'bridge': `classDiagram
-    class ServicioNotificacion {
+    class Reporte {
         <<abstract>>
-        #canal: CanalNotificacion
-        +notificar(e, msg) void
+        #generador: GeneradorReporte
+        +generar() String
+        +generarContenido() String
+        +obtenerNombreArchivo(nombre) String
     }
-    class NotificacionCreacion {
-        +notificar(e, msg) void
+    class ReporteEnvios {
+        -envios: List~Envio~
+        +generarContenido() String
     }
-    class NotificacionEntrega {
-        +notificar(e, msg) void
+    class ReporteIngresos {
+        -envios: List~Envio~
+        +generarContenido() String
     }
-    class NotificacionCancelacion {
-        +notificar(e, msg) void
+    class ReporteDesempeno {
+        -envios: List~Envio~
+        +generarContenido() String
     }
-    class CanalNotificacion {
+    class GeneradorReporte {
         <<interface>>
-        +enviar(destinatario, msg) void
+        +formatear(contenido) String
+        +obtenerExtension() String
     }
-    class CanalEmail {
-        +enviar(destinatario, msg) void
+    class GeneradorPDF {
+        +formatear(contenido) String
+        +obtenerExtension() String
     }
-    class CanalSMS {
-        +enviar(destinatario, msg) void
+    class GeneradorJSON {
+        +formatear(contenido) String
+        +obtenerExtension() String
     }
-    NotificacionCreacion --|> ServicioNotificacion
-    NotificacionEntrega --|> ServicioNotificacion
-    NotificacionCancelacion --|> ServicioNotificacion
-    ServicioNotificacion o-- CanalNotificacion
-    CanalEmail ..|> CanalNotificacion
-    CanalSMS ..|> CanalNotificacion`,
+    class GeneradorExcel {
+        +formatear(contenido) String
+        +obtenerExtension() String
+    }
+    class GeneradorCSV {
+        +formatear(contenido) String
+        +obtenerExtension() String
+    }
+    ReporteEnvios --|> Reporte
+    ReporteIngresos --|> Reporte
+    ReporteDesempeno --|> Reporte
+    Reporte o-- GeneradorReporte
+    GeneradorPDF ..|> GeneradorReporte
+    GeneradorJSON ..|> GeneradorReporte
+    GeneradorExcel ..|> GeneradorReporte
+    GeneradorCSV ..|> GeneradorReporte`,
 
 'composite': `classDiagram
     class CentroDistribucion {
@@ -1348,11 +1420,13 @@ const DIAGRAMS = {
         +obtenerCapacidad() int
         +obtenerOcupacion() int
         +mostrar(profundidad) void
+        +obtenerPorcentajeOcupacion() double
     }
-    class CentroDistribucionComposite {
-        -hijos: List~CentroDistribucion~
+    class CentroRegional {
+        -subcentros: List~CentroDistribucion~
         +agregar(c) void
         +remover(c) void
+        +obtenerSubcentros() List~CentroDistribucion~
         +obtenerCapacidad() int
         +obtenerOcupacion() int
         +mostrar(profundidad) void
@@ -1366,72 +1440,86 @@ const DIAGRAMS = {
         +obtenerOcupacion() int
         +mostrar(profundidad) void
     }
-    CentroDistribucionComposite --|> CentroDistribucion
+    CentroRegional --|> CentroDistribucion
     SucursalEntrega --|> CentroDistribucion
-    CentroDistribucionComposite o-- CentroDistribucion : hijos`,
+    CentroRegional o-- CentroDistribucion : subcentros`,
 
 'decorator': `classDiagram
-    class DecoradorEnvio {
-        <<abstract>>
-        #envioDecorado: DecoradorEnvio
-        +calcularCosto() double
-        +calcularTiempoEntrega() int
+    class ComponenteEnvio {
+        <<interface>>
+        +obtenerCosto() double
+        +obtenerTiempoEntrega() int
         +obtenerDescripcion() String
+        +obtenerServicios() String
     }
     class EnvioBasico {
         -costoBase: double
         -tiempoBase: int
-        +calcularCosto() double
-        +calcularTiempoEntrega() int
+        +obtenerCosto() double
+        +obtenerTiempoEntrega() int
         +obtenerDescripcion() String
+        +obtenerServicios() String
+    }
+    class DecoradorEnvio {
+        <<abstract>>
+        #componente: ComponenteEnvio
+        +obtenerCosto() double
+        +obtenerTiempoEntrega() int
+        +obtenerDescripcion() String
+        +obtenerServicios() String
     }
     class DecoradorSeguro {
-        +calcularCosto() double
-        +obtenerDescripcion() String
+        +obtenerCosto() double
+        +obtenerServicios() String
     }
-    class DecoradorGPS {
-        +calcularCosto() double
-        +calcularTiempoEntrega() int
-        +obtenerDescripcion() String
-    }
-    class DecoradorSMS {
-        +calcularCosto() double
-        +obtenerDescripcion() String
+    class DecoradorRastreoGPS {
+        +obtenerCosto() double
+        +obtenerServicios() String
     }
     class DecoradorPrioritario {
-        +calcularCosto() double
-        +calcularTiempoEntrega() int
-        +obtenerDescripcion() String
+        +obtenerCosto() double
+        +obtenerTiempoEntrega() int
+        +obtenerServicios() String
     }
-    EnvioBasico --|> DecoradorEnvio
+    EnvioBasico ..|> ComponenteEnvio
+    DecoradorEnvio ..|> ComponenteEnvio
     DecoradorSeguro --|> DecoradorEnvio
-    DecoradorGPS --|> DecoradorEnvio
-    DecoradorSMS --|> DecoradorEnvio
+    DecoradorRastreoGPS --|> DecoradorEnvio
     DecoradorPrioritario --|> DecoradorEnvio
-    DecoradorEnvio o-- DecoradorEnvio : envioDecorado`,
+    DecoradorEnvio o-- ComponenteEnvio : componente`,
 
 'facade': `classDiagram
     class FacadeProveedoresExternos {
-        -fabrica: FabricaDeEnvios
-        -calculoCosto: ServicioCalculoCosto
-        -rutas: ServicioRutas
-        -pagos: ServicioPago
-        -notificacion: ServicioNotificacion
-        +crearEnvio(ctx) Envio
-        +calcularCosto(e) double
-        +asignarRuta(e) void
-        +procesarPago(e) Cobro
+        -dhl: ProveedorEnvio
+        -fedex: ProveedorEnvio
+        -ups: ProveedorEnvio
+        -paypal: ProveedorPago
+        -stripe: ProveedorPago
+        +registrarEnvioExterno(e, prov) String
+        +cotizarCostoExterno(e, prov) double
+        +procesarPago(monto, ref, prov) String
     }
-    class FabricaDeEnvios
-    class ServicioCalculoCosto
-    class ServicioRutas
-    class ServicioPago
-    class ServicioNotificacion
-    FacadeProveedoresExternos --> FabricaDeEnvios
-    FacadeProveedoresExternos --> ServicioCalculoCosto
-    FacadeProveedoresExternos --> ServicioRutas
-    FacadeProveedoresExternos --> ServicioPago
-    FacadeProveedoresExternos --> ServicioNotificacion`,
+    class FachadaReportes {
+        +generarReporte(envios, tipo, fmt) String
+    }
+    class ProveedorEnvio {
+        <<interface>>
+    }
+    class ProveedorPago {
+        <<interface>>
+    }
+    class GeneradorReporte {
+        <<interface>>
+    }
+    class Logger {
+        <<singleton>>
+        +log(msg) void
+    }
+    FacadeProveedoresExternos --> ProveedorEnvio
+    FacadeProveedoresExternos --> ProveedorPago
+    FacadeProveedoresExternos --> Logger
+    FachadaReportes --> GeneradorReporte
+    FachadaReportes --> Logger`,
 
 'flyweight': `classDiagram
     class Ubicacion {
@@ -1459,42 +1547,42 @@ const DIAGRAMS = {
     PuntoEntrega --> Ubicacion : compartida`,
 
 'proxy': `classDiagram
-    class RepositorioEnvios {
+    class RepositorioEnvio {
         <<interface>>
-        +buscarPorId(id) Envio
         +guardar(e) void
+        +buscarPorId(id) Envio
         +listar() List~Envio~
         +eliminar(id) void
+        +buscarPorEstado(estado) List~Envio~
+        +buscarPorEmpresa(empresaId) List~Envio~
     }
-    class RepositorioEnviosReal {
+    class RepositorioEnvioMemoria {
         -almacen: Map~String, Envio~
-        +buscarPorId(id) Envio
         +guardar(e) void
+        +buscarPorId(id) Envio
         +listar() List~Envio~
-        +eliminar(id) void
     }
-    class ProxyRepositorioEnvios {
-        -real: RepositorioEnviosReal
+    class ProxyRepositorioEnvio {
+        -real: RepositorioEnvio
         -cache: Map~String, Envio~
-        +buscarPorId(id) Envio
         +guardar(e) void
+        +buscarPorId(id) Envio
         +listar() List~Envio~
-        +eliminar(id) void
     }
-    RepositorioEnviosReal ..|> RepositorioEnvios
-    ProxyRepositorioEnvios ..|> RepositorioEnvios
-    ProxyRepositorioEnvios --> RepositorioEnviosReal`,
+    RepositorioEnvioMemoria ..|> RepositorioEnvio
+    ProxyRepositorioEnvio ..|> RepositorioEnvio
+    ProxyRepositorioEnvio --> RepositorioEnvioMemoria`,
 
 'chain': `classDiagram
     class ValidadorEnvio {
         <<abstract>>
         #siguiente: ValidadorEnvio
         +setSiguiente(v) ValidadorEnvio
-        +validar(ctx) void
-        +obtenerNombre() String
+        +validar(ctx) bool
     }
     class CadenaValidadores {
-        +construir() ValidadorEnvio
+        -cabeza: ValidadorEnvio
+        +validar(ctx) bool
     }
     class ContextoValidacion {
         -envio: Envio
@@ -1502,23 +1590,27 @@ const DIAGRAMS = {
         +addError(msg) void
         +esValido() bool
     }
-    class ValidadorPeso {
-        +obtenerNombre() String
+    class ValidadorDatos {
+        +validar(ctx) bool
     }
-    class ValidadorDestino {
-        +obtenerNombre() String
+    class ValidadorInventario {
+        +validar(ctx) bool
     }
-    class ValidadorCliente {
-        +obtenerNombre() String
+    class ValidadorPago {
+        +validar(ctx) bool
     }
-    class ValidadorFecha {
-        +obtenerNombre() String
+    class ValidadorSeguridad {
+        +validar(ctx) bool
     }
-    ValidadorPeso --|> ValidadorEnvio
-    ValidadorDestino --|> ValidadorEnvio
-    ValidadorCliente --|> ValidadorEnvio
-    ValidadorFecha --|> ValidadorEnvio
-    CadenaValidadores ..> ValidadorEnvio
+    class ValidadorCapacidad {
+        +validar(ctx) bool
+    }
+    ValidadorDatos --|> ValidadorEnvio
+    ValidadorInventario --|> ValidadorEnvio
+    ValidadorPago --|> ValidadorEnvio
+    ValidadorSeguridad --|> ValidadorEnvio
+    ValidadorCapacidad --|> ValidadorEnvio
+    CadenaValidadores --> ValidadorEnvio
     ValidadorEnvio --> ValidadorEnvio : siguiente
     ValidadorEnvio --> ContextoValidacion`,
 
@@ -1554,28 +1646,28 @@ const DIAGRAMS = {
 'observer': `classDiagram
     class ObservadorEnvio {
         <<interface>>
-        +actualizar(e, evento) void
+        +actualizar(e) void
     }
     class Envio {
         -observadores: List~ObservadorEnvio~
         -id: String
         -estado: EstadoEnvio
-        +agregarObservador(o) void
-        +removerObservador(o) void
-        +notificarObservadores(evento) void
+        +adjuntarObservador(o) void
+        +desadjuntarObservador(o) void
+        -notificarObservadores() void
     }
     class DashboardObservador {
-        +actualizar(e, evento) void
+        +actualizar(e) void
     }
-    class CentroDistribucionObservador {
-        +actualizar(e, evento) void
+    class AuditoriaObservador {
+        +actualizar(e) void
     }
-    class SistemaNotificacionObservador {
-        +actualizar(e, evento) void
+    class NotificadorClienteObservador {
+        +actualizar(e) void
     }
     DashboardObservador ..|> ObservadorEnvio
-    CentroDistribucionObservador ..|> ObservadorEnvio
-    SistemaNotificacionObservador ..|> ObservadorEnvio
+    AuditoriaObservador ..|> ObservadorEnvio
+    NotificadorClienteObservador ..|> ObservadorEnvio
     Envio o-- ObservadorEnvio`,
 
 'state': `classDiagram
@@ -1587,30 +1679,45 @@ const DIAGRAMS = {
         +retener(e) void
         +devolver(e) void
         +reclamar(e) void
+        +obtenerNombre() String
     }
-    class EstadoPendiente {
+    class EstadoConfirmado {
         +validar(e) void
         +cancelar(e) void
+        +retener(e) void
+        +obtenerNombre() String
     }
     class EstadoEnTransito {
         +entregar(e) void
         +retener(e) void
+        +obtenerNombre() String
+    }
+    class EstadoEnReparto {
+        +entregar(e) void
+        +obtenerNombre() String
     }
     class EstadoRetenido {
         +entregar(e) void
         +devolver(e) void
+        +obtenerNombre() String
     }
     class EstadoEntregado {
         +reclamar(e) void
+        +obtenerNombre() String
     }
-    class EstadoCancelado
+    class EstadoCancelado {
+        +obtenerNombre() String
+    }
     class Envio {
         -estado: EstadoEnvio
         +cambiarEstado(s) void
-        +getEstado() EstadoEnvio
+        +validar() void
+        +entregar() void
+        +cancelar() void
     }
-    EstadoPendiente ..|> EstadoEnvio
+    EstadoConfirmado ..|> EstadoEnvio
     EstadoEnTransito ..|> EstadoEnvio
+    EstadoEnReparto ..|> EstadoEnvio
     EstadoRetenido ..|> EstadoEnvio
     EstadoEntregado ..|> EstadoEnvio
     EstadoCancelado ..|> EstadoEnvio
@@ -1620,39 +1727,29 @@ const DIAGRAMS = {
     class EstrategiaCalculoCosto {
         <<interface>>
         +calcular(e) double
-        +obtenerNombre() String
     }
     class EstrategiaPeso {
         +calcular(e) double
-        +obtenerNombre() String
     }
     class EstrategiaUrgencia {
         +calcular(e) double
-        +obtenerNombre() String
     }
     class EstrategiaDistancia {
         +calcular(e) double
-        +obtenerNombre() String
     }
     class EstrategiaHibrida {
         +calcular(e) double
-        +obtenerNombre() String
     }
-    class EstrategiaZonaHoraria {
-        +calcular(e) double
-        +obtenerNombre() String
-    }
-    class ServicioCalculoCosto {
+    class Envio {
         -estrategia: EstrategiaCalculoCosto
-        +setEstrategia(s) void
-        +calcularCosto(e) double
+        +establecerEstrategia(s) void
+        +calcularCosto() double
     }
     EstrategiaPeso ..|> EstrategiaCalculoCosto
     EstrategiaUrgencia ..|> EstrategiaCalculoCosto
     EstrategiaDistancia ..|> EstrategiaCalculoCosto
     EstrategiaHibrida ..|> EstrategiaCalculoCosto
-    EstrategiaZonaHoraria ..|> EstrategiaCalculoCosto
-    ServicioCalculoCosto o-- EstrategiaCalculoCosto`,
+    Envio o-- EstrategiaCalculoCosto`,
 
 'repository': `classDiagram
     class Repositorio~T~ {
@@ -1665,118 +1762,101 @@ const DIAGRAMS = {
     }
     class RepositorioEnvio {
         <<interface>>
-        +buscarPorEstado(s) List~Envio~
-        +buscarPorCliente(id) List~Envio~
+        +buscarPorEstado(estado) List~Envio~
+        +buscarPorEmpresa(empresaId) List~Envio~
     }
     class RepositorioEnvioMemoria {
         -almacen: Map~String, Envio~
         +guardar(e) void
         +buscarPorId(id) Envio
         +listar() List~Envio~
-    }
-    class RepositorioEnvioSQL {
-        -conexion: Connection
-        +guardar(e) void
-        +buscarPorId(id) Envio
-        +listar() List~Envio~
+        +buscarPorEstado(estado) List~Envio~
+        +buscarPorEmpresa(empresaId) List~Envio~
     }
     RepositorioEnvio ..|> Repositorio~T~
-    RepositorioEnvioMemoria ..|> RepositorioEnvio
-    RepositorioEnvioSQL ..|> RepositorioEnvio`,
+    RepositorioEnvioMemoria ..|> RepositorioEnvio`,
 
 'data-mapper': `classDiagram
     class EnvioMapper {
-        <<interface>>
-        +toEntity(row) Envio
-        +toRow(e) Map~String, Object~
+        -bd: ConexionBD
+        +insertar(e) void
+        +actualizar(e) void
+        +eliminar(id) void
+        +buscarPorId(id) Optional~Envio~
     }
-    class EnvioMapperSQL {
-        +toEntity(row) Envio
-        +toRow(e) Map~String, Object~
-        +fromResultSet(rs) Envio
+    class EnvioMapperMemoria {
+        -almacen: Map~String, Envio~
+        +insertar(e) void
+        +actualizar(e) void
+        +eliminar(id) void
+        +buscarPorId(id) Optional~Envio~
     }
-    class ClienteMapper {
-        +toEntity(row) Cliente
-        +toRow(c) Map~String, Object~
-    }
-    class CobroMapper {
-        +toEntity(row) Cobro
-        +toRow(c) Map~String, Object~
+    class ConexionBD {
+        <<singleton>>
+        +ejecutarQuery(sql) void
+        +obtenerInstancia()$ ConexionBD
     }
     class Envio {
         -id: String
-        -tipo: TipoEnvio
+        -origen: String
+        -destino: String
         -peso: double
     }
-    class Cliente {
-        -id: String
-        -nombre: String
-    }
-    EnvioMapperSQL ..|> EnvioMapper
-    EnvioMapperSQL ..> Envio : construye
-    ClienteMapper ..> Cliente : construye`,
+    EnvioMapper --> ConexionBD
+    EnvioMapper ..> Envio : mapea
+    EnvioMapperMemoria ..> Envio : mapea`,
 
 'unit-of-work': `classDiagram
     class UnitOfWork {
-        -nuevos: List~Object~
-        -sucios: List~Object~
-        -eliminados: List~Object~
-        -envioMapper: EnvioMapper
-        -cobroMapper: CobroMapper
-        +registrarNuevo(o) void
-        +registrarSucio(o) void
-        +registrarEliminado(o) void
-        +commit() void
+        -repositorio: RepositorioEnvio
+        -mapper: EnvioMapper
+        -bd: ConexionBD
+        -nuevos: List~Envio~
+        -modificados: List~Envio~
+        -eliminados: List~String~
+        +registrarNuevo(e) void
+        +registrarModificado(e) void
+        +registrarEliminado(id) void
+        +commit() bool
         +rollback() void
+        +pendientes() int
+    }
+    class RepositorioEnvio {
+        <<interface>>
+        +guardar(e) void
+        +eliminar(id) void
     }
     class EnvioMapper {
-        <<interface>>
         +insertar(e) void
         +actualizar(e) void
         +eliminar(id) void
     }
-    class CobroMapper {
-        <<interface>>
-        +insertar(c) void
-        +actualizar(c) void
-        +eliminar(id) void
+    class ConexionBD {
+        <<singleton>>
+        +ejecutarQuery(sql) void
     }
+    UnitOfWork --> RepositorioEnvio
     UnitOfWork --> EnvioMapper
-    UnitOfWork --> CobroMapper`,
+    UnitOfWork --> ConexionBD`,
 
 'lazy-load': `classDiagram
-    class CentroDistribucion {
-        <<abstract>>
-        #nombre: String
-        +obtenerCapacidad() int
-        +obtenerOcupacion() int
-        +mostrar(p) void
-    }
-    class CentroDistribucionLazyProxy {
+    class ClienteFinal {
         -id: String
-        -centroReal: CentroDistribucion
-        -cargado: bool
-        +obtenerCapacidad() int
-        +obtenerOcupacion() int
-        +mostrar(p) void
-        -cargarSiNecesario() void
+        -username: String
+        -email: String
+        -estado: String
+        +obtenerRol() Rol
     }
     class ClienteLazyProxy {
-        -id: String
-        -clienteReal: Cliente
         -cargado: bool
-        +getNombre() String
-        +getEmail() String
+        -cantidadEnvios: int
+        -categoriaFidelidad: String
+        +getCantidadEnvios() int
+        +getCategoriaFidelidad() String
+        +estaCargado() bool
         -cargarSiNecesario() void
     }
-    class HistorialEnviosLazyProxy {
-        -envioId: String
-        -historialReal: HistorialEnvios
-        -cargado: bool
-        +getHistorial() List~MementoEnvio~
-        -cargarSiNecesario() void
-    }
-    CentroDistribucionLazyProxy --|> CentroDistribucion`,
+    ClienteLazyProxy --|> ClienteFinal`,
 
 };
 

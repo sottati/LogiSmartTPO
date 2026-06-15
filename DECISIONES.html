@@ -148,6 +148,7 @@
     }
     .tag-to { background: var(--c-to-bg);  color: var(--c-to);  border: 1px solid var(--c-to-border); }
     .tag-rf { background: var(--c-rf-bg);  color: var(--c-rf);  border: 1px solid var(--c-rf-border); }
+    .tag-pd { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
     .card-head-title {
       font-size: .88rem; font-weight: 700; color: var(--text);
       flex: 1;
@@ -261,7 +262,7 @@
       <a class="sb-link" href="#h8"><span class="num">H8</span> Estructurales I</a>
       <a class="sb-link" href="#h9"><span class="num">H9</span> Estructurales II</a>
       <a class="sb-link" href="#h10"><span class="num">H10</span> Comportamiento</a>
-      <a class="sb-link" href="#h12"><span class="num">H12</span> Composite + Visitor</a>
+      <a class="sb-link" href="#h12"><span class="num">H12</span> Composite</a>
       <a class="sb-link" href="#h13"><span class="num">H13</span> Persistencia</a>
       <a class="sb-link" href="#descartados"><span class="num">—</span> Descartados</a>
       <div class="sb-sep"></div>
@@ -369,21 +370,21 @@
           <div class="card">
             <div class="card-head">
               <span class="tag tag-rf">Refactoring</span>
-              <span class="card-head-title">25 booleanos dispersos → enum <code>Rol</code> centralizado</span>
+              <span class="card-head-title">35 booleanos dispersos → enum <code>Rol</code> centralizado</span>
             </div>
             <div class="card-body">
               <div class="rf-grid">
                 <div class="rf-col before">
                   <div class="rf-col-label">Antes</div>
-                  <div class="rf-col-text">Cada subclase de <code>Usuario</code> declaraba sus 5 permisos como <code>boolean</code> individuales. Agregar un permiso = modificar 5 archivos distintos, con riesgo de inconsistencia.</div>
+                  <div class="rf-col-text">Cada subclase de <code>Usuario</code> declaraba sus 7 permisos como <code>boolean</code> individuales. Agregar un permiso = modificar 5 archivos distintos, con riesgo de inconsistencia.</div>
                 </div>
                 <div class="rf-col after">
                   <div class="rf-col-label">Después</div>
-                  <div class="rf-col-text">Enum <code>Rol</code> como única fuente de verdad. Cada valor es una fila con sus 5 permisos: <code>OPERADOR(true,true,true,true,false)</code>. Agregar un permiso = 1 columna nueva.</div>
+                  <div class="rf-col-text">Enum <code>Rol</code> como única fuente de verdad. Cada valor es una fila con sus 7 permisos (crearEnvio, asignarRuta, verReportes, gestionarFlota, administrarEmpresas, registrarEntregas, consultarUbicacion): <code>OPERADOR(true,true,true,true,false,false,true)</code>. Agregar un permiso = 1 columna nueva.</div>
                 </div>
               </div>
               <div class="reason-row">
-                <strong>Patrón aplicado:</strong> GRASP Information Expert — <code>Rol</code> es quien tiene la información para responder las preguntas de permiso.
+                <strong>Patrón aplicado:</strong> GRASP Information Expert — <code>Rol</code> es quien tiene la información para responder las preguntas de permiso. 5 roles × 7 permisos = 35 booleanos en una única matriz legible.
                 <br><strong>Ganancia:</strong> toda la lógica de permisos quedó testeable en una sola clase. La <strong>mantenibilidad</strong> mejoró de forma cuantificable: cambiar o agregar un permiso pasó de impactar 5 archivos a impactar 1.
               </div>
             </div>
@@ -415,6 +416,35 @@
                 <span class="qa-pill qa-gain">Eficiencia</span>
                 <span class="qa-pill qa-gain">Testabilidad</span>
                 <span class="qa-pill qa-cost">Configurabilidad en runtime</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-rf">Refactoring</span>
+              <span class="card-head-title">Tenant guard type-safe: <code>IPermisos.getEmpresaId()</code> + <code>Usuario.empresaId</code></span>
+            </div>
+            <div class="card-body">
+              <div class="rf-grid">
+                <div class="rf-col before">
+                  <div class="rf-col-label">Antes</div>
+                  <div class="rf-col-text"><code>consultarEnviosPorEmpresa(IPermisos actor, String empresaIdActor, String empresaIdSolicitada)</code>: el caller podía pasar cualquier <code>empresaIdActor</code>, abriendo la puerta a suplantación de empresa.</div>
+                </div>
+                <div class="rf-col after">
+                  <div class="rf-col-label">Después</div>
+                  <div class="rf-col-text"><code>IPermisos</code> agrega <code>default String getEmpresaId()</code>; <code>Usuario</code> agrega campo <code>empresaId</code> con getter/setter. El Controller deriva la empresa del actor — <code>actor.getEmpresaId()</code> — y el caller no puede mentir sobre su empresa.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Patrón aplicado:</strong> GRASP Information Expert — el actor es quien sabe a qué empresa pertenece. El guard type-safe elimina un vector de escalada de privilegios inter-empresa.
+                <br><strong>Implementación:</strong> <code>default</code> method en la interfaz evita modificar las subclases sin empresa (<code>AdminPlataforma</code>, etc. retornan <code>null</code> por defecto); solo <code>OperadorLogistico</code> y <code>AdminEmpresa</code> invocan <code>setEmpresaId()</code> al autenticar.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Seguridad</span>
+                <span class="qa-pill qa-gain">Correctitud funcional</span>
+                <span class="qa-pill qa-gain">Bajo acoplamiento</span>
               </div>
             </div>
           </div>
@@ -463,6 +493,33 @@
 
           <div class="card">
             <div class="card-head">
+              <span class="tag tag-rf">Refactoring</span>
+              <span class="card-head-title"><code>EnvioBuilder.empresa(Empresa)</code> — campo opcional añadido al Builder</span>
+            </div>
+            <div class="card-body">
+              <div class="rf-grid">
+                <div class="rf-col before">
+                  <div class="rf-col-label">Antes</div>
+                  <div class="rf-col-text"><code>EnvioBuilder</code> no tenía campo <code>empresa</code>. La asociación Envio→Empresa se asignaba después de la construcción, dejando al objeto temporalmente en estado parcial.</div>
+                </div>
+                <div class="rf-col after">
+                  <div class="rf-col-label">Después</div>
+                  <div class="rf-col-text"><code>EnvioBuilder.empresa(Empresa v)</code> como setter encadenable. La empresa queda enlazada en el momento de <code>build()</code>, garantizando que el objeto sale del Builder ya asociado.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Patrón aplicado:</strong> Builder GoF — la construcción completa del objeto se concentra en <code>build()</code>. El campo <code>empresa</code> es opcional (null por defecto) para no romper los tests existentes que construyen envíos sin empresa.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Correctitud funcional</span>
+                <span class="qa-pill qa-gain">Cohesión</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
               <span class="tag tag-to">Trade-off</span>
               <span class="card-head-title">Abstract Factory por región vs. if/switch por país</span>
             </div>
@@ -494,14 +551,42 @@
 
           <div class="card">
             <div class="card-head">
+              <span class="tag tag-rf">Refactoring</span>
+              <span class="card-head-title">Controller configurable por región: <code>LogiSmartController(LogiSmartFactory, String region)</code></span>
+            </div>
+            <div class="card-body">
+              <div class="rf-grid">
+                <div class="rf-col before">
+                  <div class="rf-col-label">Antes</div>
+                  <div class="rf-col-text"><code>consultarUbicacion()</code> tenía la región <code>"AR"</code> hardcodeada. El Controller era implícitamente argentino, ignorando que la factory ya modelaba multi-región.</div>
+                </div>
+                <div class="rf-col after">
+                  <div class="rf-col-label">Después</div>
+                  <div class="rf-col-text">Nuevo constructor <code>LogiSmartController(LogiSmartFactory factory, String region)</code>. El campo <code>this.region</code> se usa en <code>consultarUbicacion()</code>. El constructor por defecto sigue existiendo: <code>new LogiSmartController()</code> → <code>("AR")</code>.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Patrón aplicado:</strong> Abstract Factory ya inyectaba la familia de objetos; la <code>region</code> completa el contexto de despliegue. El Controller ahora es consistente con la factory que recibe: si la factory es Brasil, la región también es Brasil.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Correctitud funcional</span>
+                <span class="qa-pill qa-gain">Consistencia</span>
+                <span class="qa-pill qa-gain">Extensibilidad regional</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
               <span class="tag tag-to">Trade-off</span>
-              <span class="card-head-title"><code>EstrategiaDistancia</code> con 500 km fijos vs. distancia real desde API de mapas</span>
+              <span class="card-head-title"><code>EstrategiaDistancia</code> con distancia fija × tarifa vs. distancia real desde API de mapas</span>
             </div>
             <div class="card-body">
               <div class="to-grid">
                 <div class="to-col decided">
                   <div class="to-col-label">Decisión tomada</div>
-                  <div class="to-col-text"><code>peso × 500</code> — distancia fija de 500 km como placeholder. Todos los tests del cálculo de costo son deterministas y no requieren red.</div>
+                  <div class="to-col-text"><code>peso × 500 × tarifaPorKm</code> (tarifa=1.5 por defecto, parametrizable en el constructor). Placeholder de distancia fija: los tests de costo son deterministas y no requieren red.</div>
                 </div>
                 <div class="to-col alt">
                   <div class="to-col-label">Alternativa descartada</div>
@@ -510,7 +595,7 @@
               </div>
               <div class="reason-row">
                 <strong>Análisis:</strong> una estrategia que depende de una API externa introduce <strong>no determinismo</strong> en los tests: el resultado varía con la disponibilidad de la red, el throttling de la API y el costo por consulta. La <strong>testabilidad</strong> del cálculo de costo quedaría bloqueada por una dependencia de infraestructura.
-                <br><br>El Strategy Pattern desacopla la interfaz de la implementación: <code>EstrategiaCalculoCosto</code> puede ser <code>EstrategiaDistanciaFija</code> (esta clase) o <code>EstrategiaDistanciaReal</code> (futura, con API) sin que <code>Envio</code> cambie una sola línea. El sacrificio es de <strong>precisión funcional</strong>: los costos calculados no reflejan la distancia geográfica real, lo cual es un límite conocido y explícito.
+                <br><br>El Strategy Pattern desacopla la interfaz de la implementación: <code>EstrategiaCalculoCosto</code> puede ser <code>EstrategiaDistancia</code> (esta clase) o <code>EstrategiaDistanciaReal</code> (futura, con API) sin que <code>Envio</code> cambie una sola línea. El sacrificio es de <strong>precisión funcional</strong>: los costos calculados no reflejan la distancia geográfica real, lo cual es un límite conocido y explícito.
               </div>
               <div class="qa-row">
                 <span class="qa-label">Atributos</span>
@@ -571,7 +656,7 @@
               <div class="to-grid">
                 <div class="to-col decided">
                   <div class="to-col-label">Decisión tomada</div>
-                  <div class="to-col-text">Abstracción: <code>ReporteEnvios</code>, <code>ReporteCentros</code>, <code>ReporteVehiculos</code>. Implementación: <code>GeneradorPDF</code>, <code>GeneradorCSV</code>, <code>GeneradorJSON</code>, <code>GeneradorHTML</code>. 7 clases totales.</div>
+                  <div class="to-col-text">Abstracción: <code>ReporteEnvios</code>, <code>ReporteIngresos</code>, <code>ReporteDesempeno</code>. Implementación: <code>GeneradorPDF</code>, <code>GeneradorJSON</code>, <code>GeneradorExcel</code>, <code>GeneradorCSV</code>. 7 clases concretas; orquestadas por <code>FachadaReportes</code>.</div>
                 </div>
                 <div class="to-col alt">
                   <div class="to-col-label">Alternativa descartada</div>
@@ -613,7 +698,7 @@
               <div class="to-grid">
                 <div class="to-col decided">
                   <div class="to-col-label">Decisión tomada</div>
-                  <div class="to-col-text">5 validadores ordenados de menor a mayor costo computacional. El primero que falla corta la cadena: nunca se consulta inventario ni se procesa el pago si los datos básicos son inválidos.</div>
+                  <div class="to-col-text">5 validadores en orden fijo: <strong>Datos → Inventario → Pago → Seguridad → Capacidad</strong>. El primero que falla corta la cadena: nunca se llega a la validación de capacidad si los datos básicos o el inventario no pasan.</div>
                 </div>
                 <div class="to-col alt">
                   <div class="to-col-label">Alternativa descartada</div>
@@ -621,7 +706,7 @@
                 </div>
               </div>
               <div class="reason-row">
-                <strong>Análisis:</strong> el orden es intencional y expresa una jerarquía de costos: datos básicos (barato, sin I/O) → autorización → pago → capacidad → inventario (caro, requiere BD). Fallar en el primer validador que detecte un problema protege los recursos de los validadores subsiguientes, mejorando la <strong>eficiencia de tiempo de respuesta</strong>. El chequeo de autorización ocurre antes de cualquier mutación de estado, lo que también refuerza la <strong>seguridad</strong>.
+                <strong>Análisis:</strong> el orden implementado es <code>ValidadorDatos → ValidadorInventario → ValidadorPago → ValidadorSeguridad → ValidadorCapacidad</code> (ver <code>CadenaValidadores.java</code>). Fallar rápido en los primeros validadores — que son baratos y sin I/O — protege los recursos de los validadores más costosos. <code>ValidadorSeguridad</code> filtra destinos restringidos antes de llegar a <code>ValidadorCapacidad</code>, que tiene mayor costo de consulta.
                 <br><br>El costo es de <strong>usabilidad del API</strong>: el cliente que envía múltiples campos inválidos los descubre de a uno por llamada, no todos juntos. Esto es aceptable en operaciones logísticas donde los errores graves suelen ser excluyentes entre sí (si el origen está vacío, la validación de inventario carece de sentido).
               </div>
               <div class="qa-row">
@@ -671,7 +756,7 @@
           <div class="card">
             <div class="card-head">
               <span class="tag tag-rf">Refactoring</span>
-              <span class="card-head-title">Campo <code>String estado</code> + switch → 9 clases <code>EstadoEnvio</code> (State GoF)</span>
+              <span class="card-head-title">Campo <code>String estado</code> + switch → 6 clases <code>EstadoEnvio</code> (State GoF)</span>
               <span class="commit-chip">e9d7685</span>
             </div>
             <div class="card-body">
@@ -695,23 +780,52 @@
 
           <div class="card">
             <div class="card-head">
+              <span class="tag tag-rf">Refactoring</span>
+              <span class="card-head-title">Estado* lanzan <code>IllegalStateException</code>; observers usan <code>Logger</code></span>
+            </div>
+            <div class="card-body">
+              <div class="rf-grid">
+                <div class="rf-col before">
+                  <div class="rf-col-label">Antes</div>
+                  <div class="rf-col-text">Transiciones inválidas hacían <code>System.out.println("Operación no válida")</code> y retornaban silenciosamente. El <code>catch (IllegalStateException)</code> en el Controller era código muerto. Los observers también usaban <code>System.out.println</code>.</div>
+                </div>
+                <div class="rf-col after">
+                  <div class="rf-col-label">Después</div>
+                  <div class="rf-col-text">Cada método inválido en las 6 clases <code>Estado*</code> lanza <code>IllegalStateException</code> con mensaje descriptivo. El <code>catch</code> en el Controller ahora tiene efecto real. Los tres observers (<code>NotificadorClienteObservador</code>, <code>DashboardObservador</code>, <code>AuditoriaObservador</code>) delegan al <code>Logger.obtenerInstancia()</code> (Singleton).</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Patrón aplicado:</strong> State GoF — las transiciones inválidas deben ser imposibles de ignorar. La excepción hace visible un error de programación (llamar <code>validar()</code> desde CANCELADO) que antes se tragaba silenciosamente.
+                <br><strong>Observer + Singleton:</strong> los observers ya usaban el patrón correcto; el cambio a <code>Logger</code> elimina el acoplamiento a <code>System.out</code> y centraliza la trazabilidad en el Singleton de logging.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Correctitud funcional</span>
+                <span class="qa-pill qa-gain">Trazabilidad</span>
+                <span class="qa-pill qa-gain">Detectabilidad de errores</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
               <span class="tag tag-to">Trade-off</span>
-              <span class="card-head-title"><code>MementoEnvio</code> en <code>dominio/</code> vs. en <code>infraestructura/comportamiento/memento/</code></span>
+              <span class="card-head-title"><code>MementoEnvio</code> en <code>dominio/envio/</code> vs. en <code>infraestructura/</code></span>
             </div>
             <div class="card-body">
               <div class="to-grid">
                 <div class="to-col decided">
                   <div class="to-col-label">Decisión tomada</div>
-                  <div class="to-col-text"><code>MementoEnvio</code> vive en <code>dominio/envio/</code>. El historial de auditoría es un concepto de negocio puro — captura datos de dominio (estado, origen, destino, peso, costo).</div>
+                  <div class="to-col-text">Las tres partes del patrón (<code>Envio</code> Originator, <code>MementoEnvio</code>, <code>HistorialEnvios</code> Caretaker) viven en <code>dominio/envio/</code>. El snapshot captura datos de negocio puros (estado, origen, destino, peso, costo).</div>
                 </div>
                 <div class="to-col alt">
                   <div class="to-col-label">Alternativa descartada</div>
-                  <div class="to-col-text">Mover <code>MementoEnvio</code> a <code>infraestructura/comportamiento/memento/</code> para co-locar las tres partes del patrón GoF (Originator, Memento, Caretaker).</div>
+                  <div class="to-col-text">Mover <code>MementoEnvio</code> a <code>infraestructura/</code> para co-locar patrones técnicos. Requeriría que <code>Envio</code> (dominio) importara de infraestructura.</div>
                 </div>
               </div>
               <div class="reason-row">
-                <strong>Análisis:</strong> Clean Architecture define una regla de dependencia estricta: el dominio no puede importar de infraestructura. Si <code>MementoEnvio</code> estuviera en infraestructura y <code>Envio</code> (Originator, en dominio) lo usara, se crearía una dependencia <strong>dominio → infraestructura</strong> que viola esta regla. La <strong>independencia de capas</strong> — el activo central de la arquitectura — quedaría comprometida.
-                <br><br>El costo es de <strong>cohesión del patrón GoF</strong>: las tres partes del Memento quedan en paquetes distintos (Originator y Memento en dominio, Caretaker en infraestructura). El lector debe conocer la regla de Clean Architecture para entender por qué el patrón está partido. Esto se documenta explícitamente en el Javadoc de <code>MementoEnvio</code>.
+                <strong>Análisis:</strong> Clean Architecture define una regla de dependencia estricta: el dominio no puede importar de infraestructura. Si <code>MementoEnvio</code> estuviera en infraestructura y <code>Envio</code> (Originator, en dominio) lo usara, se crearía una dependencia <strong>dominio → infraestructura</strong> que viola esta regla. Al mantener las tres partes en <code>dominio/envio/</code>, el patrón queda cohesivo y el dominio es autónomo.
+                <br><br>El único costo percibido es que <code>MementoEnvio</code> parece un concepto técnico en el dominio — pero captura exclusivamente datos de negocio, no mecanismos de persistencia, por lo que su lugar es correcto.
               </div>
               <div class="qa-row">
                 <span class="qa-label">Atributos</span>
@@ -732,7 +846,7 @@
               <div class="to-grid">
                 <div class="to-col decided">
                   <div class="to-col-label">Decisión tomada</div>
-                  <div class="to-col-text">8 clases <code>EstrategiaCalculoCosto</code> intercambiables en runtime: Peso, Urgencia, Distancia, DistanciaReal, Volumen, Fijo, PorBulto, Híbrida. <code>Envio</code> delega y nunca sabe cuál recibe.</div>
+                  <div class="to-col-text">4 clases <code>EstrategiaCalculoCosto</code> intercambiables en runtime: <code>EstrategiaDistancia</code>, <code>EstrategiaPeso</code>, <code>EstrategiaUrgencia</code>, <code>EstrategiaHibrida</code>. <code>Envio</code> delega y nunca sabe cuál recibe.</div>
                 </div>
                 <div class="to-col alt">
                   <div class="to-col-label">Alternativa descartada</div>
@@ -750,6 +864,34 @@
                 <span class="qa-pill qa-gain">Testabilidad</span>
                 <span class="qa-pill qa-gain">Flexibilidad en runtime</span>
                 <span class="qa-pill qa-cost">Indirección</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-rf">Refactoring</span>
+              <span class="card-head-title">Strategy wired desde la factory: <code>factory.crearCalculadorCostos()</code> en <code>planificarRuta()</code></span>
+            </div>
+            <div class="card-body">
+              <div class="rf-grid">
+                <div class="rf-col before">
+                  <div class="rf-col-label">Antes</div>
+                  <div class="rf-col-text"><code>planificarRuta()</code> instanciaba <code>EstrategiaDistancia</code> directamente, acoplando el Controller a una estrategia concreta e ignorando la factory.</div>
+                </div>
+                <div class="rf-col after">
+                  <div class="rf-col-label">Después</div>
+                  <div class="rf-col-text"><code>CalculadorCostos calc = factory.crearCalculadorCostos()</code>; la estrategia se construye como lambda: <code>envio.establecerEstrategia(e -&gt; calc.calcular(distRef, e.getPeso()))</code>. La estrategia activa depende de la factory inyectada — Argentina usa su propia tarifa, Brasil la suya.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Patrón aplicado:</strong> Abstract Factory + Strategy — la factory produce el <code>CalculadorCostos</code> apropiado para la región; el Controller lo adapta a la interfaz <code>EstrategiaCalculoCosto</code> via lambda. El dominio (<code>Envio</code>) sigue sin conocer la región ni la implementación concreta.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Consistencia regional</span>
+                <span class="qa-pill qa-gain">Bajo acoplamiento</span>
+                <span class="qa-pill qa-gain">Extensibilidad</span>
               </div>
             </div>
           </div>
@@ -784,6 +926,34 @@
             </div>
           </div>
 
+          <div class="card">
+            <div class="card-head">
+              <span class="tag tag-rf">Refactoring</span>
+              <span class="card-head-title"><code>Map&lt;String, HistorialEnvios&gt;</code> persistido en el Controller vs. historial efímero por operación</span>
+            </div>
+            <div class="card-body">
+              <div class="rf-grid">
+                <div class="rf-col before">
+                  <div class="rf-col-label">Antes</div>
+                  <div class="rf-col-text">CU-04, CU-05 y CU-06 creaban <code>new HistorialEnvios()</code> localmente dentro del método. El historial se descartaba al finalizar cada operación — sin trazabilidad acumulada entre llamadas.</div>
+                </div>
+                <div class="rf-col after">
+                  <div class="rf-col-label">Después</div>
+                  <div class="rf-col-text"><code>private final Map&lt;String, HistorialEnvios&gt; historiales</code> en el Controller. Cada CU usa <code>obtenerHistorial(envioId)</code> (<code>computeIfAbsent</code>). Los snapshots se acumulan a lo largo de la vida del envío y son recuperables con <code>getHistorial(id)</code>.</div>
+                </div>
+              </div>
+              <div class="reason-row">
+                <strong>Patrón aplicado:</strong> Memento + Caretaker — el Controller actúa como Caretaker persistente. La trazabilidad completa del envío queda disponible para auditorías, reclamos o replay de estados, sin depender de que la operación actual siga activa.
+              </div>
+              <div class="qa-row">
+                <span class="qa-label">Atributos</span>
+                <span class="qa-pill qa-gain">Trazabilidad</span>
+                <span class="qa-pill qa-gain">Conformidad con requisitos de auditoría</span>
+                <span class="qa-pill qa-cost">Consumo de memoria en sesión larga</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -791,7 +961,7 @@
       <section class="hito-section" id="h12">
         <div class="hito-header">
           <span class="hito-pill-lg">Hito 12</span>
-          <span class="hito-name">Composite + Visitor</span>
+          <span class="hito-name">Composite</span>
         </div>
         <div class="cards">
 
@@ -828,7 +998,7 @@
               <div class="to-grid">
                 <div class="to-col decided">
                   <div class="to-col-label">Decisión tomada</div>
-                  <div class="to-col-text">El árbol <code>CentroDistribucionComposite</code> es la única fuente de verdad. La persistencia es plana (<code>RepositorioCentroMemoria</code> con un Map). El desfasaje entre dominio y persistencia se acepta de forma explícita.</div>
+                  <div class="to-col-text">El árbol <code>CentroDistribucion</code> / <code>CentroRegional</code> / <code>SucursalEntrega</code> es la única fuente de verdad. La persistencia es plana (Map en memoria). El desfasaje entre dominio y persistencia se acepta de forma explícita.</div>
                 </div>
                 <div class="to-col alt">
                   <div class="to-col-label">Alternativa descartada</div>
@@ -836,8 +1006,8 @@
                 </div>
               </div>
               <div class="reason-row">
-                <strong>Análisis:</strong> el Composite garantiza <strong>consistencia del modelo de dominio</strong>: <code>calcularPesoTotal()</code> y <code>aceptar(visitor)</code> siempre operan sobre un árbol correcto, sin depender de que la BD refleje fielmente la jerarquía. Las operaciones del Visitor (calcular totales, generar reportes) son correctas por construcción.
-                <br><br>El costo es de <strong>consistencia entre capas</strong>: si la BD se modifica directamente sin pasar por el repositorio, el árbol en memoria queda desincronizado con los datos persistidos. En un sistema de producción con múltiples instancias o acceso directo a la BD esto sería un riesgo de integridad serio. Se acepta en este contexto porque la persistencia es en memoria y de un único hilo.
+                <strong>Análisis:</strong> el Composite garantiza <strong>consistencia del modelo de dominio</strong>: <code>calcularPesoTotal()</code> y <code>obtenerCapacidad()</code> siempre operan sobre un árbol correcto, sin depender de que la persistencia refleje fielmente la jerarquía.
+                <br><br>El costo es de <strong>consistencia entre capas</strong>: si la persistencia se modifica directamente sin pasar por el repositorio, el árbol en memoria queda desincronizado con los datos persistidos. En un sistema de producción con múltiples instancias o acceso directo a la BD esto sería un riesgo de integridad serio. Se acepta en este contexto porque la persistencia es en memoria y de un único hilo.
               </div>
               <div class="qa-row">
                 <span class="qa-label">Atributos</span>
@@ -877,7 +1047,7 @@
               </div>
               <div class="reason-row">
                 <strong>Análisis:</strong> con Active Record, el objeto de negocio y el esquema de BD quedan acoplados bidireccionalmente: refactorizar <code>Envio</code> implica migrar la BD, y un cambio de SGBD implica reescribir <code>Envio</code>. Con Data Mapper, la <strong>portabilidad</strong> mejora: cambiar de PostgreSQL a MongoDB requiere un nuevo mapper, no modificar el dominio.
-                <br><br>La <strong>testabilidad</strong> es el beneficio más inmediato: <code>RepositorioEnvioMemoria</code> (para tests) y <code>RepositorioEnvioSQL</code> (para producción) implementan la misma interfaz — los tests de dominio corren sin BD real, sin mocks de SQL.
+                <br><br>La <strong>testabilidad</strong> es el beneficio más inmediato: <code>RepositorioEnvioMemoria</code> implementa la misma interfaz que implementaría cualquier variante SQL — los tests de dominio corren sin BD real, sin mocks de SQL.
                 <br><br>El costo es de <strong>complejidad de implementación</strong>: hay que mantener el mapper sincronizado con los cambios del dominio manualmente, sin ORM que genere el mapeo automáticamente.
               </div>
               <div class="qa-row">
@@ -899,7 +1069,7 @@
               <div class="to-grid">
                 <div class="to-col decided">
                   <div class="to-col-label">Decisión tomada</div>
-                  <div class="to-col-text">3 proxies (<code>CentroDistribucionLazyProxy</code>, <code>ClienteLazyProxy</code>, <code>HistorialEnviosLazyProxy</code>). El objeto se carga al primer acceso y se cachea; accesos subsiguientes no van a la BD.</div>
+                  <div class="to-col-text">1 proxy: <code>ClienteLazyProxy</code>. El objeto se carga al primer acceso y se cachea; accesos subsiguientes no van a la BD.</div>
                 </div>
                 <div class="to-col alt">
                   <div class="to-col-label">Alternativa descartada</div>
@@ -930,15 +1100,15 @@
               <div class="rf-grid">
                 <div class="rf-col before">
                   <div class="rf-col-label">Antes</div>
-                  <div class="rf-col-text">Todos los patrones de infraestructura en un único paquete plano. Difícil navegar qué era estructural, qué comportamiento y qué persistencia.</div>
+                  <div class="rf-col-text">Todos los patrones de infraestructura en un único paquete plano. Difícil navegar a qué patrón pertenecía cada clase.</div>
                 </div>
                 <div class="rf-col after">
                   <div class="rf-col-label">Después</div>
-                  <div class="rf-col-text"><code>infraestructura/estructural/</code> · <code>infraestructura/comportamiento/</code> · <code>infraestructura/persistencia/</code>. Estructura de paquetes refleja la taxonomía GoF.</div>
+                  <div class="rf-col-text">Un subpaquete por patrón: <code>adapter/</code> · <code>bridge/</code> · <code>decorator/</code> · <code>estrategia/</code> · <code>fabrica/</code> · <code>flyweight/</code> · <code>observer/</code> · <code>singleton/</code>. La estructura de paquetes es un índice navegable de los patrones implementados.</div>
                 </div>
               </div>
               <div class="reason-row">
-                <strong>Patrón aplicado:</strong> GRASP High Cohesion — agrupar por tipo de responsabilidad técnica. La estructura de paquetes pasa a ser una documentación navegable de la arquitectura.
+                <strong>Patrón aplicado:</strong> GRASP High Cohesion — agrupar por responsabilidad de patrón. Encontrar todas las clases de un patrón = navegar a su subpaquete.
                 <br><strong>Commit:</strong> <code>bbc1f62 Reorganize infraestructura/ into estructural/, comportamiento/, persistencia/</code>
               </div>
             </div>
